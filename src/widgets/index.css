@@ -1,0 +1,61 @@
+body {
+    padding: 0 !important;
+}
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 260px;
+}
+
+.container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.toolbar {
+    margin-top: calc(1.5 * var(--ring-unit));
+}
+
+.picker {
+    margin-left: var(--ring-unit);
+    padding-right: 0 !important;
+    width: 130px;
+}
+
+.dash {
+    margin: 0 var(--ring-unit);
+}
+
+.y-axis,
+.x-axis {
+    stroke: var(--ring-borders-color);
+}
+
+.bar {
+    cursor: pointer;
+    fill: var(--ring-main-color);
+}
+
+.bar:hover {
+    fill: var(--ring-link-hover-color);
+}
+
+.popup {
+    padding: var(--ring-unit);
+    display: flex;
+    flex-direction: column;
+}
+
+.text {
+    fill: var(--ring-text-color);
+    font-family: var(--ring-font-family);
+    font-size: var(--ring-font-size-smaller);
+    line-height: var(--ring-line-height);
+}
+
+.background {
+    fill: var(--ring-content-background-color);
+}
