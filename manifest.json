@@ -1,0 +1,20 @@
+{
+  "name" : "votes-histogram",
+  "title" : "Votes Histogram",
+  "description" : null,
+  "dependencies" : {
+    "@jetbrains/youtrack-scripting-api" : "^2021.0.0"
+  },
+  "language" : "JS",
+  "modules" : {},
+  "widgets": [
+    {
+      "indexPath": "index.html",
+      "place": "ISSUE_TOOLBAR_ITEM"
+    }
+  ],
+  "youtrack" : {
+    "autoAttached" : false,
+    "visual" : false
+  }
+}
