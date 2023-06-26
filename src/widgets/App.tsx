@@ -26,7 +26,7 @@ const data = issue.activities.map((activity: { timestamp: number }) => activity.
 function App(): JSX.Element {
     return (
         <ControlsHeightContext.Provider value={ControlsHeight.S}>
-            <Histogram data={data} width={400} height={220} created={created} />
+            <Histogram data={data} width={636} height={360} created={created} />
         </ControlsHeightContext.Provider>
     );
 }

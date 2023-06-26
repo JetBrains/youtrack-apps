@@ -14,18 +14,28 @@ HTTPS clone URL: https://git.jetbrains.team/yt/youtrack-votes-app.git
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-## Prerequisites
-
-What things you need to install the software and how to install them.
+## Install
 
 ```
-Examples
+pnpm install
 ```
 
-## Deployment
+## Dev
 
-Add additional notes about how to deploy this on a production system.
+```
+pnpm dev
+```
 
-## Resources
+## Build
 
-Add links to external resources for this project, such as CI server, bug tracker, etc.
+```
+pnpm build
+```
+
+## Pack
+
+```
+pnpm pack
+```
+
+Then add the ```youtrack-votes-app.zip``` to YouTrack as a custom app.
