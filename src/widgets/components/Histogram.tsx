@@ -9,7 +9,6 @@ import { XAxis } from './XAxis';
 import { YAxis } from './YAxis';
 import { Bars } from './Bars';
 import { Background } from './Background';
-import { isSameDay } from '../helpers/isSameDay';
 import { getStartOfDay } from '../helpers/getStartOfDay';
 import { getEndOfDay } from '../helpers/getEndOfDay';
 
@@ -32,7 +31,8 @@ const HistogramComponent: FC<Props> = props => {
 
     const x = useMemo(() => d3.scaleLinear()
         .domain([min, max])
-        .range([yAxisWidth, width]), [min, max, width]);
+        .range([yAxisWidth, width])
+        .nice(), [min, max, width]);
 
     const histogram = useMemo(() => d3.bin()
         .value(d => d)
@@ -40,6 +40,8 @@ const HistogramComponent: FC<Props> = props => {
         .thresholds(x.ticks(numberOfBars)), [x]);
 
     const bins = useMemo(() => histogram(data), [data, histogram]);
+
+    const [currentVotes, setCurrentVotes] = useState(Infinity);
 
     const maxY = d3.max(bins, d => d.length) as number;
 
@@ -60,12 +62,12 @@ const HistogramComponent: FC<Props> = props => {
         setMax(timestamp);
     }, []);
 
-    const handleBarClick = useCallback((x0: number, x1: number) => {
-        if (!isSameDay(x0, x1)) {
+    const setDomain = useCallback((x0: number, x1: number) => {
+        if (currentVotes > 1) {
             setMin(x0);
             setMax(x1);
         }
-    }, []);
+    }, [currentVotes]);
 
     return (
         <div className={'container'}>
@@ -87,8 +89,9 @@ const HistogramComponent: FC<Props> = props => {
                     bins={bins}
                     x={x}
                     y={y}
-                    onBarClick={handleBarClick}
-                    onSetPopup={setPopup}
+                    onClick={setDomain}
+                    onMouseMove={setPopup}
+                    onMouseEnter={setCurrentVotes}
                 />
                 <YAxis
                     height={height}
