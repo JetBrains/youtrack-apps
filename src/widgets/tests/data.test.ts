@@ -1,6 +1,6 @@
 export const created = 1253274480177;
 
-export const data = [
+export const votes = [
     1253274480177,
     1272368022766,
     1296750176682,

@@ -1,14 +1,14 @@
 import React, { memo, useCallback } from 'react';
 import type { FC } from 'react';
 import type * as d3 from 'd3';
-import type { PopupProps } from './Popup';
+import type { BarData } from '../types/bar-data';
 
 interface Props {
     bins: Array<d3.Bin<number, number>>;
     x: d3.ScaleLinear<number, number>;
     y: d3.ScaleLinear<number, number>;
     onClick: (x0: number, x1: number) => void;
-    onMouseMove: (popup: PopupProps | null) => void;
+    onMouseMove: (popup: BarData | null) => void;
     onMouseEnter: (votes: number) => void;
 }
 

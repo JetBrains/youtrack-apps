@@ -1,33 +1,34 @@
 import React, { useState, useCallback, useMemo, memo } from 'react';
 import type { FC } from 'react';
 import * as d3 from 'd3';
-import { Toolbar } from './Toolbar';
-import { Popup } from './Popup';
-import type { PopupProps } from './Popup';
 import { numberOfBars, topMargin, bottomMargin, yAxisWidth } from '../constants';
-import { XAxis } from './XAxis';
-import { YAxis } from './YAxis';
-import { Bars } from './Bars';
-import { Background } from './Background';
-import { getStartOfDay } from '../helpers/getStartOfDay';
-import { getEndOfDay } from '../helpers/getEndOfDay';
+import { getStartOfDay } from '../helpers/get-start-of-day';
+import { getEndOfDay } from '../helpers/get-end-of-day';
+import type { BarData } from '../types/bar-data';
+import { Background } from './background';
+import { Toolbar } from './toolbar';
+import { Popup } from './popup';
+import { XAxis } from './x-axis';
+import { YAxis } from './y-axis';
+import { Bars } from './bars';
 
 interface Props {
     data: number[];
     width: number;
     height: number;
     created: number;
+    datePattern: string;
 }
 
 const HistogramComponent: FC<Props> = props => {
-    const { data, width, height, created } = props;
+    const { data, width, height, created, datePattern } = props;
 
     const start = getStartOfDay(created);
     const end = getEndOfDay(Date.now());
 
     const [min, setMin] = useState(start);
     const [max, setMax] = useState(end);
-    const [popup, setPopup] = useState<PopupProps | null>(null);
+    const [popup, setPopup] = useState<BarData | null>(null);
 
     const x = useMemo(() => d3.scaleLinear()
         .domain([min, max])
@@ -78,6 +79,7 @@ const HistogramComponent: FC<Props> = props => {
                     votes={popup.votes}
                     min={popup.min}
                     max={popup.max}
+                    datePattern={datePattern}
                 />
             )}
             <svg width={width} height={height}>
@@ -109,6 +111,7 @@ const HistogramComponent: FC<Props> = props => {
                 onSetDefault={handleSetDefault}
                 onSetMin={handleSetMin}
                 onSetMax={handleSetMax}
+                datePattern={datePattern}
             />
         </div>
     );

@@ -22,7 +22,6 @@ body {
 .picker {
     margin-left: var(--ring-unit);
     padding-right: 0 !important;
-    width: 130px;
 }
 
 .dash {

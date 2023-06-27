@@ -3,6 +3,7 @@ import type { FC } from 'react';
 import DatePicker from '@jetbrains/ring-ui/dist/date-picker/date-picker';
 import Button from '@jetbrains/ring-ui/dist/button/button';
 import { Size } from '@jetbrains/ring-ui/dist/input/input';
+import { formatDate } from '../helpers/format-date';
 
 interface Props {
     min: number;
@@ -10,10 +11,11 @@ interface Props {
     onSetDefault: () => void;
     onSetMin: (timestamp: number) => void;
     onSetMax: (timestamp: number) => void;
+    datePattern: string;
 }
 
 const ToolbarComponent: FC<Props> = props => {
-    const { min, max, onSetDefault, onSetMin, onSetMax } = props;
+    const { min, max, onSetDefault, onSetMin, onSetMax, datePattern } = props;
 
     const handleSetDefault = useCallback((): void => {
         onSetDefault();
@@ -39,12 +41,14 @@ const ToolbarComponent: FC<Props> = props => {
                 className={'picker'}
                 onChange={handleSetMin}
                 date={new Date(min)}
+                displayFormat={date => formatDate(date, datePattern)}
             />
             <span className={'dash'}>{'—'}</span>
             <DatePicker
                 size={Size.AUTO}
                 onChange={handleSetMax}
                 date={new Date(max)}
+                displayFormat={date => formatDate(date, datePattern)}
             />
         </div>
     );
