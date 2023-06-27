@@ -5,18 +5,6 @@ import { ControlsHeightContext } from '@jetbrains/ring-ui/dist/global/controls-h
 import { Histogram } from './components/Histogram';
 import { ControlsHeight } from '@jetbrains/ring-ui/components/global/controls-height';
 
-interface YTPluginHost {
-    fetchYouTrack: (path: string, options?: { query?: Record<string, string | number> }) => Promise<any>;
-}
-
-declare const YTPlugin: {
-    register: () => Promise<YTPluginHost>;
-    entity: {
-        id: string;
-        created: string;
-    };
-};
-
 const host = await YTPlugin.register();
 
 const issueID: string = YTPlugin.entity.id;
