@@ -4,12 +4,14 @@ import * as d3 from 'd3';
 import { Toolbar } from './Toolbar';
 import { Popup } from './Popup';
 import type { PopupProps } from './Popup';
-import { barAmount, topMargin, bottomMargin, yAxisWidth } from '../constants';
+import { numberOfBars, topMargin, bottomMargin, yAxisWidth } from '../constants';
 import { XAxis } from './XAxis';
 import { YAxis } from './YAxis';
 import { Bars } from './Bars';
 import { Background } from './Background';
 import { isSameDay } from '../helpers/isSameDay';
+import { getStartOfDay } from '../helpers/getStartOfDay';
+import { getEndOfDay } from '../helpers/getEndOfDay';
 
 interface Props {
     data: number[];
@@ -18,9 +20,14 @@ interface Props {
     created: number;
 }
 
-const HistogramComponent: FC<Props> = ({ data, width, height, created }) => {
-    const [min, setMin] = useState(created);
-    const [max, setMax] = useState(Date.now());
+const HistogramComponent: FC<Props> = props => {
+    const { data, width, height, created } = props;
+
+    const start = getStartOfDay(created);
+    const end = getEndOfDay(Date.now());
+
+    const [min, setMin] = useState(start);
+    const [max, setMax] = useState(end);
     const [popup, setPopup] = useState<PopupProps | null>(null);
 
     const x = useMemo(() => d3.scaleLinear()
@@ -30,7 +37,7 @@ const HistogramComponent: FC<Props> = ({ data, width, height, created }) => {
     const histogram = useMemo(() => d3.bin()
         .value(d => d)
         .domain(x.domain() as [number, number])
-        .thresholds(x.ticks(barAmount)), [x]);
+        .thresholds(x.ticks(numberOfBars)), [x]);
 
     const bins = useMemo(() => histogram(data), [data, histogram]);
 
@@ -41,9 +48,9 @@ const HistogramComponent: FC<Props> = ({ data, width, height, created }) => {
         .range([height - bottomMargin, topMargin]), [maxY, height]);
 
     const handleSetDefault = useCallback((): void => {
-        setMin(created);
-        setMax(Date.now());
-    }, [created]);
+        setMin(start);
+        setMax(end);
+    }, [start, end]);
 
     const handleSetMin = useCallback((timestamp: number): void => {
         setMin(timestamp);
@@ -61,7 +68,7 @@ const HistogramComponent: FC<Props> = ({ data, width, height, created }) => {
     }, []);
 
     return (
-        <div className="container">
+        <div className={'container'}>
             {popup !== null && (
                 <Popup
                     x={popup.x}
