@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo } from 'react';
 import type { FC } from 'react';
 import type * as d3 from 'd3';
 import type { BarData } from '../types/bar-data';
@@ -15,15 +15,15 @@ interface Props {
 const BarsComponent: FC<Props> = props => {
     const { bins, x, y, onClick, onMouseMove, onMouseEnter } = props;
 
-    const handleClick = useCallback((x0: number, x1: number) => () => {
+    const handleClick = (x0: number, x1: number) => () => {
         onClick(x0, x1);
-    }, [onClick]);
+    };
 
-    const handleMouseEnter = useCallback((votes: number) => () => {
+    const handleMouseEnter = (votes: number) => () => {
         onMouseEnter(votes);
-    }, [onMouseEnter]);
+    };
 
-    const handleMouseMove = useCallback((x0: number, x1: number, votes: number) => (event: React.MouseEvent<SVGRectElement>) => {
+    const handleMouseMove = (x0: number, x1: number, votes: number) => (event: React.MouseEvent<SVGRectElement>) => {
         onMouseMove({
             x: event.clientX,
             y: event.clientY,
@@ -31,11 +31,11 @@ const BarsComponent: FC<Props> = props => {
             min: x0,
             max: x1,
         });
-    }, [onMouseMove]);
+    };
 
-    const handleMouseLeave = useCallback(() => {
+    const handleMouseLeave = () => {
         onMouseMove(null);
-    }, [onMouseMove]);
+    };
 
     return (
         <>
