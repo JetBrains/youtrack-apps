@@ -15,28 +15,6 @@ interface Props {
 const BarsComponent: FC<Props> = props => {
     const { bins, x, y, onClick, onMouseMove, onMouseEnter } = props;
 
-    const handleClick = (x0: number, x1: number) => () => {
-        onClick(x0, x1);
-    };
-
-    const handleMouseEnter = (votes: number) => () => {
-        onMouseEnter(votes);
-    };
-
-    const handleMouseMove = (x0: number, x1: number, votes: number) => (event: React.MouseEvent<SVGRectElement>) => {
-        onMouseMove({
-            x: event.clientX,
-            y: event.clientY,
-            votes,
-            min: x0,
-            max: x1,
-        });
-    };
-
-    const handleMouseLeave = () => {
-        onMouseMove(null);
-    };
-
     return (
         <>
             {bins.map((d, i) => {
@@ -52,10 +30,28 @@ const BarsComponent: FC<Props> = props => {
                         width={Math.max(x(d.x1) - x(d.x0) - 1, 0)}
                         height={y(0) - y(d.length)}
                         className={'bar'}
-                        onMouseEnter={handleMouseEnter(d.length)}
-                        onClick={handleClick(d.x0, d.x1)}
-                        onMouseMove={handleMouseMove(d.x0, d.x1, d.length)}
-                        onMouseLeave={handleMouseLeave}
+                        onMouseEnter={() => {
+                            onMouseEnter(d.length);
+                        }}
+                        onMouseLeave={() => {
+                            onMouseMove(null);
+                        }}
+                        onClick={() => {
+                            if (d.x0 !== undefined && d.x1 !== undefined) {
+                                onClick(d.x0, d.x1);
+                            }
+                        }}
+                        onMouseMove={event => {
+                            if (d.x0 !== undefined && d.x1 !== undefined) {
+                                onMouseMove({
+                                    x: event.clientX,
+                                    y: event.clientY,
+                                    votes: d.length,
+                                    min: d.x0,
+                                    max: d.x1,
+                                });
+                            }
+                        }}
                     />
                 );
             })}
