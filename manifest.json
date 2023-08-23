@@ -9,6 +9,7 @@
   "modules" : {},
   "widgets": [
     {
+      "name": "Issue Votes Histogram",
       "indexPath": "index.html",
       "place": "ISSUE_TOOLBAR_ITEM"
     }
