@@ -7,7 +7,7 @@ export async function fetchVotes(host: YTPluginHost, issueID: string): Promise<n
         },
     });
 
-    return issue.activities.flatMap((activity: {timestamp: number; added: unknown[]}) => {
+    return issue.activities.flatMap((activity: { timestamp: number; added: unknown[] }) => {
         return new Array(activity.added.length).fill(activity.timestamp);
     });
 }
