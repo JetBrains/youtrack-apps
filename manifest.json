@@ -9,9 +9,10 @@
   "modules" : {},
   "widgets": [
     {
+      "key": "votes-histogram",
       "name": "Issue Votes Histogram",
       "indexPath": "index.html",
-      "place": "ISSUE_TOOLBAR_ITEM"
+      "place": "ISSUE_OPTIONS_MENU_ITEM"
     }
   ],
   "youtrack" : {

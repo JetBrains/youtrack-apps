@@ -5,7 +5,7 @@ declare global {
         fetchYouTrack: (path: string, options?: { query?: Record<string, string | number> }) => Promise<any>;
     }
 
-    const YTPlugin: {
+    const YTApp: {
         register: () => Promise<YTPluginHost>;
         entity: {
             id: string;
