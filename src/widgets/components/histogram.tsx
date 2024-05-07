@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, memo } from 'react';
 import type { FC } from 'react';
 import * as d3 from 'd3';
-import { numberOfBars, topMargin, bottomMargin, yAxisWidth } from '../constants';
+import { numberOfBars, topMargin, bottomMargin } from '../constants';
 import { getStartOfDay } from '../helpers/get-start-of-day';
 import { getEndOfDay } from '../helpers/get-end-of-day';
 import type { BarData } from '../types/bar-data';
@@ -32,7 +32,7 @@ const HistogramComponent: FC<Props> = props => {
 
     const x = useMemo(() => d3.scaleLinear()
         .domain([min, max])
-        .range([yAxisWidth, width])
+        .range([25, width])
         .nice(), [min, max, width]);
 
     const histogram = useMemo(() => d3.bin()
@@ -98,9 +98,9 @@ const HistogramComponent: FC<Props> = props => {
                 <YAxis
                     height={height}
                     y={y}
-                    maxY={maxY}
                 />
                 <XAxis
+                    y={y}
                     width={width}
                     height={height}
                 />
