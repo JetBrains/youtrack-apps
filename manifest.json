@@ -1,0 +1,19 @@
+{
+  "name": "article-feedback",
+  "title": "Article Feedback",
+  "description": "Article Feedback",
+  "icon": "demo-app-logo.svg",
+  "vendor": {
+    "name": "JetBrains",
+    "url": "https://jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "sample-widget",
+      "name": "Sample Widget",
+      "description": "Sample Widget",
+      "indexPath": "sample-widget/index.html",
+      "extensionPoint": "ARTICLE_ABOVE_ACTIVITY_STREAM"
+    }
+  ]
+}
