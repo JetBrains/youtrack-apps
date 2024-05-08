@@ -14,8 +14,7 @@
   "dependencies": {
     "@jetbrains/ring-ui-built": "^6.0.25",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "vite-plugin-static-copy": "^1.0.4"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@jetbrains/youtrack-scripting": "^0.0.30",
