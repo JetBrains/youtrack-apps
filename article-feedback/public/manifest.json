@@ -9,10 +9,9 @@
   },
   "widgets": [
     {
-      "key": "sample-widget",
-      "name": "Sample Widget",
-      "description": "Sample Widget",
-      "indexPath": "sample-widget/index.html",
+      "key": "feedback-form",
+      "name": "Article Feedback",
+      "indexPath": "feedback-form/index.html",
       "extensionPoint": "ARTICLE_ABOVE_ACTIVITY_STREAM"
     }
   ]
