@@ -1,6 +1,6 @@
-import {defineConfig} from 'vite'
-import {resolve} from 'path'
-import react from '@vitejs/plugin-react'
+import {defineConfig} from 'vite';
+import {resolve} from 'path';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   base: './',
@@ -9,9 +9,9 @@ export default defineConfig({
     assetsDir: 'widgets',
     rollupOptions: {
       input: {
-        'sample-widget': resolve(__dirname, 'widgets/sample-widget/index.html'),
-      },
-    },
+        'feedback-form': resolve(__dirname, 'widgets/feedback-form/index.html')
+      }
+    }
   },
-  plugins: [react()],
-})
+  plugins: [react()]
+});
