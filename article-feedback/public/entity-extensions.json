@@ -1,0 +1,12 @@
+{
+  "entityTypeExtensions": [
+    {
+      "entityType": "Article",
+      "properties": {
+        "likes": {
+          "type": "string"
+        }
+      }
+    }
+  ]
+}

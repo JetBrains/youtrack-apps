@@ -5,17 +5,27 @@ import Button from '@jetbrains/ring-ui-built/components/button/button';
 import ButtonSet from '@jetbrains/ring-ui-built/components/button-set/button-set';
 
 const host = await YTApp.register();
-console.log(YTApp, host);
 
-const articleID = YTApp.entity.id;
+const likes = await host.fetchApp('backend/likes', {scope: true});
+console.log('likes', likes);
 
 const AppComponent: FC = () => {
+  const onLike = async () => {
+    const response = await host.fetchApp('backend/like', {scope: true, method: 'post'});
+    console.log('onLike', response);
+  };
+
+  const onDislike = async () => {
+    const response = await host.fetchApp('backend/dislike', {scope: true, method: 'post'});
+    console.log('onDislike', response);
+  };
+
   return (
     <ControlsHeightContext.Provider value={ControlsHeight.S}>
       <p>{'Was this article helpful?'}</p>
       <ButtonSet>
-        <Button>{'Yes'}</Button>
-        <Button>{'No'}</Button>
+        <Button onClick={onLike}>{'Yes'}</Button>
+        <Button onClick={onDislike}>{'No'}</Button>
       </ButtonSet>
     </ControlsHeightContext.Provider>
   );

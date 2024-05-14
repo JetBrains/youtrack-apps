@@ -1,11 +1,17 @@
+import type {RequestParams} from '@jetbrains/ring-ui/components/http/http';
+
 export {};
 
 declare global {
   interface YTPluginHost {
     fetchYouTrack: (
-      path: string,
-      options?: { query?: Record<string, string | number> }
-    ) => Promise<any>;
+      relativeURL: string,
+      requestParams: RequestParams
+    ) => unknown;
+    fetchApp: (
+      relativeURL: string,
+      requestParams: RequestParams & { scope: boolean }
+    ) => unknown;
   }
 
   const YTApp: {

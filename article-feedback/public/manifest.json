@@ -3,6 +3,9 @@
   "title": "Article Feedback",
   "description": "Article Feedback",
   "icon": "demo-app-logo.svg",
+  "dependencies": {
+    "@jetbrains/youtrack-scripting-api": "*"
+  },
   "vendor": {
     "name": "JetBrains",
     "url": "https://jetbrains.com"
