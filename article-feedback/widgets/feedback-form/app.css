@@ -1,0 +1,9 @@
+.widget {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+}
+
+.message textarea {
+  min-height: calc(var(--ring-unit) * 8);
+}
