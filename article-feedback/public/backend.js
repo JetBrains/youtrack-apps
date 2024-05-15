@@ -1,3 +1,34 @@
+function getFeedback(ctx) {
+  return JSON.parse(ctx.article.extensionProperties.feedback) || {};
+}
+
+function isGuest(ctx) {
+  return ctx.currentUser.login === 'guest';
+}
+
+function getUserId(ctx) {
+  return ctx.currentUser.ringId;
+}
+
+function updateFeedback(ctx, liked, message) {
+  const feedback = getFeedback(ctx);
+  const userId = getUserId(ctx);
+  const timestamp = Date.now();
+
+  ctx.article.extensionProperties.feedback = JSON.stringify({
+    ...feedback,
+    [userId]: {
+      liked: liked ?? feedback[userId]?.liked,
+      message,
+      timestamp
+    }
+  });
+}
+
+function response(ctx, data) {
+  return ctx.response.json(data);
+}
+
 exports.httpHandler = {
   endpoints: [
     {
@@ -5,7 +36,7 @@ exports.httpHandler = {
       method: 'GET',
       path: 'debug',
       handle: function handleDebug(ctx) {
-        ctx.response.json(JSON.parse(ctx.article.extensionProperties.likes));
+        response(ctx, getFeedback(ctx));
       }
     },
 
@@ -14,13 +45,13 @@ exports.httpHandler = {
       method: 'GET',
       path: 'user',
       handle: function handleUser(ctx) {
-        const likes = JSON.parse(ctx.article.extensionProperties.likes);
-        const userId = ctx.currentUser.ringId;
-        const isGuest = ctx.currentUser.login === 'guest';
-        ctx.response.json({
-          liked: likes[userId]?.liked ?? undefined,
-          leftMessage: Boolean(likes[userId]?.message),
-          isGuest
+        const feedback = getFeedback(ctx);
+        const userId = getUserId(ctx);
+        const userFeedback = feedback[userId];
+        response(ctx, {
+          liked: userFeedback?.liked ?? undefined,
+          leftMessage: Boolean(userFeedback?.message),
+          isGuest: isGuest(ctx)
         });
       }
     },
@@ -30,16 +61,11 @@ exports.httpHandler = {
       method: 'POST',
       path: 'like',
       handle: function handleLike(ctx) {
-        if (ctx.currentUser.login === 'guest') {
+        if (isGuest(ctx)) {
           return;
         }
 
-        const likes = JSON.parse(ctx.article.extensionProperties.likes);
-        const userId = ctx.currentUser.ringId;
-        ctx.article.extensionProperties.likes = JSON.stringify({
-          ...likes,
-          [userId]: {liked: true, timestamp: Date.now()}
-        });
+        updateFeedback(ctx, true);
       }
     },
 
@@ -48,16 +74,11 @@ exports.httpHandler = {
       method: 'POST',
       path: 'dislike',
       handle: function handleDislike(ctx) {
-        if (ctx.currentUser.login === 'guest') {
+        if (isGuest(ctx)) {
           return;
         }
 
-        const likes = JSON.parse(ctx.article.extensionProperties.likes);
-        const userId = ctx.currentUser.ringId;
-        ctx.article.extensionProperties.likes = JSON.stringify({
-          ...likes,
-          [userId]: {liked: false, timestamp: Date.now()}
-        });
+        updateFeedback(ctx, false);
       }
     },
 
@@ -66,21 +87,12 @@ exports.httpHandler = {
       method: 'POST',
       path: 'feedback',
       handle: function handleFeedback(ctx) {
-        if (ctx.currentUser.login === 'guest') {
+        if (isGuest(ctx)) {
           return;
         }
 
-        const likes = JSON.parse(ctx.article.extensionProperties.likes);
-        const userId = ctx.currentUser.ringId;
         const message = ctx.request.getParameter('message');
-        ctx.article.extensionProperties.likes = JSON.stringify({
-          ...likes,
-          [userId]: {
-            liked: false,
-            message,
-            timestamp: Date.now()
-          }
-        });
+        updateFeedback(ctx, undefined, message);
       }
     }
   ]

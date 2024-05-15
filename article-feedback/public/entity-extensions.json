@@ -3,7 +3,7 @@
     {
       "entityType": "Article",
       "properties": {
-        "likes": {
+        "feedback": {
           "type": "string"
         }
       }
