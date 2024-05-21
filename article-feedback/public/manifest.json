@@ -16,6 +16,13 @@
       "name": "Article Feedback",
       "indexPath": "feedback-form/index.html",
       "extensionPoint": "ARTICLE_ABOVE_ACTIVITY_STREAM"
+    },
+    {
+      "key": "feedback-statistics",
+      "name": "Article Feedback Statistics",
+      "indexPath": "feedback-statistics/index.html",
+      "extensionPoint": "ARTICLE_OPTIONS_MENU_ITEM",
+      "permissions": ["UPDATE_ARTICLE"]
     }
   ]
 }

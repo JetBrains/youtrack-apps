@@ -9,7 +9,8 @@ export default defineConfig({
     assetsDir: 'widgets',
     rollupOptions: {
       input: {
-        'feedback-form': resolve(__dirname, 'widgets/feedback-form/index.html')
+        'feedback-form': resolve(__dirname, 'widgets/feedback-form/index.html'),
+        'feedback-statistics': resolve(__dirname, 'widgets/feedback-statistics/index.html')
       }
     }
   },

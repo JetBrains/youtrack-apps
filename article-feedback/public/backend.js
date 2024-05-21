@@ -94,6 +94,30 @@ exports.httpHandler = {
         const message = ctx.request.getParameter('message');
         updateFeedback(ctx, undefined, message);
       }
+    },
+
+    {
+      scope: 'article',
+      method: 'GET',
+      path: 'stat',
+      handle: function handleStat(ctx) {
+        const feedback = getFeedback(ctx);
+
+        const likes = Object.values(feedback).filter(
+          (it) => it.liked
+        ).length;
+
+        const dislikes = Object.values(feedback).filter(
+          (it) => it.liked === false
+        ).length;
+
+        const messages = Object.values(feedback).
+          filter((it) => it.message).
+          sort((a, b) => a.timestamp - b.timestamp).
+          map((it) => it.message);
+
+        response(ctx, {likes, dislikes, messages});
+      }
     }
   ]
 };
