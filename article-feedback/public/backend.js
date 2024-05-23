@@ -10,6 +10,10 @@ function getUserId(ctx) {
   return ctx.currentUser.ringId;
 }
 
+function getProjectKey(ctx) {
+  return ctx.project.key;
+}
+
 function updateFeedback(ctx, liked, message) {
   const feedback = getFeedback(ctx);
   const userId = getUserId(ctx);
@@ -52,6 +56,17 @@ exports.httpHandler = {
           liked: userFeedback?.liked ?? undefined,
           leftMessage: Boolean(userFeedback?.message),
           isGuest: isGuest(ctx)
+        });
+      }
+    },
+
+    {
+      scope: 'article',
+      method: 'GET',
+      path: 'project',
+      handle: function handleProject(ctx) {
+        response(ctx, {
+          projectKey: getProjectKey(ctx)
         });
       }
     },

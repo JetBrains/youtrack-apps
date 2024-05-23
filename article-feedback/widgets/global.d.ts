@@ -6,7 +6,7 @@ declare global {
   interface YTPluginHost {
     fetchYouTrack: (
       relativeURL: string,
-      requestParams: RequestParams
+      requestParams?: RequestParams
     ) => unknown;
     fetchApp: (
       relativeURL: string,
