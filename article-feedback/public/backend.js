@@ -2,6 +2,10 @@ function getFeedback(ctx) {
   return JSON.parse(ctx.article.extensionProperties.feedback) || {};
 }
 
+function getGuestFeedback(ctx) {
+  return JSON.parse(ctx.article.extensionProperties.guestFeedback) || [];
+}
+
 function isGuest(ctx) {
   return ctx.currentUser.login === 'guest';
 }
@@ -29,6 +33,15 @@ function updateFeedback(ctx, liked, message) {
   });
 }
 
+function updateGuestFeedback(ctx, liked, message, name, email) {
+  const guestFeedback = getGuestFeedback(ctx);
+  const timestamp = Date.now();
+
+  guestFeedback.push({name, email, liked, message, timestamp});
+
+  ctx.article.extensionProperties.guestFeedback = JSON.stringify(guestFeedback);
+}
+
 function response(ctx, data) {
   return ctx.response.json(data);
 }
@@ -40,7 +53,10 @@ exports.httpHandler = {
       method: 'GET',
       path: 'debug',
       handle: function handleDebug(ctx) {
-        response(ctx, getFeedback(ctx));
+        response(ctx, {
+          feedback: getFeedback(ctx),
+          guestFeedback: getGuestFeedback(ctx)
+        });
       }
     },
 
@@ -108,6 +124,22 @@ exports.httpHandler = {
 
         const message = ctx.request.getParameter('message');
         updateFeedback(ctx, undefined, message);
+      }
+    },
+
+    {
+      scope: 'article',
+      method: 'POST',
+      path: 'guest-feedback',
+      handle: function handleFeedback(ctx) {
+        if (!isGuest(ctx)) {
+          return;
+        }
+
+        const message = ctx.request.getParameter('message');
+        const name = ctx.request.getParameter('userName');
+        const email = ctx.request.getParameter('userEmail');
+        updateGuestFeedback(ctx, false, message, name, email);
       }
     },
 

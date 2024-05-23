@@ -15,24 +15,39 @@ const user = (await host.fetchApp('backend/user', {scope: true})) as {
   liked?: boolean;
   leftMessage?: boolean;
 };
+console.log('user', user);
 
+// eslint-disable-next-line complexity
 const AppComponent: FC = () => {
   const [liked, setLiked] = useState(user.liked);
   const [leftMessage, setLeftMessage] = useState(user.leftMessage);
   const [message, setMessage] = useState('');
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
 
   const onLike = async () => {
-    await host.fetchApp('backend/like', {scope: true, method: 'post'});
+    if (!user.isGuest) {
+      await host.fetchApp('backend/like', {scope: true, method: 'post'});
+    }
     setLiked(true);
   };
 
   const onDislike = async () => {
-    await host.fetchApp('backend/dislike', {scope: true, method: 'post'});
+    if (!user.isGuest) {
+      await host.fetchApp('backend/dislike', {scope: true, method: 'post'});
+    }
     setLiked(false);
   };
 
   const onSend = async () => {
-    await host.fetchApp('backend/feedback', {scope: true, method: 'post', query: {message}});
+    if (user.isGuest) {
+      await host.fetchApp(
+        'backend/guest-feedback',
+        {scope: true, method: 'post', query: {message, userName, userEmail}}
+      );
+    } else {
+      await host.fetchApp('backend/feedback', {scope: true, method: 'post', query: {message}});
+    }
     setLeftMessage(true);
   };
 
@@ -40,6 +55,18 @@ const AppComponent: FC = () => {
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setMessage(event.target.value);
+  };
+
+  const onUserNameChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setUserName(event.target.value);
+  };
+
+  const onUserEmailChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setUserEmail(event.target.value);
   };
 
   return (
@@ -62,6 +89,23 @@ const AppComponent: FC = () => {
         {liked === false && !leftMessage && (
           <>
             <div>{'How can we improve?'}</div>
+
+            {user.isGuest && (
+              <>
+                <Input
+                  label={'Name'}
+                  value={userName}
+                  onChange={onUserNameChange}
+                />
+
+                <Input
+                  label={'Email'}
+                  value={userEmail}
+                  onChange={onUserEmailChange}
+                />
+              </>
+            )}
+
             <Input
               multiline
               value={message}
@@ -69,8 +113,12 @@ const AppComponent: FC = () => {
               size={Size.L}
               className="message"
             />
+
             <ButtonSet>
-              <Button disabled={!message} onClick={onSend}>
+              <Button
+                disabled={!message || (user.isGuest && !userName)}
+                onClick={onSend}
+              >
                 {'Send'}
               </Button>
             </ButtonSet>
