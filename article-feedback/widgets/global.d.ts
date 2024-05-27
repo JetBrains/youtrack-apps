@@ -7,11 +7,11 @@ declare global {
     fetchYouTrack: (
       relativeURL: string,
       requestParams?: RequestParams
-    ) => unknown;
+    ) => Promise<unknown>;
     fetchApp: (
       relativeURL: string,
       requestParams: RequestParams & { scope: boolean }
-    ) => unknown;
+    ) => Promise<unknown>;
   }
 
   const YTApp: {

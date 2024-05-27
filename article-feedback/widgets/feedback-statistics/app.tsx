@@ -2,16 +2,17 @@ import React, {memo} from 'react';
 import type {FC} from 'react';
 import {ControlsHeightContext, ControlsHeight} from '@jetbrains/ring-ui-built/components/global/controls-height';
 
+import API from '../api';
+
 const UPDATE_ARTICLE_PERMISSION = 'JetBrains.YouTrack.UPDATE_ARTICLE';
 
 const host = await YTApp.register();
+const api = new API(host);
 
-const debug = await host.fetchApp('backend/debug', {scope: true});
+const debug = await api.getDebug();
 console.log('debug', debug);
 
-const user = (await host.fetchApp('backend/project', {scope: true})) as {
-  projectKey: string;
-};
+const project = await api.getProject();
 
 const permissions = (await host.fetchYouTrack('permissions/cache?fields=global,permission(key),projects(shortName)')) as
   Array<{
@@ -23,16 +24,10 @@ const permissions = (await host.fetchYouTrack('permissions/cache?fields=global,p
 const canUpdateArticle = permissions.some(it =>
   it.permission.key === UPDATE_ARTICLE_PERMISSION &&
   (it.global ||
-    it.projects?.some((project) => project.shortName === user.projectKey))
+    it.projects?.some(pr => pr.shortName === project.projectKey))
 );
 
-const stat = canUpdateArticle
-  ? ((await host.fetchApp('backend/stat', {scope: true})) as {
-      likes: boolean;
-      dislikes: boolean;
-      messages: string[];
-    })
-  : undefined;
+const stat = canUpdateArticle ? await api.getStat() : undefined;
 
 const AppComponent: FC = () => {
   return (

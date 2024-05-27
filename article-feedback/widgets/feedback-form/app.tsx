@@ -5,16 +5,15 @@ import Button from '@jetbrains/ring-ui-built/components/button/button';
 import ButtonSet from '@jetbrains/ring-ui-built/components/button-set/button-set';
 import Input, {Size} from '@jetbrains/ring-ui-built/components/input/input';
 
-const host = await YTApp.register();
+import API from '../api';
 
-const debug = await host.fetchApp('backend/debug', {scope: true});
+const host = await YTApp.register();
+const api = new API(host);
+
+const debug = await api.getDebug();
 console.log('debug', debug);
 
-const user = (await host.fetchApp('backend/user', {scope: true})) as {
-  isGuest: boolean;
-  liked?: boolean;
-  leftMessage?: boolean;
-};
+const user = await api.getUser();
 
 // eslint-disable-next-line complexity
 const AppComponent: FC = () => {
@@ -26,26 +25,23 @@ const AppComponent: FC = () => {
 
   const onLike = async () => {
     if (!user.isGuest) {
-      await host.fetchApp('backend/like', {scope: true, method: 'post'});
+      await api.postLike();
     }
     setLiked(true);
   };
 
   const onDislike = async () => {
     if (!user.isGuest) {
-      await host.fetchApp('backend/dislike', {scope: true, method: 'post'});
+      await api.postDislike();
     }
     setLiked(false);
   };
 
   const onSend = async () => {
     if (user.isGuest) {
-      await host.fetchApp(
-        'backend/guest-feedback',
-        {scope: true, method: 'post', query: {message, userName, userEmail}}
-      );
+      await api.postGuestFeedback(message, userName, userEmail);
     } else {
-      await host.fetchApp('backend/feedback', {scope: true, method: 'post', query: {message}});
+      await api.postFeedback(message);
     }
     setLeftMessage(true);
   };
