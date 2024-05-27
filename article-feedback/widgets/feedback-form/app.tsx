@@ -15,7 +15,6 @@ const user = (await host.fetchApp('backend/user', {scope: true})) as {
   liked?: boolean;
   leftMessage?: boolean;
 };
-console.log('user', user);
 
 // eslint-disable-next-line complexity
 const AppComponent: FC = () => {
@@ -112,6 +111,7 @@ const AppComponent: FC = () => {
               onChange={onMessageChange}
               size={Size.L}
               className="message"
+              placeholder={'Tell us what you think would make this article better'}
             />
 
             <ButtonSet>
