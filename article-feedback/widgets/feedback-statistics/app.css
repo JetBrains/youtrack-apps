@@ -1,0 +1,5 @@
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 1.5);
+}

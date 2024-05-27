@@ -149,6 +149,7 @@ exports.httpHandler = {
       path: 'stat',
       handle: function handleStat(ctx) {
         const feedback = getFeedback(ctx);
+        const guestFeedback = getGuestFeedback(ctx);
 
         const likes = Object.values(feedback).filter(
           (it) => it.liked
@@ -158,12 +159,25 @@ exports.httpHandler = {
           (it) => it.liked === false
         ).length;
 
-        const messages = Object.values(feedback).
-          filter((it) => it.message).
-          sort((a, b) => a.timestamp - b.timestamp).
-          map((it) => it.message);
+        const messages = Object.entries(feedback).
+          filter(it => it[1].message).
+          sort((a, b) => a[1].timestamp - b[1].timestamp).
+          map(it => ({
+            userId: it[0],
+            message: it[1].message,
+            timestamp: it[1].timestamp
+          }));
 
-        response(ctx, {likes, dislikes, messages});
+        const guestMessages = guestFeedback.
+          filter(it => it.message).
+          map(it => ({
+            name: it.name,
+            email: it.email,
+            message: it.message,
+            timestamp: it.timestamp
+          }));
+
+        response(ctx, {likes, dislikes, messages, guestMessages});
       }
     }
   ]

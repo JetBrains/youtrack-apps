@@ -11,7 +11,13 @@ export interface User {
 export interface Stat {
   likes: boolean;
   dislikes: boolean;
-  messages: string[];
+  messages: Array<{userId: string; message: string; timestamp: string}>;
+  guestMessages: Array<{
+    name: string;
+    email?: string;
+    message: string;
+    timestamp: string;
+  }>;
 }
 
 export default class API {
