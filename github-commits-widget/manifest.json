@@ -1,0 +1,24 @@
+{
+  "name": "github-commits-widget",
+  "title": "GitHub Commits Widget",
+  "description": "Widget for displaying commits for GitHub project",
+  "version": "2.0.0",
+  "icon": "github.png",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "github-commits-widget",
+      "name": "GitHub Commits Widget",
+      "description": "Widget for displaying commits for GitHub project",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "indexPath": "index.html",
+      "iconPath": "pict/github.png",
+      "settingsSchemaPath": "widget-settings.json"
+    }
+  ]
+}
