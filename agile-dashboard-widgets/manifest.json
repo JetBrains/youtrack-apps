@@ -1,0 +1,31 @@
+{
+  "name": "agile-dashboard-widgets",
+  "title": "Agile Dashboard Widgets",
+  "description": "A set of dashboard widgets that provide various agile board views. The set includes widgets for viewing the status of an agile board, a burndown chart, or a cumulative flow diagram for a sprint.",
+  "version": "1.0.0",
+  "icon": "youtrack.svg",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "agile-chart",
+      "name": "Agile Chart",
+      "description": "Displays a Burn Down Chart or Cumulative Flow Diagram for your sprint.",
+      "indexPath": "agile-chart/index.html",
+      "settingsSchemaPath": "agile-chart/widget-settings.json",
+      "extensionPoint": "DASHBOARD_WIDGET"
+    },
+    {
+      "key": "youtrack-board-status-widget",
+      "name": "Agile Board Status",
+      "description": "Displays the progress indicator for columns from an agile board in YouTrack.",
+      "indexPath": "youtrack-board-status-widget/index.html",
+      "settingsSchemaPath": "youtrack-board-status-widget/widget-settings.json",
+      "extensionPoint": "DASHBOARD_WIDGET"
+    }
+  ]
+}
