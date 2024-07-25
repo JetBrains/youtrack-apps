@@ -1,3 +1,5 @@
 node_modules
 dist
-youtrack-votes-app.zip
+*.zip
+.idea
+*.iml
