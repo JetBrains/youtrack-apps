@@ -1,0 +1,31 @@
+{
+  "name": "report-dashboard-widgets",
+  "title": "Reports Widget",
+  "description": "Embedded reports widget for YouTrack",
+  "version": "1.0.0",
+  "icon": "youtrack.svg",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "widget-youtrack-report",
+      "name": "Reports",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "indexPath": "index.html",
+      "settingsSchemaPath": "widget-settings.json"
+    }
+  ],
+
+  "dependencies": {
+    "YouTrack": ">=2017.4",
+    "Hub": ">=2017.4"
+  },
+  "products": {
+    "YouTrack": ">=2017.4",
+    "Hub": ">=2017.4"
+  }
+}
