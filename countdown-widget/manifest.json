@@ -1,0 +1,24 @@
+{
+  "name": "countdown-widget",
+  "title": "Countdown Widget",
+  "description": "Widget displaying countdown or elapsed timer",
+  "version": "1.5.0",
+  "icon": "timer.png",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "countdown-widget",
+      "name": "Countdown Widget",
+      "description": "Widget displaying countdown or elapsed timer",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "indexPath": "index.html",
+      "iconPath": "pict/timer.png",
+      "settingsSchemaPath": "widget-settings.json"
+    }
+  ]
+}
