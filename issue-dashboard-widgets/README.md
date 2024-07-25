@@ -1,6 +1,6 @@
 # Issue Dashboard Widgets
 
-> **Warning**  
+> [!WARNING]  
 > This code was migrated from a legacy widget implementation.
 > Please don't use it as a reference when creating new widgets.
 > Instead, please refer to the [documentation](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-documentation.html) and the [native demo apps](https://github.com/JetBrains/youtrack-demo-app).
