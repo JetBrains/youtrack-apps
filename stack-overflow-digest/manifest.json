@@ -1,0 +1,23 @@
+{
+  "name": "stack-overflow-digest",
+  "title": "Stack Overflow Digest",
+  "description": "Displays a digest of questions from Stack Overflow that match one or more tags.",
+  "url": "https://github.com/jk1/youtrack-so-widget",
+  "version": "1.0.4",
+  "icon": "stackoverflow.png",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains",
+    "url": "https://github.com/jk1/youtrack-so-widget"
+  },
+  "widgets": [
+    {
+      "key": "so-widget",
+      "name": "Stack Overflow Digest",
+      "description": "Displays a digest of questions from Stack Overflow that match one or more tags.",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "indexPath": "index.html",
+      "iconPath": "stackoverflow.png"
+    }
+  ]
+}

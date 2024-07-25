@@ -1,0 +1,114 @@
+<!-- WARNING! -->
+<!-- This code was migrated from a legacy widget implementation. -->
+<!-- Please don't use it as a reference when creating new widgets. -->
+<!-- Instead, please refer to the documentation and the native demo apps. -->
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <base target="_parent">
+    <!-- Default styles of dashboard widgets -->
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/hub-dashboard-addons@latest/dashboard.css">
+    <!-- Include dashboard connector from CDN -->
+    <script src="https://unpkg.com/hub-dashboard-addons@latest"></script>
+    <!-- Syntax highlighting for code blocks -->
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+    <style>
+        html {
+            height: 100%
+        }
+
+        pre.prettyprint {
+            border: none !important;
+        }
+
+        a {
+            text-decoration: none;
+            color: rgb(57, 115, 157);
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        h2 {
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .widgetBody {
+            height: calc(100% - 32px);
+            padding-top: 0;
+        }
+
+        .soFeed {
+            height: 100%;
+            width: 100%;
+        }
+
+        .soQuestion {
+            padding-top: 15px;
+            padding-bottom: 10px;
+        }
+
+        .soTag {
+            background-color: rgb(225, 236, 244);
+            color: rgb(57, 115, 157);
+            margin-right: 5px;
+            padding: 5px;
+        }
+
+        .soStats {
+            background-color: #eeeeee;
+            margin-right: 5px;
+            padding: 5px;
+        }
+
+        .soAnswered {
+            background-color: #ccffcc;
+            margin-right: 5px;
+            padding: 5px;
+        }
+
+        .soAvatar {
+            width: 26px;
+            vertical-align: middle;
+        }
+
+        .soInput {
+            float: right;
+        }
+
+        .soInput {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .soButton {
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+
+        .soLoader {
+            margin-left: 25px;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body class="widgetBody">
+<div id="soSettings" hidden="true">
+    <div><input type='text' id='soTitle' class="soInput" placeholder='Optional title'></div>
+    <div><input type='text' id='soTags' class="soInput" placeholder='Stack Overflow tags, space separated'></div>
+    <div>
+        <input type='button' id='save' class="soButton" value='Save'>
+        <input type='button' id='cancel' class="soButton" value='Cancel'>
+    </div>
+</div>
+<div id="soFeed" class="soFeed"></div>
+<script src="loader.js"></script>
+<script src="index.js"></script>
+</body>
+</html>
