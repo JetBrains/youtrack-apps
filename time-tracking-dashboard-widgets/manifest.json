@@ -1,0 +1,38 @@
+{
+  "name": "time-tracking-dashboard-widgets",
+  "title": "Time Tracking Dashboard Widgets",
+  "description": "A set of dashboard widgets for working with time tracking data from YouTrack. The set includes a widget for exporting work items and widgets for viewing personal work items and time tracking reports.",
+  "version": "1.0.0",
+  "icon": "youtrack.svg",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "personal-time-tracking",
+      "name": "Personal Time Tracking",
+      "description": "Displays daily and cumulative totals for spent time that you have added to issues in YouTrack.",
+      "indexPath": "personal-time-tracking/index.html",
+      "extensionPoint": "DASHBOARD_WIDGET"
+    },
+    {
+      "key": "time-tracking-report",
+      "name": "Time Tracking Report",
+      "description": "Display a report that tracks the amount of time spent working on issues in one or more YouTrack projects. This widget presents this data in the time report or timesheet report format.",
+      "indexPath": "time-tracking-report/index.html",
+      "settingsSchemaPath": "time-tracking-report/widget-settings.json",
+      "extensionPoint": "DASHBOARD_WIDGET"
+    },
+    {
+      "key": "youtrack-work-items-export",
+      "name": "Work Item Exporter",
+      "description": "This widget provides an interface for exporting work item data from YouTrack. You can add this widget to dashboards and project overview pages in your YouTrack or Hub installation.",
+      "indexPath": "youtrack-work-items-export/index.html",
+      "settingsSchemaPath": "youtrack-work-items-export/widget-settings.json",
+      "extensionPoint": "DASHBOARD_WIDGET"
+    }
+  ]
+}
