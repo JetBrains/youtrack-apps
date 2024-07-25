@@ -1,0 +1,24 @@
+{
+  "name": "crowdin-project-status-widget",
+  "title": "Crowdin Project Status",
+  "description": "Widget for displaying translation status for project in Crowdin",
+  "version": "2.0.0",
+  "icon": "crowdin.png",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "crowdin-project-status-widget",
+      "name": "Crowdin Project Status",
+      "description": "Widget for displaying translation status for project in Crowdin",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "indexPath": "index.html",
+      "iconPath": "pict/crowdin.png",
+      "settingsSchemaPath": "widget-settings.json"
+    }
+  ]
+}
