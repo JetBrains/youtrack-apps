@@ -1,0 +1,39 @@
+{
+  "name": "teamcity-dashboard-widgets",
+  "title": "Teamcity Dashboard Widgets",
+  "description": "A set of dashboard widgets that provide various views of TeamCity configurations. The set includes widgets for viewing build configuration statuses, build artifacts, and assigned investigations from TeamCity.",
+  "version": "1.0.0",
+  "icon": "teamcity.svg",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "teamcity-build-artifacts-widget",
+      "name": "Build Artifacts",
+      "description": "Dashboard widget to list downloadable artifacts of a TeamCity configurations",
+      "indexPath": "teamcity-build-artifacts-widget/index.html",
+      "settingsSchemaPath": "teamcity-build-artifacts-widget/widget-settings.json",
+      "extensionPoint": "DASHBOARD_WIDGET"
+    },
+    {
+      "key": "teamcity-investigations",
+      "name": "Investigations",
+      "description": "Dashboard widget to show the list of assigned investigations from TeamCity",
+      "indexPath": "teamcity-investigations/index.html",
+      "settingsSchemaPath": "teamcity-investigations/widget-settings.json",
+      "extensionPoint": "DASHBOARD_WIDGET"
+    },
+    {
+      "key": "teamcity-project-status",
+      "name": "Project Status",
+      "description": "Hub dashboard widget to show the status of TeamCity build configurations statuses",
+      "indexPath": "teamcity-project-status/index.html",
+      "settingsSchemaPath": "teamcity-project-status/widget-settings.json",
+      "extensionPoint": "DASHBOARD_WIDGET"
+    }
+  ]
+}
