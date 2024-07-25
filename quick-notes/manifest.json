@@ -1,0 +1,23 @@
+{
+  "name": "quick-notes",
+  "title": "Quick Notes",
+  "description": "Allows to make markdown notes",
+  "version": "1.0.10",
+  "icon": "notes.svg",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "quick-notes",
+      "name": "Quick Notes",
+      "description": "Allows to make markdown notes",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "indexPath": "index.html",
+      "settingsSchemaPath": "widget-settings.json"
+    }
+  ]
+}
