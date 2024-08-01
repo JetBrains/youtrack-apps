@@ -18,14 +18,5 @@
       "indexPath": "index.html",
       "settingsSchemaPath": "widget-settings.json"
     }
-  ],
-
-  "dependencies": {
-    "YouTrack": ">=2017.4",
-    "Hub": ">=2017.4"
-  },
-  "products": {
-    "YouTrack": ">=2017.4",
-    "Hub": ">=2017.4"
-  }
+  ]
 }

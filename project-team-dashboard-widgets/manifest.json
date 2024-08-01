@@ -24,7 +24,11 @@
       "name": "Revoke User Access",
       "description": "This widget lets you remove a user from all groups and teams where they are a member. It also lets you revoke your own project roles.",
       "indexPath": "revoke-user-access/index.html",
-      "extensionPoint": "DASHBOARD_WIDGET"
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "defaultDimensions": {
+        "height" : "3fr",
+        "width" : "4fr"
+      }
     }
   ]
 }

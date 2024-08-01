@@ -17,7 +17,11 @@
       "description": "Displays a digest of questions from Stack Overflow that match one or more tags.",
       "extensionPoint": "DASHBOARD_WIDGET",
       "indexPath": "index.html",
-      "iconPath": "stackoverflow.png"
+      "iconPath": "stackoverflow.png",
+      "defaultDimensions" : {
+        "height" : "3fr",
+        "width" : "3fr"
+      }
     }
   ]
 }

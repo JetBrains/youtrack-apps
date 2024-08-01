@@ -17,7 +17,11 @@
       "description": "Displays a Burn Down Chart or Cumulative Flow Diagram for your sprint.",
       "indexPath": "agile-chart/index.html",
       "settingsSchemaPath": "agile-chart/widget-settings.json",
-      "extensionPoint": "DASHBOARD_WIDGET"
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "defaultDimensions": {
+        "height" : "3fr",
+        "width" : "4fr"
+      }
     },
     {
       "key": "youtrack-board-status-widget",

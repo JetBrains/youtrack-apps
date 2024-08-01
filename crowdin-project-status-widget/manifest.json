@@ -18,7 +18,11 @@
       "extensionPoint": "DASHBOARD_WIDGET",
       "indexPath": "index.html",
       "iconPath": "pict/crowdin.png",
-      "settingsSchemaPath": "widget-settings.json"
+      "settingsSchemaPath": "widget-settings.json",
+      "defaultDimensions": {
+        "height" : "2fr",
+        "width" : "2fr"
+      }
     }
   ]
 }

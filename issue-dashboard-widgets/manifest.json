@@ -25,7 +25,11 @@
       "description": "Displays a distribution report for YouTrack issues. The widget settings let you build the report directly on a dashboard or project overview page.",
       "indexPath": "distribution-reports/index.html",
       "settingsSchemaPath": "distribution-reports/widget-settings.json",
-      "extensionPoint": "DASHBOARD_WIDGET"
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "defaultDimensions": {
+        "height" : "3fr",
+        "width" : "4fr"
+      }
     },
     {
       "key": "due-dates-calendar",
@@ -33,7 +37,11 @@
       "description": "Due Date Calendar Widget for YouTrack Issues",
       "indexPath": "due-dates-calendar/index.html",
       "settingsSchemaPath": "due-dates-calendar/widget-settings.json",
-      "extensionPoint": "DASHBOARD_WIDGET"
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "defaultDimensions": {
+        "height" : "4fr",
+        "width" : "4fr"
+      }
     },
     {
       "key": "youtrack-activities-widget",
