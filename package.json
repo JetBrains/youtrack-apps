@@ -1,0 +1,10 @@
+{
+    "name": "@jetbrains/youtrack-apps-monorepo",
+    "workspaces": [
+        "packages/*"
+    ],
+    "packageManager": "npm@10.1.0",
+    "scripts": {
+        "test": "echo 'no tests'"
+    }
+}   

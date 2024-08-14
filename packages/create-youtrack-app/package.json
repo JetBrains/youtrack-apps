@@ -1,0 +1,11 @@
+{
+  "name": "@jetbrains/create-youtrack-app",
+  "version": "1.0.0",
+  "description": "A scaffolder for YouTrack App generating",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Andrey Skladchikov",
+  "license": "Apache-2.0"
+}
