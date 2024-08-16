@@ -4,8 +4,18 @@
   "description": "A scaffolder for YouTrack App generating",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "widget": "hygen widget add",
+    "settings": "hygen init settings",
+    "manifest": "hygen init manifest",
+    "extension-property": "hygen entity create",
+    "settings-property": "hygen property add"
   },
   "author": "Andrey Skladchikov",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "hygen": "^6.2.11"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.8.3"
+  }
 }
