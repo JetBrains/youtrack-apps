@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { runner } = require('hygen')
 const Logger = require('hygen/dist/logger')
 const path = require('path')
