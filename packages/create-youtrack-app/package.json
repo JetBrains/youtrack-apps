@@ -19,6 +19,8 @@
     "extension-property": "hygen entity create",
     "settings-property": "hygen property add",
     "lint": "biome lint .",
+    "test": "echo 'no tests yet'",
+    "build": "echo 'no build required'",
     "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm publish --tag alpha"
   },
   "author": "Andrey Skladchikov",
