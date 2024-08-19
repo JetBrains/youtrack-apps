@@ -9,9 +9,6 @@ const UPDATE_ARTICLE_PERMISSION = 'JetBrains.YouTrack.UPDATE_ARTICLE';
 const host = await YTApp.register();
 const api = new API(host);
 
-const debug = await api.getDebug();
-console.log('debug', debug);
-
 const project = await api.getProject();
 
 const permissions = (await host.fetchYouTrack('permissions/cache?fields=global,permission(key),projects(shortName)')) as

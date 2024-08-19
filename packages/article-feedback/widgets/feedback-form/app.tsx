@@ -10,9 +10,6 @@ import API from '../api';
 const host = await YTApp.register();
 const api = new API(host);
 
-const debug = await api.getDebug();
-console.log('debug', debug);
-
 const user = await api.getUser();
 
 // eslint-disable-next-line complexity

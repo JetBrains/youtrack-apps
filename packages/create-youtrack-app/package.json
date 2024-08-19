@@ -8,7 +8,8 @@
     "settings": "hygen init settings",
     "manifest": "hygen init manifest",
     "extension-property": "hygen entity create",
-    "settings-property": "hygen property add"
+    "settings-property": "hygen property add",
+    "lint": "echo 'no linting'"
   },
   "author": "Andrey Skladchikov",
   "license": "Apache-2.0",
