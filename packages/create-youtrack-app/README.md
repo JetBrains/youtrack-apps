@@ -2,6 +2,8 @@
 
 [![Build Status][ci-img]][ci-project] ![NPM Version](https://img.shields.io/npm/v/@jetbrains/create-youtrack-app)
 
+[![official JetBrains project](https://jb.gg/badges/official-flat-square.svg)](https://github.com/JetBrains#jetbrains-on-github)
+
 [this is Work in progress]
 
 supported commands for now:
