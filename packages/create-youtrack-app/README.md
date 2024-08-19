@@ -1,4 +1,7 @@
 # Create YouTrack App
+
+[![Build Status][ci-img]][ci-project] ![NPM Version](https://img.shields.io/npm/v/@jetbrains/create-youtrack-app)
+
 [this is Work in progress]
 
 supported commands for now:
@@ -29,3 +32,7 @@ Hygen is quite powerful tool for generation files, but it is not perfect for the
  - [ ] wording review
  - [ ] testing
  - [ ] documentation
+
+
+[ci-project]: https://teamcity.jetbrains.com/project/JetBrainsUi_YouTrackApps_CreateYouTrackApp
+[ci-img]:  https://teamcity.jetbrains.com/app/rest/builds/buildType:JetBrainsUi_YoutrackApps_Checks/statusIcon.svg
