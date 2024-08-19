@@ -10,7 +10,7 @@
     "extension-property": "hygen entity create",
     "settings-property": "hygen property add",
     "lint": "biome lint .",
-    "release:ci": "commit-and-tag-version --prerelease alpha && npm publish --tag alpha && git push --follow-tags origin main"
+    "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm publish --tag alpha"
   },
   "author": "Andrey Skladchikov",
   "license": "Apache-2.0",
