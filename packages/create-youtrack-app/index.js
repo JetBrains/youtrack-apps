@@ -2,7 +2,7 @@
 
 const { runner } = require('hygen')
 const Logger = require('hygen/dist/logger')
-const path = require('path')
+const path = require('node:path')
 const defaultTemplates = path.join(__dirname, 'templates')
 
 runner(process.argv.slice(2), {
