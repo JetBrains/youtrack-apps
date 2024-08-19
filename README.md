@@ -1,6 +1,8 @@
 # YouTrack Apps
 
-This is a monorepository that contains YouTrack apps by JetBrains and related utilities.
+[![official JetBrains project](https://jb.gg/badges/official-flat-square.svg)](https://github.com/JetBrains#jetbrains-on-github)
+
+This is a monorepository that contains YouTrack Apps by JetBrains and related utilities.
 
 # Contributing
 
