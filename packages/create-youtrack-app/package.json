@@ -9,7 +9,7 @@
     "manifest": "hygen init manifest",
     "extension-property": "hygen entity create",
     "settings-property": "hygen property add",
-    "lint": "echo 'no linting'",
+    "lint": "biome lint .",
     "release:ci": "commit-and-tag-version --prerelease alpha && npm publish --tag alpha && git push --follow-tags origin main"
   },
   "author": "Andrey Skladchikov",

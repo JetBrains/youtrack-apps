@@ -56,7 +56,11 @@ module.exports = {
         });
     }
 
-    let exclusiveMinimum, exclusiveMaximum, minimum, maximum, multipleOf;
+    let exclusiveMinimum;
+    let exclusiveMaximum;
+    let minimum;
+    let maximum;
+    let multipleOf;
     if (type === "integer" || type === "number") {
       const { hasMinimum } = await prompter.prompt({
         type: "confirm",
@@ -121,7 +125,10 @@ module.exports = {
       }
     }
 
-    let minLength, maxLength, format, enumValues;
+    let minLength;
+    let maxLength;
+    let format;
+    let enumValues;
     if (type === "string") {
       const { hasMinLength } = await prompter.prompt({
         type: "confirm",
@@ -190,7 +197,7 @@ module.exports = {
     const { readOnly } = await prompter.prompt({
       type: "confirm",
       name: "readOnly",
-      message: `Do you want to make this property read only?`,
+      message: "Do you want to make this property read only?",
     });
 
     let constValue;
@@ -200,7 +207,7 @@ module.exports = {
         .prompt({
           type: "input",
           name: "constValue",
-          message: `What is the constant value of this property?`,
+          message: "What is the constant value of this property?",
         })
         .then((res) => {
           if (type === "string") {
@@ -214,7 +221,7 @@ module.exports = {
     const { xScope } = await prompter.prompt({
       type: "select",
       name: "xScope",
-      message: `What is the scope of this property?`,
+      message: "What is the scope of this property?",
       choices: [
         { message: "Global", name: "global" },
         { message: "Project", name: "project" },
@@ -225,13 +232,13 @@ module.exports = {
     const { required } = await prompter.prompt({
       type: "confirm",
       name: "required",
-      message: `Do you want to make this property required?`,
+      message: "Do you want to make this property required?",
     });
 
     const { writeOnly } = await prompter.prompt({
       type: "confirm",
       name: "writeOnly",
-      message: `Do you want to make this property write only?`,
+      message: "Do you want to make this property write only?",
     });
 
     return {

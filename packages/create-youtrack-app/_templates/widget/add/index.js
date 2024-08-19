@@ -73,13 +73,13 @@ module.exports = {
     const { folderName } = await prompter.prompt({
       type: "input",
       name: "folderName",
-      message: `What is the folder name of your widget?`,
+      message: "What is the folder name of your widget?",
       initial: key,
     });
     const { name } = await prompter.prompt({
       type: "input",
       name: "name",
-      message: `What is the name of your widget?`,
+      message: "What is the name of your widget?",
       initial: key,
     });
 
@@ -93,7 +93,7 @@ module.exports = {
     const { extensionPoint } = await prompter.prompt({
       type: "select",
       name: "extensionPoint",
-      message: `What is the extension point of your widget?`,
+      message: "What is the extension point of your widget?",
       choices: extensionPoints.map(({ name, value }) => ({
         message: `${name} (${value})`,
         name: value,
@@ -103,22 +103,23 @@ module.exports = {
     const { description } = await prompter.prompt({
       type: "input",
       name: "description",
-      message: `What is the description of your widget?`,
+      message: "What is the description of your widget?",
     });
 
     const { addDimensions } = await prompter.prompt({
       type: "confirm",
       name: "addDimensions",
-      message: `Do you want to add dimensions to your widget?`,
+      message: "Do you want to add dimensions to your widget?",
     });
 
-    let width, height;
+    let width;
+    let height;
     if (addDimensions) {
       await prompter
         .prompt({
           type: "number",
           name: "width",
-          message: `What is the width of your widget in pixels?`,
+          message: "What is the width of your widget in pixels?",
         })
         .then((res) => {
           width = res.width;
@@ -128,7 +129,7 @@ module.exports = {
         .prompt({
           type: "number",
           name: "height",
-          message: `What is the height of your widget in pixels?`,
+          message: "What is the height of your widget in pixels?",
         })
         .then((res) => {
           height = res.height;
