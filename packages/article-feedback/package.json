@@ -9,9 +9,9 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "pack": "rm -rf article-feedback.zip && cd dist && zip -r ../article-feedback.zip .",
-    "release:bump-version": "commit-and-tag-version --packageFiles manifest.json --prerelease alpha && git push --follow-tags origin main",
-    "release:ci": "npm run build && npm run pack && npm run upload:marketplace",
-    "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer %env.pluginsRepositoryToken%\" -F \"pluginId=%env.pluginRepositoryID%\" -F \"file=@article-feedback.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin",
+    "release:bump-version": "commit-and-tag-version --packageFiles manifest.json --prerelease alpha",
+    "release:ci": "npm run release:bump-version && npm run build && npm run pack && npm run upload:marketplace && git push --follow-tags origin main",
+    "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer $pluginsRepositoryToken\" -F \"pluginId=$pluginRepositoryID\" -F \"file=@article-feedback.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin",
     "upload": "youtrack-workflow upload dist"
   },
   "dependencies": {
