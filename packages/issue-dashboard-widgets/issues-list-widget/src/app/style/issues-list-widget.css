@@ -1,0 +1,223 @@
+@import '~@jetbrains/ring-ui/components/global/global';
+
+.issues-list-widget {
+  color: var(--ring-text-color);
+
+  --search-context-width: calc(var(--ring-unit) * 12);
+}
+
+.issues-list-widget__issue {
+  position: relative;
+
+  overflow-x: hidden;
+
+  margin: 0 -4px;
+
+  padding: 4px;
+
+  line-height: 20px;
+}
+
+.issues-list-widget__issue.issues-list-widget__issue_expanded {
+  background-color: var(--ring-content-background-color);
+  box-shadow: 0 1px 4px var(--ring-borders-color);
+}
+
+.issues-list-widget__issue-info {
+  display: inline-block;
+
+  padding-right: calc(2 * var(--ring-unit));
+  padding-left: calc(3 * var(--ring-unit));
+}
+
+.issues-list-widget__issue-expanded-block {
+  margin-bottom: 2px;
+  margin-left: 20px;
+}
+
+.issues-list-widget__colored-field {
+  position: absolute;
+  top: 6px;
+
+  display: inline-block;
+
+  width: 15px;
+  height: 13px;
+
+  cursor: default;
+
+  text-align: center;
+  vertical-align: text-bottom;
+  white-space: nowrap;
+
+  border: 1px solid transparent;
+  border-radius: 2px;
+
+  background-color: var(--ring-sidebar-background-color);
+
+  font-size: 10px;
+
+  line-height: 13px;
+}
+
+.issues-list-widget__issue-toggler {
+  position: absolute;
+  top: 2px;
+  right: 0;
+
+  display: none;
+
+  width: calc(3 * var(--ring-unit));
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  background-color: var(--ring-content-background-color);
+}
+
+.issues-list-widget__issue_highlighted .issues-list-widget__issue-toggler {
+  display: inline-block;
+}
+
+.issues-list-widget__issue_expanded .issues-list-widget__issue-toggler {
+  top: 0;
+
+  display: inline-block;
+}
+
+.issues-list-widget__issue-id {
+  white-space: nowrap;
+}
+
+.issues-list-widget__issue-id.issues-list-widget__issue-id_resolved {
+  text-decoration: line-through;
+
+  color: var(--ring-secondary-color);
+}
+
+.issues-list-widget__issue-summary {
+  margin-left: var(--ring-unit);
+}
+
+.issues-list-widget__issue-summary.issues-list-widget__issue-summary_resolved {
+  color: var(--ring-secondary-color);
+}
+
+.issues-list-widget__fields {
+  display: table;
+
+  min-width: calc(var(--ring-unit) * 20);
+  max-width: calc(var(--ring-unit) * 50);
+
+  padding: 2px 6px 0 4px;
+
+  text-align: left;
+
+  font-size: var(--ring-font-size-smaller);
+}
+
+.issues-list-widget__fields-fix {
+  padding-right: 4px !important;
+}
+
+.issues-list-widget__field-row {
+  display: table-row-group;
+}
+
+.issues-list-widget__field {
+  display: table-row;
+
+  padding: 0 6px;
+}
+
+.issues-list-widget__field-title {
+  display: table-cell;
+
+  padding-right: calc(2 * var(--ring-unit));
+  padding-bottom: 2px;
+
+  color: var(--ring-secondary-color);
+}
+
+.issues-list-widget__field-value {
+  display: table-cell;
+}
+
+.issues-list-widget__field-avatar {
+  position: relative;
+  top: 5px;
+
+  width: calc(2 * var(--ring-unit));
+  height: calc(2 * var(--ring-unit));
+
+  margin-top: calc(-1 * var(--ring-unit));
+  margin-left: var(--ring-unit);
+
+  border-radius: 3px;
+}
+
+.issues-list-widget__field-color {
+  position: static;
+
+  height: 12px;
+
+  margin-left: var(--ring-unit);
+}
+
+
+.issues-list-widget__filter {
+  margin: 0 0 var(--ring-unit) 4px;
+}
+
+.issues-list-widget__filters-switcher {
+  margin: var(--ring-unit) 0;
+}
+
+.issues-list-widget__no-filters {
+  margin: var(--ring-unit) 4px;
+
+  color: var(--ring-secondary-color);
+}
+
+.issues-list-widget__filters-list {
+  min-height: calc(4 * var(--ring-unit));
+  margin-bottom: calc(6 * var(--ring-unit));
+}
+
+
+.issues-list-widget__search-context {
+  display: inline-block;
+  float: left;
+
+  width: var(--search-context-width);
+}
+
+.issues-list-widget__search-context [data-test="ring-select__button"] {
+  border-radius: 3px 0 0 3px;
+}
+
+.issues-list-widget__search-query {
+  width: 100%;
+  width: calc(100% - var(--search-context-width));
+
+  margin-left: var(--search-context-width);
+
+  vertical-align: top;
+}
+
+.issues-list-widget__load-more {
+  margin: 4px 0;
+  padding: 4px 0;
+
+  text-align: center;
+
+  border: 1px dashed var(--ring-borders-color);
+  border-radius: 3px;
+
+  font-size: var(--ring-font-size-smaller);
+}
+
+.issues-list-widget__load-more:hover {
+  border-color: var(--ring-pale-control-color);
+}

@@ -1,0 +1,129 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /widgets/youtrack-issues-list-widget/default.pot\n"
+"X-Crowdin-File-ID: 33626\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2023-07-28 12:21\n"
+
+#: src/app/content.js:62
+msgid "Can't load information from service"
+msgstr "无法从服务加载信息"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "取消"
+
+#: src/app/content.js:50
+msgid "Edit search query"
+msgstr "编辑搜索查询"
+
+#: src/app/issues-list-edit-form.js:300
+#: src/app/issues-list-edit-form.js:35
+msgid "Everything"
+msgstr "所有"
+
+#: src/app/issues-list-widget.js:72
+msgid "Issues List"
+msgstr "问题列表"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "1 月|2 月|3 月|4 月|5 月|6 月|7 月|8 月|9 月|10 月|11 月|12 月"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "1 月|2 月|3 月|4 月|5 月|6 月|7 月|8 月|9 月|10 月|11 月|12 月"
+
+#: src/app/content.js:124
+msgid "Load 1 more issue"
+msgid_plural "Load {{$count}} more issues"
+msgstr[0] "加载其他 {{$count}} 个问题"
+
+#: src/app/content.js:41
+msgid "No issues found"
+msgstr "找不到问题"
+
+#: src/app/issues-list-edit-form.js:226
+msgid "No projects"
+msgstr "没有项目"
+
+#: src/app/issues-list-edit-form.js:228
+msgid "No saved searches"
+msgstr "没有保存的搜索"
+
+#: src/app/issues-list-edit-form.js:227
+msgid "No tags"
+msgstr "没有标签"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "哎呀，出了些问题…"
+
+#: src/app/issues-list-edit-form.js:319
+msgid "Projects"
+msgstr "项目"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "保存"
+
+#: src/app/issues-list-edit-form.js:331
+msgid "Saved searches"
+msgstr "保存的搜索"
+
+#: src/app/issues-list-edit-form.js:398
+msgid "Select YouTrack"
+msgstr "选择 YouTrack"
+
+#: src/app/issues-list-edit-form.js:100
+msgid "Selected YouTrack service is not available"
+msgstr "所选 YouTrack 服务不可用"
+
+#: src/app/issues-list-edit-form.js:384
+msgid "Set optional title"
+msgstr "设置可选标题"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "星期日|星期一|星期二|星期三|星期四|星期五|星期六"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "周日|周一|周二|周三|周四|周五|周六"
+
+#: src/app/issues-list-edit-form.js:325
+msgid "Tags"
+msgstr "标签"
+
+#: src/app/issues-list-edit-form.js:306
+msgid "Type search query"
+msgstr "输入搜索查询"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "微件每分钟刷新一次"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "微件每 {{minutesCount}} 分钟刷新一次"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "上午|下午"
+
+#: src/app/issues-list-widget.js:49
+msgid "issues"
+msgstr "问题"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} 分钟"
+

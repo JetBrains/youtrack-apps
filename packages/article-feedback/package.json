@@ -12,7 +12,8 @@
     "upload": "youtrack-workflow upload dist"
   },
   "dependencies": {
-    "@jetbrains/ring-ui-built": "^6.0.25",
+    "@jetbrains/ring-ui-built": "6.0.25",
+    "core-js": "3.38.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

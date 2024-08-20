@@ -8,12 +8,14 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
+    "test": "echo 'no tests'",
     "upload": "youtrack-workflow upload src --host http://localhost:8088",
     "pack": "rm -rf youtrack-votes-app.zip && cd dist && zip -r ../youtrack-votes-app.zip ."
   },
   "dependencies": {
     "@jetbrains/icons": "^3.21.0",
-    "@jetbrains/ring-ui": "^5.0.147",
+    "@jetbrains/ring-ui": "5.0.147",
+    "core-js": "^3.38.0",
     "d3": "^7.8.4",
     "date-fns": "^2.30.0",
     "react": "^18.2.0",
@@ -27,6 +29,7 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^8.2.0",
     "@vitejs/plugin-react": "^3.1.0",
     "eslint": "^8.43.0",
     "eslint-config-standard-with-typescript": "^35.0.0",

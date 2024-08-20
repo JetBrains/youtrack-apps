@@ -1,0 +1,129 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: ja\n"
+"X-Crowdin-File: /widgets/youtrack-issues-list-widget/default.pot\n"
+"X-Crowdin-File-ID: 33626\n"
+"Language-Team: Japanese\n"
+"Language: ja_JP\n"
+"PO-Revision-Date: 2023-07-28 12:21\n"
+
+#: src/app/content.js:62
+msgid "Can't load information from service"
+msgstr "サービスから情報を読み込むことができません"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "取り消す"
+
+#: src/app/content.js:50
+msgid "Edit search query"
+msgstr "検索クエリの編集"
+
+#: src/app/issues-list-edit-form.js:300
+#: src/app/issues-list-edit-form.js:35
+msgid "Everything"
+msgstr "すべて"
+
+#: src/app/issues-list-widget.js:72
+msgid "Issues List"
+msgstr "課題リスト"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月"
+
+#: src/app/content.js:124
+msgid "Load 1 more issue"
+msgid_plural "Load {{$count}} more issues"
+msgstr[0] "さらに{{$count}}件の課題を読み込む"
+
+#: src/app/content.js:41
+msgid "No issues found"
+msgstr "課題が見つかりません"
+
+#: src/app/issues-list-edit-form.js:226
+msgid "No projects"
+msgstr "プロジェクトがありません"
+
+#: src/app/issues-list-edit-form.js:228
+msgid "No saved searches"
+msgstr "保存した検索はありません"
+
+#: src/app/issues-list-edit-form.js:227
+msgid "No tags"
+msgstr "タグなし"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "エラー！不明なエラーが発生しました…"
+
+#: src/app/issues-list-edit-form.js:319
+msgid "Projects"
+msgstr "プロジェクト"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "保存"
+
+#: src/app/issues-list-edit-form.js:331
+msgid "Saved searches"
+msgstr "保存した検索条件"
+
+#: src/app/issues-list-edit-form.js:398
+msgid "Select YouTrack"
+msgstr "YouTrackを選択"
+
+#: src/app/issues-list-edit-form.js:100
+msgid "Selected YouTrack service is not available"
+msgstr "選択されたYouTrackサービスはご利用いただけません"
+
+#: src/app/issues-list-edit-form.js:384
+msgid "Set optional title"
+msgstr "タイトル（省略可）を設定"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "日曜日|月曜日|火曜日|水曜日|木曜日|金曜日|土曜日"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "日|月|火|水|木|金|土"
+
+#: src/app/issues-list-edit-form.js:325
+msgid "Tags"
+msgstr "タグ"
+
+#: src/app/issues-list-edit-form.js:306
+msgid "Type search query"
+msgstr "検索クエリを入力"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "ウィジェットは1分ごとに更新されます"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "ウィジェットは{{minutesCount}}分ごとに更新されます"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "am|pm"
+
+#: src/app/issues-list-widget.js:49
+msgid "issues"
+msgstr "課題"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} 分"
+
