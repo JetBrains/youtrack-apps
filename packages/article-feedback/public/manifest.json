@@ -1,7 +1,7 @@
 {
   "name": "article-feedback",
   "title": "Article Feedback",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Article Feedback",
   "icon": "demo-app-logo.svg",
   "dependencies": {
