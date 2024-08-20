@@ -7,7 +7,7 @@ const i18n = require('../../lib/i18n/i18n');
  * @param {string} appDir
  * @returns
  */
-exports.resolveAppName = function(appDir) {
+exports.resolveAppName = function (appDir) {
   if (!appDir) {
     exit(new Error(i18n('App directory should be defined')));
     return;
@@ -16,7 +16,7 @@ exports.resolveAppName = function(appDir) {
   const appPath = path.resolve(appDir);
 
   if (!fs.existsSync(appPath)) {
-    exit(new Error(i18n('App directory doesn\'t exist')));
+    exit(new Error(i18n("App directory doesn't exist")));
     return;
   }
 
@@ -33,7 +33,7 @@ exports.resolveAppName = function(appDir) {
   }
 
   if (!appName) {
-    exit(new Error(i18n('App doesn\'t contain manifest.json file')));
+    exit(new Error(i18n("App doesn't contain manifest.json file")));
   }
 
   return appName;

@@ -6,7 +6,7 @@ const {resolveAppName} = require('./upload-utils');
 const testApp = 'testApp';
 const testAppName = 'test';
 
-describe('resolveAppName util', function() {
+describe('resolveAppName util', function () {
   let testDir = '';
   let outDir;
   beforeEach(() => {
@@ -14,7 +14,6 @@ describe('resolveAppName util', function() {
     jest.spyOn(process, 'exit').mockImplementation();
     outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'upload-test'));
     testDir = path.resolve(outDir, testApp);
-
   });
   afterEach(() => {
     jest.restoreAllMocks();
@@ -22,7 +21,7 @@ describe('resolveAppName util', function() {
     testDir = '';
   });
 
-  it('should successfully resolve app dir with manifest.json', async function() {
+  it('should successfully resolve app dir with manifest.json', async function () {
     const manifest = path.resolve(testDir, 'manifest.json');
     const manifestContent = JSON.stringify({name: testAppName});
     fs.mkdirSync(testDir);
@@ -34,19 +33,18 @@ describe('resolveAppName util', function() {
     expect(appName).toEqual(testAppName);
   });
 
-  it('should fail if app folder doesn\'t have manifest.json', async function() {
+  it("should fail if app folder doesn't have manifest.json", async function () {
     fs.mkdirSync(testDir);
     resolveAppName(testDir);
 
-    expect(console.error).toHaveBeenCalledWith('Error: App doesn\'t contain manifest.json file');
+    expect(console.error).toHaveBeenCalledWith("Error: App doesn't contain manifest.json file");
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
-  it('should fail if app folder doesn\'t exist', async function() {
+  it("should fail if app folder doesn't exist", async function () {
     resolveAppName(testDir);
 
-    expect(console.error).toHaveBeenCalledWith('Error: App directory doesn\'t exist');
+    expect(console.error).toHaveBeenCalledWith("Error: App directory doesn't exist");
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 });
-

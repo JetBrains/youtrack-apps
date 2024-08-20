@@ -1,11 +1,10 @@
 const nock = require('nock');
 nock.back.setMode('record');
 
-describe('index', function() {
-  beforeEach(function() {
+describe('index', function () {
+  beforeEach(function () {
     nock.disableNetConnect();
-    jest.spyOn(console, 'log').mockImplementation(() => {
-    });
+    jest.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -13,14 +12,13 @@ describe('index', function() {
     jest.resetAllMocks();
   });
 
-  it('should print version', function() {
+  it('should print version', function () {
     require('./index').run(['', '', 'version']);
     expect(console.log).toHaveBeenCalledWith(require('../../package.json').version);
   });
 
-  it('should show error message if required parameter doesn`t have value', function() {
-    jest.spyOn(console, 'error').mockImplementation(() => {
-    });
+  it('should show error message if required parameter doesn`t have value', function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation();
 
     require('./index').run(['', '', 'list', '--host=']);
@@ -28,13 +26,12 @@ describe('index', function() {
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
-  it('should not throw error if user passed all required parameters', function() {
-    jest.spyOn(console, 'error').mockImplementation(() => {
-    });
+  it('should not throw error if user passed all required parameters', function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation();
 
     nock('https://foo:443')
-      .get((uri) => uri.includes('/api/admin/apps'))
+      .get(uri => uri.includes('/api/admin/apps'))
       .reply(200, []);
 
     require('./index').run(['', '', 'list', '--host=foo']);

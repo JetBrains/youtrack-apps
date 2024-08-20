@@ -15,7 +15,7 @@ const tmpdir = require('../../lib/fs/tmpdir');
  * @param {string} appDir
  * @returns
  */
-module.exports = function(config, appDir) {
+module.exports = function (config, appDir) {
   const appName = resolveAppName(appDir);
 
   if (!appName) {
@@ -39,21 +39,21 @@ module.exports = function(config, appDir) {
     function updateApp(isCreate) {
       const form = new FormData();
       form.append('file', fs.createReadStream(zip.path), {
-        filename: appName + '.zip'
+        filename: appName + '.zip',
       });
 
       let message = HttpMessage(resolve(config.host, '/api/admin/apps/import'));
       const options = {
         method: 'POST',
-        headers: form.getHeaders()
+        headers: form.getHeaders(),
       };
 
       if (config.token) {
         const signHeaders = HttpMessage.sign(config.token);
-        options.headers = { ...options.headers, ...signHeaders.headers };
+        options.headers = {...options.headers, ...signHeaders.headers};
       }
 
-      const req = request(message, options, (error) => {
+      const req = request(message, options, error => {
         if (error && error.statusCode === 404 && !isCreate) {
           // Try to create new workflow
           return updateApp(true);

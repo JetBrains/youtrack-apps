@@ -21,8 +21,8 @@ function download(config, appName) {
   let message = HttpMessage(resolve(config.host, '/api/admin/apps/' + appName.replace(/^@/, '')));
   const options = {
     headers: {
-      'Accept': 'application/zip'
-    }
+      Accept: 'application/zip',
+    },
   };
 
   if (config.token) {
@@ -30,18 +30,16 @@ function download(config, appName) {
     options.headers = {...options.headers, ...signHeaders.headers};
   }
 
-  const req = request(message, options,
-    (downloadError) => {
-      if (downloadError) exit(downloadError);
-    }
-  );
+  const req = request(message, options, downloadError => {
+    if (downloadError) exit(downloadError);
+  });
 
   req.on('response', response => {
     const zip = fs.createWriteStream(tmpdir(getZipName(appName)));
     const output = config.output || config.cwd;
 
     response.pipe(zip).on('close', () => {
-      unzip(zip.path.toString(), require('path').resolve(output, appName), (error) => {
+      unzip(zip.path.toString(), require('path').resolve(output, appName), error => {
         if (error) return exit(error);
 
         console.log(i18n(`File extracted into '${output}'`));

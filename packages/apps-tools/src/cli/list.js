@@ -8,7 +8,7 @@ const HttpMessage = require('../../lib/net/httpmessage');
  * @param {*} config
  * @returns {*}
  */
-module.exports = function(config) {
+module.exports = function (config) {
   let message = HttpMessage(resolve(config.host, '/api/admin/apps'));
   const options = config.token ? HttpMessage.sign(config.token) : {};
   message.searchParams.append('fields', queryfields(['id', 'name']));
@@ -17,12 +17,12 @@ module.exports = function(config) {
   return request(message, options, (error, data) => {
     if (error) return exit(error);
 
-    data.forEach((/**@type {*}*/x) => {
+    data.forEach((/**@type {*}*/ x) => {
       print(x.name);
     });
   });
 
-  function print(/**@type {string}*/name) {
+  function print(/**@type {string}*/ name) {
     console.log(name);
   }
 };
