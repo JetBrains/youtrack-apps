@@ -1,0 +1,82 @@
+const i18n = require('../../lib/i18n/i18n');
+
+module.exports.run = function(argv = process.argv) {
+  const args = require('../../lib/cli/parseargv')(argv);
+  const config = {
+    host: args.host || null,
+    token: args.token || null,
+    output: args.output || null,
+    cwd: process.cwd()
+  };
+
+  if (args.version || args.v) {
+    return printVersion();
+  }
+
+  switch (args._[0]) {
+    case 'list':
+    case 'download':
+    case 'upload':
+      checkRequiredParams(['host'], args, () => {
+        require('./' + args._[0])(config, args._.slice(1)[0]);
+      });
+      return;
+    case 'version':
+      printVersion();
+      return;
+    default:
+      printHelp();
+      return;
+  }
+
+  function printHelp() {
+    br();
+    printLine(i18n('list     --host [--token]     '), i18n('View a list of installed apps'));
+    printLine(i18n('download <app> [--output]     '), i18n('Download an app'));
+    printLine(i18n('upload   <directory>          '), i18n('Upload app to server'));
+    br();
+
+    function br() {
+      console.log('');
+    }
+
+    /**
+     * @param {string} option
+     * @param {string} description
+     */
+    function printLine(option, description) {
+      console.log('    ' + option + '   ' + description);
+    }
+  }
+
+  /**
+   * @param {string[]} required
+   * @param {Object<string,*>} args
+   * @param {*} fn
+   * @returns {void}
+   */
+  function checkRequiredParams(required, args, fn) {
+    const exit = require('../../lib/cli/exit');
+
+    /**
+     * @param {string[]} params
+     * @param {Object<string,*>} args
+     * @returns {Boolean}
+     */
+    function allParamsProvided(params, args) {
+      return params.every(param => {
+        if (!args.hasOwnProperty(param) || !args[param]) {
+          exit(new Error(i18n('Option "--' + param + '" is required')));
+          return false;
+        }
+        return true;
+      });
+    }
+
+    if (allParamsProvided(required, args)) fn();
+  }
+
+  function printVersion() {
+    console.log(require('../../package.json').version);
+  }
+};
