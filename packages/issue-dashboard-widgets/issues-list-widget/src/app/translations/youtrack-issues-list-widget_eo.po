@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: eo\n"
+"X-Crowdin-File: /widgets/youtrack-issues-list-widget/default.pot\n"
+"X-Crowdin-File-ID: 33626\n"
+"Language-Team: Esperanto\n"
+"Language: eo_UY\n"
+"PO-Revision-Date: 2023-07-28 12:17\n"
+
+#: src/app/content.js:62
+msgid "Can't load information from service"
+msgstr "crwdns10855694:0crwdne10855694:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "crwdns894671:0crwdne894671:0"
+
+#: src/app/content.js:50
+msgid "Edit search query"
+msgstr "crwdns894672:0crwdne894672:0"
+
+#: src/app/issues-list-edit-form.js:300
+#: src/app/issues-list-edit-form.js:35
+msgid "Everything"
+msgstr "crwdns894673:0crwdne894673:0"
+
+#: src/app/issues-list-widget.js:72
+msgid "Issues List"
+msgstr "crwdns1448748:0crwdne1448748:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "crwdns894674:0crwdne894674:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "crwdns894675:0crwdne894675:0"
+
+#: src/app/content.js:124
+msgid "Load 1 more issue"
+msgid_plural "Load {{$count}} more issues"
+msgstr[0] "crwdns1449322:1crwdne1449322:1"
+msgstr[1] "crwdns1449322:5{{$count}}crwdne1449322:5"
+
+#: src/app/content.js:41
+msgid "No issues found"
+msgstr "crwdns894678:0crwdne894678:0"
+
+#: src/app/issues-list-edit-form.js:226
+msgid "No projects"
+msgstr "crwdns894679:0crwdne894679:0"
+
+#: src/app/issues-list-edit-form.js:228
+msgid "No saved searches"
+msgstr "crwdns894680:0crwdne894680:0"
+
+#: src/app/issues-list-edit-form.js:227
+msgid "No tags"
+msgstr "crwdns894681:0crwdne894681:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "crwdns894682:0crwdne894682:0"
+
+#: src/app/issues-list-edit-form.js:319
+msgid "Projects"
+msgstr "crwdns894683:0crwdne894683:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "crwdns894684:0crwdne894684:0"
+
+#: src/app/issues-list-edit-form.js:331
+msgid "Saved searches"
+msgstr "crwdns894685:0crwdne894685:0"
+
+#: src/app/issues-list-edit-form.js:398
+msgid "Select YouTrack"
+msgstr "crwdns894686:0crwdne894686:0"
+
+#: src/app/issues-list-edit-form.js:100
+msgid "Selected YouTrack service is not available"
+msgstr "crwdns894687:0crwdne894687:0"
+
+#: src/app/issues-list-edit-form.js:384
+msgid "Set optional title"
+msgstr "crwdns894688:0crwdne894688:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "crwdns894689:0crwdne894689:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "crwdns894690:0crwdne894690:0"
+
+#: src/app/issues-list-edit-form.js:325
+msgid "Tags"
+msgstr "crwdns894691:0crwdne894691:0"
+
+#: src/app/issues-list-edit-form.js:306
+msgid "Type search query"
+msgstr "crwdns894692:0crwdne894692:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "crwdns894693:0crwdne894693:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "crwdns894694:0{{minutesCount}}crwdne894694:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "crwdns894695:0crwdne894695:0"
+
+#: src/app/issues-list-widget.js:49
+msgid "issues"
+msgstr "crwdns894696:0crwdne894696:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "crwdns894697:0{{minutesCount}}crwdne894697:0"
+

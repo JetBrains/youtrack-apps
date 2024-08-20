@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: da\n"
+"X-Crowdin-File: /widgets/youtrack-issues-list-widget/default.pot\n"
+"X-Crowdin-File-ID: 241498\n"
+"Language-Team: Danish\n"
+"Language: da_DK\n"
+"PO-Revision-Date: 2023-11-05 05:31\n"
+
+#: src/app/content.js:62
+msgid "Can't load information from service"
+msgstr "Oplysninger kan ikke indlæses fra tjenesten"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr ""
+
+#: src/app/content.js:50
+msgid "Edit search query"
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:300
+#: src/app/issues-list-edit-form.js:35
+msgid "Everything"
+msgstr ""
+
+#: src/app/issues-list-widget.js:73
+msgid "Issues List"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr ""
+
+#: src/app/content.js:124
+msgid "Load 1 more issue"
+msgid_plural "Load {{$count}} more issues"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/app/content.js:41
+msgid "No issues found"
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:226
+msgid "No projects"
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:228
+msgid "No saved searches"
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:227
+msgid "No tags"
+msgstr ""
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:319
+msgid "Projects"
+msgstr ""
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:331
+msgid "Saved searches"
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:398
+msgid "Select YouTrack"
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:100
+msgid "Selected YouTrack service is not available"
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:384
+msgid "Set optional title"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:325
+msgid "Tags"
+msgstr ""
+
+#: src/app/issues-list-edit-form.js:306
+msgid "Type search query"
+msgstr ""
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr ""
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Widget opdaterer hver {{minutesCount}} minutter"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr ""
+
+#: src/app/issues-list-widget.js:50
+msgid "issues"
+msgstr ""
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} min"
+
