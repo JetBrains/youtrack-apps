@@ -6,8 +6,5 @@
     "packageManager": "npm@10.1.0",
     "scripts": {
         "test": "echo 'no tests'"
-    },
-    "devDependencies": {
-        "commit-and-tag-version": "^12.4.1"
     }
 }
