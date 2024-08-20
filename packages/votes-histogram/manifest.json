@@ -1,6 +1,7 @@
 {
   "name" : "votes-histogram",
   "title" : "Votes Histogram",
+  "version": "0.1.0",
   "description" : null,
   "dependencies" : {
     "@jetbrains/youtrack-scripting-api" : "^2021.0.0"
