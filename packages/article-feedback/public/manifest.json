@@ -1,7 +1,7 @@
 {
   "name": "article-feedback",
   "title": "Article Feedback",
-  "version": "0.1.0",
+  "version": "0.1.1-alpha.0",
   "description": "Article Feedback",
   "icon": "demo-app-logo.svg",
   "dependencies": {
@@ -23,7 +23,9 @@
       "name": "Article Feedback Statistics",
       "indexPath": "feedback-statistics/index.html",
       "extensionPoint": "ARTICLE_OPTIONS_MENU_ITEM",
-      "permissions": ["UPDATE_ARTICLE"]
+      "permissions": [
+        "UPDATE_ARTICLE"
+      ]
     }
   ]
 }
