@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: fr\n"
+"X-Crowdin-File: /widgets/youtrack-issues-list-widget/default.pot\n"
+"X-Crowdin-File-ID: 33626\n"
+"Language-Team: French\n"
+"Language: fr_FR\n"
+"PO-Revision-Date: 2023-07-28 12:21\n"
+
+#: src/app/content.js:62
+msgid "Can't load information from service"
+msgstr "Impossible de charger les informations du service"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "Annuler"
+
+#: src/app/content.js:50
+msgid "Edit search query"
+msgstr "Modifier la requête de recherche"
+
+#: src/app/issues-list-edit-form.js:300
+#: src/app/issues-list-edit-form.js:35
+msgid "Everything"
+msgstr "Tout"
+
+#: src/app/issues-list-widget.js:72
+msgid "Issues List"
+msgstr "Liste de tickets"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Janvier|Février|Mars|Avril|Mai|Juin|Juillet|Août|Septembre|Octobre|Novembre|Décembre"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Jan|Fév|Mar|Avr|Mai|Jun|Jul|Aoû|Sep|Oct|Nov|Déc"
+
+#: src/app/content.js:124
+msgid "Load 1 more issue"
+msgid_plural "Load {{$count}} more issues"
+msgstr[0] "Charger un ticket supplémentaire"
+msgstr[1] "Charger {{$count}} tickets supplémentaires"
+
+#: src/app/content.js:41
+msgid "No issues found"
+msgstr "Aucun ticket trouvé"
+
+#: src/app/issues-list-edit-form.js:226
+msgid "No projects"
+msgstr "Aucun projet"
+
+#: src/app/issues-list-edit-form.js:228
+msgid "No saved searches"
+msgstr "Aucune recherche enregistrée"
+
+#: src/app/issues-list-edit-form.js:227
+msgid "No tags"
+msgstr "Aucune balise"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Oups ! Un problème est survenu..."
+
+#: src/app/issues-list-edit-form.js:319
+msgid "Projects"
+msgstr "Projets"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "Enregistrer"
+
+#: src/app/issues-list-edit-form.js:331
+msgid "Saved searches"
+msgstr "Recherches enregistrées"
+
+#: src/app/issues-list-edit-form.js:398
+msgid "Select YouTrack"
+msgstr "Sélectionner YouTrack"
+
+#: src/app/issues-list-edit-form.js:100
+msgid "Selected YouTrack service is not available"
+msgstr "Le service YouTrack sélectionné n'est pas disponible"
+
+#: src/app/issues-list-edit-form.js:384
+msgid "Set optional title"
+msgstr "Définir un titre facultatif"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Dimanche|Lundi|Mardi|Mercredi|Jeudi|Vendredi|Samedi"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Dim|Lun|Mar|Mer|Jeu|Ven|Sam"
+
+#: src/app/issues-list-edit-form.js:325
+msgid "Tags"
+msgstr "Balises"
+
+#: src/app/issues-list-edit-form.js:306
+msgid "Type search query"
+msgstr "Saisissez la requête de recherche"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "Le widget s'actualise toutes les minutes"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Le widget s'actualise toutes les {{minutesCount}} minutes"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "am|pm"
+
+#: src/app/issues-list-widget.js:49
+msgid "issues"
+msgstr "tickets"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} mn"
+

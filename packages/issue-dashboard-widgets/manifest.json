@@ -1,0 +1,21 @@
+{
+  "key": "youtrack-issues-list",
+  "version": "1.0.31",
+  "name": "Issues List",
+  "description": "Displays a list of YouTrack issues that match a search query.",
+  "applicationName": "YouTrack",
+  "author": "JetBrains",
+  "dependencies": {
+    "YouTrack": ">=2019.1.51759",
+    "Hub": ">3.0"
+  },
+  "products": {
+    "YouTrack": ">=2019.1.51759",
+    "Hub": ">3.0"
+  },
+  "capabilities": {
+    "popups": true,
+    "topNavigation": true
+  }
+}
+

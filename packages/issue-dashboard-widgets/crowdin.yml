@@ -1,0 +1,13 @@
+"project_identifier_env": CROWDIN_PROJECT_IDENTIFIER
+"api_key_env" : CROWDIN_API_KEY
+"base_path" : ".."
+
+"preserve_hierarchy": true
+
+files: [
+ {
+  "source" : "/src/app/translations/default.pot",
+  "dest": "/widgets/youtrack-issues-list-widget/default.pot",
+  "translation" : "/src/app/translations/youtrack-issues-list-widget_%two_letters_code%.po",
+ }
+]

@@ -1,0 +1,130 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: it\n"
+"X-Crowdin-File: /widgets/youtrack-issues-list-widget/default.pot\n"
+"X-Crowdin-File-ID: 241498\n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"PO-Revision-Date: 2023-11-05 05:32\n"
+
+#: src/app/content.js:62
+msgid "Can't load information from service"
+msgstr "Impossibile caricare informazioni dal servizio"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "Annulla"
+
+#: src/app/content.js:50
+msgid "Edit search query"
+msgstr "Modifica la query di ricerca"
+
+#: src/app/issues-list-edit-form.js:300
+#: src/app/issues-list-edit-form.js:35
+msgid "Everything"
+msgstr "Qualsiasi"
+
+#: src/app/issues-list-widget.js:73
+msgid "Issues List"
+msgstr "Elenco ticket"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Gennaio|Febbraio|Marzo|Aprile|Maggio|Giugno|Luglio|Agosto|Settembre|Ottobre|Novembre|Dicembre"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Gen|Feb|Mar|Apr|Mag|Giu|Lug|Ago|Set|Ott|Nov|Dic"
+
+#: src/app/content.js:124
+msgid "Load 1 more issue"
+msgid_plural "Load {{$count}} more issues"
+msgstr[0] "Carica un altro ticket"
+msgstr[1] "Carica altri {{$count}} ticket"
+
+#: src/app/content.js:41
+msgid "No issues found"
+msgstr "Nessun ticket trovato"
+
+#: src/app/issues-list-edit-form.js:226
+msgid "No projects"
+msgstr "Nessun progetto"
+
+#: src/app/issues-list-edit-form.js:228
+msgid "No saved searches"
+msgstr "Nessuna ricerca salvata"
+
+#: src/app/issues-list-edit-form.js:227
+msgid "No tags"
+msgstr "Nessun tag"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Oops! Qualcosa è andato storto..."
+
+#: src/app/issues-list-edit-form.js:319
+msgid "Projects"
+msgstr "Progetti"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "Salva"
+
+#: src/app/issues-list-edit-form.js:331
+msgid "Saved searches"
+msgstr "Ricerche salvate"
+
+#: src/app/issues-list-edit-form.js:398
+msgid "Select YouTrack"
+msgstr "Seleziona YouTrack"
+
+#: src/app/issues-list-edit-form.js:100
+msgid "Selected YouTrack service is not available"
+msgstr "Il servizio YouTrack selezionato non è disponibile"
+
+#: src/app/issues-list-edit-form.js:384
+msgid "Set optional title"
+msgstr "Imposta titolo facoltativo"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Domenica|Lunedi|Martedi|Mercoledi|Giovedi|Venerdi|Sabato"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Dom|Lun|Mar|Mer|Gio|Ven|Sab"
+
+#: src/app/issues-list-edit-form.js:325
+msgid "Tags"
+msgstr "Tag"
+
+#: src/app/issues-list-edit-form.js:306
+msgid "Type search query"
+msgstr "Digitare la query di ricerca"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "Il widget si aggiorna ogni minuto"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Il widget si aggiorna ogni {{minutesCount}} minuti"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "am|pm"
+
+#: src/app/issues-list-widget.js:50
+msgid "issues"
+msgstr "ticket"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} min"
+
