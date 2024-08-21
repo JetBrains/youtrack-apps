@@ -2,12 +2,11 @@
   "name" : "votes-histogram",
   "title" : "Votes Histogram",
   "version": "0.1.0",
-  "description" : null,
+  "description" : "Votes Histogram App",
   "dependencies" : {
-    "@jetbrains/youtrack-scripting-api" : "^2021.0.0"
+    "@jetbrains/youtrack-scripting-api" : "^2024.3.0"
   },
   "language" : "JS",
-  "modules" : {},
   "widgets": [
     {
       "key": "votes-histogram",
@@ -15,9 +14,5 @@
       "indexPath": "index.html",
       "place": "ISSUE_OPTIONS_MENU_ITEM"
     }
-  ],
-  "youtrack" : {
-    "autoAttached" : false,
-    "visual" : false
-  }
+  ]
 }
