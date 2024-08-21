@@ -12,7 +12,7 @@
       "key": "votes-histogram",
       "name": "Issue Votes Histogram",
       "indexPath": "index.html",
-      "place": "ISSUE_OPTIONS_MENU_ITEM"
+      "extensionPoint": "ISSUE_OPTIONS_MENU_ITEM"
     }
   ]
 }
