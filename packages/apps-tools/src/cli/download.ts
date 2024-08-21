@@ -1,18 +1,13 @@
-const fs = require('fs');
-const exit = require('../../lib/cli/exit');
-const resolve = require('../../lib/net/resolve');
-const tmpdir = require('../../lib/fs/tmpdir');
-const unzip = require('../../lib/fs/unzip');
-const request = require('../../lib/net/request');
-const i18n = require('../../lib/i18n/i18n');
-const HttpMessage = require('../../lib/net/httpmessage');
+import fs from 'fs';
+import {exit} from '../../lib/cli/exit';
+import {resolve} from '../../lib/net/resolve';
+import {tmpDir} from '../../lib/fs/tmpdir';
+import {unzip} from '../../lib/fs/unzip';
+import {request} from '../../lib/net/request';
+import {i18n} from '../../lib/i18n/i18n';
+import {HttpMessage} from '../../lib/net/httpmessage';
 
-/**
- * @param {*} config
- * @param {string} appName
- * @returns
- */
-function download(config, appName) {
+export function download(config: any, appName: string) {
   if (!appName) {
     exit(new Error(i18n('App name should be defined')));
     return;
@@ -35,7 +30,7 @@ function download(config, appName) {
   });
 
   req.on('response', response => {
-    const zip = fs.createWriteStream(tmpdir(getZipName(appName)));
+    const zip = fs.createWriteStream(tmpDir(getZipName(appName)));
     const output = config.output || config.cwd;
 
     response.pipe(zip).on('close', () => {
@@ -49,13 +44,7 @@ function download(config, appName) {
 
   return req;
 
-  /**
-   * @param {string} appName
-   * @returns {string}
-   */
-  function getZipName(appName) {
+  function getZipName(appName: string): string {
     return 'youtrack-app-' + appName.split('/').pop() + '.zip';
   }
 }
-
-module.exports = download;

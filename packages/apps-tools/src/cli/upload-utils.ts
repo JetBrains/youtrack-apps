@@ -1,13 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const exit = require('../../lib/cli/exit');
-const i18n = require('../../lib/i18n/i18n');
+import fs from 'fs';
+import path from 'path';
+import {i18n} from '../../lib/i18n/i18n';
+import {exit} from '../../lib/cli/exit';
 
-/**
- * @param {string} appDir
- * @returns
- */
-exports.resolveAppName = function (appDir) {
+export function resolveAppName(appDir: string): undefined | string {
   if (!appDir) {
     exit(new Error(i18n('App directory should be defined')));
     return;
@@ -37,4 +33,4 @@ exports.resolveAppName = function (appDir) {
   }
 
   return appName;
-};
+}

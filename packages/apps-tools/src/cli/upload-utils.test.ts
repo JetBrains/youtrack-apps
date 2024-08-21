@@ -1,7 +1,7 @@
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
-const {resolveAppName} = require('./upload-utils');
+import {resolveAppName} from './upload-utils';
+import os from 'os';
+import fs from 'fs';
+import path from 'path';
 
 const testApp = 'testApp';
 const testAppName = 'test';

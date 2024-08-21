@@ -1,4 +1,5 @@
-const nock = require('nock');
+import nock from 'nock';
+
 nock.back.setMode('record');
 
 describe('index', function () {

@@ -1,12 +1,12 @@
-const zipFolder = require('./zipfolder');
-const unzip = require('./unzip');
-const {promisify} = require('util');
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
+import {promisify} from 'util';
+import {unzip} from './unzip';
+import {zipFolder} from './zipfolder';
 
-describe('zipfolder', function() {
-  it('should zip/unzip package', async function() {
+describe('zipfolder', function () {
+  it('should zip/unzip package', async function () {
     const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'zipfolder-test'));
     const fooDir = path.resolve(outDir, 'foo');
     const unzipDir = path.resolve(outDir, 'bar');
@@ -21,7 +21,7 @@ describe('zipfolder', function() {
     expect(files).toEqual(['package.json']);
   });
 
-  it('should contain manifest.json in package', async function() {
+  it('should contain manifest.json in package', async function () {
     const outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'zipfolder-test'));
     const fooDir = path.resolve(outDir, 'foo');
     const unzipDir = path.resolve(outDir, 'bar');

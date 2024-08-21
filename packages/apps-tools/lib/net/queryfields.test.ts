@@ -1,7 +1,7 @@
-const queryfields = require('./queryfields');
+import {queryfields} from './queryfields';
 
-describe('queryfields.test', function() {
-  it('should create fields query string', function() {
+describe('queryfields.test', function () {
+  it('should create fields query string', function () {
     expect(queryfields(['foo'])).toEqual('foo');
     expect(queryfields(['foo', 'bar'])).toEqual('foo,bar');
     expect(queryfields([{foo: ['bar']}])).toEqual('foo(bar)');

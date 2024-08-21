@@ -1,7 +1,7 @@
-const HttpMessage = require('./httpmessage');
+import {HttpMessage} from './httpmessage';
 
-describe('httpmessage.test', function() {
-  it('should create message', function() {
+describe('httpmessage.test', function () {
+  it('should create message', function () {
     const message = HttpMessage('http://localhost:81/foo/bar');
     expect(message.protocol).toEqual('http:');
     expect(message.port).toEqual('81');
@@ -9,7 +9,7 @@ describe('httpmessage.test', function() {
     expect(message.pathname).toEqual('/foo/bar');
   });
 
-  it('should use https by default', function() {
+  it('should use https by default', function () {
     const message = HttpMessage('localhost:81/foo/bar');
 
     expect(message.protocol).toEqual('https:');
@@ -18,14 +18,14 @@ describe('httpmessage.test', function() {
     expect(message.pathname).toEqual('/foo/bar');
   });
 
-  it('should sign', function() {
+  it('should sign', function () {
     const token = '12345';
     const sign = HttpMessage.sign(token);
 
     expect(sign.headers['Authorization']).toBeDefined();
   });
 
-  it('should throw exception if user tries to proceed without token', function() {
+  it('should throw exception if user tries to proceed without token', function () {
     expect(() => {
       HttpMessage.sign('');
     }).toThrow();

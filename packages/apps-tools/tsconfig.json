@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2023",
     "allowJs": true,
     "checkJs": true,
-    "noEmit": true,
     "skipLibCheck": true,
     "strict": true,
     "noImplicitAny": true,
@@ -11,10 +10,11 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "typeRoots": ["./node_modules/@types", "./@types"],
-    "types": ["jest"]
+    "types": ["jest", "node"],
+    "outDir": "dist"
   },
   "include": ["@types/**/*", "src", "lib"],
   "exclude": ["node_modules"]
 }
-

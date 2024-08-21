@@ -1,8 +1,20 @@
-const i18n = require('../../lib/i18n/i18n');
+import {i18n} from '../../lib/i18n/i18n';
+import {exit} from '../../lib/cli/exit';
+import {parse} from '../../lib/cli/parseargv';
+import {Config} from '../../types/types';
+import {list} from './list';
+import {download} from './download';
+import {upload} from './upload';
 
-module.exports.run = function (argv = process.argv) {
-  const args = require('../../lib/cli/parseargv')(argv);
-  const config = {
+const options = {
+  list: list,
+  download: download,
+  upload: upload,
+} as const;
+
+export function run(argv = process.argv) {
+  const args = parse(argv);
+  const config: Config = {
     host: args.host || null,
     token: args.token || null,
     output: args.output || null,
@@ -13,12 +25,14 @@ module.exports.run = function (argv = process.argv) {
     return printVersion();
   }
 
-  switch (args._[0]) {
+  const option = args._[0];
+  switch (option) {
     case 'list':
     case 'download':
     case 'upload':
       checkRequiredParams(['host'], args, () => {
-        require('./' + args._[0])(config, args._.slice(1)[0]);
+        const executable = options[option];
+        executable(config, args._.slice(1)[0]);
       });
       return;
     case 'version':
@@ -40,30 +54,13 @@ module.exports.run = function (argv = process.argv) {
       console.log('');
     }
 
-    /**
-     * @param {string} option
-     * @param {string} description
-     */
-    function printLine(option, description) {
+    function printLine(option: string, description: string) {
       console.log('    ' + option + '   ' + description);
     }
   }
 
-  /**
-   * @param {string[]} required
-   * @param {Object<string,*>} args
-   * @param {*} fn
-   * @returns {void}
-   */
-  function checkRequiredParams(required, args, fn) {
-    const exit = require('../../lib/cli/exit');
-
-    /**
-     * @param {string[]} params
-     * @param {Object<string,*>} args
-     * @returns {Boolean}
-     */
-    function allParamsProvided(params, args) {
+  function checkRequiredParams(required: string[], args: {[s: string]: any}, fn: any): void {
+    function allParamsProvided(params: string[], args: {[s: string]: any}): boolean {
       return params.every(param => {
         if (!args.hasOwnProperty(param) || !args[param]) {
           exit(new Error(i18n('Option "--' + param + '" is required')));
@@ -79,4 +76,4 @@ module.exports.run = function (argv = process.argv) {
   function printVersion() {
     console.log(require('../../package.json').version);
   }
-};
+}
