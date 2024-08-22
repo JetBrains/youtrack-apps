@@ -1,4 +1,4 @@
-import {AppItem, Config} from '../../types/types';
+import {AppItem, Config} from '../../@types/types';
 import {resolve} from '../../lib/net/resolve';
 import {exit} from '../../lib/cli/exit';
 import {request} from '../../lib/net/request';

@@ -10,7 +10,7 @@ import {resolve} from '../../lib/net/resolve';
 import {HttpMessage} from '../../lib/net/httpmessage';
 import FormData from 'form-data';
 import {tmpDir} from '../../lib/fs/tmpdir';
-import {Config} from '../../types/types';
+import {Config} from '../../@types/types';
 
 export function upload(config: Config, appDir: string) {
   const appName = resolveAppName(appDir);
