@@ -12,10 +12,10 @@ import FormData from 'form-data';
 import {tmpDir} from '../../lib/fs/tmpdir';
 import {Config} from '../../@types/types';
 
-export function upload(config: Config, appDir: string) {
+export function upload(config: Config, appDir?: string) {
   const appName = resolveAppName(appDir);
 
-  if (!appName) {
+  if (!appName || !appDir) {
     exit(new Error(i18n('Unexpected error')));
     return;
   }

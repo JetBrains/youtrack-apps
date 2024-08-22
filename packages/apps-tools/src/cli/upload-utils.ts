@@ -3,7 +3,7 @@ import path from 'path';
 import {i18n} from '../../lib/i18n/i18n';
 import {exit} from '../../lib/cli/exit';
 
-export function resolveAppName(appDir: string): undefined | string {
+export function resolveAppName(appDir?: string): undefined | string {
   if (!appDir) {
     exit(new Error(i18n('App directory should be defined')));
     return;

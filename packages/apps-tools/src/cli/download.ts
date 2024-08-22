@@ -7,7 +7,7 @@ import {request} from '../../lib/net/request';
 import {i18n} from '../../lib/i18n/i18n';
 import {HttpMessage} from '../../lib/net/httpmessage';
 
-export function download(config: any, appName: string) {
+export function download(config: any, appName?: string) {
   if (!appName) {
     exit(new Error(i18n('App name should be defined')));
     return;
