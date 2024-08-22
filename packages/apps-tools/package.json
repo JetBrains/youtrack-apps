@@ -21,7 +21,7 @@
   },
   "scripts": {
     "dev": "npx ts-node index",
-    "build": "tsup src/cli/index.ts --format cjs --clean",
+    "build": "tsup",
     "lint": "eslint .",
     "test": "jest",
     "test:type": "tsc"
