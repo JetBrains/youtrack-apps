@@ -39,8 +39,10 @@ export default tseslint.config({
     'no-delete-var': 2,
     'no-use-before-define': [2, 'nofunc'],
     'no-undef': 2,
-    'no-unused-vars': 2,
+    'no-unused-vars': 'off',
     'no-undef-init': 2,
     'handle-callback-err': 2,
+    'no-prototype-builtins': 'off',
+    '@typescript-eslint/no-require-imports': ['error', {allow: ['/package\\.json$', '/index$']}],
   },
 });
