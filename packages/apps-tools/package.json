@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/JetBrains/youtrack-apps.git"
   },
-  "main": "src/cli/index.js",
+  "main": "dist/index.js",
   "bin": {
     "youtrack-app": "./bin/youtrack-app"
   },
@@ -20,11 +20,11 @@
     "unzipper": "0.12.3"
   },
   "scripts": {
-    "bin": "npx ts-node ./bin/youtrack-app",
-    "build": "tsc",
+    "dev": "npx ts-node index",
+    "build": "tsup src/cli/index.ts --format cjs --clean",
     "lint": "eslint .",
     "test": "jest",
-    "test:type": "tsc --noEmit"
+    "test:type": "tsc"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
@@ -45,6 +45,7 @@
     "prettier": "3.3.3",
     "ts-jest": "^29.2.4",
     "ts-node": "^10.9.2",
+    "tsup": "^8.2.4",
     "typescript": "5.5.4",
     "typescript-eslint": "^8.2.0"
   }
