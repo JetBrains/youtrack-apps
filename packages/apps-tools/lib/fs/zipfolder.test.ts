@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import {promisify} from 'util';
 import {unzip} from './unzip';
 import {zipFolder} from './zipfolder';
 
@@ -15,8 +14,8 @@ describe('zipfolder', function () {
     fs.mkdirSync(fooDir, {recursive: true});
     fs.writeFileSync(pkg, '{}');
 
-    await promisify(zipFolder)(fooDir, zipFilePath);
-    await promisify(unzip)(zipFilePath, unzipDir);
+    await zipFolder(fooDir, zipFilePath);
+    await unzip(zipFilePath, unzipDir);
     const files = fs.readdirSync(unzipDir);
     expect(files).toEqual(['package.json']);
   });
@@ -32,8 +31,8 @@ describe('zipfolder', function () {
     fs.writeFileSync(pkg, '{}');
     fs.writeFileSync(manifest, '{}');
 
-    await promisify(zipFolder)(fooDir, zipFilePath);
-    await promisify(unzip)(zipFilePath, unzipDir);
+    await zipFolder(fooDir, zipFilePath);
+    await unzip(zipFilePath, unzipDir);
     const files = fs.readdirSync(unzipDir);
     expect(files).toEqual(['manifest.json', 'package.json']);
   });

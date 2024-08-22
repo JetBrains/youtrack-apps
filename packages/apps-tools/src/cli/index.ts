@@ -59,8 +59,8 @@ export function run(argv = process.argv) {
     }
   }
 
-  function checkRequiredParams(required: string[], args: {[s: string]: any}, fn: any): void {
-    function allParamsProvided(params: string[], args: {[s: string]: any}): boolean {
+  function checkRequiredParams(required: string[], args: Record<string, string>, fn: () => void): void {
+    function allParamsProvided(params: string[], args: Record<string, string>): boolean {
       return params.every(param => {
         if (!args.hasOwnProperty(param) || !args[param]) {
           exit(new Error(i18n('Option "--' + param + '" is required')));

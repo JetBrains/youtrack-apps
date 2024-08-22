@@ -1,10 +1,11 @@
 import nock from 'nock';
 import {request} from './request';
 import {HttpMessage} from './httpmessage';
+import {ErrorWithStatusCodeAndData} from '../../@types/types';
 
 const options = {
   method: 'GET',
-  headers: {},
+  headers: {'content-type': 'application/json'},
 };
 
 nock.back.setMode('record');
@@ -14,30 +15,28 @@ describe('request.test', function () {
     nock.disableNetConnect();
   });
 
-  it('should send http request', function (done) {
+  it('should send http request', async () => {
     nock('http://localhost:80').get('/foo').reply(200, response({}));
 
-    // @ts-ignore
-    request('http://localhost:80/foo', options, done);
+    await request('http://localhost:80/foo', options);
   });
 
-  it('should send https request', function (done) {
+  it('should send https request', async () => {
     nock('https://localhost:80').get('/foo').reply(200, response({}));
 
-    request('https://localhost:80/foo', options, done);
+    await request('https://localhost:80/foo', options);
   });
 
-  it('should pass response in callback', function (done) {
+  it('should pass response in callback', async () => {
+    expect.assertions(1);
     nock('https://localhost:80').get('/foo').reply(200, response({}));
 
-    request('https://localhost:80/foo', options, (error, response) => {
-      expect(error).toEqual(null);
-      expect(response).toBeDefined();
-      done();
-    });
+    const resp = await request('https://localhost:80/foo', options);
+    expect(resp).toBeDefined();
   });
 
-  it('should return parsed json data', function (done) {
+  it('should return parsed json data', async () => {
+    expect.assertions(1);
     nock('https://localhost:80')
       .get('/foo')
       .reply(
@@ -50,22 +49,22 @@ describe('request.test', function () {
         },
       );
 
-    request('https://localhost:80/foo', options, (error, response) => {
-      expect(response.foo).toEqual('foo');
-      done();
-    });
+    const res = await request('https://localhost:80/foo', options);
+    expect(res.foo).toEqual('foo');
   });
 
-  it('should pass error to handler', function (done) {
+  it('should pass error to handler', async () => {
+    expect.assertions(1);
     nock('https://localhost:80').get('/foo').reply(500, response({}));
 
-    request('https://localhost:80/foo', options, error => {
+    try {
+      await request('https://localhost:80/foo', options);
+    } catch (error) {
       expect(error).toBeDefined();
-      done();
-    });
+    }
   });
 
-  it('should parse error response', function (done) {
+  it('should parse error response', async () => {
     nock('https://localhost:80')
       .get('/foo')
       .reply(
@@ -78,14 +77,15 @@ describe('request.test', function () {
         },
       );
 
-    request('https://localhost:80/foo', options, (error, response) => {
+    try {
+      await request('https://localhost:80/foo', options);
+    } catch (error) {
       expect(error).toBeDefined();
-      expect(response.foo).toEqual('foo');
-      done();
-    });
+      expect((error as ErrorWithStatusCodeAndData).data?.foo).toEqual('foo');
+    }
   });
 
-  it('should pass query parameters', function (done) {
+  it('should pass query parameters', async () => {
     const message = HttpMessage('https://localhost:80/foo');
     message.searchParams.append('fields', 'foo');
     nock('https://localhost:80')
@@ -95,7 +95,7 @@ describe('request.test', function () {
       })
       .reply(200, response({}));
 
-    request(message, options, done);
+    request(message, options);
   });
 
   function response(data: unknown): string {
