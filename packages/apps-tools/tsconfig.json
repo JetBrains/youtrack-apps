@@ -1,20 +1,26 @@
 {
+  "extends": "ts-node/node16/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2023",
-    "allowJs": true,
-    "checkJs": true,
+    "lib": ["es2023"],
+    "target": "es2023",
     "skipLibCheck": true,
     "strict": true,
     "noImplicitAny": true,
     "removeComments": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
     "esModuleInterop": true,
     "typeRoots": ["./node_modules/@types", "./@types"],
     "types": ["jest", "node"],
     "outDir": "dist"
   },
-  "include": ["@types/**/*", "src", "lib"],
-  "exclude": ["node_modules"]
+  "include": ["src", "lib"],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true
+  }
 }
