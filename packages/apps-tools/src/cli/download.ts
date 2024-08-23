@@ -8,6 +8,7 @@ import {i18n} from '../../lib/i18n/i18n';
 import {HttpMessage} from '../../lib/net/httpmessage';
 import {Config} from '../../@types/types';
 import path from 'path';
+import {IncomingMessage} from 'http';
 
 export async function download(config: Config, appName?: string) {
   if (!appName) {
@@ -28,28 +29,26 @@ export async function download(config: Config, appName?: string) {
   }
 
   try {
-    const req = await request(message, options);
-    req.on('response', response => {
-      const zip = fs.createWriteStream(tmpDir(getZipName(appName)));
-      const output = config.output || config.cwd;
-
-      response.pipe(zip).on('close', async () => {
-        try {
-          await unzip(zip.path.toString(), path.resolve(output, appName));
-          console.log(i18n(`File extracted into '${output}'`));
-        } catch (error: unknown) {
-          if (error instanceof Error) {
-            return exit(error);
-          }
-        }
-      });
-    });
-    return req;
+    await request(message, options, response => unzipCallback(response, appName));
   } catch (error) {
     exit(error);
   }
 
   function getZipName(appName: string): string {
     return 'youtrack-app-' + appName.split('/').pop() + '.zip';
+  }
+
+  function unzipCallback(response: IncomingMessage, appName: string) {
+    const zip = fs.createWriteStream(tmpDir(getZipName(appName)));
+    const output = config.output || config.cwd;
+
+    response.pipe(zip).on('close', async () => {
+      try {
+        await unzip(zip.path.toString(), path.resolve(output, appName));
+        console.log(i18n(`File extracted into '${output}'`));
+      } catch (error) {
+        exit(error);
+      }
+    });
   }
 }

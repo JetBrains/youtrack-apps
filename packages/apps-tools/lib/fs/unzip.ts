@@ -10,5 +10,5 @@ export async function unzip(zipFilePath: string, outputdir: string): Promise<voi
 
   const outputPath = outputdir || path.dirname(zipFilePath);
   const directory = await unzipper.Open.file(zipFilePath);
-  return await directory.extract({path: outputPath});
+  await directory.extract({path: outputPath});
 }
