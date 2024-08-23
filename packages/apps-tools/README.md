@@ -39,7 +39,7 @@ following parameters:
 
 ### Download
 
-`youtrack-app download <appName> --host --token [--output]`
+`youtrack-app download <appName> --host --token [--output, --overwrite true]`
 
 This command downloads the referenced app from your YouTrack installation.
 
@@ -48,6 +48,8 @@ the current working directory and the app files are extracted into the new direc
 downloaded into the directory that is specified in the `output` parameter.
 
 Here, you also need to specify values for the `--host` and `--token` parameters to gain authorized access to YouTrack.
+
+One can also specify the `--overwrite true` parameter to overwrite the existing directory with the same name.
 
 ### Upload
 
