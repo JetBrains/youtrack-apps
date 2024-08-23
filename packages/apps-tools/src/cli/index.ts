@@ -18,6 +18,7 @@ export function run(argv = process.argv) {
     host: args.host || null,
     token: args.token || null,
     output: args.output || null,
+    overwrite: args.overwrite || null,
     cwd: process.cwd(),
   };
 
@@ -45,9 +46,9 @@ export function run(argv = process.argv) {
 
   function printHelp() {
     br();
-    printLine(i18n('list     --host [--token]     '), i18n('View a list of installed apps'));
-    printLine(i18n('download <app> [--output]     '), i18n('Download an app'));
-    printLine(i18n('upload   <directory>          '), i18n('Upload app to server'));
+    printLine(i18n('list     --host [--token]                  '), i18n('View a list of installed apps'));
+    printLine(i18n('download <app> [--output, --overwrite true]'), i18n('Download an app'));
+    printLine(i18n('upload   <directory>                       '), i18n('Upload app to server'));
     br();
 
     function br() {

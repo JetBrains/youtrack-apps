@@ -41,11 +41,21 @@ export async function download(config: Config, appName?: string) {
   function unzipCallback(response: IncomingMessage, appName: string) {
     const zip = fs.createWriteStream(tmpDir(getZipName(appName)));
     const output = config.output || config.cwd;
+    const shouldOverwrite = config?.overwrite === 'true';
+
+    if (shouldOverwrite) {
+      const existingPath = path.resolve(output, appName);
+      fs.rmSync(existingPath, {recursive: true, force: true});
+    }
 
     response.pipe(zip).on('close', async () => {
       try {
         await unzip(zip.path.toString(), path.resolve(output, appName));
-        console.log(i18n(`File extracted into '${output}'`));
+        if (!shouldOverwrite) {
+          console.log(i18n(`File extracted into '${output}'`));
+        } else {
+          console.log(i18n(`File extracted into '${output}' and existing files are overwritten`));
+        }
       } catch (error) {
         exit(error);
       }

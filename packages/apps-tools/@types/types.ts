@@ -4,6 +4,7 @@ export interface Config {
   host: string;
   token: string;
   output: string | null;
+  overwrite: string | null;
   cwd: string;
 }
 
