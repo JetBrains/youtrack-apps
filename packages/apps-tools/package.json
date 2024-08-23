@@ -1,6 +1,6 @@
 {
   "name": "@jetbrains/youtrack-apps-tools",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
   "bin": {
     "youtrack-app": "./bin/youtrack-app"
   },
-  "author": "",
+  "author": "Sergey Kochetkov",
   "license": "Apache-2.0",
   "dependencies": {
     "archiver": "7.0.1",
@@ -24,7 +24,8 @@
     "build": "tsup",
     "lint": "eslint .",
     "test": "jest",
-    "test:type": "tsc"
+    "test:type": "tsc",
+    "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm publish --tag alpha"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
