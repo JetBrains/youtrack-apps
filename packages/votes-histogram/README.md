@@ -6,10 +6,6 @@
 
 Download links:
 
-SSH clone URL: ssh://git@git.jetbrains.team/yt/youtrack-votes-app.git
-
-HTTPS clone URL: https://git.jetbrains.team/yt/youtrack-votes-app.git
-
 
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
@@ -17,25 +13,25 @@ These instructions will get you a copy of the project up and running on your loc
 ## Install
 
 ```
-pnpm install
+npm install
 ```
 
 ## Dev
 
 ```
-pnpm dev
+npm run dev
 ```
 
 ## Build
 
 ```
-pnpm build
+npm run build
 ```
 
 ## Pack
 
 ```
-pnpm pack
+npm run pack
 ```
 
 Then add the ```youtrack-votes-app.zip``` to YouTrack as a custom app.

@@ -72,18 +72,18 @@ const webpackConfig = () => ({
     hot: true,
     port: '9010',
     devMiddleware: {
-      stats: 'minimal',
+      stats: 'minimal'
     },
     client: {
       overlay: {
         // https://github.com/webpack/webpack-dev-server/issues/4771
-        runtimeErrors: false,
+        runtimeErrors: false
       },
-      logging: 'error',
+      logging: 'error'
     },
     allowedHosts: 'all',
     headers: {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': '*'
     }
   },
   plugins: [

@@ -1,23 +1,18 @@
 {
-  "name" : "votes-histogram",
-  "title" : "Votes Histogram",
-  "version": "0.1.0",
-  "description" : null,
-  "dependencies" : {
-    "@jetbrains/youtrack-scripting-api" : "^2021.0.0"
+  "name": "votes-histogram",
+  "title": "Votes Histogram",
+  "version": "0.1.1",
+  "description": "Votes Histogram App",
+  "dependencies": {
+    "@jetbrains/youtrack-scripting-api": "^2024.3.0"
   },
-  "language" : "JS",
-  "modules" : {},
+  "language": "JS",
   "widgets": [
     {
       "key": "votes-histogram",
       "name": "Issue Votes Histogram",
       "indexPath": "index.html",
-      "place": "ISSUE_OPTIONS_MENU_ITEM"
+      "extensionPoint": "ISSUE_OPTIONS_MENU_ITEM"
     }
-  ],
-  "youtrack" : {
-    "autoAttached" : false,
-    "visual" : false
-  }
+  ]
 }

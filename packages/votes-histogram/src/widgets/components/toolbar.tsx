@@ -1,8 +1,8 @@
 import React, { memo, useCallback } from 'react';
 import type { FC } from 'react';
-import DatePicker from '@jetbrains/ring-ui/dist/date-picker/date-picker';
-import Button from '@jetbrains/ring-ui/dist/button/button';
-import { Size } from '@jetbrains/ring-ui/dist/input/input';
+import DatePicker from '@jetbrains/ring-ui-built/components/date-picker/date-picker';
+import Button from '@jetbrains/ring-ui-built/components/button/button';
+import { Size } from '@jetbrains/ring-ui-built/components/input/input';
 import { formatDate } from '../helpers/format-date';
 
 interface Props {

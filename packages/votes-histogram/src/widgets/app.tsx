@@ -1,8 +1,7 @@
 import React, { memo } from 'react';
 import type { FC } from 'react';
-import '@jetbrains/ring-ui/dist/style.css';
-import { ControlsHeightContext } from '@jetbrains/ring-ui/dist/global/controls-height';
-import { ControlsHeight } from '@jetbrains/ring-ui/components/global/controls-height';
+import '@jetbrains/ring-ui-built/components/style.css';
+import { ControlsHeightContext, ControlsHeight } from '@jetbrains/ring-ui-built/components/global/controls-height';
 import { fetchDatePattern } from './api/fetch-date-pattern';
 import { Histogram } from './components/histogram';
 import { fetchVotes } from './api/fetch-votes';

@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import type { FC } from 'react';
-import RingPopup from '@jetbrains/ring-ui/dist/popup/popup';
-import Text from '@jetbrains/ring-ui/dist/text/text';
+import RingPopup from '@jetbrains/ring-ui-built/components/popup/popup';
+import Text from '@jetbrains/ring-ui-built/components/text/text';
 import { formatVotes } from '../helpers/format-votes';
 import { formatDate } from '../helpers/format-date';
 import { isSameDay } from '../helpers/is-same-day';
