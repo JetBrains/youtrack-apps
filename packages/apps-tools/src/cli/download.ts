@@ -45,10 +45,8 @@ export async function download(config: Config, appName?: string) {
       });
     });
     return req;
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      exit(error);
-    }
+  } catch (error) {
+    exit(error);
   }
 
   function getZipName(appName: string): string {

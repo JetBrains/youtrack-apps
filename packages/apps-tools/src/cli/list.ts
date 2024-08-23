@@ -16,10 +16,8 @@ export async function list(config: Config): Promise<void> {
     (res as unknown as AppItem[]).forEach(x => {
       print(x.name);
     });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      exit(error);
-    }
+  } catch (error) {
+    exit(error);
   }
 
   function print(name: string) {

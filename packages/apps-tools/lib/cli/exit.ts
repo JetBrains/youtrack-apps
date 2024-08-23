@@ -1,4 +1,4 @@
-export function exit(message: (Error & {statusCode?: number}) | null): boolean {
+export function exit(message: (Error & {statusCode?: number}) | unknown | null): boolean {
   if (message instanceof Error) {
     console.error(message.toString());
   }

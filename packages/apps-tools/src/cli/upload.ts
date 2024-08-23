@@ -24,10 +24,8 @@ export async function upload(config: Config, appDir?: string) {
   try {
     await zipFolder(path.resolve(config.cwd, appDir), zipPath);
     return await updateApp();
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      return exit(error);
-    }
+  } catch (error) {
+    exit(error);
   }
 
   async function updateApp(isCreate = false) {
@@ -55,14 +53,13 @@ export async function upload(config: Config, appDir?: string) {
         console.log(i18n('App "' + appName + '" uploaded'));
 
         form.pipe(req);
-        return req;
       }
     } catch (error) {
-      if (error instanceof Error) {
-        if (isErrorWithStatusCodeAndData(error) && error.statusCode === 404 && !isCreate) {
-          return updateApp(true);
-        }
-        return exit(error);
+      if (!(error instanceof Error)) {
+        exit(error);
+      }
+      if (isErrorWithStatusCodeAndData(error) && error.statusCode === 404 && !isCreate) {
+        return updateApp(true);
       }
     }
   }
