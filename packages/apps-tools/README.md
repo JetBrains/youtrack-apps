@@ -1,9 +1,9 @@
-# youtrack-scripting
+# youtrack-apps-tools
 
-![Test](https://github.com/JetBrains/youtrack-scripting/apps/Test/badge.svg)
-[![official JetBrains project](http://jb.gg/badges/official-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+[![Build Status][ci-img]][ci-project] ![NPM Version](https://img.shields.io/npm/v/@jetbrains/youtrack-apps-tools)
+[![official JetBrains project](https://jb.gg/badges/official-flat-square.svg)](https://github.com/JetBrains#jetbrains-on-github)
 
-The **@jetbrains/youtrack-scripting** package contains utilities that help you manage YouTrack apps when you work
+The **@jetbrains/youtrack-apps-tools** package contains utilities that help you manage YouTrack apps when you work
 in an external code editor. This lets you write and update apps for YouTrack in JavaScript in your preferred
 development environment.
 
@@ -14,11 +14,11 @@ the npm package manager that lets you work with the scripting package in your pr
 Next, install the **@jetbrains/youtrack-scripting** package in your development environment. The easiest way to get
 started is to install the package globally with the following command:
 
-```npm install -g @jetbrains/youtrack-scripting```
+`npm install -g @jetbrains/youtrack-apps-tools`
 
 If you prefer to install packages as dependencies in your development environment, enter:
 
-```npm install --save-dev @jetbrains/youtrack-scripting```
+`npm install --save-dev @jetbrains/youtrack-apps-tools`
 
 ## Utility Scripts
 
@@ -33,7 +33,7 @@ This command lists all the apps that are available in your YouTrack installation
 following parameters:
 
 | Parameter | Description                                                                                                                                                                               |
-|-----------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| --------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | host      | The base URL of your YouTrack installation. For an InCloud instance, include the trailing `/youtrack`.                                                                                    |
 | token     | A permanent token that grants access to the YouTrack service. You can generate your own permanent tokens to authenticate with YouTrack on the **Authentication** tab of your Hub profile. |
 
