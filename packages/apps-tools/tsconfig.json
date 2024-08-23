@@ -1,0 +1,26 @@
+{
+  "extends": "ts-node/node16/tsconfig.json",
+  "compilerOptions": {
+    "lib": ["es2023"],
+    "target": "es2022",
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "module": "Node16",
+    "moduleResolution": "node16",
+    "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "typeRoots": ["./node_modules/@types", "./@types"],
+    "types": ["jest", "node"],
+    "outDir": "dist"
+  },
+  "include": ["src", "lib"],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "transpileOnly": true,
+    "files": true
+  }
+}
