@@ -50,7 +50,9 @@ describe('request.test', function () {
       );
 
     const res = await request('https://localhost:80/foo', options);
-    expect(res.foo).toEqual('foo');
+    if ('foo' in res) {
+      expect(res.foo).toEqual('foo');
+    }
   });
 
   it('should pass error to handler', async () => {

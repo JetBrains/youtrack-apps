@@ -6,7 +6,8 @@ import {ErrorWithStatusCodeAndData, ResponseData} from '../../@types/types';
 export function request(
   message: string | URL,
   options: {method?: string; headers?: Record<string, string>},
-): Promise<ResponseData> {
+  onResponseCb?: (res: IncomingMessage) => void,
+): Promise<RedirectableRequest<ClientRequest, IncomingMessage>> {
   return new Promise((resolve, reject) => {
     message = HttpMessage(message);
     const updatedOptions = updateOptions(options);
@@ -18,7 +19,7 @@ export function request(
       return reject(error);
     });
 
-    return closeMaybe(req, updatedOptions, resolve);
+    return closeMaybe(req, updatedOptions, resolve, onResponseCb);
 
     function onResponse(res: IncomingMessage) {
       let dataRaw = '';
@@ -43,7 +44,7 @@ export function request(
           error.data = resData;
           return reject(error);
         }
-        return resolve(resData ?? dataRaw);
+        return resolve(resData ?? req);
       });
 
       res.on('error', error => {
@@ -56,12 +57,16 @@ export function request(
 function closeMaybe(
   req: RedirectableRequest<ClientRequest, IncomingMessage>,
   options: {method: string},
-  resolveFn: (data: ResponseData) => void,
+  resolveFn: (data: RedirectableRequest<ClientRequest, IncomingMessage>) => void,
+  responseCb?: (res: IncomingMessage) => void,
 ) {
   if (options.method === 'GET') {
+    req.on('response', resp => {
+      responseCb?.(resp);
+    });
     req.end();
   } else {
-    resolveFn(req as unknown as ResponseData);
+    resolveFn(req);
   }
   return req;
 }
