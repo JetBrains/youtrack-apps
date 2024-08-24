@@ -12,6 +12,9 @@
   },
   "author": "Sergey Kochetkov",
   "license": "Apache-2.0",
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "archiver": "7.0.1",
     "follow-redirects": "^1.15.6",
