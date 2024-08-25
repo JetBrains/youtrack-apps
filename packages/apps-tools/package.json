@@ -42,6 +42,7 @@
     "@types/mock-fs": "4.13.4",
     "@types/node": "^22.4.2",
     "@types/unzipper": "0.10.10",
+    "commit-and-tag-version": "^12.4.2",
     "eslint": "^9.9.0",
     "eslint-config-prettier": "^9.1.0",
     "globals": "^15.9.0",
