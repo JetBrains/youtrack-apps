@@ -41,7 +41,7 @@ export async function download(config: Config, appName?: string) {
   function unzipCallback(response: IncomingMessage, appName: string) {
     const zip = fs.createWriteStream(tmpDir(getZipName(appName)));
     const output = config.output || config.cwd;
-    const shouldOverwrite = config?.overwrite === 'true';
+    const shouldOverwrite = config.overwrite !== null;
 
     if (shouldOverwrite) {
       const existingPath = path.resolve(output, appName);

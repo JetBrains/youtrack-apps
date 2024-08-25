@@ -47,7 +47,7 @@ export function run(argv = process.argv) {
   function printHelp() {
     br();
     printLine(i18n('list     --host [--token]                  '), i18n('View a list of installed apps'));
-    printLine(i18n('download <app> [--output, --overwrite true]'), i18n('Download an app'));
+    printLine(i18n('download <app> [--output, --overwrite]     '), i18n('Download an app'));
     printLine(i18n('upload   <directory>                       '), i18n('Upload app to server'));
     br();
 
