@@ -29,6 +29,7 @@
     "lint": "eslint",
     "test": "jest",
     "test:type": "tsc --noEmit",
+    "prerelease:ci": "echo '{ \"version\": \"'$npm_package_version'\" }' > dist/package.json",
     "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm publish --tag alpha"
   },
   "devDependencies": {
