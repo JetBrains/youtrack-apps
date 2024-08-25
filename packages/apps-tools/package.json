@@ -26,7 +26,7 @@
   "scripts": {
     "dev": "npx ts-node index",
     "build": "tsc",
-    "lint": "eslint .",
+    "lint": "eslint",
     "test": "jest",
     "test:type": "tsc --noEmit",
     "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm publish --tag alpha"
