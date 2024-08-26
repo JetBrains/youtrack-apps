@@ -46,5 +46,11 @@
     "vite": "^4.2.0",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-static-copy": "^0.14.0"
+  },
+  "commit-and-tag-version": {
+    "skip": {
+      "tag": true,
+      "changelog": true
+    }
   }
 }
