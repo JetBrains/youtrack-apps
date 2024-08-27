@@ -1,7 +1,7 @@
 {
   "name": "votes-histogram",
   "title": "Votes Histogram",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Votes Histogram App",
   "icon": "votes-histogram-app.svg",
   "dependencies": {
