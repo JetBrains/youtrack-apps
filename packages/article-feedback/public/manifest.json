@@ -3,7 +3,7 @@
   "title": "Article Feedback",
   "version": "0.1.2",
   "description": "Article Feedback",
-  "icon": "demo-app-logo.svg",
+  "icon": "article-feedback-logo.svg",
   "dependencies": {
     "@jetbrains/youtrack-scripting-api": "*"
   },
