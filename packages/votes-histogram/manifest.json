@@ -3,6 +3,7 @@
   "title": "Votes Histogram",
   "version": "0.1.1",
   "description": "Votes Histogram App",
+  "icon": "votes-histogram-app.svg",
   "dependencies": {
     "@jetbrains/youtrack-scripting-api": "^2024.3.0"
   },
