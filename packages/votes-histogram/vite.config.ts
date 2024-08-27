@@ -16,6 +16,10 @@ export default defineConfig({
           dest: '../'
         },
         {
+          src: 'votes-histogram-app.svg',
+          dest: '../'
+        },
+        {
           src: 'public/*',
           dest: '../'
         },
