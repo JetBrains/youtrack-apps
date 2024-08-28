@@ -14,15 +14,15 @@
     {
       "key": "hub-project-team-widget",
       "name": "Project Team",
-      "description": "Displays a list of users who are members of a project team in Hub.",
+      "description": "Displays a list of users who are members of a project team.",
       "indexPath": "hub-project-team-widget/index.html",
       "settingsSchemaPath": "hub-project-team-widget/widget-settings.json",
       "extensionPoint": "DASHBOARD_WIDGET"
     },
     {
       "key": "revoke-user-access",
-      "name": "Revoke User Access",
-      "description": "This widget lets you remove a user from all groups and teams where they are a member. It also lets you revoke your own project roles.",
+      "name": "Access Eraser",
+      "description": "Quickly restrict user access rights by revoking memberships in groups and teams, revoking project roles, or deleting credentials.",
       "indexPath": "revoke-user-access/index.html",
       "extensionPoint": "DASHBOARD_WIDGET",
       "defaultDimensions": {

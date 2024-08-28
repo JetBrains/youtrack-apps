@@ -14,7 +14,7 @@
     {
       "key": "quick-notes",
       "name": "Quick Notes",
-      "description": "Allows to make markdown notes",
+      "description": "Display messages on a YouTrack dashboard using Markdown syntax to format your text.",
       "extensionPoint": "DASHBOARD_WIDGET",
       "indexPath": "index.html",
       "settingsSchemaPath": "widget-settings.json"

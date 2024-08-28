@@ -14,7 +14,7 @@
     {
       "key": "teamcity-build-artifacts-widget",
       "name": "Build Artifacts",
-      "description": "Dashboard widget to list downloadable artifacts of a TeamCity configurations",
+      "description": "Displays a list of artifacts available for download from a specific build configuration in TeamCity.",
       "indexPath": "teamcity-build-artifacts-widget/index.html",
       "settingsSchemaPath": "teamcity-build-artifacts-widget/widget-settings.json",
       "extensionPoint": "DASHBOARD_WIDGET"
@@ -22,7 +22,7 @@
     {
       "key": "teamcity-investigations",
       "name": "Investigations",
-      "description": "Dashboard widget to show the list of assigned investigations from TeamCity",
+      "description": "Displays a list of assigned investigations for failed builds in TeamCity.",
       "indexPath": "teamcity-investigations/index.html",
       "settingsSchemaPath": "teamcity-investigations/widget-settings.json",
       "extensionPoint": "DASHBOARD_WIDGET"
@@ -30,7 +30,7 @@
     {
       "key": "teamcity-project-status",
       "name": "Project Status",
-      "description": "Hub dashboard widget to show the status of TeamCity build configurations statuses",
+      "description": "Displays the status of build configurations that belong to a project in TeamCity.",
       "indexPath": "teamcity-project-status/index.html",
       "settingsSchemaPath": "teamcity-project-status/widget-settings.json",
       "extensionPoint": "DASHBOARD_WIDGET"

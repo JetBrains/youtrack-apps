@@ -14,7 +14,7 @@
     {
       "key": "crowdin-project-status-widget",
       "name": "Crowdin Project Status",
-      "description": "Widget for displaying translation status for project in Crowdin",
+      "description": "Displays the translation status for a project in Crowdin.",
       "extensionPoint": "DASHBOARD_WIDGET",
       "indexPath": "index.html",
       "iconPath": "pict/crowdin.png",

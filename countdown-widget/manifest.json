@@ -14,7 +14,7 @@
     {
       "key": "countdown-widget",
       "name": "Countdown Widget",
-      "description": "Widget displaying countdown or elapsed timer",
+      "description": "Adds a countdown or stopwatch-style timer on your dashboard.",
       "extensionPoint": "DASHBOARD_WIDGET",
       "indexPath": "index.html",
       "iconPath": "pict/timer.png",
