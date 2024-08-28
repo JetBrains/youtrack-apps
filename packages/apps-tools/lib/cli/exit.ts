@@ -1,6 +1,6 @@
-export function exit(message: (Error & {statusCode?: number}) | unknown | null): boolean {
-  if (message instanceof Error) {
-    console.error(message.toString());
+export function exit(error: Error | unknown | null): boolean {
+  if (error) {
+    console.error(error.toString());
   }
   return process.exit(1);
 }
