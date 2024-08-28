@@ -1,4 +1,4 @@
-export function resolve(url: string, a: string): string {
+export function resolve(url: string, a: string): URL {
   if (typeof url === 'string' && !/^http(s)?:\/\//.test(url)) {
     url = `https://${url}`;
   }
@@ -11,5 +11,5 @@ export function resolve(url: string, a: string): string {
     a = a.replace(/^\//, '');
   }
 
-  return new URL(a, url).href;
+  return new URL(a, url);
 }

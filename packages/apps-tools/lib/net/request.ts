@@ -1,84 +1,29 @@
-import {http, https, RedirectableRequest} from 'follow-redirects';
-import {ClientRequest, IncomingMessage} from 'http';
-import {HttpMessage} from './httpmessage';
-import {ErrorWithStatusCodeAndData, ResponseData} from '../../@types/types';
+import {Config} from '../../@types/types';
 
-export function request(
-  message: string | URL,
-  options: {method?: string; headers?: Record<string, string>},
-  onResponseCb?: (res: IncomingMessage) => void,
-): Promise<RedirectableRequest<ClientRequest, IncomingMessage>> {
-  return new Promise((resolve, reject) => {
-    message = HttpMessage(message);
-    const updatedOptions = updateOptions(options);
-
-    const netProvider = message.protocol === 'http:' ? http : https;
-    const req = netProvider.request(message, updatedOptions, onResponse);
-
-    req.on('error', error => {
-      return reject(error);
-    });
-
-    return closeMaybe(req, updatedOptions, resolve, onResponseCb);
-
-    function onResponse(res: IncomingMessage) {
-      let dataRaw = '';
-      let resData: ResponseData;
-      let error: ErrorWithStatusCodeAndData | null = null;
-
-      res.on('data', chunk => {
-        dataRaw += chunk.toString();
-      });
-
-      res.on('end', function () {
-        const contentType = res.headers['content-type'] || '';
-
-        if (contentType.indexOf('application/json') > -1) {
-          resData = JSON.parse(dataRaw);
-        }
-
-        if (res.statusCode && (res.statusCode < 200 || res.statusCode > 299)) {
-          const errorDesc = resData?.error_description ?? '';
-          error = new Error('[' + res.statusCode + '] ' + (errorDesc || res.statusMessage));
-          error.statusCode = res.statusCode;
-          error.data = resData;
-          return reject(error);
-        }
-        return resolve(resData ?? req);
-      });
-
-      res.on('error', error => {
-        return reject(error);
-      });
-    }
-  });
-}
-
-function closeMaybe(
-  req: RedirectableRequest<ClientRequest, IncomingMessage>,
-  options: {method: string},
-  resolveFn: (data: RedirectableRequest<ClientRequest, IncomingMessage>) => void,
-  responseCb?: (res: IncomingMessage) => void,
-) {
-  if (options.method === 'GET') {
-    req.on('response', resp => {
-      responseCb?.(resp);
-    });
-    req.end();
-  } else {
-    resolveFn(req);
-  }
-  return req;
-}
-
-function updateOptions(options: {method?: string; headers?: Record<string, string>}) {
-  return {
+export function generateRequestParams(
+  config: Config,
+  url: string,
+  options?: {method?: string; headers?: Record<string, string>; body?: FormData},
+): Request {
+  return new Request(url, {
     method: options?.method ?? 'GET',
     headers: {
+      Accept: 'application/json',
+      Authorization: `Bearer ${config.token}`,
       'User-Agent':
         options?.headers?.['User-Agent'] ??
         [`Nodejs/${process.versions.node}`, `YouTrackCLI/${require('../../package.json').version}`].join(' '),
-      ...options.headers,
+      ...options?.headers,
     },
-  };
+    body: options?.body,
+  });
+}
+
+export async function prepareErrorMessage(res: Response) {
+  const data = (await res.json()) as Record<string, string>;
+  let errorDescription = res.statusText;
+  if ('error_description' in data) {
+    errorDescription = data.error_description;
+  }
+  return `[${res.status}] ${errorDescription}`;
 }
