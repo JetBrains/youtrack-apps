@@ -1,8 +1,8 @@
 {
   "name": "votes-histogram",
-  "title": "Votes Histogram",
+  "title": "Vote Histogram",
   "version": "0.1.2",
-  "description": "Votes Histogram App",
+  "description": "Displays a visualization of voting activity over time for a specific issue.",
   "icon": "votes-histogram-app.svg",
   "dependencies": {
     "@jetbrains/youtrack-scripting-api": "^2024.3.0"

@@ -14,7 +14,7 @@
     {
       "key": "github-commits-widget",
       "name": "GitHub Commits Widget",
-      "description": "Widget for displaying commits for GitHub project",
+      "description": "Displays a list of commits and issues for a target repository in GitHub.",
       "extensionPoint": "DASHBOARD_WIDGET",
       "indexPath": "index.html",
       "iconPath": "pict/github.png",

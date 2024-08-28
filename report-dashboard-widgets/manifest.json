@@ -1,7 +1,7 @@
 {
   "name": "report-dashboard-widgets",
-  "title": "Reports Widget",
-  "description": "Embedded reports widget for YouTrack",
+  "title": "Report Widget",
+  "description": "Display copies of existing reports on your YouTrack dashboards.",
   "version": "1.0.0",
   "icon": "youtrack.svg",
   "minYouTrackVersion": "2024.3.0",
@@ -13,7 +13,8 @@
   "widgets": [
     {
       "key": "widget-youtrack-report",
-      "name": "Reports",
+      "name": "Report",
+      "description": "Display a copy of an existing report on your YouTrack dashboard.",
       "extensionPoint": "DASHBOARD_WIDGET",
       "indexPath": "index.html",
       "settingsSchemaPath": "widget-settings.json"

@@ -14,7 +14,7 @@
     {
       "key": "agile-chart",
       "name": "Agile Chart",
-      "description": "Displays a Burn Down Chart or Cumulative Flow Diagram for your sprint.",
+      "description": "Displays the burndown chart or cumulative flow diagram associated with a specific agile board in YouTrack.",
       "indexPath": "agile-chart/index.html",
       "settingsSchemaPath": "agile-chart/widget-settings.json",
       "extensionPoint": "DASHBOARD_WIDGET",
