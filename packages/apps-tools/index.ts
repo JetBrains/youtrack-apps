@@ -1,3 +1,3 @@
-import {run} from './src/cli/index';
+import {run} from './src/cli';
 
 run();

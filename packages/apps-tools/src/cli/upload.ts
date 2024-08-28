@@ -1,15 +1,13 @@
-import fs from 'fs';
-import path from 'path';
-import {exit} from '../../lib/cli/exit';
-import {resolveAppName} from './upload-utils';
-import {i18n} from '../../lib/i18n/i18n';
-import {zipFolder} from '../../lib/fs/zipfolder';
-import {request} from '../../lib/net/request';
-import {resolve} from '../../lib/net/resolve';
-import {HttpMessage} from '../../lib/net/httpmessage';
-import FormData from 'form-data';
-import {tmpDir} from '../../lib/fs/tmpdir';
+import {readFile} from 'node:fs/promises';
+import path from 'node:path';
+import * as zl from 'zip-lib';
 import {Config, ErrorWithStatusCodeAndData} from '../../@types/types';
+import {exit} from '../../lib/cli/exit';
+import {tmpDir} from '../../lib/fs/tmpdir';
+import {i18n} from '../../lib/i18n/i18n';
+import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request';
+import {resolve} from '../../lib/net/resolve';
+import {resolveAppName} from './upload-utils';
 
 export async function upload(config: Config, appDir?: string) {
   const appName = resolveAppName(appDir);
@@ -22,44 +20,41 @@ export async function upload(config: Config, appDir?: string) {
   const zipPath = tmpDir(generateZipName(appDir));
 
   try {
-    await zipFolder(path.resolve(config.cwd, appDir), zipPath);
-    return await updateApp();
+    await zl.archiveFolder(path.resolve(config.cwd, appDir), zipPath);
+    await updateApp();
   } catch (error) {
     exit(error);
   }
 
   async function updateApp(isCreate = false) {
-    const form = new FormData();
-    form.append('file', fs.createReadStream(zipPath), {
-      filename: appName + '.zip',
-    });
+    const body = new FormData();
+    const blob = new Blob([await readFile(zipPath)]);
+    body.set('file', blob, `${appName}.zip`);
 
-    const message = HttpMessage(resolve(config.host, '/api/admin/apps/import'));
+    const url = resolve(config.host, '/api/admin/apps/import');
     const options = {
       method: 'POST',
-      headers: form.getHeaders(),
+      body,
     };
 
-    if (config.token) {
-      const signHeaders = HttpMessage.sign(config.token);
-      options.headers = {...options.headers, ...signHeaders.headers};
-    }
+    const requestParams = generateRequestParams(config, url.href, options);
 
     try {
-      const req = await request(message, options);
+      const res = await fetch(requestParams);
+      if (!res.ok) {
+        const error = await prepareErrorMessage(res);
+        throw new Error(error);
+      }
       if (isCreate) {
         console.log(i18n('App "' + appName + '" created'));
       } else {
         console.log(i18n('App "' + appName + '" uploaded'));
-
-        form.pipe(req);
       }
     } catch (error) {
-      if (!(error instanceof Error)) {
-        exit(error);
-      }
       if (isErrorWithStatusCodeAndData(error) && error.statusCode === 404 && !isCreate) {
         return updateApp(true);
+      } else {
+        exit(error);
       }
     }
   }

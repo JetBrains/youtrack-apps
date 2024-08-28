@@ -30,6 +30,9 @@ describe('index', function () {
   it('should not throw error if user passed all required parameters', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation();
+    jest
+      .spyOn(global, 'fetch')
+      .mockImplementation(jest.fn(() => Promise.resolve({json: () => Promise.resolve({data: []})})) as jest.Mock);
 
     nock('https://foo:443')
       .get(uri => uri.includes('/api/admin/apps'))
