@@ -4,11 +4,11 @@
   "description": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JetBrains/youtrack-apps.git"
+    "url": "git+https://github.com/JetBrains/youtrack-apps.git"
   },
   "main": "dist/index.js",
   "bin": {
-    "youtrack-app": "./bin/youtrack-app"
+    "youtrack-app": "bin/youtrack-app"
   },
   "author": "Sergey Kochetkov",
   "license": "Apache-2.0",
@@ -26,8 +26,8 @@
     "lint": "eslint",
     "test": "jest",
     "test:type": "tsc --noEmit",
-    "prerelease:ci": "echo '{ \"version\": \"'$npm_package_version'\" }' > dist/package.json",
-    "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm publish --tag alpha"
+    "save-version": "echo '{ \"version\": \"'$npm_package_version'\" }' > dist/package.json",
+    "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm run save-version && npm publish --tag alpha"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
