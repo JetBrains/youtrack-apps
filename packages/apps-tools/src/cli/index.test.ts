@@ -27,6 +27,18 @@ describe('index', function () {
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
+  it('should show error message if token is not provided', function () {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation();
+
+    require('./index').run(['', '', 'list', '--host=foo']);
+
+    expect(console.error).toHaveBeenCalledWith(
+      'Error: Token is required. Please create one at https://foo/users/me?tab=account-security',
+    );
+    expect(process.exit).toHaveBeenCalledWith(1);
+  });
+
   it('should not throw error if user passed all required parameters', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation();
@@ -38,7 +50,7 @@ describe('index', function () {
       .get(uri => uri.includes('/api/admin/apps'))
       .reply(200, []);
 
-    require('./index').run(['', '', 'list', '--host=foo']);
+    require('./index').run(['', '', 'list', '--host=foo', '--token=bar']);
 
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();

@@ -5,6 +5,7 @@ import {Config} from '../../@types/types';
 import {list} from './list';
 import {download} from './download';
 import {upload} from './upload';
+import {resolve} from '../../lib/net/resolve';
 
 const options = {
   list: list,
@@ -31,7 +32,7 @@ export function run(argv = process.argv) {
     case 'list':
     case 'download':
     case 'upload':
-      checkRequiredParams(['host'], args, () => {
+      checkRequiredParams(['host', 'token'], args, () => {
         const executable = options[option];
         executable(config, args._.slice(1)[0]);
       });
@@ -46,7 +47,7 @@ export function run(argv = process.argv) {
 
   function printHelp() {
     br();
-    printLine(i18n('list     --host [--token]                  '), i18n('View a list of installed apps'));
+    printLine(i18n('list     --host --token                    '), i18n('View a list of installed apps'));
     printLine(i18n('download <app> [--output, --overwrite]     '), i18n('Download an app'));
     printLine(i18n('upload   <directory>                       '), i18n('Upload app to server'));
     br();
@@ -64,7 +65,13 @@ export function run(argv = process.argv) {
     function allParamsProvided(params: string[], args: Record<string, string>): boolean {
       return params.every(param => {
         if (!args.hasOwnProperty(param) || !args[param]) {
-          exit(new Error(i18n('Option "--' + param + '" is required')));
+          if (param === 'token') {
+            const createTokenUrl = `${resolve(config.host, 'users/me?tab=account-security').href}`;
+            exit(new Error(i18n(`Token is required. Please create one at ${createTokenUrl}`)));
+          } else {
+            exit(new Error(i18n('Option "--' + param + '" is required')));
+          }
+
           return false;
         }
         return true;
