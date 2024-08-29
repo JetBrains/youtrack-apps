@@ -1,5 +1,5 @@
 function getFeedback(ctx) {
-  return JSON.parse(ctx.article.extensionProperties.feedback) || {};
+  return JSON.parse(ctx.article.extensionProperties.feedback) || [];
 }
 
 function getGuestFeedback(ctx) {
@@ -16,17 +16,12 @@ function getUserId(ctx) {
 
 function updateFeedback(ctx, liked, message) {
   const feedback = getFeedback(ctx);
-  const userId = getUserId(ctx);
   const timestamp = Date.now();
+  const userId = getUserId(ctx);
 
-  ctx.article.extensionProperties.feedback = JSON.stringify({
-    ...feedback,
-    [userId]: {
-      liked: liked ?? feedback[userId]?.liked,
-      message,
-      timestamp
-    }
-  });
+  feedback.push({userId, liked, message, timestamp});
+
+  ctx.article.extensionProperties.feedback = JSON.stringify(feedback);
 }
 
 function updateGuestFeedback(ctx, liked, message, name, email) {
@@ -63,7 +58,7 @@ exports.httpHandler = {
       handle: function handleUser(ctx) {
         const feedback = getFeedback(ctx);
         const userId = getUserId(ctx);
-        const userFeedback = feedback[userId];
+        const userFeedback = feedback.find(it => it.userId === userId);
         response(ctx, {
           liked: userFeedback?.liked ?? undefined,
           leftMessage: Boolean(userFeedback?.message),
@@ -89,33 +84,20 @@ exports.httpHandler = {
       scope: 'article',
       method: 'POST',
       path: 'dislike',
-      handle: function handleDislike(ctx) {
-        if (isGuest(ctx)) {
-          return;
-        }
-
-        updateFeedback(ctx, false);
-      }
-    },
-
-    {
-      scope: 'article',
-      method: 'POST',
-      path: 'feedback',
       handle: function handleFeedback(ctx) {
         if (isGuest(ctx)) {
           return;
         }
 
         const message = ctx.request.getParameter('message');
-        updateFeedback(ctx, undefined, message);
+        updateFeedback(ctx, false, message);
       }
     },
 
     {
       scope: 'article',
       method: 'POST',
-      path: 'guest-feedback',
+      path: 'guest-dislike',
       handle: function handleFeedback(ctx) {
         if (!isGuest(ctx)) {
           return;
@@ -136,31 +118,11 @@ exports.httpHandler = {
         const feedback = getFeedback(ctx);
         const guestFeedback = getGuestFeedback(ctx);
 
-        const likes = Object.values(feedback).filter(
-          (it) => it.liked
-        ).length;
+        const likes = [...feedback, ...guestFeedback].filter(it => it.liked).length;
+        const dislikes = [...feedback, ...guestFeedback].filter(it => !it.liked).length;
 
-        const dislikes = Object.values(feedback).filter(
-          (it) => it.liked === false
-        ).length;
-
-        const messages = Object.entries(feedback).
-          filter(it => it[1].message).
-          sort((a, b) => a[1].timestamp - b[1].timestamp).
-          map(it => ({
-            userId: it[0],
-            message: it[1].message,
-            timestamp: it[1].timestamp
-          }));
-
-        const guestMessages = guestFeedback.
-          filter(it => it.message).
-          map(it => ({
-            name: it.name,
-            email: it.email,
-            message: it.message,
-            timestamp: it.timestamp
-          }));
+        const messages = feedback.filter(it => it.message);
+        const guestMessages = guestFeedback.filter(it => it.message);
 
         response(ctx, {likes, dislikes, messages, guestMessages});
       }

@@ -36,20 +36,20 @@ export default class API {
     return this.host.fetchApp('backend/like', {scope: true, method: 'post'}) as Promise<void>;
   }
 
-  postDislike() {
-    return this.host.fetchApp('backend/dislike', {scope: true, method: 'post'}) as Promise<void>;
+  postDislike(message: string) {
+    return this.host.fetchApp('backend/dislike', {
+      scope: true,
+      method: 'post',
+      query: {message}
+    }) as Promise<void>;
   }
 
-  postFeedback(message: string) {
-    return this.host.fetchApp('backend/feedback', {scope: true, method: 'post', query: {message}}) as Promise<void>;
-  }
-
-  postGuestFeedback(
+  postGuestDislike(
     message: string,
     userName: string,
     userEmail: string
   ) {
-    return this.host.fetchApp('backend/guest-feedback', {
+    return this.host.fetchApp('backend/guest-dislike', {
       scope: true,
       method: 'post',
       query: {message, userName, userEmail}

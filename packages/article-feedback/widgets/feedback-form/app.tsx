@@ -28,17 +28,14 @@ const AppComponent: FC = () => {
   };
 
   const onDislike = async () => {
-    if (!user.isGuest) {
-      await api.postDislike();
-    }
     setLiked(false);
   };
 
   const onSend = async () => {
     if (user.isGuest) {
-      await api.postGuestFeedback(message, userName, userEmail);
+      await api.postGuestDislike(message, userName, userEmail);
     } else {
-      await api.postFeedback(message);
+      await api.postDislike(message);
     }
     setLeftMessage(true);
   };
