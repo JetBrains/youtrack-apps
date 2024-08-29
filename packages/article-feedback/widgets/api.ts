@@ -1,7 +1,3 @@
-export interface Project {
-  projectKey: string;
-}
-
 export interface User {
   isGuest: boolean;
   liked?: boolean;
@@ -26,12 +22,6 @@ export default class API {
 
   getDebug() {
     return this.host.fetchApp('backend/debug', {scope: true});
-  }
-
-  getProject() {
-    return this.host.fetchApp('backend/project', {
-      scope: true
-    }) as Promise<Project>;
   }
 
   getUser() {
