@@ -17,5 +17,15 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    'max-len': [
+      'error',
+      {
+        code: 120,
+        ignoreComments: true,
+        ignoreTemplateLiterals: true,
+        ignoreRegExpLiterals: true,
+        ignorePattern: '"(?=([^"]|"){40,}")|\'(?=([^\']|\'){40,}\')',
+      },
+    ],
   },
 }
