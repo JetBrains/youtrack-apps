@@ -8,6 +8,8 @@ export interface Config {
   cwd: string;
 }
 
+export type RequiredParams = 'host' | 'token';
+
 export interface AppItem {
   id: string;
   name: string;

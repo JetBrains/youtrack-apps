@@ -25,6 +25,15 @@ If you prefer to install packages as dependencies in your development environmen
 The package includes scripts that let you synchronize local changes with your YouTrack installation. The following
 commands are available:
 
+### Using environment variables
+
+`youtrack-app` also reads the following environment variables:
+
+- `YOUTRACK_HOST` - Your YouTrack instance URL.
+- `YOUTRACK_API_TOKEN` - Your permanent token for accessing the YouTrack API.
+
+If provided `--host` and `--token` can be omitted. Whether both environment variables and command line arguments are provided, the command line arguments take precedence.
+
 ### List
 
 `youtrack-app list --host --token`

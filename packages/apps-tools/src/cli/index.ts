@@ -1,7 +1,7 @@
 import {i18n} from '../../lib/i18n/i18n';
 import {exit} from '../../lib/cli/exit';
 import {parse} from '../../lib/cli/parseargv';
-import {Config} from '../../@types/types';
+import {Config, RequiredParams} from '../../@types/types';
 import {list} from './list';
 import {download} from './download';
 import {upload} from './upload';
@@ -15,9 +15,10 @@ const options = {
 
 export function run(argv = process.argv) {
   const args = parse(argv);
+  const {YOUTRACK_HOST, YOUTRACK_API_TOKEN} = process.env;
   const config: Config = {
-    host: args.host || null,
-    token: args.token || null,
+    host: args.host || YOUTRACK_HOST || null,
+    token: args.token || YOUTRACK_API_TOKEN || null,
     output: args.output || null,
     overwrite: args.overwrite || null,
     cwd: process.cwd(),
@@ -51,6 +52,9 @@ export function run(argv = process.argv) {
     printLine(i18n('download <app> [--output, --overwrite]     '), i18n('Download an app'));
     printLine(i18n('upload   <directory>                       '), i18n('Upload app to server'));
     br();
+    console.log(
+      i18n('One can also provide host and token via environment variables $YOUTRACK_HOST and $YOUTRACK_API_TOKEN.'),
+    );
 
     function br() {
       console.log('');
@@ -61,10 +65,10 @@ export function run(argv = process.argv) {
     }
   }
 
-  function checkRequiredParams(required: string[], args: Record<string, string>, fn: () => void): void {
-    function allParamsProvided(params: string[], args: Record<string, string>): boolean {
+  function checkRequiredParams(required: RequiredParams[], args: Record<string, string>, fn: () => void): void {
+    function allParamsProvided(params: RequiredParams[], args: Record<string, string>): boolean {
       return params.every(param => {
-        if (!args.hasOwnProperty(param) || !args[param]) {
+        if ((!args.hasOwnProperty(param) || !args[param]) && !config[param]) {
           if (param === 'token') {
             const createTokenUrl = `${resolve(config.host, 'users/me?tab=account-security').href}`;
             exit(new Error(i18n(`Token is required. Please create one at ${createTokenUrl}`)));
