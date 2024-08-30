@@ -1,9 +1,11 @@
 import React, {memo, useState} from 'react';
 import type {FC} from 'react';
+
 import {ControlsHeightContext, ControlsHeight} from '@jetbrains/ring-ui-built/components/global/controls-height';
 import Button from '@jetbrains/ring-ui-built/components/button/button';
 import ButtonSet from '@jetbrains/ring-ui-built/components/button-set/button-set';
 import Input, {Size} from '@jetbrains/ring-ui-built/components/input/input';
+import Link from '@jetbrains/ring-ui-built/components/link/link';
 
 import API from '../api';
 
@@ -14,7 +16,7 @@ const user = await api.getUser();
 
 // eslint-disable-next-line complexity
 const AppComponent: FC = () => {
-  const [liked, setLiked] = useState(user.liked);
+  const [liked, setLiked] = useState<boolean | undefined>();
   const [leftMessage, setLeftMessage] = useState(user.leftMessage);
   const [message, setMessage] = useState('');
   const [userName, setUserName] = useState('');
@@ -33,6 +35,14 @@ const AppComponent: FC = () => {
 
   const onDislike = async () => {
     setLiked(false);
+  };
+
+  const onChangeMyMind = async () => {
+    setLiked(undefined);
+    setLeftMessage(false);
+    setMessage('');
+    setUserName('');
+    setUserEmail('');
   };
 
   const onSend = async () => {
@@ -81,7 +91,10 @@ const AppComponent: FC = () => {
         )}
 
         {(liked === true || leftMessage) && (
-          <div>{'Thanks for your feedback!'}</div>
+          <>
+            <div>{'Thanks for your feedback!'}</div>
+            <Link onClick={onChangeMyMind}>{'I changed my mind'}</Link>
+          </>
         )}
 
         {liked === false && !leftMessage && (

@@ -1,7 +1,7 @@
 export interface User {
   isGuest: boolean;
   liked?: boolean;
-  leftMessage?: boolean;
+  leftMessage: boolean;
 }
 
 export interface Stat {

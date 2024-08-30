@@ -58,10 +58,11 @@ exports.httpHandler = {
       handle: function handleUser(ctx) {
         const feedback = getFeedback(ctx);
         const userId = getUserId(ctx);
-        const userFeedback = feedback.find(it => it.userId === userId);
+        const userFeedback = feedback.filter(it => it.userId === userId);
+        const lastUserFeedback = userFeedback[userFeedback.length - 1];
         response(ctx, {
-          liked: userFeedback?.liked ?? undefined,
-          leftMessage: Boolean(userFeedback?.message),
+          liked: lastUserFeedback?.liked ?? undefined,
+          leftMessage: Boolean(lastUserFeedback?.message),
           isGuest: isGuest(ctx)
         });
       }
