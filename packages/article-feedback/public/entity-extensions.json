@@ -8,6 +8,9 @@
         },
         "guestFeedback": {
           "type": "string"
+        },
+        "guestLikes": {
+          "type": "string"
         }
       }
     }

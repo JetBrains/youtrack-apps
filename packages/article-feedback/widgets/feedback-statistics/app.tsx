@@ -17,6 +17,7 @@ const dateTimePattern = profile.profiles.general.dateFieldFormat.pattern;
 const usersIds = stat.messages.map(it => it.userId);
 const users = await api.getYtUsers(usersIds);
 const messages = [...stat.messages, ...stat.guestMessages].sort((a, b) => b.timestamp - a.timestamp);
+const likesTotal = stat.likes + stat.guestLikes;
 
 function getYouTrackUrl(path: string) {
   if (config.contextPath) {
@@ -31,7 +32,11 @@ const AppComponent: FC = () => {
       <article className="widget">
         {stat && (
           <>
-            <div data-test="likes"><strong>{'Liked'}</strong>{': '}{stat.likes}</div>
+            <div data-test="likes">
+              <strong>{'Liked'}</strong>
+              {': '}{likesTotal}
+              {likesTotal > 0 && ` (${stat.likes} from registered users)`}
+            </div>
             <div data-test="dislikes" className="dislikes"><strong>{'Didn\'t like'}</strong>{': '}{stat.dislikes}</div>
 
             {messages.length > 0 && (

@@ -26,7 +26,9 @@ const AppComponent: FC = () => {
   }, [message, userName]);
 
   const onLike = async () => {
-    if (!user.isGuest) {
+    if (user.isGuest) {
+      await api.postGuestLike();
+    } else {
       await api.postLike();
     }
     setLiked(true);

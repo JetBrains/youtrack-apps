@@ -1,9 +1,13 @@
 function getFeedback(ctx) {
-  return JSON.parse(ctx.article.extensionProperties.feedback) || [];
+  return JSON.parse(ctx.article.extensionProperties.feedback) ?? [];
 }
 
 function getGuestFeedback(ctx) {
-  return JSON.parse(ctx.article.extensionProperties.guestFeedback) || [];
+  return JSON.parse(ctx.article.extensionProperties.guestFeedback) ?? [];
+}
+
+function getGuestLikes(ctx) {
+  return Number(JSON.parse(ctx.article.extensionProperties.guestLikes) ?? 0);
 }
 
 function isGuest(ctx) {
@@ -33,6 +37,11 @@ function updateGuestFeedback(ctx, liked, message, name, email) {
   ctx.article.extensionProperties.guestFeedback = JSON.stringify(guestFeedback);
 }
 
+function updateGuestLikes(ctx) {
+  const guestLikes = getGuestLikes(ctx);
+  ctx.article.extensionProperties.guestLikes = String(guestLikes + 1);
+}
+
 function response(ctx, data) {
   return ctx.response.json(data);
 }
@@ -46,7 +55,8 @@ exports.httpHandler = {
       handle: function handleDebug(ctx) {
         response(ctx, {
           feedback: getFeedback(ctx),
-          guestFeedback: getGuestFeedback(ctx)
+          guestFeedback: getGuestFeedback(ctx),
+          guestLikes: getGuestLikes(ctx)
         });
       }
     },
@@ -85,7 +95,7 @@ exports.httpHandler = {
       scope: 'article',
       method: 'POST',
       path: 'dislike',
-      handle: function handleFeedback(ctx) {
+      handle: function handleDislike(ctx) {
         if (isGuest(ctx)) {
           return;
         }
@@ -98,8 +108,21 @@ exports.httpHandler = {
     {
       scope: 'article',
       method: 'POST',
+      path: 'guest-like',
+      handle: function handleGuestLike(ctx) {
+        if (!isGuest(ctx)) {
+          return;
+        }
+
+        updateGuestLikes(ctx);
+      }
+    },
+
+    {
+      scope: 'article',
+      method: 'POST',
       path: 'guest-dislike',
-      handle: function handleFeedback(ctx) {
+      handle: function handleGuestDislike(ctx) {
         if (!isGuest(ctx)) {
           return;
         }
@@ -118,6 +141,7 @@ exports.httpHandler = {
       handle: function handleStat(ctx) {
         const feedback = getFeedback(ctx);
         const guestFeedback = getGuestFeedback(ctx);
+        const guestLikes = getGuestLikes(ctx);
 
         const lastFeedbackOfEachUser = feedback.
           sort((a, b) => b.timestamp - a.timestamp).
@@ -133,7 +157,7 @@ exports.httpHandler = {
         const messages = feedback.filter(it => it.message);
         const guestMessages = guestFeedback.filter(it => it.message);
 
-        response(ctx, {likes, dislikes, messages, guestMessages});
+        response(ctx, {likes, guestLikes, dislikes, messages, guestMessages});
       }
     }
   ]

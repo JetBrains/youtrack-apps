@@ -5,8 +5,9 @@ export interface User {
 }
 
 export interface Stat {
-  likes: boolean;
-  dislikes: boolean;
+  likes: number;
+  guestLikes: number;
+  dislikes: number;
   messages: Array<{
     userId: string;
     message: string;
@@ -59,6 +60,10 @@ export default class API {
 
   postLike() {
     return this.host.fetchApp('backend/like', {scope: true, method: 'post'}) as Promise<void>;
+  }
+
+  postGuestLike() {
+    return this.host.fetchApp('backend/guest-like', {scope: true, method: 'post'}) as Promise<void>;
   }
 
   postDislike(message: string) {
