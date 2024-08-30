@@ -66,7 +66,7 @@ const AppComponent: FC = () => {
                           <div className="messageSubHeader">{message.email}</div>
                         )}
 
-                        <p className="messageText">{message.message}</p>
+                        <pre className="messageText">{message.message}</pre>
                       </section>
                     );
                   })}
