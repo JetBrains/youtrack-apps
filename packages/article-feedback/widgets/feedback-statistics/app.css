@@ -3,6 +3,10 @@
   line-height: var(--ring-line-height);
 }
 
+.dislikes {
+  margin-top: var(--ring-unit);
+}
+
 .messages {
   display: flex;
   flex-direction: column;
@@ -22,16 +26,16 @@
 .messageSubHeader {
   font-size: var(--ring-font-size-smaller);
   color: var(--ring-secondary-color);
-  margin-top: var(--ring-unit);
 }
 
 .messageText {
   margin: 0;
-  margin-top: calc(var(--ring-unit) * 1.5);
+  margin-top: calc(var(--ring-unit) / 2);
+  white-space: pre;
 }
 
 .separator {
   height: 1px;
   background-color: var(--ring-line-color);
-  margin: calc(var(--ring-unit) * 4) 0;
+  margin: calc(var(--ring-unit) * 3) 0;
 }
