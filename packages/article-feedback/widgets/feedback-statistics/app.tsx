@@ -31,8 +31,8 @@ const AppComponent: FC = () => {
       <article className="widget">
         {stat && (
           <>
-            <p><strong>{'Liked'}</strong>{': '}{stat.likes}</p>
-            <p><strong>{'Didn\'t like'}</strong>{': '}{stat.dislikes}</p>
+            <p data-test="likes"><strong>{'Liked'}</strong>{': '}{stat.likes}</p>
+            <p data-test="dislikes"><strong>{'Didn\'t like'}</strong>{': '}{stat.dislikes}</p>
 
             {messages.length > 0 && (
               <>
@@ -66,7 +66,7 @@ const AppComponent: FC = () => {
                           <div className="messageSubHeader">{message.email}</div>
                         )}
 
-                        <pre className="messageText">{message.message}</pre>
+                        <pre className="messageText" data-test="feedback-text">{message.message}</pre>
                       </section>
                     );
                   })}

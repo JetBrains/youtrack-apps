@@ -72,10 +72,10 @@ const AppComponent: FC = () => {
       <form className="widget" onSubmit={onSend}>
         {liked === undefined && (
           <>
-            <div>{'Was this article helpful?'}</div>
+            <div data-test="feedback-question">{'Was this article helpful?'}</div>
             <ButtonSet>
-              <Button onClick={onLike}>{'Yes'}</Button>
-              <Button onClick={onDislike}>{'No'}</Button>
+              <Button onClick={onLike} data-test="yes-button">{'Yes'}</Button>
+              <Button onClick={onDislike} data-test="no-button">{'No'}</Button>
             </ButtonSet>
           </>
         )}
@@ -117,6 +117,7 @@ const AppComponent: FC = () => {
               <Button
                 disabled={isDisabled}
                 onClick={onSend}
+                data-test="send-button"
               >
                 {'Send'}
               </Button>
