@@ -14,9 +14,8 @@ const api = new API(host);
 
 const user = await api.getUser();
 
-// eslint-disable-next-line complexity
 const AppComponent: FC = () => {
-  const [liked, setLiked] = useState<boolean | undefined>();
+  const [liked, setLiked] = useState(user.liked);
   const [leftMessage, setLeftMessage] = useState(user.leftMessage);
   const [message, setMessage] = useState('');
   const [userName, setUserName] = useState('');

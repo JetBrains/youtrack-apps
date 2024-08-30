@@ -119,8 +119,16 @@ exports.httpHandler = {
         const feedback = getFeedback(ctx);
         const guestFeedback = getGuestFeedback(ctx);
 
-        const likes = [...feedback, ...guestFeedback].filter(it => it.liked).length;
-        const dislikes = [...feedback, ...guestFeedback].filter(it => !it.liked).length;
+        const lastFeedbackOfEachUser = feedback.
+          sort((a, b) => b.timestamp - a.timestamp).
+          filter(({userId}, i) => i === feedback.findIndex((it) => it.userId === userId));
+
+        const lastFeedbackOfEachGuest = guestFeedback.
+          sort((a, b) => b.timestamp - a.timestamp).
+          filter(({email}, i) => !email || i === guestFeedback.findIndex((it) => it.email === email));
+
+        const likes = [...lastFeedbackOfEachUser, ...lastFeedbackOfEachGuest].filter(it => it.liked).length;
+        const dislikes = [...lastFeedbackOfEachUser, ...lastFeedbackOfEachGuest].filter(it => !it.liked).length;
 
         const messages = feedback.filter(it => it.message);
         const guestMessages = guestFeedback.filter(it => it.message);
