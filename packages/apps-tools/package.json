@@ -24,7 +24,7 @@
     "dev": "npx ts-node index",
     "build": "tsc",
     "lint": "eslint",
-    "test": "YOUTRACK_HOST='' YOUTRACK_API_TOKEN='' jest",
+    "test": "jest",
     "test:type": "tsc --noEmit",
     "save-version": "echo '{ \"version\": \"'$npm_package_version'\" }' > dist/package.json",
     "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm run save-version && npm publish --tag alpha"

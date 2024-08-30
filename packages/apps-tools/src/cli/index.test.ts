@@ -1,11 +1,16 @@
 import nock from 'nock';
+import {list} from './list';
 
 nock.back.setMode('record');
+const listFnMock = jest.fn();
+jest.mock('./list');
 
 describe('index', function () {
   beforeEach(function () {
     nock.disableNetConnect();
     jest.spyOn(console, 'log').mockImplementation(() => {});
+    process.env.YOUTRACK_HOST = '';
+    process.env.YOUTRACK_API_TOKEN = '';
   });
 
   afterEach(() => {
@@ -52,6 +57,19 @@ describe('index', function () {
 
     require('./index').run(['', '', 'list', '--host=foo', '--token=bar']);
 
+    expect(console.error).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  it('should take arg param when ENV var is also provided', function () {
+    process.env.YOUTRACK_HOST = 'baz';
+    const expectedCallArgs = {cwd: process.cwd(), host: 'foo', token: 'bar', overwrite: null, output: null};
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation();
+
+    require('./index').run(['', '', 'list', '--host=foo', '--token=bar']);
+
+    expect(list).toHaveBeenCalledWith(expectedCallArgs, undefined);
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });
