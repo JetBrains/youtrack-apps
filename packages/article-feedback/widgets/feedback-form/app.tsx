@@ -20,6 +20,10 @@ const AppComponent: FC = () => {
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
 
+  const isDisabled = React.useMemo(() => {
+    return !message.trim() || (user.isGuest && !userName);
+  }, [message, userName]);
+
   const onLike = async () => {
     if (!user.isGuest) {
       await api.postLike();
@@ -32,11 +36,16 @@ const AppComponent: FC = () => {
   };
 
   const onSend = async () => {
+    if (isDisabled) {
+      return;
+    }
+
     if (user.isGuest) {
       await api.postGuestDislike(message, userName, userEmail);
     } else {
       await api.postDislike(message);
     }
+
     setLeftMessage(true);
   };
 
@@ -60,7 +69,7 @@ const AppComponent: FC = () => {
 
   return (
     <ControlsHeightContext.Provider value={ControlsHeight.S}>
-      <div className="widget">
+      <form className="widget" onSubmit={onSend}>
         {liked === undefined && (
           <>
             <div>{'Was this article helpful?'}</div>
@@ -106,7 +115,7 @@ const AppComponent: FC = () => {
 
             <ButtonSet>
               <Button
-                disabled={!message || (user.isGuest && !userName)}
+                disabled={isDisabled}
                 onClick={onSend}
               >
                 {'Send'}
@@ -114,7 +123,7 @@ const AppComponent: FC = () => {
             </ButtonSet>
           </>
         )}
-      </div>
+      </form>
     </ControlsHeightContext.Provider>
   );
 };
