@@ -2,7 +2,6 @@ import nock from 'nock';
 import {list} from './list';
 
 nock.back.setMode('record');
-const listFnMock = jest.fn();
 jest.mock('./list');
 
 describe('index', function () {
