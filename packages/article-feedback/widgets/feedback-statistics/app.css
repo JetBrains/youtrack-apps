@@ -3,3 +3,29 @@
   flex-direction: column;
   gap: calc(var(--ring-unit) * 1.5);
 }
+
+.messageHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--ring-unit);
+}
+
+.datetime {
+  color: var(--ring-secondary-color);
+}
+
+.messageSubHeader {
+  font-size: var(--ring-font-size-smaller);
+  color: var(--ring-secondary-color);
+  margin-top: var(--ring-unit);
+}
+
+.messageText {
+  margin: calc(var(--ring-unit) * 1.5) 0;
+}
+
+.separator {
+  height: 1px;
+  background-color: var(--ring-line-color);
+  margin: calc(var(--ring-unit) * 4) 0;
+}

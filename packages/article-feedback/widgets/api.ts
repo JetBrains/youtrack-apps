@@ -7,13 +7,38 @@ export interface User {
 export interface Stat {
   likes: boolean;
   dislikes: boolean;
-  messages: Array<{userId: string; message: string; timestamp: string}>;
+  messages: Array<{
+    userId: string;
+    message: string;
+    timestamp: number;
+  }>;
   guestMessages: Array<{
     name: string;
     email?: string;
     message: string;
-    timestamp: string;
+    timestamp: number;
   }>;
+}
+
+export interface YTUser {
+  id: string;
+  ringId: string;
+  fullName: string;
+  guest: boolean;
+}
+
+export interface YTConfig {
+  contextPath: string;
+}
+
+export interface YTUserProfile {
+  profiles: {
+    general: {
+      dateFieldFormat: {
+        pattern: string;
+      }
+    }
+  };
 }
 
 export default class API {
@@ -54,5 +79,21 @@ export default class API {
       method: 'post',
       query: {message, userName, userEmail}
     }) as Promise<void>;
+  }
+
+  getYtUsers(ids: string[]) {
+    return Promise.all(
+      ids.map(
+        id => this.host.fetchYouTrack(`users/${id}?fields=id,ringId,fullName,guest`) as Promise<YTUser>
+      )
+    );
+  }
+
+  getYtConfig() {
+    return this.host.fetchYouTrack('config?fields=contextPath') as Promise<YTConfig>;
+  }
+
+  getYtUserProfile() {
+    return this.host.fetchYouTrack('users/me?fields=profiles(general(dateFieldFormat(pattern)))') as Promise<YTUserProfile>;
   }
 }
