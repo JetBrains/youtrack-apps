@@ -14,7 +14,7 @@ const api = new API(host);
 const [stat, config, profile] = await Promise.all([api.getStat(), api.getYtConfig(), api.getYtUserProfile()]);
 
 const dateTimePattern = profile.profiles.general.dateFieldFormat.pattern;
-const usersIds = stat.messages.map(it => it.userId);
+const usersIds = [...new Set(stat.messages.map(it => it.userId))];
 const users = await api.getYtUsers(usersIds);
 const messages = [...stat.messages, ...stat.guestMessages].sort((a, b) => b.timestamp - a.timestamp);
 const likesTotal = stat.likes + stat.guestLikes;

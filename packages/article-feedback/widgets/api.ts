@@ -25,7 +25,6 @@ export interface YTUser {
   id: string;
   ringId: string;
   fullName: string;
-  guest: boolean;
 }
 
 export interface YTConfig {
@@ -89,7 +88,7 @@ export default class API {
   getYtUsers(ids: string[]) {
     return Promise.all(
       ids.map(
-        id => this.host.fetchYouTrack(`users/${id}?fields=id,ringId,fullName,guest`) as Promise<YTUser>
+        id => this.host.fetchYouTrack(`users/${id}?fields=id,ringId,fullName`) as Promise<YTUser>
       )
     );
   }
