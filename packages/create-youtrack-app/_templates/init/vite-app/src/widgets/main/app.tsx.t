@@ -1,5 +1,5 @@
 ---
- to: widgets/main/app.tsx
+ to: src/widgets/main/app.tsx
 ---
 import React, {memo, useCallback} from 'react';
 import type {FC} from 'react';
