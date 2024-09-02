@@ -16,26 +16,28 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: 'manifest.json',
+          src: '../manifest.json',
           dest: '.'
         },
         {
-          src: 'src/*.*',
+          src: '*.*',
           dest: '.'
         }
       ]
     })
   ],
+  root: './src',
   base: '',
   publicDir: 'public',
   build: {
-    outDir: 'dist',
+    outDir: '../dist',
+    emptyOutDir: true,
     copyPublicDir: true,
     target: ['es2022'],
     assetsDir: 'widgets/assets',
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'widgets/main/index.html')
+        main: resolve(__dirname, 'src/widgets/main/index.html')
         // Add widgets here
       }
     }
