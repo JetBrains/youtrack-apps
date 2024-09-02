@@ -6,6 +6,10 @@ import {defineConfig} from 'vite';
 import {viteStaticCopy} from 'vite-plugin-static-copy';
 import react from '@vitejs/plugin-react';
 
+/*
+      See https://vitejs.dev/config/
+*/
+
 export default defineConfig({
   plugins: [
     react(),
@@ -16,7 +20,7 @@ export default defineConfig({
           dest: '../'
         },
         {
-          src: 'public/*',
+          src: 'src/*.*',
           dest: '../'
         }
       ]
@@ -26,8 +30,8 @@ export default defineConfig({
   publicDir: '',
   build: {
     outDir: 'dist/widgets',
+    copyPublicDir: true,
     target: ['es2022'],
-    assetsDir: 'widgets',
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/widgets/main/index.html')

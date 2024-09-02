@@ -1,5 +1,5 @@
 ---
- to: public/backend.js
+ to: src/backend.js
 ---
 exports.httpHandler = {
   endpoints: [
