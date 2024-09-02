@@ -20,5 +20,5 @@
     /* Linting */
     "strict": true
   },
-  "include": ["src"]
+  "include": ["src", "@types"]
 }
