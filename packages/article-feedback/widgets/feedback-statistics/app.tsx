@@ -6,7 +6,7 @@ import {ControlsHeightContext, ControlsHeight} from '@jetbrains/ring-ui-built/co
 import Link from '@jetbrains/ring-ui-built/components/link/link';
 import Badge from '@jetbrains/ring-ui-built/components/badge/badge';
 
-import API from '../api';
+import API, {YTUser} from '../api';
 
 const host = await YTApp.register();
 const api = new API(host);
@@ -26,6 +26,30 @@ function getYouTrackUrl(path: string) {
   return `/${path}`;
 }
 
+function renderUser(user?: YTUser, guest?: {name: string}) {
+  return (
+    <>
+      <strong>
+        {user &&
+          <Link href={getYouTrackUrl(`users/${user.ringId}`)} target="_blank">{user.fullName}</Link>
+        }
+
+        {guest &&
+          <span>{guest.name}</span>
+        }
+
+        {!user && !guest &&
+          <span>{'Deleted User'}</span>
+        }
+      </strong>
+
+      {guest &&
+        <Badge>{'guest'}</Badge>
+      }
+    </>
+  );
+}
+
 const AppComponent: FC = () => {
   return (
     <ControlsHeightContext.Provider value={ControlsHeight.S}>
@@ -37,6 +61,7 @@ const AppComponent: FC = () => {
               {': '}{likesTotal}
               {likesTotal > 0 && ` (${stat.likes} from registered users)`}
             </div>
+
             <div data-test="dislikes" className="dislikes"><strong>{'Didn\'t like'}</strong>{': '}{stat.dislikes}</div>
 
             {messages.length > 0 && (
@@ -50,19 +75,7 @@ const AppComponent: FC = () => {
                     return (
                       <section key={message.message}>
                         <header className="messageHeader">
-                          <strong>
-                            {user && (
-                              <Link href={getYouTrackUrl(`users/${user.ringId}`)} target="_blank">{user.fullName}</Link>
-                            )}
-
-                            {!user && 'name' in message && (
-                              <span>{message.name}</span>
-                            )}
-                          </strong>
-
-                          {!('userId' in message) && (
-                            <Badge>{'guest'}</Badge>
-                          )}
+                          {renderUser(user, 'name' in message ? message : undefined)}
 
                           <span className="datetime">{format(message.timestamp, dateTimePattern)}</span>
                         </header>
