@@ -4,6 +4,10 @@ export interface User {
   leftMessage: boolean;
 }
 
+export interface Project {
+  projectKey: string;
+}
+
 export interface Stat {
   likes: number;
   guestLikes: number;
@@ -27,6 +31,12 @@ export interface YTUser {
   fullName: string;
 }
 
+export interface YTPermission {
+  global: boolean;
+  permission: {key: string};
+  projects: {shortName: string}[] | null;
+}
+
 export interface YTConfig {
   contextPath: string;
 }
@@ -41,8 +51,44 @@ export interface YTUserProfile {
   };
 }
 
+const READ_USER_PERMISSION = 'jetbrains.jetpass.user-read';
+
 export default class API {
+  project?: Project;
+  permissions?: YTPermission[];
+
   constructor(private host: YTPluginHost) {
+  }
+
+  async loadProject() {
+    this.project = await this.getProject();
+  }
+
+  async loadPermissions() {
+    this.permissions = await this.getYtPermissions();
+  }
+
+  hasPermission(permission: string) {
+    if (!this.project) {
+      throw new Error('Project isn\'t loaded');
+    }
+
+    if (!this.permissions) {
+      throw new Error('Permissions aren\'t loaded');
+    }
+
+    const project = this.project;
+
+    return this.permissions.some(it =>
+      it.permission.key === permission && (
+        it.global ||
+        it.projects?.some(pr => pr.shortName === project.projectKey)
+      )
+    );
+  }
+
+  canReadUser() {
+    return this.hasPermission(READ_USER_PERMISSION);
   }
 
   getDebug() {
@@ -51,6 +97,10 @@ export default class API {
 
   getUser() {
     return this.host.fetchApp('backend/user', {scope: true}) as Promise<User>;
+  }
+
+  getProject() {
+    return this.host.fetchApp('backend/project', {scope: true}) as Promise<Project>;
   }
 
   getStat() {
@@ -99,5 +149,9 @@ export default class API {
 
   getYtUserProfile() {
     return this.host.fetchYouTrack('users/me?fields=profiles(general(dateFieldFormat(pattern)))') as Promise<YTUserProfile>;
+  }
+
+  getYtPermissions() {
+    return this.host.fetchYouTrack('permissions/cache?fields=global,permission(key),projects(shortName)') as Promise<YTPermission[]>;
   }
 }

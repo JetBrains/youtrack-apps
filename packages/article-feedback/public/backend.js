@@ -18,6 +18,10 @@ function getUserId(ctx) {
   return ctx.currentUser.ringId;
 }
 
+function getProjectKey(ctx) {
+  return ctx.project.key;
+}
+
 function updateFeedback(ctx, liked, message) {
   const feedback = getFeedback(ctx);
   const timestamp = Date.now();
@@ -74,6 +78,17 @@ exports.httpHandler = {
           liked: lastUserFeedback?.liked ?? undefined,
           leftMessage: Boolean(lastUserFeedback?.message),
           isGuest: isGuest(ctx)
+        });
+      }
+    },
+
+    {
+      scope: 'article',
+      method: 'GET',
+      path: 'project',
+      handle: function handleProject(ctx) {
+        response(ctx, {
+          projectKey: getProjectKey(ctx)
         });
       }
     },

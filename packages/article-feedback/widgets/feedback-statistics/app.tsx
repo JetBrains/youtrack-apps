@@ -11,13 +11,20 @@ import API, {YTUser} from '../api';
 const host = await YTApp.register();
 const api = new API(host);
 
-const [stat, config, profile] = await Promise.all([api.getStat(), api.getYtConfig(), api.getYtUserProfile()]);
+const [stat, config, profile] = await Promise.all([
+  api.getStat(),
+  api.getYtConfig(),
+  api.getYtUserProfile(),
+  api.loadProject(),
+  api.loadPermissions()
+]);
 
 const dateTimePattern = profile.profiles.general.dateFieldFormat.pattern;
 const usersIds = [...new Set(stat.messages.map(it => it.userId))];
 const users = await api.getYtUsers(usersIds);
 const messages = [...stat.messages, ...stat.guestMessages].sort((a, b) => b.timestamp - a.timestamp);
 const likesTotal = stat.likes + stat.guestLikes;
+const canReadUser = api.canReadUser();
 
 function getYouTrackUrl(path: string) {
   if (config.contextPath) {
@@ -27,27 +34,19 @@ function getYouTrackUrl(path: string) {
 }
 
 function renderUser(user?: YTUser, guest?: {name: string}) {
-  return (
-    <>
-      <strong>
-        {user &&
-          <Link href={getYouTrackUrl(`users/${user.ringId}`)} target="_blank">{user.fullName}</Link>
-        }
+  if (user) {
+    if (canReadUser) {
+      return <Link href={getYouTrackUrl(`users/${user.ringId}`)} target="_blank">{user.fullName}</Link>;
+    } else {
+      return <span>{user.fullName}</span>;
+    }
+  }
 
-        {guest &&
-          <span>{guest.name}</span>
-        }
+  if (guest) {
+    return <span>{guest.name}</span>;
+  }
 
-        {!user && !guest &&
-          <span>{'Deleted User'}</span>
-        }
-      </strong>
-
-      {guest &&
-        <Badge>{'guest'}</Badge>
-      }
-    </>
-  );
+  return <span>{'Deleted User'}</span>;
 }
 
 const AppComponent: FC = () => {
@@ -71,17 +70,24 @@ const AppComponent: FC = () => {
                 <div className="messages">
                   {messages.map(message => {
                     const user = 'userId' in message ? users.find(it => it.ringId === message.userId) : undefined;
+                    const guest = 'name' in message ? {name: message.name, email: message.email} : undefined;
 
                     return (
                       <section key={message.message}>
                         <header className="messageHeader">
-                          {renderUser(user, 'name' in message ? message : undefined)}
+                          <strong>
+                            {renderUser(user, guest)}
+                          </strong>
+
+                          {guest && (
+                            <Badge>{'guest'}</Badge>
+                          )}
 
                           <span className="datetime">{format(message.timestamp, dateTimePattern)}</span>
                         </header>
 
-                        {'email' in message && (
-                          <div className="messageSubHeader">{message.email}</div>
+                        {guest && (
+                          <div className="messageSubHeader">{guest.email}</div>
                         )}
 
                         <div className="messageText" data-test="feedback-text">{message.message}</div>
