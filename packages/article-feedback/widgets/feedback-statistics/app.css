@@ -1,6 +1,7 @@
 .widget {
   font-size: var(--ring-font-size);
   line-height: var(--ring-line-height);
+  margin-bottom: calc(var(--ring-unit) * 3);
 }
 
 .dislikes {
