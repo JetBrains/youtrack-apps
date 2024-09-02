@@ -17,24 +17,25 @@ export default defineConfig({
       targets: [
         {
           src: 'manifest.json',
-          dest: '../'
+          dest: '.'
         },
         {
           src: 'src/*.*',
-          dest: '../'
+          dest: '.'
         }
       ]
     })
   ],
-  base: './',
-  publicDir: '',
+  base: '',
+  publicDir: 'public',
   build: {
-    outDir: 'dist/widgets',
+    outDir: 'dist',
     copyPublicDir: true,
     target: ['es2022'],
+    assetsDir: 'widgets/assets',
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'src/widgets/main/index.html')
+        main: resolve(__dirname, 'widgets/main/index.html')
         // Add widgets here
       }
     }

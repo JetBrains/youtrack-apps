@@ -16,6 +16,6 @@
       "name": "<%= appName %> Widget",
       "indexPath": "main/index.html",
       "extensionPoint": "ISSUE_BELOW_SUMMARY"
-    },
+    }
   ]
 }

@@ -1,5 +1,5 @@
 ---
- to: src/widgets/main/app.tsx
+ to: widgets/main/app.tsx
 ---
 import React, {memo, useCallback} from 'react';
 import type {FC} from 'react';
@@ -11,7 +11,7 @@ const host = await YTApp.register();
 
 const AppComponent: FC = () => {
   const callBackend = useCallback(async () => {
-    const result = await host.fetchApp('debug', {query: {test: '123'}});
+    const result = await host.fetchApp('backend/debug', {query: {test: '123'}});
     // eslint-disable-next-line no-console
     console.log('request result', result);
   }, []);

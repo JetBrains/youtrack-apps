@@ -1,5 +1,5 @@
 ---
- to: src/widgets/main/index.tsx
+ to: widgets/main/index.tsx
 ---
 import React from 'react';
 import ReactDOM from 'react-dom/client';

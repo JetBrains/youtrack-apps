@@ -1,5 +1,5 @@
 ---
- to: src/widgets/main/app.css
+ to: widgets/main/app.css
 ---
 .widget {
   display: flex;
