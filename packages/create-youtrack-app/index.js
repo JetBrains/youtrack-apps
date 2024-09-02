@@ -3,9 +3,11 @@
 const { runner } = require('hygen')
 const Logger = require('hygen/dist/logger')
 const path = require('node:path')
-const defaultTemplates = path.join(__dirname, 'templates')
+const defaultTemplates = path.join(__dirname, '_templates')
 const args = require('minimist')(process.argv.slice(2));
 const cwd = path.resolve(process.cwd(), args.cwd || '.');
+
+console.log('Working directory:', cwd);
 
 runner(process.argv.slice(2), {
   templates: defaultTemplates,
