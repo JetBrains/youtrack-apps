@@ -7,4 +7,6 @@
 
 .message textarea {
   min-height: calc(var(--ring-unit) * 8);
+  max-height: 500px;
+  overflow: auto;
 }
