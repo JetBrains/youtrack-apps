@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test": "echo 'no tests'",
     "preview": "vite preview",
     "pack": "rm -rf <%= appName %>.zip && cd dist && zip -r ../<%= appName %>.zip .",
     "upload": "youtrack-app upload dist"

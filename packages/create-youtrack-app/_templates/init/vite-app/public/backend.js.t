@@ -4,7 +4,6 @@
 exports.httpHandler = {
   endpoints: [
     {
-      scope: 'issue',
       method: 'GET',
       path: 'debug',
       handle: function handleDebug(ctx) {

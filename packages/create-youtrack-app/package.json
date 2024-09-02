@@ -20,7 +20,8 @@
     "extension-property": "node index.js entity create --cwd ./tmp",
     "settings-property": "node index.js property add --cwd ./tmp",
     "lint": "biome lint .",
-    "test": "echo 'no tests yet'",
+    "generate:test": "bash scripts/generate-test-app.sh",
+    "test": "bash scripts/generate-and-test.sh",
     "build": "echo 'no build required'",
     "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm publish --tag alpha"
   },

@@ -11,7 +11,7 @@ const cwd = path.resolve(process.cwd(), args.cwd || ".");
 
 (async function run() {
   const hasHygenParams = ["init", "entity", "widget", "property"].some(
-    (key) => !!args[key]
+    key => new Set(argv).has(key)
   );
 
   if (!hasHygenParams) {
