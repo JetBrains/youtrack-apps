@@ -1,3 +1,6 @@
+---
+ to: @types/globals.d.ts
+---
 type AppAPI = {
   onRefresh?: () => void;
   onConfigure?: () => void;
