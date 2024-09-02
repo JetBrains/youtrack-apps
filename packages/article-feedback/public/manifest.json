@@ -1,7 +1,7 @@
 {
   "name": "article-feedback",
   "title": "Article Feedback",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Adds a widget that lets you collect and analyze reader feedback for articles in the YouTrack knowledge base.",
   "icon": "article-feedback-logo.svg",
   "dependencies": {
