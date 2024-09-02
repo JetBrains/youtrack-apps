@@ -11,5 +11,11 @@
   },
   "icon": "icon.svg",
   "widgets": [
+    {
+      "key": "main-widget",
+      "name": "<%= appName %> Widget",
+      "indexPath": "main/index.html",
+      "extensionPoint": "ISSUE_BELOW_SUMMARY"
+    },
   ]
 }

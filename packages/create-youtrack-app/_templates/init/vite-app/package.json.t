@@ -15,17 +15,17 @@
     "upload": "youtrack-app upload dist"
   },
   "dependencies": {
-    "@jetbrains/ring-ui-built": "6.0.25",
+    "@jetbrains/ring-ui-built": "^6.0.56",
     "core-js": "3.38.0",
     "date-fns": "^3.6.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@jetbrains/eslint-config": "^5.4.2",
-    "@jetbrains/youtrack-apps-tools": "^0.0.1-alpha.5"
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
+    "@jetbrains/youtrack-apps-tools": "^0.0.1-alpha.5",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -34,7 +34,9 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.0.1",
+    "vite": "^5.4.1",
+    "vite-plugin-static-copy": "^1.0.6"
   }
 }
