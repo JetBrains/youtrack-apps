@@ -1,5 +1,5 @@
 ---
- to: @types/globals.d.ts
+ to: '@types/globals.d.ts'
 ---
 type AppAPI = {
   onRefresh?: () => void;
@@ -35,7 +35,7 @@ export interface InstanceAwareAPILayer extends BaseAPILayer {
  * This layer allows plugin to communicate with own backend
  */
 export interface PluginEndpointAPILayer extends InstanceAwareAPILayer {
-  fetchApp: (relativeURL: string, requestParams: RequestParams & {scope: boolean}) => Promise<unknown>;
+  fetchApp: (relativeURL: string, requestParams: RequestParams & {scope?: boolean}) => Promise<unknown>;
 }
 
 /*
