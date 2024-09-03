@@ -50,7 +50,7 @@ function runHygen(hygenArgs = argv) {
   if (
     !(await new Confirm({
       initial: true,
-      message: `Would you like your App to have Settings (you can do it later by running "npm init @jetbrains/youtrack-app init settings")`,
+      message: `Would you like your App to have Settings (you can do it later by running "npx @jetbrains/create-youtrack-app init settings")`,
     }).run())
   ) {
     return;

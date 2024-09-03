@@ -47,8 +47,8 @@ export default defineConfig({
     assetsDir: 'widgets/assets',
     rollupOptions: {
       input: {
+        // List every widget entry point here
         main: resolve(__dirname, 'src/widgets/main/index.html')
-        // Add widgets here
       }
     }
   }

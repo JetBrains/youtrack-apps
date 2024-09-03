@@ -1,13 +1,17 @@
-// TODO: How to run manifest generator first?
+const {validateNotEmpty} = require('../../utils');
+
 module.exports = [
   {
     type: "input",
     name: "appName",
+    initial: 'my-app',
+    validate: validateNotEmpty,
     message: "What is the name of your app?",
   },
   {
     type: "input",
     name: "title",
+    initial: 'My App',
     message: "What is the title of your app?",
   },
   {

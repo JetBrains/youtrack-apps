@@ -59,7 +59,6 @@ export interface CustomWidgetAPILayer extends PluginEndpointAPILayer {
   storeConfig: (config: unknown) => Promise<void>;
 
   downloadFile: (serviceID: string, relativeURL: string, requestParams: unknown, fileName?: string) => Promise<void>;
-  fetch: (serviceID: string, relativeURL: string, requestParams: RequestParams) => unknown;
   fetchHub: (relativeURL: string, requestParams: RequestParams) => unknown;
 
   loadServices: (applicationName: string) => Promise<HubService[]>;

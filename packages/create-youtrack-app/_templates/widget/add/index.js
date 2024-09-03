@@ -1,3 +1,5 @@
+const { validateNotEmpty } = require("../../utils");
+
 const extensionPoints = [
   {
     name: "A page that has its own item in the administration menu.",
@@ -68,17 +70,20 @@ module.exports = {
     const { key } = await prompter.prompt({
       type: "input",
       name: "key",
+      validate: validateNotEmpty,
       message: "What is the key of your widget?",
     });
     const { folderName } = await prompter.prompt({
       type: "input",
       name: "folderName",
+      validate: validateNotEmpty,
       message: "What is the folder name of your widget?",
       initial: key,
     });
     const { name } = await prompter.prompt({
       type: "input",
       name: "name",
+      validate: validateNotEmpty,
       message: "What is the name of your widget?",
       initial: key,
     });
@@ -86,6 +91,7 @@ module.exports = {
     const { indexPath } = await prompter.prompt({
       type: "input",
       name: "indexPath",
+      validate: validateNotEmpty,
       initial: `${folderName}/index.html`,
       message: `What is the path of your widget's index file?`,
     });
@@ -136,24 +142,6 @@ module.exports = {
         });
     }
 
-    let iconPath;
-    if (
-      [
-        "HELPDESK_CHANNEL",
-        "ARTICLE_OPTIONS_MENU_ITEM",
-        "ISSUE_OPTIONS_MENU_ITEM",
-      ].includes(extensionPoint)
-    ) {
-      await prompter
-        .prompt({
-          type: "input",
-          name: "iconPath",
-          message: `What is the path of your widget's icon?`,
-        })
-        .then((res) => {
-          iconPath = res.iconPath;
-        });
-    }
     return {
       key,
       name,
@@ -164,7 +152,6 @@ module.exports = {
       addDimensions,
       width,
       height,
-      iconPath,
     };
   },
 };
