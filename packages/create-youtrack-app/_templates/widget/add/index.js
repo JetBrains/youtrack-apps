@@ -1,4 +1,5 @@
 const { validateNotEmpty } = require("../../utils");
+const { PERMISSIONS } = require("../../consts");
 
 const extensionPoints = [
   {
@@ -67,20 +68,20 @@ const extensionPoints = [
 
 module.exports = {
   prompt: async ({ prompter, args }) => {
-    const { key } = await prompter.prompt({
+    const { key } = args.key ? args : await prompter.prompt({
       type: "input",
       name: "key",
       validate: validateNotEmpty,
       message: "What is the key of your widget?",
     });
-    const { folderName } = await prompter.prompt({
+    const { folderName } = args.folderName ? args : await prompter.prompt({
       type: "input",
       name: "folderName",
       validate: validateNotEmpty,
       message: "What is the folder name of your widget?",
       initial: key,
     });
-    const { name } = await prompter.prompt({
+    const { name } = args.name ? args : await prompter.prompt({
       type: "input",
       name: "name",
       validate: validateNotEmpty,
@@ -88,7 +89,7 @@ module.exports = {
       initial: key,
     });
 
-    const { indexPath } = await prompter.prompt({
+    const { indexPath } = args.indexPath ? args : await prompter.prompt({
       type: "input",
       name: "indexPath",
       validate: validateNotEmpty,
@@ -96,7 +97,7 @@ module.exports = {
       message: `What is the path of your widget's index file?`,
     });
 
-    const { extensionPoint } = await prompter.prompt({
+    const { extensionPoint } = args.extensionPoint ? args : await prompter.prompt({
       type: "select",
       name: "extensionPoint",
       message: "What is the extension point of your widget?",
@@ -106,13 +107,33 @@ module.exports = {
       })),
     });
 
-    const { description } = await prompter.prompt({
+    const { description } = args.description ? args : await prompter.prompt({
       type: "input",
       name: "description",
       message: "What is the description of your widget?",
     });
 
-    const { addDimensions } = await prompter.prompt({
+    const { limitPermissions } = args.limitPermissions ?? await prompter.prompt({
+      type: "confirm",
+      name: "limitPermissions",
+      message: "Would you like to make widget visibility limited?",
+    });
+
+    let permissions = false;
+    if (limitPermissions) {
+      const res = await prompter.prompt({
+        type: "multiselect",
+        name: "permissions",
+        message: "Would you like to limit visibility of this widget? Leave empty to keep it always visible",
+        choices: PERMISSIONS.map(({ key, description }) => ({
+          message: `"${key}": ${description}`,
+          name: key,
+        })),
+      });
+      permissions = res.permissions;
+    }
+
+    const { addDimensions } = args.addDimensions ?? await prompter.prompt({
       type: "confirm",
       name: "addDimensions",
       message: "Do you want to add dimensions to your widget?",
@@ -145,6 +166,7 @@ module.exports = {
     return {
       key,
       name,
+      permissions,
       folderName,
       indexPath,
       extensionPoint,

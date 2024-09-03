@@ -11,7 +11,8 @@ after: '\"widgets\": \['
       "indexPath": "<%= indexPath %>",
       "extensionPoint": "<%= extensionPoint %>",
       "description": "<%= description %>",
-      "iconPath": "<%= folderName %>/widget-icon.svg"
+      "iconPath": "<%= folderName %>/widget-icon.svg"<% if (permissions){ -%>,
+      "permissions": [<%- permissions.map(p => `"${p}"`).join(', ') %>]<% } -%>
  <% if (addDimensions){ -%>
 ,
         "expectedDimensions": {

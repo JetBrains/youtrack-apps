@@ -11,6 +11,6 @@ cd tmp
 npm i
 
 # Check and build test app
-npm run lint
+npm run lint -- --fix
 npm run test
 npm run build
