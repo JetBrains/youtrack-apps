@@ -2,7 +2,6 @@
 to: manifest.json
 inject: true
 after: '\"widgets\": \['
-sh: npx prettier --write manifest.json
 ---
     {
       "key": "<%= key %>",
@@ -12,7 +11,7 @@ sh: npx prettier --write manifest.json
       "indexPath": "<%= indexPath %>",
       "extensionPoint": "<%= extensionPoint %>",
       "description": "<%= description %>",
-      "iconPath": "widget-icon.svg"
+      "iconPath": "<%= folderName %>/widget-icon.svg"
  <% if (addDimensions){ -%>
 ,
         "expectedDimensions": {

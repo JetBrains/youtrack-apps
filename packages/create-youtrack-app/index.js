@@ -47,6 +47,16 @@ function runHygen(hygenArgs = argv) {
     return;
   }
 
+  console.log(`
+======= Your App is created ========
+
+Now let's add first widget!
+You can add more later by running "npx @jetbrains/create-youtrack-app widget add"
+
+====================================
+  `)
+  await runHygen(['widget', 'add', ...argv]);
+
   if (
     !(await new Confirm({
       initial: true,
