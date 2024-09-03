@@ -11,12 +11,5 @@
   },
   "icon": "icon.svg",
   "widgets": [
-    {
-      "key": "main-widget",
-      "name": "<%= appName %> Widget",
-      "indexPath": "main/index.html",
-      "iconPath": "main/widget-icon.svg",
-      "extensionPoint": "ISSUE_BELOW_SUMMARY"
-    }
   ]
 }

@@ -48,7 +48,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         // List every widget entry point here
-        main: resolve(__dirname, 'src/widgets/main/index.html')
       }
     }
   }
