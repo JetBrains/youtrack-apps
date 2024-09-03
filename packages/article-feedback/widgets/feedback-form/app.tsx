@@ -108,12 +108,14 @@ const AppComponent: FC = () => {
                   label={'Name'}
                   value={userName}
                   onChange={onUserNameChange}
+                  data-test="name-input"
                 />
 
                 <Input
                   label={'Email'}
                   value={userEmail}
                   onChange={onUserEmailChange}
+                  data-test="email-input"
                 />
               </>
             )}
