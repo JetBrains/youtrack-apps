@@ -13,7 +13,7 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "vite-app": "node index.js --cwd ./tmp",
+    "start": "node index.js --cwd ./tmp",
     "widget": "node index.js widget add --cwd ./tmp",
     "settings": "node index.js init settings --cwd ./tmp",
     "manifest": "node index.js init manifest --cwd ./tmp",
