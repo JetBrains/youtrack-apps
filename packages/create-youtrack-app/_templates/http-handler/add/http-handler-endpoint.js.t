@@ -11,7 +11,10 @@ after: '// Put handlers below'
 <% } -%><% if (permissions.length > 0){ -%>
       permissions: [<%- permissions.map(p => `'${p}'`).join(', ') %>],
 <% } -%>
-      handle: function handleDebug(ctx) {
-        ctx.response.json({test: true});
+      handle: function handle(ctx) {
+        // See more https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html#request
+        const requestParam = ctx.request.getParameter('test');
+        // See more https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html#response
+        ctx.response.json({test: requestParam});
       }
     },
