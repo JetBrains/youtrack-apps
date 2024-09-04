@@ -6,6 +6,6 @@ unless_exists: true
 
 exports.httpHandler = {
   endpoints: [
-    // Put handlers below
+
   ]
 };
