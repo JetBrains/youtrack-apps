@@ -1,6 +1,6 @@
 # Create YouTrack App
 
-[![Build Status][ci-img]][ci-project] ![NPM Version](https://img.shields.io/npm/v/@jetbrains/create-youtrack-app)
+[![Build Status][ci-img]][ci-project] [![NPM Version][npm-img]][npm-page]
 
 [![official JetBrains project](https://jb.gg/badges/official-flat-square.svg)](https://github.com/JetBrains#jetbrains-on-github)
 
@@ -48,3 +48,5 @@ Hygen is quite powerful tool for generation files, but it is not perfect for the
 
 [ci-project]: https://teamcity.jetbrains.com/project/JetBrainsUi_YouTrackApps_CreateYouTrackApp
 [ci-img]:  https://teamcity.jetbrains.com/app/rest/builds/buildType:JetBrainsUi_YoutrackApps_Checks/statusIcon.svg
+[npm-img]: https://img.shields.io/npm/v/@jetbrains/create-youtrack-app
+[npm-page]: https://www.npmjs.com/package/@jetbrains/create-youtrack-app
