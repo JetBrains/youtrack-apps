@@ -74,7 +74,9 @@ Now we are installing dependencies by running "npm install":
 ====================================
 `);
 
-  await execa("npm", ["install"], {cwd}).stdout.pipe(process.stdout);
+  const installProcess = execa("npm", ["install"], {cwd});
+  installProcess.stdout.pipe(process.stdout);
+  await installProcess;
 
   console.log(`
 Done!
