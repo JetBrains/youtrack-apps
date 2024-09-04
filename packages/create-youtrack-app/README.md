@@ -38,7 +38,7 @@ Hygen is quite powerful tool for generation files, but it is not perfect for the
  - [x] permissions in `widget.add`
  - [ ] possibly rewrite `property add` to JSON-based approach
  - [ ] full list of the extension properties entities
- - [ ] creation of http handlers
+ - [x] creation of http handlers
  - [x] TypeScript support (at least widgets/handlers/extension-propertioes should be added to `app.d.ts` file)
  - [x] `React` + `ring-ui` support in widget templates
  - [ ] wording review
