@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const { runner } = require("hygen");
+const chalk = require('chalk');
 const execa = require("execa");
 const { Confirm } = require("enquirer");
 const Logger = require("hygen/dist/logger");
@@ -46,7 +47,7 @@ function runHygen(hygenArgs = argv) {
   if (
     !(await new Confirm({
       initial: true,
-      message: `New YouTrack App will be created in a directory "${cwd}".\n\nContinue?`,
+      message: `New YouTrack App will be created in a directory ${chalk.bold(cwd)}\n\nContinue?`,
     }).run())
   ) {
     return;
@@ -61,7 +62,7 @@ function runHygen(hygenArgs = argv) {
 ====================================
 
 Now let's add first widget!
-You can add more later by running "npx @jetbrains/create-youtrack-app widget add"
+You can add more later by running ${chalk.magenta('npx @jetbrains/create-youtrack-app widget add')}
 
 ====================================
   `);
@@ -70,17 +71,16 @@ You can add more later by running "npx @jetbrains/create-youtrack-app widget add
   if (
     await new Confirm({
       initial: true,
-      message: `Would you like your App to have Settings (you can do it later by running "npx @jetbrains/create-youtrack-app init settings")`,
+      message: `Would you like your App to have Settings (you can do it later by running ${chalk.magenta('npx @jetbrains/create-youtrack-app init settings')})`,
     }).run()
   ) {
     await runHygen(["init", "settings", ...argv]);
   }
 
   console.log(`
-======= Your App is created! =======
+${chalk.bold('======= Your App is created! =======')}
 
-Now we are installing dependencies by running "npm install":
-====================================
+We are now installing dependencies by running ${chalk.magenta('npm install')}:
 `);
 
   const installProcess = execa("npm", ["install"], {cwd});
@@ -88,7 +88,7 @@ Now we are installing dependencies by running "npm install":
   await installProcess;
 
   console.log(`
-Done!
+${chalk.bold('Done!')}
 
 Now you would need to create a Permanent Token to upload the app into YouTrack isntance
 
@@ -96,9 +96,9 @@ See documentation https://www.jetbrains.com/help/youtrack/server/manage-permanen
 
 Once you have this token, you could build and upload the App:
 
-1. npm run build
-2. npm run upload -- --host http://your-youtrack.url --token perm:cm9...
+1. ${chalk.magenta('npm run build')}
+2. ${chalk.magenta('npm run upload -- --host http://your-youtrack.url --token perm:cm9...')}
 
-You can add more features to your app by running generator again. See help:`);
-  await runHygen(["help", "show", ...argv]);
+You can add more features to your app by running generator again.
+Run ${chalk.magenta('npx @jetbrains/create-youtrack-app --help')} to explore available options.`);
 })();
