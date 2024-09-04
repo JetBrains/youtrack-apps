@@ -30,6 +30,10 @@ function runHygen(hygenArgs = argv) {
 }
 
 (async function run() {
+  if ('help' in args || 'h' in args) {
+    require('./help');
+    return;
+  }
   const hasHygenParams = ["init", "entity", "widget", "property", "help"].some(
     (key) => new Set(argv).has(key)
   );

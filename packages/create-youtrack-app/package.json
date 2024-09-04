@@ -9,6 +9,7 @@
   "files": [
     "_templates",
     "index.js",
+    "help.js",
     "README.md",
     "CHANGELOG.md"
   ],
@@ -28,6 +29,7 @@
   "author": "Andrey Skladchikov",
   "license": "Apache-2.0",
   "dependencies": {
+    "chalk": "^4.1.2",
     "enquirer": "^2.4.1",
     "execa": "^5.0.0",
     "hygen": "^6.2.11",
