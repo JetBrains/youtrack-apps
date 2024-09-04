@@ -21,13 +21,13 @@ Once App is generated, one may need to add more features. See list of awailable 
 * `npx @jetbrains/create-youtrack-app property add` to add one more property into Settings, created by command above
 * `npx @jetbrains/create-youtrack-app widget add` to add one more [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-extension-points.html)
 * `npx @jetbrains/create-youtrack-app entity create` to declare [extension property](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html)
+* `npx @jetbrains/create-youtrack-app http-handler add` to add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html)
 
 ### Development
 
-To test locally, run `npm exec .`
+To test locally, run one of the package.json scripts like `npm run widget`. This generator uses [Hygen](https://www.hygen.io/docs/generators) udner the hood.
 
-## Documentation
-https://www.hygen.io/docs/generators - Hygen is used for the documentation
+Run `npm test` to check basic generation workflow.
 
 ## Caveats
 Hygen is quite powerful tool for generation files, but it is not perfect for the working with the JSON files. So, some JSON manipulation can be tricky. To prevent this, there is a `injectJsCallback.js` file where is a helper function that can be called to create custom JS actions instead of file rendering. Example of usage `_templates/settings/index.js` file.
