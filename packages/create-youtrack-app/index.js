@@ -14,7 +14,12 @@ function runHygen(hygenArgs = argv) {
   return runner(hygenArgs, {
     templates: defaultTemplates,
     cwd,
-    logger: new Logger.default(console.log.bind(console)),
+    logger: new Logger.default((msg, ...res) => {
+      if (msg.startsWith('Loaded templates:')) {
+        return;
+      }
+      return console.log(msg, ...res);
+    }),
     createPrompter: () => require("enquirer"),
     exec: (action, body) => {
       const opts = body && body.length > 0 ? { input: body } : {};
