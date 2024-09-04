@@ -4,13 +4,23 @@
 
 [![official JetBrains project](https://jb.gg/badges/official-flat-square.svg)](https://github.com/JetBrains#jetbrains-on-github)
 
-[this is Work in progress]
+YouTrack App is an App that can be installed into JetBrains YouTrack to customize it even more. See [documentation](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-documentation.html).
 
-supported commands for now:
- - `hygen init manifest` - to create `manifest.json` file
- - `hygen init settings` - to create `settings.json` file
- - `hygen widget add` - to create widget directory, and add widget to `settings.json` file
- - `hygen property add` - to create extension property
+## Quick Start
+
+1. Prepare an empty directory for your App
+2. Run `npm create @jetbrains/youtrack-app`
+3. Follow the prompts
+
+## Adding more features to generated App
+
+Once App is generated, one may need to add more features. See list of awailable commands:
+
+* `npx @jetbrains/create-youtrack-app help show` to see list of possible commands
+* `npx @jetbrains/create-youtrack-app init settings` to add a [settings declaration](https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html)
+* `npx @jetbrains/create-youtrack-app property add` to add one more property into Settings, created by command above
+* `npx @jetbrains/create-youtrack-app widget add` to add one more [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-extension-points.html)
+* `npx @jetbrains/create-youtrack-app entity create` to declare [extension property](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html)
 
 ### Development
 

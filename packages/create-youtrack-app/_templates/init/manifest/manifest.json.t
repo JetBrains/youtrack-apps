@@ -1,5 +1,5 @@
 ---
- to: src/manifest.json
+ to: manifest.json
 ---
 {
   "name" : "<%= appName %>",
