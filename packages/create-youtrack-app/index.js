@@ -88,7 +88,7 @@ See documentation https://www.jetbrains.com/help/youtrack/server/manage-permanen
 Once you have this token, you could build and upload the App:
 
 1. npm run build
-2. npm run upload -- --host http://your-youtrack.url --token perm:cm9
+2. npm run upload -- --host http://your-youtrack.url --token perm:cm9...
 
 You can add more features to your app by running generator again. See help:`);
   await runHygen(["help", "show", ...argv]);
