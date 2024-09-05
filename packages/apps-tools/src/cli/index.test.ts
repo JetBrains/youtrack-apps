@@ -62,7 +62,15 @@ describe('index', function () {
 
   it('should take arg param when ENV var is also provided', function () {
     process.env.YOUTRACK_HOST = 'baz';
-    const expectedCallArgs = {cwd: process.cwd(), host: 'foo', token: 'bar', overwrite: null, output: null};
+    const expectedCallArgs = {
+      cwd: process.cwd(),
+      host: 'foo',
+      token: 'bar',
+      manifest: null,
+      schema: null,
+      overwrite: null,
+      output: null,
+    };
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation();
 
