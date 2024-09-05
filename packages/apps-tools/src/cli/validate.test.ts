@@ -68,6 +68,21 @@ describe('validate', () => {
     removeTmpSchema();
   });
 
+  it('should validate without host and token provided', () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation();
+    process.env.YOUTRACK_HOST = '';
+    process.env.YOUTRACK_API_TOKEN = '';
+
+    require('./index').run(['', '', 'validate', testDir]);
+
+    expect(console.error).not.toHaveBeenCalled();
+    expect(process.exit).not.toHaveBeenCalled();
+
+    process.env.YOUTRACK_HOST = 'foo';
+    process.env.YOUTRACK_API_TOKEN = 'bar';
+  });
+
   it('should exit if no directory or manifest file provided', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation();

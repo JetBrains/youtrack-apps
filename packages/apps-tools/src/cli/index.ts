@@ -37,11 +37,13 @@ export async function run(argv = process.argv) {
     case 'list':
     case 'download':
     case 'upload':
-    case 'validate':
       await checkRequiredParams(['host', 'token'], args, async () => {
         const executable = options[option];
         await executable(config, args._.slice(1)[0]);
       });
+      return;
+    case 'validate':
+      await options['validate'](config, args._.slice(1)[0]);
       return;
     case 'version':
       printVersion();
@@ -71,7 +73,11 @@ export async function run(argv = process.argv) {
     }
   }
 
-  async function checkRequiredParams(required: RequiredParams[], args: Record<string, string>, fn: () => Promise<void>): Promise<void> {
+  async function checkRequiredParams(
+    required: RequiredParams[],
+    args: Record<string, string>,
+    fn: () => Promise<void>,
+  ): Promise<void> {
     function allParamsProvided(params: RequiredParams[], args: Record<string, string>): boolean {
       return params.every(param => {
         if ((!args.hasOwnProperty(param) || !args[param]) && !config[param]) {

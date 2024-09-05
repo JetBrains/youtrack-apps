@@ -80,4 +80,13 @@ describe('index', function () {
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });
+
+  it('should execute validate without expecting required params', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(process, 'exit').mockImplementation();
+
+    await require('./index').run(['', '', 'validate', 'foo']);
+    expect(console.error).not.toHaveBeenCalledWith('Error: Option "--host" is required');
+    expect(process.exit).toHaveBeenCalledWith(1);
+  });
 });
