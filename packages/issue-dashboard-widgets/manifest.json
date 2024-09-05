@@ -3,6 +3,7 @@
   "version": "1.0.31",
   "name": "Issues List",
   "description": "Displays a list of YouTrack issues that match a search query.",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
   "applicationName": "YouTrack",
   "author": "JetBrains",
   "dependencies": {

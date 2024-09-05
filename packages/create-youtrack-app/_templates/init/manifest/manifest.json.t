@@ -5,6 +5,7 @@
   "name" : "<%= appName %>",
   "title" : "<%= title %>",
   "description" :  "<%= description %>",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
   "vendor": {
     "name": "<%= vendor %>",
     "url": "<%= vendorUrl %>"

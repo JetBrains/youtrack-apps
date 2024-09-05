@@ -3,11 +3,8 @@
   "title": "Vote Histogram",
   "version": "0.1.2",
   "description": "Displays a visualization of voting activity over time for a specific issue.",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
   "icon": "votes-histogram-app.svg",
-  "dependencies": {
-    "@jetbrains/youtrack-scripting-api": "^2024.3.0"
-  },
-  "language": "JS",
   "widgets": [
     {
       "key": "votes-histogram",
