@@ -6,11 +6,13 @@ import {list} from './list';
 import {download} from './download';
 import {upload} from './upload';
 import {resolve} from '../../lib/net/resolve';
+import {validate} from './validate';
 
 const options = {
   list: list,
   download: download,
   upload: upload,
+  validate: validate,
 } as const;
 
 export function run(argv = process.argv) {
@@ -21,6 +23,8 @@ export function run(argv = process.argv) {
     token: args.token || YOUTRACK_API_TOKEN || null,
     output: args.output || null,
     overwrite: args.overwrite || null,
+    manifest: args.manifest || null,
+    schema: args.schema || null,
     cwd: process.cwd(),
   };
 
@@ -33,6 +37,7 @@ export function run(argv = process.argv) {
     case 'list':
     case 'download':
     case 'upload':
+    case 'validate':
       checkRequiredParams(['host', 'token'], args, () => {
         const executable = options[option];
         executable(config, args._.slice(1)[0]);
@@ -48,9 +53,10 @@ export function run(argv = process.argv) {
 
   function printHelp() {
     br();
-    printLine(i18n('list     --host --token                    '), i18n('View a list of installed apps'));
-    printLine(i18n('download <app> [--output, --overwrite]     '), i18n('Download an app'));
-    printLine(i18n('upload   <directory>                       '), i18n('Upload app to server'));
+    printLine(i18n('list     --host --token                      '), i18n('View a list of installed apps'));
+    printLine(i18n('download <app> [--output, --overwrite]       '), i18n('Download an app'));
+    printLine(i18n('upload   <directory>                         '), i18n('Upload app to server'));
+    printLine(i18n('validate <directory> [--manifest, --schema]  '), i18n('Validate manifest'));
     br();
     console.log(
       i18n('One can also provide host and token via environment variables $YOUTRACK_HOST and $YOUTRACK_API_TOKEN.'),

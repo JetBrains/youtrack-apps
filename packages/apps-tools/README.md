@@ -70,6 +70,12 @@ does not specify the app name, the name of the directory is used as the name of 
 
 Specify values for the `--host` and `--token` parameters to gain authorized access to YouTrack.
 
+### Verify
+
+`youtrack-app verify <dir> [--schema, --manifest]`
+
+This command verifies the app's `manifest.json` from the specified directory against the [YouTrack App JSON schema][json-schema]. One can also specify the `--schema` parameter to provide a custom schema file and the `--manifest` parameter to specify a custom manifest file. When both `dir` and manifest are provided, the manifest file is used.
+
 ### Special Instructions for SSL Certificates
 
 If your YouTrack domain uses an SSL certificate that is issued by a known certificate authority, you can establish a
@@ -83,3 +89,4 @@ information, [refer to the YouTrack documentation](https://www.jetbrains.com/hel
 
 [ci-project]: https://teamcity.jetbrains.com/project/JetBrainsUi_YouTrackApps_AppsTools
 [ci-img]: https://teamcity.jetbrains.com/app/rest/builds/buildType:JetBrainsUi_YouTrackApps_AppsTools_Checks/statusIcon.svg
+[json-schema]: https://json.schemastore.org/youtrack-app.json

@@ -5,6 +5,8 @@ export interface Config {
   token: string;
   output: string | null;
   overwrite: string | null;
+  manifest: string | null;
+  schema: string | null;
   cwd: string;
 }
 
