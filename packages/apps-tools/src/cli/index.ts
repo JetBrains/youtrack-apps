@@ -15,7 +15,7 @@ const options = {
   validate: validate,
 } as const;
 
-export function run(argv = process.argv) {
+export async function run(argv = process.argv) {
   const args = parse(argv);
   const {YOUTRACK_HOST, YOUTRACK_API_TOKEN} = process.env;
   const config: Config = {
@@ -38,9 +38,9 @@ export function run(argv = process.argv) {
     case 'download':
     case 'upload':
     case 'validate':
-      checkRequiredParams(['host', 'token'], args, () => {
+      await checkRequiredParams(['host', 'token'], args, async () => {
         const executable = options[option];
-        executable(config, args._.slice(1)[0]);
+        await executable(config, args._.slice(1)[0]);
       });
       return;
     case 'version':
@@ -71,7 +71,7 @@ export function run(argv = process.argv) {
     }
   }
 
-  function checkRequiredParams(required: RequiredParams[], args: Record<string, string>, fn: () => void): void {
+  async function checkRequiredParams(required: RequiredParams[], args: Record<string, string>, fn: () => Promise<void>): Promise<void> {
     function allParamsProvided(params: RequiredParams[], args: Record<string, string>): boolean {
       return params.every(param => {
         if ((!args.hasOwnProperty(param) || !args[param]) && !config[param]) {
@@ -88,7 +88,7 @@ export function run(argv = process.argv) {
       });
     }
 
-    if (allParamsProvided(required, args)) fn();
+    if (allParamsProvided(required, args)) await fn();
   }
 
   function printVersion() {
