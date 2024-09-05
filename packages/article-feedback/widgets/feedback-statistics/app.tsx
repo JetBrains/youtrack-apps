@@ -56,12 +56,13 @@ const AppComponent: FC = () => {
         {stat && (
           <>
             <div data-test="likes">
-              <strong>{'Liked'}</strong>
-              {': '}{likesTotal}
+              <strong>{'Helpful'}</strong>{': '}{likesTotal}
               {likesTotal > 0 && ` (${stat.likes} from registered users)`}
             </div>
 
-            <div data-test="dislikes" className="dislikes"><strong>{'Didn\'t like'}</strong>{': '}{stat.dislikes}</div>
+            <div data-test="dislikes" className="dislikes">
+              <strong>{'Not helpful'}</strong>{': '}{stat.dislikes}
+            </div>
 
             {messages.length > 0 && (
               <>

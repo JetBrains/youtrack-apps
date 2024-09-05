@@ -135,7 +135,7 @@ const AppComponent: FC = () => {
                 onClick={onSend}
                 data-test="send-button"
               >
-                {'Send'}
+                {'Submit'}
               </Button>
             </ButtonSet>
           </>
