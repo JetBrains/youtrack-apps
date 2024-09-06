@@ -10,9 +10,19 @@ import react from '@vitejs/plugin-react';
       See https://vitejs.dev/config/
 */
 
+const dropCrossoriginAttributePlugin = () => {
+  return {
+    name: 'no-attribute',
+    transformIndexHtml(html: string) {
+      return html.replaceAll('crossorigin', '');
+    }
+  };
+};
+
 export default defineConfig({
   plugins: [
     react(),
+    dropCrossoriginAttributePlugin(),
     viteStaticCopy({
       targets: [
         {
