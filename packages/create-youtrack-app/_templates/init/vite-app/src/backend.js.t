@@ -4,7 +4,7 @@
 exports.httpHandler = {
   endpoints: [
     {
-      method: 'POST',
+      method: 'GET',
       path: 'debug',
       handle: function handle(ctx) {
         // See https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html#request
