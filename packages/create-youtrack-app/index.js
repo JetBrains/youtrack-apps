@@ -35,7 +35,7 @@ function runHygen(hygenArgs = argv) {
     require('./help');
     return;
   }
-  const hasHygenParams = ["init", "extension-property", "widget", "property", "http-handler"].some(
+  const hasHygenParams = ["init", "extension-property", "widget", "settings", "http-handler"].some(
     (key) => new Set(argv).has(key)
   );
 
@@ -71,10 +71,10 @@ You can add more later by running ${chalk.magenta('npx @jetbrains/create-youtrac
   if (
     await new Confirm({
       initial: true,
-      message: `Would you like your App to have Settings (you can do it later by running ${chalk.magenta('npx @jetbrains/create-youtrack-app init settings')})`,
+      message: `Would you like your App to have Settings (you can do it later by running ${chalk.magenta('npx @jetbrains/create-youtrack-app settings init')})`,
     }).run()
   ) {
-    await runHygen(["init", "settings", ...argv]);
+    await runHygen(["settings", "init", ...argv]);
   }
 
   console.log(`

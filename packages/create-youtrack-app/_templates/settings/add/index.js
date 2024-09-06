@@ -1,6 +1,5 @@
 module.exports = {
   prompt: async ({ prompter, args }) => {
-    console.log("args", args);
     const { name } = await prompter.prompt({
       type: "input",
       name: "name",

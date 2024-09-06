@@ -17,8 +17,8 @@ YouTrack App is an App that can be installed into JetBrains YouTrack to customiz
 Once App is generated, one may need to add more features. See list of awailable commands:
 
 * `npx @jetbrains/create-youtrack-app help show` to see list of possible commands
-* `npx @jetbrains/create-youtrack-app init settings` to add a [settings declaration](https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html)
-* `npx @jetbrains/create-youtrack-app property add` to add one more property into Settings, created by command above
+* `npx @jetbrains/create-youtrack-app settings init` to add a [settings declaration](https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html)
+* `npx @jetbrains/create-youtrack-app settings add` to add one more property into Settings, created by command above
 * `npx @jetbrains/create-youtrack-app widget add` to add one more [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-extension-points.html)
 * `npx @jetbrains/create-youtrack-app extension-property add` to declare [extension property](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html)
 * `npx @jetbrains/create-youtrack-app http-handler add` to add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html)
@@ -36,7 +36,7 @@ Hygen is quite powerful tool for generation files, but it is not perfect for the
 
  - [x] update the code to use this as external tool
  - [x] permissions in `widget.add`
- - [ ] possibly rewrite `property add` to JSON-based approach
+ - [ ] possibly rewrite `settings add` to JSON-based approach
  - [ ] full list of the extension properties entities
  - [x] creation of http handlers
  - [x] TypeScript support (at least widgets/handlers/extension-propertioes should be added to `app.d.ts` file)
