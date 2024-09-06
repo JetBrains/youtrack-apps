@@ -16,7 +16,7 @@ YouTrack App is an App that can be installed into JetBrains YouTrack to customiz
 
 Once App is generated, one may need to add more features. See list of awailable commands:
 
-* `npx @jetbrains/create-youtrack-app help show` to see list of possible commands
+* `npx @jetbrains/create-youtrack-app --help` to see list of possible commands
 * `npx @jetbrains/create-youtrack-app settings init` to add a [settings declaration](https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html)
 * `npx @jetbrains/create-youtrack-app settings add` to add one more property into Settings, created by command above
 * `npx @jetbrains/create-youtrack-app widget add` to add one more [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-extension-points.html)
