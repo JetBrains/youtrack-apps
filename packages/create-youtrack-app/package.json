@@ -19,7 +19,7 @@
     "http-handler": "node index.js http-handler add --cwd ./tmp",
     "settings": "node index.js init settings --cwd ./tmp",
     "manifest": "node index.js init manifest --cwd ./tmp",
-    "extension-property": "node index.js entity create --cwd ./tmp",
+    "extension-property": "node index.js extension-property add --cwd ./tmp",
     "settings-property": "node index.js property add --cwd ./tmp",
     "lint": "biome lint .",
     "generate:test": "bash scripts/generate-test-app.sh",

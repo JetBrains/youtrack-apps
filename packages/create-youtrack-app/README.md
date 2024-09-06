@@ -20,7 +20,7 @@ Once App is generated, one may need to add more features. See list of awailable 
 * `npx @jetbrains/create-youtrack-app init settings` to add a [settings declaration](https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html)
 * `npx @jetbrains/create-youtrack-app property add` to add one more property into Settings, created by command above
 * `npx @jetbrains/create-youtrack-app widget add` to add one more [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-extension-points.html)
-* `npx @jetbrains/create-youtrack-app entity create` to declare [extension property](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html)
+* `npx @jetbrains/create-youtrack-app extension-property add` to declare [extension property](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html)
 * `npx @jetbrains/create-youtrack-app http-handler add` to add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html)
 
 ### Development

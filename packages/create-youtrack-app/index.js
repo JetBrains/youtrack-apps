@@ -35,7 +35,7 @@ function runHygen(hygenArgs = argv) {
     require('./help');
     return;
   }
-  const hasHygenParams = ["init", "entity", "widget", "property", "http-handler"].some(
+  const hasHygenParams = ["init", "extension-property", "widget", "property", "http-handler"].some(
     (key) => new Set(argv).has(key)
   );
 
