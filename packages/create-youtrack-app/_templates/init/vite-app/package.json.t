@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && youtrack-app validate dist",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
     "pack": "rm -rf <%= appName %>.zip && cd dist && zip -r ../<%= appName %>.zip .",
@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@jetbrains/eslint-config": "^5.4.2",
-    "@jetbrains/youtrack-apps-tools": "^0.0.1-alpha.5",
+    "@jetbrains/youtrack-apps-tools": "^0.0.1-alpha.13",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.2.0",

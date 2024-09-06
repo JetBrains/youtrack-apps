@@ -20,4 +20,4 @@ after: '\"widgets\": \['
         "height": <%= height %>
       }
  <% } -%>
-    },
+    }
