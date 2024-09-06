@@ -22,6 +22,10 @@ export default defineConfig({
         {
           src: '*.*',
           dest: '.'
+        },
+        {
+          src: '../public/*.*',
+          dest: '.'
         }
       ]
     }),
@@ -42,7 +46,7 @@ export default defineConfig({
   build: {
     outDir: '../dist',
     emptyOutDir: true,
-    copyPublicDir: true,
+    copyPublicDir: false,
     target: ['es2022'],
     assetsDir: 'widgets/assets',
     rollupOptions: {
