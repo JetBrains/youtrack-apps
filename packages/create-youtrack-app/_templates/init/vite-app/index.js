@@ -1,4 +1,5 @@
 const {validateNotEmpty} = require('../../utils');
+const h = require('hygen/dist/helpers').default;
 
 module.exports = [
   {
@@ -6,6 +7,8 @@ module.exports = [
     name: "appName",
     initial: 'my-app',
     validate: validateNotEmpty,
+    format: input => h.changeCase.lower(h.inflection.dasherize(input)),
+    result: input => h.changeCase.lower(h.inflection.dasherize(input)),
     message: "What is the name of your app?",
   },
   {

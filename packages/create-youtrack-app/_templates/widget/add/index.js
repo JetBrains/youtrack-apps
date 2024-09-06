@@ -67,34 +67,21 @@ const extensionPoints = [
 ];
 
 module.exports = {
-  prompt: async ({ prompter, args }) => {
+  prompt: async ({ prompter, args, h }) => {
     const { key } = args.key ? args : await prompter.prompt({
       type: "input",
       name: "key",
       validate: validateNotEmpty,
+      format: input => h.changeCase.lower(h.inflection.dasherize(input)),
+      result: input => h.changeCase.lower(h.inflection.dasherize(input)),
       message: "What is the key of your widget?",
-    });
-    const { folderName } = args.folderName ? args : await prompter.prompt({
-      type: "input",
-      name: "folderName",
-      validate: validateNotEmpty,
-      message: "What is the folder name of your widget?",
-      initial: key,
     });
     const { name } = args.name ? args : await prompter.prompt({
       type: "input",
       name: "name",
       validate: validateNotEmpty,
       message: "What is the name of your widget?",
-      initial: key,
-    });
-
-    const { indexPath } = args.indexPath ? args : await prompter.prompt({
-      type: "input",
-      name: "indexPath",
-      validate: validateNotEmpty,
-      initial: `${folderName}/index.html`,
-      message: `What is the path of your widget's index file?`,
+      initial: h.inflection.titleize(key),
     });
 
     const { extensionPoint } = args.extensionPoint ? args : await prompter.prompt({
@@ -167,8 +154,8 @@ module.exports = {
       key,
       name,
       permissions,
-      folderName,
-      indexPath,
+      folderName: h.changeCase.path(key),
+      indexPath: `${h.changeCase.path(key)}/index.html`,
       extensionPoint,
       description,
       addDimensions,
