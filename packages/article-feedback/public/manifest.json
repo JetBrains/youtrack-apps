@@ -18,7 +18,7 @@
     },
     {
       "key": "feedback-statistics",
-      "name": "Article Feedback",
+      "name": "View feedback",
       "indexPath": "feedback-statistics/index.html",
       "extensionPoint": "ARTICLE_OPTIONS_MENU_ITEM",
       "permissions": [
