@@ -22,9 +22,9 @@ const extensionPoints = [
     name: "An item in the options menu of a comment.",
     value: "COMMENT_OPTIONS_MENU_ITEM",
   },
-  { name: "The dashboard.", value: "DASHBOARD_WIDGET" },
+  { name: "Dashboards.", value: "DASHBOARD_WIDGET" },
   {
-    name: "An extra channel for tickets. This extension point is only available for helpdesk projects.",
+    name: "An extra channel for handling tickets. This extension point is only available for helpdesk projects.",
     value: "HELPDESK_CHANNEL",
   },
   {
@@ -48,12 +48,12 @@ const extensionPoints = [
     value: "ISSUE_OPTIONS_MENU_ITEM",
   },
   {
-    name: "A separate application page with a menu item in the header.",
+    name: "A separate application page with a link in the main navigation menu.",
     value: "MAIN_MENU_ITEM",
   },
-  { name: "The area in a Markdown-formatted text.", value: "MARKDOWN" },
+  { name: "Any input area where you can add and format text in Markdown.", value: "MARKDOWN" },
   {
-    name: "A separate tab in the project settings.",
+    name: "A separate tab in the settings for a project.",
     value: "PROJECT_SETTINGS",
   },
   {
@@ -74,20 +74,20 @@ module.exports = {
       validate: validateNotEmpty,
       format: input => h.changeCase.lower(h.inflection.dasherize(input)),
       result: input => h.changeCase.lower(h.inflection.dasherize(input)),
-      message: "What is the key of your widget?",
+      message: "What key (ID) would you like to assign this widget?",
     });
     const { name } = args.name ? args : await prompter.prompt({
       type: "input",
       name: "name",
       validate: validateNotEmpty,
-      message: "What is the name of your widget?",
+      message: "What would you like to name this widget?",
       initial: h.inflection.titleize(key),
     });
 
     const { extensionPoint } = args.extensionPoint ? args : await prompter.prompt({
       type: "select",
       name: "extensionPoint",
-      message: "What is the extension point of your widget?",
+      message: "Which extension point do you want to use for this widget?",
       choices: extensionPoints.map(({ name, value }) => ({
         message: `${name} (${value})`,
         name: value,
@@ -97,13 +97,13 @@ module.exports = {
     const { description } = args.description ? args : await prompter.prompt({
       type: "input",
       name: "description",
-      message: "What is the description of your widget?",
+      message: "What is the description you want to give this widget?",
     });
 
     const { limitPermissions } = args.limitPermissions ?? await prompter.prompt({
       type: "confirm",
       name: "limitPermissions",
-      message: "Would you like to make widget visibility limited?",
+      message: "Would you like to use permissions to restrict the visibility of this widget?",
     });
 
     let permissions = false;
@@ -111,7 +111,7 @@ module.exports = {
       const res = await prompter.prompt({
         type: "multiselect",
         name: "permissions",
-        message: "Would you like to limit visibility of this widget? Leave empty to keep it always visible",
+        message: "Which permissions determine who can view this widget? If you leave this field empty, it is visible to everyone",
         choices: PERMISSIONS.map(({ key, description }) => ({
           message: `"${key}": ${description}`,
           name: key,
@@ -123,7 +123,7 @@ module.exports = {
     const { addDimensions } = args.addDimensions ?? await prompter.prompt({
       type: "confirm",
       name: "addDimensions",
-      message: "Do you want to add dimensions to your widget?",
+      message: "Do you want to set the dimensions for your widget?",
     });
 
     let width;
@@ -133,7 +133,7 @@ module.exports = {
         .prompt({
           type: "number",
           name: "width",
-          message: "What is the width of your widget in pixels?",
+          message: "What is the width of your widget (in pixels)?",
         })
         .then((res) => {
           width = res.width;
@@ -143,7 +143,7 @@ module.exports = {
         .prompt({
           type: "number",
           name: "height",
-          message: "What is the height of your widget in pixels?",
+          message: "What is the height of your widget (in pixels)?",
         })
         .then((res) => {
           height = res.height;

@@ -1,7 +1,7 @@
 {
   "name": "@jetbrains/create-youtrack-app",
   "version": "0.0.1-alpha.15",
-  "description": "A scaffolder for YouTrack App generating",
+  "description": "A scaffolding utility that generates a YouTrack app",
   "main": "index.js",
   "bin": {
     "create-youtrack-app": "index.js"
