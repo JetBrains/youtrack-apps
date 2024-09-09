@@ -17,7 +17,7 @@ To learn more about app development for the YouTrack platform, please refer to o
 
 ## Adding Features to a Generated App
 
-After you have generated an app, you may want to add more features. Add new features quickly with using one of these commands:
+After you have generated an app, you may want to add more features. Add new features quickly with one of these commands:
 
 | Action | Command |
 | --- | --- |

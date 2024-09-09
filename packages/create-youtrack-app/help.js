@@ -4,15 +4,15 @@ const chalk = require('chalk');
 
 
 console.log(chalk`
-To generate a new app, run
+To generate a new app, run the following command
 
 ===
 ${chalk.magenta('npm init @jetbrains/youtrack-app')}
 ===
 
-And follow the promts
+... and follow the prompts
 
-Once App is generated, one may need to add more features. See list of awailable commands:
+After you have generated an app, you may want to add more features. Add new features quickly with one of these commands:
 
 * ${chalk.magenta('npx @jetbrains/create-youtrack-app --help')} to view a list of available commands
 * ${chalk.magenta('npx @jetbrains/create-youtrack-app settings init')} to add a settings declaration (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html')})

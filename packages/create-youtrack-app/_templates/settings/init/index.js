@@ -2,11 +2,11 @@ module.exports = [
   {
     type: "input",
     name: "title",
-    message: "What is the title of the settings?",
+    message: "What text would you like to use as the title for your settings?",
   },
   {
     type: "input",
     name: "description",
-    message: "What is the description of the settings?",
+    message: "What text would you like to use to describe your settings?",
   },
 ];
