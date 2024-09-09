@@ -4,20 +4,20 @@ const chalk = require('chalk');
 
 
 console.log(chalk`
-To generate a new app, run
+To generate a new app, run the following command
 
 ===
 ${chalk.magenta('npm init @jetbrains/youtrack-app')}
 ===
 
-And follow the promts
+... and follow the prompts
 
-Once App is generated, one may need to add more features. See list of awailable commands:
+After you have generated an app, you may want to add more features. Add new features quickly with one of these commands:
 
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app --help')} to see list of possible commands
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app settings init')} to create a settings declaration (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html')})
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app settings add')} to add one more property into Settings, created by command above
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app widget add')} to add one more widget (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-extension-points.html')})
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app extension-property add')} to add extension property (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html')})
+* ${chalk.magenta('npx @jetbrains/create-youtrack-app --help')} to view a list of available commands
+* ${chalk.magenta('npx @jetbrains/create-youtrack-app settings init')} to add a settings declaration (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html')})
+* ${chalk.magenta('npx @jetbrains/create-youtrack-app settings add')} to add one or more properties to the setting scheme created using the command listed above
+* ${chalk.magenta('npx @jetbrains/create-youtrack-app widget add')} to add another widget (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-extension-points.html')})
+* ${chalk.magenta('npx @jetbrains/create-youtrack-app extension-property add')} to declare an extension property (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html')})
 * ${chalk.magenta('npx @jetbrains/create-youtrack-app http-handler add')} to add an HTTP handler (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html')})
 `);
