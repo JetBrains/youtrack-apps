@@ -25,7 +25,7 @@
     "generate:test": "bash scripts/generate-test-app.sh",
     "test": "bash scripts/generate-and-test.sh",
     "build": "echo 'no build required'",
-    "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm publish"
+    "release:ci": "commit-and-tag-version && git push --follow-tags origin main && npm publish"
   },
   "author": "Andrey Skladchikov",
   "license": "Apache-2.0",
