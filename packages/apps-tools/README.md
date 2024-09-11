@@ -11,7 +11,7 @@ development environment.
 
 To work with the scripting package, you need to install and run [Node.js](https://nodejs.org/en/). This also installs
 the npm package manager that lets you work with the scripting package in your projects.
-Next, install the **@jetbrains/youtrack-scripting** package in your development environment. The easiest way to get
+Next, install the **@jetbrains/youtrack-apps-tools** package in your development environment. The easiest way to get
 started is to install the package globally with the following command:
 
 `npm install -g @jetbrains/youtrack-apps-tools`
