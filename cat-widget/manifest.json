@@ -1,0 +1,28 @@
+{
+  "name": "cat-widget",
+  "title": "Pets Dashboard Widget",
+  "description": "Funny cats and dogs for your Dashboard!",
+  "version": "1.1.1",
+  "icon": "cat_purr.png",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "cat-widget",
+      "name": "Pets",
+      "description": "Funny cats and dogs for your Dashboard!",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "indexPath": "index.html",
+      "iconPath": "images/cat_purr.png",
+      "settingsSchemaPath": "widget-settings.json",
+      "defaultDimensions": {
+        "height" : "1fr",
+        "width" : "1fr"
+      }
+    }
+  ]
+}
