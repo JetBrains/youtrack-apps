@@ -7,7 +7,7 @@
 Apps in YouTrack let you add new features, tools, and integrations that aren't available out of the box.
 They can help you customize YouTrack to fit your organization's specific needs, improving your project management, 
 reporting, automation, or integrating with other tools in your software ecosystem.
-To learn more about app development for the YouTrack platform, please refer to our [Develeper Portal](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-documentation.html).
+To learn more about app development for the YouTrack platform, please refer to our [Developer Portal](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-documentation.html).
 
 ## Quick Start
 
