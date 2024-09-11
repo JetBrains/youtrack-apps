@@ -5,9 +5,11 @@
   "description": "Adds a widget that lets you collect and analyze reader feedback for articles in the YouTrack knowledge base.",
   "$schema": "https://json.schemastore.org/youtrack-app.json",
   "icon": "article-feedback-logo.svg",
+  "minYouTrackVersion": "2024.3.0",
   "vendor": {
-    "name": "JetBrains",
-    "url": "https://jetbrains.com"
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
   },
   "widgets": [
     {

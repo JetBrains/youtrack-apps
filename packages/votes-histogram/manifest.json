@@ -5,6 +5,12 @@
   "description": "Displays a visualization of voting activity over time for a specific issue.",
   "$schema": "https://json.schemastore.org/youtrack-app.json",
   "icon": "votes-histogram-app.svg",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
   "widgets": [
     {
       "key": "votes-histogram",
