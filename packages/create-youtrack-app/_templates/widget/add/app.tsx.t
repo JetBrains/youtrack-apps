@@ -2,20 +2,19 @@
 to: src/widgets/<%= folderName %>/app.tsx
 ---
 import React, {memo, useCallback} from 'react';
-import type {HostAPI} from '../../../@types/globals';
+import type {FC} from 'react';
 import {ControlsHeightContext, ControlsHeight} from '@jetbrains/ring-ui-built/components/global/controls-height';
 import Button from '@jetbrains/ring-ui-built/components/button/button';
 
-interface Props {
-  host: HostAPI
-}
+// Register widget in YouTrack. To learn more, see https://www.jetbrains.com/help/youtrack/devportal-apps/apps-host-api.html
+const host = await YTApp.register();
 
-const AppComponent: React.FunctionComponent<Props> = ({host}) => {
+const AppComponent: FC = () => {
   const callBackend = useCallback(async () => {
     const result = await host.fetchApp('backend/debug', {query: {test: '123'}});
     // eslint-disable-next-line no-console
     console.log('request result', result);
-  }, [host]);
+  }, []);
 
   return (
     <div className="widget">
