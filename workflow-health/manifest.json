@@ -3,6 +3,7 @@
   "title": "Workflow Health Dashboard Widget",
   "description": "Highlights errors in workflow configurations.",
   "version": "1.0.3",
+  "icon": "youtrack.svg",
   "minYouTrackVersion": "2024.3.0",
   "vendor": {
     "name": "JetBrains s.r.o.",
