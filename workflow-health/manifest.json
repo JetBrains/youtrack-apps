@@ -1,0 +1,25 @@
+{
+  "name": "workflow-health",
+  "title": "Workflow Health Dashboard Widget",
+  "description": "Highlights errors in workflow configurations.",
+  "version": "1.0.3",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "workflow-health",
+      "name": "Workflow Health",
+      "description": "Highlights errors in workflow configurations.",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "indexPath": "index.html",
+      "defaultDimensions" : {
+        "height" : "2fr",
+        "width" : "2fr"
+      }
+    }
+  ]
+}
