@@ -29,31 +29,18 @@ After you have generated an app, you may want to add more features. Add new feat
 | View a list of available commands | `npx @jetbrains/create-youtrack-app --help` |
 
 
-### Development Guide
+### Contribuging
 
 To test locally, run one of the package.json scripts like `npm run widget`. This generator uses [Hygen](https://www.hygen.io/docs/generators) under the hood.
 
 Run `npm test` to check basic generation workflow.
 
-## Caveats
+#### Caveats
 While Hygen is a powerful tool for generating files, it isn't ideal for working with JSON files. 
 This means JSON manipulation can be a challenge. 
 To address this issue, we have added a `injectJsCallback.js` file. 
 This file contains a helper function that can be used to create custom JS actions instead of simply rendering files. 
 An example that demonstrates the use of this function can be found in the `_templates/settings/index.js` file.
-
-### TODO:
-
- - [x] update the code to use this as external tool
- - [x] permissions in `widget.add`
- - [ ] possibly rewrite `settings add` to JSON-based approach
- - [ ] full list of the extension properties entities
- - [x] creation of http handlers
- - [x] TypeScript support (at least widgets/handlers/extension-propertioes should be added to `app.d.ts` file)
- - [x] `React` + `ring-ui` support in widget templates
- - [ ] wording review
- - [ ] testing
- - [ ] documentation
 
 
 [ci-project]: https://teamcity.jetbrains.com/project/JetBrainsUi_YouTrackApps_CreateYouTrackApp
