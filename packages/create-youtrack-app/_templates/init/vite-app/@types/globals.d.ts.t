@@ -52,10 +52,10 @@ export interface CustomWidgetAPILayer extends PluginEndpointAPILayer {
   setError: (e: Error) => void;
   clearError: () => void;
 
-  readCache: () => Promise<unknown>;
+  readCache: <T = unknown>() => Promise<T | null>;
   storeCache: (data: unknown) => Promise<void>;
 
-  readConfig: () => Promise<unknown>;
+  readConfig: <T = unknown>() => Promise<T | null>;
   storeConfig: (config: unknown) => Promise<void>;
 
   downloadFile: (serviceID: string, relativeURL: string, requestParams: unknown, fileName?: string) => Promise<void>;
