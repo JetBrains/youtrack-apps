@@ -1,4 +1,4 @@
-# Reports Widget
+# Report Widget
 
 > [!WARNING]  
 > This code was migrated from a legacy widget implementation.
