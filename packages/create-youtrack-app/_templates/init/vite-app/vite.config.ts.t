@@ -33,7 +33,7 @@ export default defineConfig({
       targets: [
         // Widget icons and configurations
         {
-          src: 'widgets/*/*.{svg,png,jpg,json}',
+          src: 'widgets/**/*.{svg,png,jpg,json}',
           dest: '.'
         }
       ],

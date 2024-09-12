@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && youtrack-app validate dist",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --ext cjs,js,ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
     "pack": "rm -rf <%= appName %>.zip && cd dist && zip -r ../<%= appName %>.zip .",
     "upload": "youtrack-app upload dist"

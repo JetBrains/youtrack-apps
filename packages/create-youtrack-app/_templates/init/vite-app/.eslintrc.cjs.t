@@ -20,6 +20,7 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    "react/jsx-no-literals": "off",
     'max-len': [
       'error',
       {
@@ -31,4 +32,10 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ["src/*.js"],
+      env: { node: true },
+    },
+  ],
 }
