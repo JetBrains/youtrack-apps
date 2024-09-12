@@ -3,7 +3,6 @@ to: src/widgets/<%= folderName %>/app.tsx
 ---
 import React, {memo, useCallback} from 'react';
 import type {FC} from 'react';
-import {ControlsHeightContext, ControlsHeight} from '@jetbrains/ring-ui-built/components/global/controls-height';
 import Button from '@jetbrains/ring-ui-built/components/button/button';
 
 // Register widget in YouTrack. To learn more, see https://www.jetbrains.com/help/youtrack/devportal-apps/apps-host-api.html
@@ -18,9 +17,7 @@ const AppComponent: FC = () => {
 
   return (
     <div className="widget">
-      <ControlsHeightContext.Provider value={ControlsHeight.S}>
-        <Button primary onClick={callBackend}>{'Make HTTP Request'}</Button>
-      </ControlsHeightContext.Provider>
+      <Button primary onClick={callBackend}>{'Make HTTP Request'}</Button>
     </div>
   );
 };
