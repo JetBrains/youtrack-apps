@@ -1,7 +1,7 @@
 {
   "name": "cat-widget",
   "title": "Pets Dashboard Widget",
-  "description": "Funny cats and dogs for your Dashboard!",
+  "description": "Cute cats and adorable dogs for your YouTrack dashboards!",
   "version": "1.1.1",
   "icon": "cat_purr.png",
   "minYouTrackVersion": "2024.3.0",
@@ -14,7 +14,7 @@
     {
       "key": "cat-widget",
       "name": "Pets",
-      "description": "Funny cats and dogs for your Dashboard!",
+      "description": "Cute cats and adorable dogs for your YouTrack dashboards!",
       "extensionPoint": "DASHBOARD_WIDGET",
       "indexPath": "index.html",
       "iconPath": "images/cat_purr.png",

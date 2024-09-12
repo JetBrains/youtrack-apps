@@ -1,7 +1,7 @@
 {
   "name": "workflow-health",
-  "title": "Workflow Health Dashboard Widget",
-  "description": "Highlights errors in workflow configurations.",
+  "title": "Workflow Health Monitor",
+  "description": "Provides an overview with links to projects where there are workflow configuration errors.",
   "version": "1.0.3",
   "icon": "youtrack.svg",
   "minYouTrackVersion": "2024.3.0",
@@ -13,8 +13,8 @@
   "widgets": [
     {
       "key": "workflow-health",
-      "name": "Workflow Health",
-      "description": "Highlights errors in workflow configurations.",
+      "name": "Workflow Health Monitor",
+      "description": "Provides an overview with links to projects where there are workflow configuration errors.",
       "extensionPoint": "DASHBOARD_WIDGET",
       "indexPath": "index.html",
       "defaultDimensions" : {

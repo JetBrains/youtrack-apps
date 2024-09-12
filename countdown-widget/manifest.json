@@ -14,7 +14,7 @@
     {
       "key": "countdown-widget",
       "name": "Countdown Widget",
-      "description": "Adds a countdown or stopwatch-style timer on your dashboard.",
+      "description": "Adds a countdown or stopwatch-style timer to your YouTrack dashboard.",
       "extensionPoint": "DASHBOARD_WIDGET",
       "indexPath": "index.html",
       "iconPath": "pict/timer.png",
