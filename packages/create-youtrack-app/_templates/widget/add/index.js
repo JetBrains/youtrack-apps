@@ -14,14 +14,6 @@ const extensionPoints = [
     name: "An item in the article toolbar that invokes the widget.",
     value: "ARTICLE_OPTIONS_MENU_ITEM",
   },
-  {
-    name: "An item in the options menu of an attachment",
-    value: "ATTACHMENT_OPTIONS_MENU_ITEM",
-  },
-  {
-    name: "An item in the options menu of a comment.",
-    value: "COMMENT_OPTIONS_MENU_ITEM",
-  },
   { name: "Dashboards.", value: "DASHBOARD_WIDGET" },
   {
     name: "An extra channel for handling tickets. This extension point is only available for helpdesk projects.",
