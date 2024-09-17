@@ -20,8 +20,6 @@ interface BaseAPILayer {
   enterModalMode: () => void;
   exitModalMode: () => void;
   collapse: () => void;
-  reportWidgetSize: (size: {width: number; height: number}) => void;
-  reportWidgetScroll?: (scroll: {yScrolled: boolean}) => void;
 }
 
 /*
