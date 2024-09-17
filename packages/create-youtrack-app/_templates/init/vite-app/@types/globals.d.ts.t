@@ -17,8 +17,8 @@ export interface HubService {
 
 interface BaseAPILayer {
   alert: (...args: Parameters<(typeof AlertService)['addAlert']>) => void;
-  enterModalMode: () => void;
-  exitModalMode: () => void;
+  enterModalMode: Promise<() => void>;
+  exitModalMode: Promise<() => void>;
   collapse: () => void;
 }
 
@@ -40,14 +40,14 @@ export interface PluginEndpointAPILayer extends InstanceAwareAPILayer {
  * This layer is only available for MARKDOWN and DASHBOARD_WIDGET extension points
  */
 export interface EmbeddableWidgetAPI extends PluginEndpointAPILayer {
-  setTitle: (label: string, labelUrl: string) => void;
-  setLoadingAnimationEnabled: (isEnabled: boolean) => void;
+  setTitle: (label: string, labelUrl: string) => Promise<void>;
+  setLoadingAnimationEnabled: (isEnabled: boolean) => Promise<void>;
 
-  enterConfigMode: () => void;
-  exitConfigMode: () => void;
+  enterConfigMode: () => Promise<void>;
+  exitConfigMode: () => Promise<void>;
 
-  setError: (e: Error) => void;
-  clearError: () => void;
+  setError: (e: Error) => Promise<void>;
+  clearError: () => Promise<void>;
 
   readCache: <T = unknown>() => Promise<T | null>;
   storeCache: (data: unknown) => Promise<void>;
@@ -56,11 +56,11 @@ export interface EmbeddableWidgetAPI extends PluginEndpointAPILayer {
   storeConfig: (config: unknown) => Promise<void>;
 
   downloadFile: (serviceID: string, relativeURL: string, requestParams: unknown, fileName?: string) => Promise<void>;
-  fetchHub: (relativeURL: string, requestParams: RequestParams) => unknown;
+  fetchHub: (relativeURL: string, requestParams: RequestParams) => Promise<unknown>;
 
   loadServices: (applicationName: string) => Promise<HubService[]>;
 
-  alert: (...args: Parameters<(typeof AlertService)['addAlert']>) => void;
+  alert: (...args: Parameters<(typeof AlertService)['addAlert']>) => Promise<void>;
   removeWidget: () => void;
 }
 
@@ -73,7 +73,7 @@ type YTAppInterface = {
     id: string;
     type: 'user' | 'article' | 'ticket' | 'project' | 'app'
   };
-  register: (appApi?: AppAPI) => HostAPI | EmbeddableWidgetAPI;
+  register: (appApi?: AppAPI) => Promise<HostAPI | EmbeddableWidgetAPI>;
 }
 
 declare global {
