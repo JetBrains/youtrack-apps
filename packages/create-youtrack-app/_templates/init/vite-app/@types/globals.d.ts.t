@@ -28,21 +28,20 @@ interface BaseAPILayer {
  * This layer should allow plugin to call YT endpoints while being sure there is just ONE YouTrack instance
  */
 export interface InstanceAwareAPILayer extends BaseAPILayer {
-  fetchYouTrack: (relativeURL: string, requestParams: RequestParams) => Promise<unknown>;
+  fetchYouTrack: <T = unknown>(relativeURL: string, requestParams?: RequestParams) => Promise<T>;
 }
 
 /*
  * This layer allows plugin to communicate with own backend
  */
 export interface PluginEndpointAPILayer extends InstanceAwareAPILayer {
-  fetchApp: (relativeURL: string, requestParams: RequestParams & {scope?: boolean}) => Promise<unknown>;
+  fetchApp: <T = unknown>(relativeURL: string, requestParams?: RequestParams & {scope?: boolean}) => Promise<T>;
 }
 
 /*
- * This layer should repeat Custom Widgets API and be compatible with it.
- * It is needed to make it possible to use custom widgets as plugins with no or minimal changes.
+ * This layer is only available for MARKDOWN and DASHBOARD_WIDGET extension points
  */
-export interface CustomWidgetAPILayer extends PluginEndpointAPILayer {
+export interface EmbeddableWidgetAPI extends PluginEndpointAPILayer {
   setTitle: (label: string, labelUrl: string) => void;
   setLoadingAnimationEnabled: (isEnabled: boolean) => void;
 
@@ -76,7 +75,7 @@ type YTAppInterface = {
     id: string;
     type: 'user' | 'article' | 'ticket' | 'project' | 'app'
   };
-  register: (appApi?: AppAPI) => HostAPI | CustomWidgetAPILayer;
+  register: (appApi?: AppAPI) => HostAPI | EmbeddableWidgetAPI;
 }
 
 declare global {
