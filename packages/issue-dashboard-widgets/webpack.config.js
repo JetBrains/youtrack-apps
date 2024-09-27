@@ -19,7 +19,7 @@ const PATHS = {
   }
 };
 
-const SOURCES = [PATHS.issuesList.sources, PATHS.recentActivity.sources];
+const SOURCES = Object.values(PATHS).map(({sources}) => sources);
 
 // Patch @jetbrains/ring-ui svg-sprite-loader config
 ringUiWebpackConfig.loaders.svgInlineLoader.include.push(
@@ -112,8 +112,9 @@ const webpackConfig = () => ({
     new CopyWebpackPlugin([
       'manifest.json',
       'youtrack.svg',
-      {from: `${PATHS.issuesList.sources}/widget-settings.json`, to: PATHS.issuesList.outDir},
-      {from: `${PATHS.recentActivity.sources}/widget-settings.json`, to: PATHS.recentActivity.outDir}
+      ...Object.values(PATHS).map(({sources, outDir}) => (
+        {from: `${sources}/widget-settings.json`, to: outDir}
+      ))
     ], {})
   ]
 });
