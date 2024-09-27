@@ -6,7 +6,7 @@ const ringUiWebpackConfig = require('@jetbrains/ring-ui/webpack.config');
 
 const pkgConfig = require('./package.json').config;
 
-const componentsPath = join(__dirname, 'issues-list-widget/src');
+const componentsPath = join(__dirname, 'widgets/youtrack-issues-list/src');
 
 // Patch @jetbrains/ring-ui svg-sprite-loader config
 ringUiWebpackConfig.loaders.svgSpriteLoader.include.push(
@@ -95,7 +95,7 @@ const webpackConfig = () => ({
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'html-loader?interpolate!issues-list-widget/src/index.html',
+      template: `html-loader?interpolate!${componentsPath}/index.html`,
       filename: `widgets/${WIDGETS_PATHS.issuesList}/index.html`
     }),
     new CopyWebpackPlugin([
