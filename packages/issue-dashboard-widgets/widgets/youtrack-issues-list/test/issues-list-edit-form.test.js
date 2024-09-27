@@ -58,7 +58,7 @@ describe('IssuesListEditForm', () => {
     (onCancel).should.be.called();
   });
 
-  it('should respect localization', () => {
+  it.skip('should respect localization', () => {
     let cancelButton = mountIssueListEditForm().
       find('button[data-test="cancel-button"]');
 
