@@ -35,9 +35,12 @@ ringUiWebpackConfig.loaders.svgInlineLoader.include.push(
 const webpackConfig = () => ({
   mode: 'development',
   entry: {
-    [PATHS.issuesList.key]: `${PATHS.issuesList.sources}/app/app.js`,
-    [PATHS.recentActivity.key]: `${PATHS.recentActivity.sources}/app/app.js`,
-    [PATHS.distributionReports.key]: `${PATHS.distributionReports.sources}/app/app.js`
+    ...Object.keys(PATHS).reduce((acc, key) => {
+      if (PATHS[key].sources && PATHS[key].key) {
+        acc[PATHS[key].key] = `${PATHS[key].sources}/app/app.js`;
+      }
+      return acc;
+    }, {})
   },
   output: {
     path: resolve(__dirname, pkgConfig.dist),
