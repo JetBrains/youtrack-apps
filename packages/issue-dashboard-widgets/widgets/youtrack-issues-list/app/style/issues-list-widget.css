@@ -1,9 +1,9 @@
 @import '~@jetbrains/ring-ui/components/global/global';
 
 .issues-list-widget {
-  color: var(--ring-text-color);
-
   --search-context-width: calc(var(--ring-unit) * 12);
+
+  color: var(--ring-text-color);
 }
 
 .issues-list-widget__issue {
@@ -165,7 +165,6 @@
   margin-left: var(--ring-unit);
 }
 
-
 .issues-list-widget__filter {
   margin: 0 0 var(--ring-unit) 4px;
 }
@@ -184,7 +183,6 @@
   min-height: calc(4 * var(--ring-unit));
   margin-bottom: calc(6 * var(--ring-unit));
 }
-
 
 .issues-list-widget__search-context {
   display: inline-block;

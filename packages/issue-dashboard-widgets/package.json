@@ -11,7 +11,7 @@
     "upload": "youtrack-app upload dist",
     "test": "karma start",
     "lint": "eslint . --quiet=true && npm run stylelint",
-    "stylelint": "stylelint --ignore-path .gitignore **/*.scss",
+    "stylelint": "stylelint --ignore-path .gitignore **/*.css",
     "ci-test": "npm run lint && xvfb-maybe karma start --teamcity",
     "i18n:extract": "angular-gettext-cli --files \"{src/**/*.js,node_modules/hub-dashboard-addons/components/**/*.js,node_modules/@jetbrains/hub-widget-ui/src/**/*.js}\" --dest src/app/translations/default.pot --marker-name=i18n --module-method-plural=plural --module-name=i18n"
   },

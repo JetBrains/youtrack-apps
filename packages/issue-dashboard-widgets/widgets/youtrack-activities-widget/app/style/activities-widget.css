@@ -1,355 +1,502 @@
 .aw {
   color: var(--ring-text-color);
 }
+
 .aw__optional-title {
   margin-bottom: 0;
 }
+
 .aw__empty-widget-message {
   max-width: 288px;
   margin: calc(3 * var(--ring-unit)) auto var(--ring-unit) auto;
+
   color: var(--ring-text-color);
+
   font-size: var(--ring-font-size);
 }
+
 .aw__issue-filter {
   margin-bottom: calc(3 * var(--ring-unit));
 }
+
 .aw__issue-filter__query {
   width: 100%;
+
   vertical-align: top;
 }
+
 .aw__user-selector {
   margin-bottom: calc(3 * var(--ring-unit));
 }
+
 .aw__user-selector__title {
   color: var(--ring-secondary-color);
+
   font-size: var(--ring-font-size-smaller);
 }
+
 .aw__user-selector__form-select {
   width: 100%;
+
   vertical-align: top;
 }
+
 .aw__category-selector {
   margin-bottom: calc(2 * var(--ring-unit));
 }
+
 .aw__category-selector__title {
   padding: 0 0 4px 0;
+
   font-size: var(--ring-font-size);
   font-weight: bold;
 }
+
 .aw__category-selector__info {
   padding: 0 0 var(--ring-unit) 0;
+
   color: var(--ring-secondary-color);
+
   font-size: var(--ring-font-size-smaller);
 }
+
 .aw__category-selector [data-test|=ring-table-header-cell]:first-child {
   padding-left: var(--ring-unit) !important;
 }
+
 .aw__category-selector [data-test|=ring-table-cell]:first-child {
   padding-left: var(--ring-unit) !important;
 }
+
 .aw__load-more {
   margin: 4px 0;
   padding: 4px 0;
+
   text-align: center;
+
   border: 1px dashed var(--ring-borders-color);
   border-radius: 3px;
+
   font-size: var(--ring-font-size-smaller);
 }
+
 .aw__load-more:hover {
   border-color: var(--ring-pale-control-color);
 }
+
 .aw__issue {
   display: block;
   overflow: hidden;
+
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+
 .aw__issue__id {
   white-space: nowrap;
+
   color: var(--ring-text-color);
+
   font-size: var(--ring-font-size-larger);
 }
+
 .aw__issue__id_resolved {
   text-decoration: line-through;
+
   color: var(--ring-secondary-color);
 }
+
 .aw__issue__summary {
   margin-left: 4px;
 }
+
 .aw__issue__summary_resolved {
   color: var(--ring-secondary-color);
 }
+
 .aw__issue__summary_text {
   margin-left: 4px;
 }
+
 .aw__author-avatar {
   position: relative;
 }
+
 .aw__author-avatar__icon {
   position: relative;
 }
+
 .aw__author-avatar__group {
   position: absolute;
   right: 6px;
   bottom: 1px;
+
   width: 14px;
   height: 14px;
+
   border-radius: 2px;
 }
+
 .aw__author-link {
   margin-right: 4px;
 }
+
 .aw__action-name {
   margin-right: 4px;
+
   color: var(--ring-secondary-color);
 }
+
 .aw__action-time {
   color: var(--ring-secondary-color);
 }
+
 .aw__stream-link-icon {
   color: var(--ring-icon-color);
 }
+
 .aw__toggle {
   margin-right: 4px;
+
   cursor: pointer;
   text-align: left;
   vertical-align: baseline;
 }
+
 .aw__toggle__text {
   margin-left: 4px;
+
   color: var(--ring-main-color);
 }
+
 .aw__issue-card__header {
   display: flex;
 }
+
 .aw__issue-card__header__toggle {
   margin-right: 4px;
+
   text-align: left;
   vertical-align: baseline;
 }
+
 .aw__issue-card__header__link {
   flex-grow: 1;
+
   width: 100px;
 }
+
 .aw__issue-card__panel__issue {
   position: relative;
+
   overflow-x: hidden;
+
   margin: 0 -4px;
   padding: 4px;
+
   line-height: 20px;
 }
+
 .aw__issue-card__panel__issue_expanded {
   background-color: var(--ring-content-background-color);
   box-shadow: 0 1px 4px var(--ring-borders-color);
 }
+
 .aw__issue-card__panel__issue-info {
   display: inline-block;
+
   padding-right: calc(2 * var(--ring-unit));
   padding-left: calc(3 * var(--ring-unit));
 }
+
 .aw__issue-card__panel__colored-field {
   position: absolute;
   top: 6px;
+
   display: inline-block;
+
   width: 15px;
   height: 13px;
+
   cursor: default;
   text-align: center;
   vertical-align: text-bottom;
   white-space: nowrap;
+
   border: 1px solid transparent;
   border-radius: 2px;
   background-color: var(--ring-sidebar-background-color);
+
   font-size: 10px;
   line-height: 13px;
 }
+
 .aw__issue-card__panel__fields {
   display: table;
+
   min-width: calc(20 * var(--ring-unit));
   max-width: calc(50 * var(--ring-unit));
   padding: 2px 0 0 0;
+
   text-align: left;
+
   font-size: var(--ring-font-size-smaller);
   line-height: 20px;
 }
+
 .aw__issue-card__panel__fields-fix {
   padding-right: 4px !important;
 }
+
 .aw__issue-card__panel__field-row {
   display: table-row-group;
 }
+
 .aw__issue-card__panel__field {
   display: table-row;
+
   padding: 0 6px;
 }
+
 .aw__issue-card__panel__field-title {
   display: table-cell;
+
   padding-right: calc(2 * var(--ring-unit));
   padding-bottom: 2px;
+
   color: var(--ring-secondary-color);
 }
+
 .aw__issue-card__panel__field-value {
   display: table-cell;
 }
+
 .aw__issue-card__panel__field-avatar {
   position: relative;
   top: 5px;
+
   width: calc(2 * var(--ring-unit));
   height: calc(3 * var(--ring-unit));
   margin-top: calc(-1 * var(--ring-unit));
   margin-left: var(--ring-unit);
+
   border-radius: 3px;
 }
+
 .aw__issue-card__panel__field-color {
   position: static;
+
   height: 12px;
   margin-left: var(--ring-unit) !important;
 }
+
 .aw__entry {
   padding-bottom: calc(3 * var(--ring-unit));
+
   font-size: 14px;
 }
+
 .aw__entry_new {
   background: var(--ring-selected-background-color);
 }
+
 .aw__entry__container {
   margin-bottom: var(--ring-unit);
+
   font-weight: bold;
   line-height: calc(3 * var(--ring-unit));
 }
+
 .aw__entry__user-activity {
   display: flex;
+
   width: 100%;
 }
+
 .aw__entry__user-activity__avatar {
   width: 49px;
   min-width: 49px;
   margin-top: 3px;
 }
+
 .aw__entry__user-activity__data {
   flex-grow: 1;
 }
+
 .aw__entry__user-activity__data__header {
   display: flex;
+
   line-height: calc(3 * var(--ring-unit));
 }
+
 .aw__entry__user-activity__data__header__action {
   margin-right: 4px;
 }
+
 .aw__entry__user-activity__data__header__stream-link {
   flex-grow: 1;
+
   text-align: right;
   vertical-align: baseline;
 }
+
 .aw__entry__user-activity__data__content {
   line-height: 22px;
 }
+
 .aw__activity__change__field-name {
   margin-right: var(--ring-unit);
+
   white-space: nowrap;
 }
+
 .aw__activity__change__added {
   margin-right: 4px;
+
   color: var(--ring-icon-success-color);
 }
+
 .aw__activity__change__removed {
   text-decoration: line-through;
 }
+
 .aw__activity__attachment__header__field-name {
   margin-right: var(--ring-unit);
+
   white-space: nowrap;
 }
+
 .aw__activity__attachment__header__stub {
   display: inline-block;
+
   margin-right: var(--ring-unit);
 }
+
 .aw__activity__attachment__header__stub_removed {
   text-decoration: line-through;
 }
+
 .aw__activity__attachment__added-panel {
   display: flex;
   flex-wrap: wrap;
 }
+
 .aw__activity__attachment__added-panel__thumbnail {
   margin: 4px var(--ring-unit) 0 0;
 }
+
 .aw__activity__text {
   display: flex;
 }
+
 .aw__activity__text__field-name {
   margin-right: var(--ring-unit);
+
   white-space: nowrap;
 }
+
 .aw__activity__text__value {
   flex: 1;
+
   white-space: initial;
 }
+
 .aw__activity__text__value .diff-ins {
   text-decoration: none;
+
   background-color: #e6ffe6;
 }
+
 .aw__activity__text__value .diff-del {
   text-decoration: none;
+
   background-color: #ffe6e6;
 }
+
 .aw__activity__link {
   display: flex;
 }
+
 .aw__activity__link__field-name {
   margin-right: var(--ring-unit);
+
   white-space: nowrap;
 }
+
 .aw__activity__link__field-name_removed {
   text-decoration: line-through;
 }
+
 .aw__activity__link__change {
   flex-grow: 1;
 }
+
 .aw__activity__work_item__period_minutes {
   color: #999;
+
   font-weight: 700;
 }
+
 .aw__activity__work_item__period_hours {
   font-weight: 700;
 }
+
 .aw__activity__work_item__container {
   display: flex;
+
   width: 100%;
 }
+
 .aw__activity__work_item__cell {
   width: calc(11 * var(--ring-unit));
   padding: 0 4px 0 4px;
+
   text-align: left;
 }
+
 .aw__activity__work_item__cell_separator {
   width: 5px;
   padding: 0 4px 0 4px;
+
   text-align: center;
+
   color: #cfdbe5;
 }
+
 .aw__activity__work_item__cell_date {
   padding: 0 4px 0 0;
+
   white-space: nowrap;
 }
+
 .aw__activity__work_item__cell_duration {
   text-align: right;
   white-space: nowrap;
+
   font-size: 14px;
   font-weight: 700;
 }
+
 .aw__activity__work_item__cell_type {
   overflow: hidden;
+
   width: 112px;
   min-width: calc(2 * var(--ring-unit));
+
   text-overflow: ellipsis;
 }
+
 .aw__activity__work_item__cell_text {
   flex: 2;
+
   width: auto;
   padding: 0 0 0 4px;
+
   hyphens: auto;
 }
+
 .aw__activity__vcs_change_link {
   float: right;
+
   margin-top: -24px;
 }
