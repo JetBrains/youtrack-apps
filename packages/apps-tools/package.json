@@ -30,7 +30,7 @@
     "test": "jest",
     "test:type": "tsc --noEmit",
     "save-version": "echo '{ \"version\": \"'$npm_package_version'\" }' > dist/package.json",
-    "release:ci": "commit-and-tag-version --prerelease alpha && git push --follow-tags origin main && npm run save-version && npm publish --tag alpha"
+    "release:ci": "commit-and-tag-version && git push --follow-tags origin main && npm run save-version && npm publish"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
