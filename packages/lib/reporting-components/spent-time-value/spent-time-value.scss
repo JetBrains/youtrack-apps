@@ -1,0 +1,9 @@
+.spent-time-value {
+  &__hours {
+    margin-right: 4px;
+  }
+
+  &__minutes {
+    color: var(--ring-secondary-color);
+  }
+}

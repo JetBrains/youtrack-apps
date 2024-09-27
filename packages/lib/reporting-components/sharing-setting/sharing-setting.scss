@@ -1,0 +1,22 @@
+.sharing-setting__text {
+  display: inline-block;
+  overflow: hidden;
+
+  max-width: 200px;
+
+  vertical-align: bottom;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sharing-setting__anchor {
+  &[disabled] {
+    cursor: auto;
+
+    color: var(--ring-disabled-color);
+  }
+}
+
+.sharing-setting__popup {
+  width: calc(44 * var(--ring-unit));
+}

@@ -1,0 +1,109 @@
+@import '~@jetbrains/ring-ui/components/global/global';
+@import '~@jetbrains/ring-ui/components/palette/palette';
+
+$color-fields-mapping:
+  //tone, brightness
+  6 3,
+  6 2,
+  1 3,
+  3 3,
+  4 4,
+  3 4,
+  2 3,
+  5 4,
+  4 3,
+  1 2,
+  5 2,
+  4 2,
+  5 1,
+  1 1,
+  2 0,
+  0 0,
+  1 0,
+  5 0,
+  4 1,
+  5 3,
+  3 0,
+  4 0,
+  6 0,
+  2 1,
+  3 1,
+  6 1,
+  0 1,
+  2 2,
+  3 2,
+  0 2,
+  0 3,
+  1 4,
+  2 4,
+  6 4,
+  0 4;
+
+.color-fields__color-0 {
+  color: var(--ring-text-color);
+}
+
+.color-fields__background-0 {
+  background-color: var(--ring-content-background-color);
+}
+
+.color-fields__border-0 {
+  border-color: transparent;
+}
+
+.color-fields__field-0 {
+  border-color: var(--ring-dark-borders-color);
+
+  @extend .color-fields__border-0;
+  @extend .color-fields__background-0;
+  @extend .color-fields__color-0;
+}
+
+.color-fields__field-none {
+  box-sizing: border-box;
+
+  border: 1px solid var(--ring-pale-control-color) !important;
+}
+
+$i: 1;
+
+@each $color in $color-fields-mapping {
+  $tone: nth($color, 1);
+  $brightness: nth($color, 2);
+  $pi: $tone + ($brightness * 7) + 2;
+  $rc: nth($ring-palette-array, $pi);
+
+  .color-fields__color-#{$i} {
+    color: nth($rc, 2);
+  }
+
+  .color-fields__plain-color-#{$i} {
+    @if $pi < 16 { color: nth($rc, 2); }
+
+    @else { color: nth($rc, 1); }
+  }
+
+  .color-fields__background-#{$i} {
+    background-color: nth($rc, 1);
+  }
+
+  .color-fields__border-#{$i} {
+    border-color: transparent !important;
+  }
+
+  .color-fields__field-#{$i} {
+    @extend .color-fields__border-#{$i};
+    @extend .color-fields__background-#{$i};
+    @extend .color-fields__color-#{$i};
+  }
+
+  .color-tag-#{$i} {
+    color: nth($rc, 1);
+
+    & svg {
+      stroke: nth($rc, 1);
+      fill: nth($rc, 2);
+    }
+  }
+  $i: $i + 1;
+}

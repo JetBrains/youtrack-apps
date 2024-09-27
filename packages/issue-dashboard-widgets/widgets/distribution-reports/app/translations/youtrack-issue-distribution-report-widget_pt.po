@@ -1,0 +1,421 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-File: /widgets/youtrack-issue-distribution-report-widget/youtrack-issue-distribution-report-widget.pot\n"
+"X-Crowdin-File-ID: 35340\n"
+"Language-Team: Portuguese, Brazilian\n"
+"Language: pt_BR\n"
+"PO-Revision-Date: 2023-01-31 23:50\n"
+
+#: ../../components/src/report-form-controls/report-projects.js:53
+msgid "Add project"
+msgstr "Adicionar projeto"
+
+#: ../../components/src/report-form-controls/report-users.js:29
+msgid "Add user"
+msgstr "Adicionar usuário"
+
+#: ../../components/src/report-form-controls/report-work-types.js:44
+msgid "Add work type"
+msgstr "Adicionar tipo de trabalho"
+
+#: ../../components/src/report-form-controls/report-projects.js:54
+msgid "All projects"
+msgstr "Todos os projetos"
+
+#: ../../components/src/report-form-controls/report-users.js:30
+msgid "All users"
+msgstr "Todos os usuários"
+
+#: ../../components/src/report-form-controls/report-work-types.js:45
+msgid "All work types"
+msgstr "Todos os tipos de trabalho"
+
+#: src/app/distribution-report-types.js:34
+msgid "Assignee"
+msgstr "Atribuído"
+
+#: src/app/report-chart.js:277
+msgid "Bars"
+msgstr "Barras"
+
+#: src/app/content.js:101
+msgid "Calculating..."
+msgstr "Calculando..."
+
+#: src/app/distribution-report-form.js:358
+msgid "Can edit"
+msgstr "Pode editar"
+
+#: src/app/distribution-report-form.js:349
+msgid "Can view and use"
+msgstr "Pode ver e usar"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: src/app/content.js:77
+msgid "Cannot find YouTrack installation"
+msgstr "Não foi possível encontrar uma instalação do YouTrack"
+
+#: src/app/content.js:82
+msgid "Cannot find any issue distribution report"
+msgstr "Não foi possível encontrar nenhum relatório de distribuição de issues"
+
+#: ../../components/src/base-configuration/base-configuration.js:52
+msgid "Cannot find any time tracking reports"
+msgstr "Não foi possível encontrar nenhum relatório de controle de tempo"
+
+#: src/app/content.js:86
+msgid "Cannot load selected report"
+msgstr "Não foi possível carregar relatório selecionado"
+
+#: ../../components/src/base-configuration/base-configuration.js:239
+msgid "Cannot save report"
+msgstr "Não foi possível salvar relatório"
+
+#: ../../components/src/base-configuration/base-configuration.js:248
+msgid "Cannot update widget"
+msgstr "Não foi possível atualizar o widget"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:130
+msgid "Create new report"
+msgstr "Criar novo relatório"
+
+#: ../../components/src/report-form-controls/report-period.js:21
+msgid "Custom dates interval"
+msgstr "Intervalo de datas personalizado"
+
+#: ../../components/src/report-model/report-time-scales.js:6
+msgid "Day"
+msgstr "Dia"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:135
+msgid "Display existing report"
+msgstr "Exibir relatório existente"
+
+#: src/app/content.js:67
+msgid "Edit settings"
+msgstr "Editar configurações"
+
+#: ../../components/src/base-configuration/base-configuration.js:120
+msgid "Failed to find proper YouTrack installation"
+msgstr "Não foi possível encontrar uma instalação adequada do YouTrack"
+
+#: ../../components/src/base-configuration/base-configuration.js:362
+msgid "Failed to load data from selected YouTrack"
+msgstr "Não foi possível carregar dados do YouTrack selecionado"
+
+#: src/app/distribution-report-form.js:392
+msgid "Filter issues"
+msgstr "Filtrar issues"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:131
+msgid "Filter users, groups, and teams"
+msgstr "Filtrar usuários, grupos e equipes"
+
+#: ../../components/src/report-model/report-time-ranges.js:6
+msgid "Fixed"
+msgstr "Corrigida"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:38
+msgid "Groups and teams"
+msgstr "Grupos e equipes"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:47
+msgid "If you want to customize your own copy of this report, {{cloneItPlaceholder}}"
+msgstr "Se você deseja personalizar sua própria cópia deste relatório, {{cloneItPlaceholder}}"
+
+#: src/app/widget.js:58
+msgid "Issue Distribution Report"
+msgstr "Relatório de distribuição de issues"
+
+#: src/app/distribution-report-form.js:307
+msgid "Issues"
+msgstr "Issues"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Janeiro|Fevereiro|Março|Abril|Maio|Junho|Julho|Agosto|Setembro|Outubro|Novembro|Dezembro"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Jan|Fev|Mar|Abr|Maio|Jun|Jul|Ago|Set|Out|Nov|Dez"
+
+#: ../../components/src/report-model/report-time-ranges.js:54
+msgid "Last month"
+msgstr "Mês passado"
+
+#: ../../components/src/report-model/report-time-ranges.js:50
+msgid "Last week"
+msgstr "Semana passada"
+
+#: ../../components/src/report-model/report-time-ranges.js:34
+msgid "Last working day"
+msgstr "Dia de trabalho passada"
+
+#: ../../components/src/report-model/report-time-scales.js:14
+msgid "Month"
+msgstr "Mês"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:27
+msgid "New report"
+msgstr "Novo relatório"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:60
+msgid "No grouping"
+msgstr "Sem agrupamento"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:15
+msgid "No value"
+msgstr "Nenhum valor"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Oops! Algo deu errado..."
+
+#: src/app/content.js:89
+msgid "Oops... Something went wrong =("
+msgstr "Oops... Algo deu errado =("
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:38
+msgid "Other groups and teams"
+msgstr "Outros grupos e equipes"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:19
+#: ../../components/src/sharing-setting/sharing-setting.js:20
+msgid "Owner"
+msgstr "Proprietário"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:23
+msgid "Parent issue"
+msgstr "Issue progenitor"
+
+#: src/app/report-chart.js:300
+msgid "Pie chart"
+msgstr "Gráfico pizza"
+
+#: src/app/distribution-report-types.js:31
+msgid "Project"
+msgstr "Projeto"
+
+#: src/app/distribution-report-form.js:370
+msgid "Projects"
+msgstr "Projetos"
+
+#: ../../components/src/report-form-controls/report-issues-filter.js:30
+msgid "Query"
+msgstr "Consulta"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:37
+msgid "Recommended groups and teams"
+msgstr "Grupos e equipes recomendados"
+
+#: ../../components/src/base-configuration/base-configuration.js:370
+#: src/app/content.js:48
+msgid "Remove widget"
+msgstr "Remover widget"
+
+#: src/app/distribution-report-form.js:419
+msgid "Report name"
+msgstr "Nome do relatório"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:145
+msgid "Reset to default (owner)"
+msgstr "Redefinir para o default (proprietário)"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "Salvar"
+
+#: ../../components/src/base-configuration/base-configuration.js:340
+msgid "Select YouTrack"
+msgstr "Selecionar YouTrack"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:142
+msgid "Select report"
+msgstr "Selecionar relatório"
+
+#: src/app/distribution-report-form.js:348
+msgid "Sharing settings"
+msgstr "Configurações de compartilhamento"
+
+#: src/app/distribution-report-form.js:281
+msgid "Show distribution by"
+msgstr "Mostrar distribuição por"
+
+#: src/app/distribution-report-form.js:299
+msgid "Show totals for {{aggregationPolicy}}"
+msgstr "Mostrar totais para {{aggregationPolicy}}"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Domingo|Segunda|Terça|Quarta|Quinta|Sexta|Sábado"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Dom|Seg|Ter|Qua|Qui|Sex|Sáb"
+
+#: src/app/report-chart.js:288
+msgid "Table"
+msgstr "Tabela"
+
+#: src/app/content.js:116
+msgid "The report cannot be calculated: the filters in the report settings return too many issues"
+msgstr "O relatório não pode ser calculado: os filtros nas configurações do relatório retornam issues demais"
+
+#: src/app/content.js:121
+msgid "There aren't any issues that match the filters in the report settings"
+msgstr "Não há issues que correspondam aos filtros nas configurações do relatório"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:132
+msgid "This field does not exist in some of the selected projects"
+msgstr "Este campo não existe em alguns dos projetos selecionados"
+
+#: ../../components/src/report-model/report-time-ranges.js:42
+msgid "This month"
+msgstr "Este mês"
+
+#: ../../components/src/report-model/report-time-ranges.js:38
+msgid "This week"
+msgstr "Esta semana"
+
+#: ../../components/src/report-model/report-time-ranges.js:46
+msgid "This year"
+msgstr "Este ano"
+
+#: ../../components/src/report-model/report-time-ranges.js:24
+msgid "Today"
+msgstr "Hoje"
+
+#: src/app/report-chart.js:249
+msgid "Total"
+msgstr "Total"
+
+#: src/app/content.js:128
+msgid "Total issues count"
+msgstr "Contagem total de issues"
+
+#: src/app/content.js:131
+msgid "Total votes count"
+msgstr "Contagem total de votos"
+
+#: src/app/content.js:134
+msgid "Total {{fieldName}}"
+msgstr "Total {{fieldName}}"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:26
+msgid "Unnamed"
+msgstr "Sem nome"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:39
+msgid "Users"
+msgstr "Usuários"
+
+#: ../../components/src/report-model/report-time-scales.js:10
+msgid "Week"
+msgstr "Semana"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "Widget atualiza a cada minuto"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Widget atualiza a cada {{minutesCount}} minutos"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:18
+msgid "Work author"
+msgstr "Autor de trabalho"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:13
+msgid "Work type"
+msgstr "Tipo de trabalho"
+
+#: ../../components/src/report-model/report-time-ranges.js:29
+msgid "Yesterday"
+msgstr "Ontem"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:42
+msgid "You do not have access to edit report settings."
+msgstr "Você não tem permissões de acesso para editar as configurações do relatório."
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "a.m.|p.m."
+
+#: src/app/distribution-report-form.js:265
+msgid "and"
+msgstr "e"
+
+#: src/app/report-chart-sort-order.js:31
+msgid "asc"
+msgstr "asc"
+
+#: src/app/report-chart-sort-order.js:49
+msgid "by count"
+msgstr "por contagem"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:26
+msgid "clone"
+msgstr "clonar"
+
+#: src/app/report-chart-sort-order.js:31
+msgid "desc"
+msgstr "desc"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:23
+msgid "estimation"
+msgstr "estimativa"
+
+#: ../../components/src/spent-time-value/spent-time-value.js:28
+msgid "h"
+msgstr "h"
+
+#: ../../components/src/spent-time-value/spent-time-value.js:19
+msgid "m"
+msgstr "m"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:20
+msgid "me"
+msgstr "eu"
+
+#: src/app/report-chart-sort-order.js:50
+msgid "natural"
+msgstr "natural"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:47
+msgid "overdue"
+msgstr "em atraso"
+
+#: ../../components/src/report-model/report-model.js:127
+msgid "project"
+msgstr "projeto"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:34
+msgid "total spent time"
+msgstr "tempo gasto total"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:52
+msgid "{{ifYouWantToCustomizeYourOwnCopyOfThisReportPlaceholder}} clone it"
+msgstr "{{ifYouWantToCustomizeYourOwnCopyOfThisReportPlaceholder}} clone-o"
+
+#: ../../components/src/issue-link/issue-link.js:26
+msgid "{{minCount}}m"
+msgstr "{{minCount}} min"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} minutos"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:118
+msgid "＋Add field"
+msgstr "＋Adicionar campo"
+

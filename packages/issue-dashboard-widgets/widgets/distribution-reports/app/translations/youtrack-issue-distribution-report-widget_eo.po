@@ -1,0 +1,421 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: eo\n"
+"X-Crowdin-File: /widgets/youtrack-issue-distribution-report-widget/youtrack-issue-distribution-report-widget.pot\n"
+"X-Crowdin-File-ID: 35340\n"
+"Language-Team: Esperanto\n"
+"Language: eo_UY\n"
+"PO-Revision-Date: 2022-08-30 10:00\n"
+
+#: ../../components/src/report-form-controls/report-projects.js:53
+msgid "Add project"
+msgstr "crwdns9736986:0crwdne9736986:0"
+
+#: ../../components/src/report-form-controls/report-users.js:29
+msgid "Add user"
+msgstr "crwdns9736988:0crwdne9736988:0"
+
+#: ../../components/src/report-form-controls/report-work-types.js:44
+msgid "Add work type"
+msgstr "crwdns9736990:0crwdne9736990:0"
+
+#: ../../components/src/report-form-controls/report-projects.js:54
+msgid "All projects"
+msgstr "crwdns9736992:0crwdne9736992:0"
+
+#: ../../components/src/report-form-controls/report-users.js:30
+msgid "All users"
+msgstr "crwdns9736994:0crwdne9736994:0"
+
+#: ../../components/src/report-form-controls/report-work-types.js:45
+msgid "All work types"
+msgstr "crwdns9736996:0crwdne9736996:0"
+
+#: src/app/distribution-report-types.js:34
+msgid "Assignee"
+msgstr "crwdns9697800:0crwdne9697800:0"
+
+#: src/app/report-chart.js:277
+msgid "Bars"
+msgstr "crwdns933076:0crwdne933076:0"
+
+#: src/app/content.js:101
+msgid "Calculating..."
+msgstr "crwdns933080:0crwdne933080:0"
+
+#: src/app/distribution-report-form.js:358
+msgid "Can edit"
+msgstr "crwdns9072638:0crwdne9072638:0"
+
+#: src/app/distribution-report-form.js:349
+msgid "Can view and use"
+msgstr "crwdns9072640:0crwdne9072640:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "crwdns933082:0crwdne933082:0"
+
+#: src/app/content.js:77
+msgid "Cannot find YouTrack installation"
+msgstr "crwdns933084:0crwdne933084:0"
+
+#: src/app/content.js:82
+msgid "Cannot find any issue distribution report"
+msgstr "crwdns933086:0crwdne933086:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:52
+msgid "Cannot find any time tracking reports"
+msgstr "crwdns9736998:0crwdne9736998:0"
+
+#: src/app/content.js:86
+msgid "Cannot load selected report"
+msgstr "crwdns933088:0crwdne933088:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:239
+msgid "Cannot save report"
+msgstr "crwdns9737000:0crwdne9737000:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:248
+msgid "Cannot update widget"
+msgstr "crwdns9737002:0crwdne9737002:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:130
+msgid "Create new report"
+msgstr "crwdns9737004:0crwdne9737004:0"
+
+#: ../../components/src/report-form-controls/report-period.js:21
+msgid "Custom dates interval"
+msgstr "crwdns9737006:0crwdne9737006:0"
+
+#: ../../components/src/report-model/report-time-scales.js:6
+msgid "Day"
+msgstr "crwdns9737008:0crwdne9737008:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:135
+msgid "Display existing report"
+msgstr "crwdns9737010:0crwdne9737010:0"
+
+#: src/app/content.js:67
+msgid "Edit settings"
+msgstr "crwdns933096:0crwdne933096:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:120
+msgid "Failed to find proper YouTrack installation"
+msgstr "crwdns9737012:0crwdne9737012:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:362
+msgid "Failed to load data from selected YouTrack"
+msgstr "crwdns9737014:0crwdne9737014:0"
+
+#: src/app/distribution-report-form.js:392
+msgid "Filter issues"
+msgstr "crwdns933098:0crwdne933098:0"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:131
+msgid "Filter users, groups, and teams"
+msgstr "crwdns9737016:0crwdne9737016:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:6
+msgid "Fixed"
+msgstr "crwdns9737018:0crwdne9737018:0"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:38
+msgid "Groups and teams"
+msgstr "crwdns9737020:0crwdne9737020:0"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:47
+msgid "If you want to customize your own copy of this report, {{cloneItPlaceholder}}"
+msgstr "crwdns9737022:0{{cloneItPlaceholder}}crwdne9737022:0"
+
+#: src/app/widget.js:58
+msgid "Issue Distribution Report"
+msgstr "crwdns933100:0crwdne933100:0"
+
+#: src/app/distribution-report-form.js:307
+msgid "Issues"
+msgstr "crwdns1253928:0crwdne1253928:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "crwdns933102:0crwdne933102:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "crwdns933104:0crwdne933104:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:54
+msgid "Last month"
+msgstr "crwdns9737024:0crwdne9737024:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:50
+msgid "Last week"
+msgstr "crwdns9737026:0crwdne9737026:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:34
+msgid "Last working day"
+msgstr "crwdns9737028:0crwdne9737028:0"
+
+#: ../../components/src/report-model/report-time-scales.js:14
+msgid "Month"
+msgstr "crwdns9737030:0crwdne9737030:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:27
+msgid "New report"
+msgstr "crwdns9737032:0crwdne9737032:0"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:60
+msgid "No grouping"
+msgstr "crwdns9737034:0crwdne9737034:0"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:15
+msgid "No value"
+msgstr "crwdns9737036:0crwdne9737036:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "crwdns933116:0crwdne933116:0"
+
+#: src/app/content.js:89
+msgid "Oops... Something went wrong =("
+msgstr "crwdns933118:0crwdne933118:0"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:38
+msgid "Other groups and teams"
+msgstr "crwdns9737038:0crwdne9737038:0"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:19
+#: ../../components/src/sharing-setting/sharing-setting.js:20
+msgid "Owner"
+msgstr "crwdns9737040:0crwdne9737040:0"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:23
+msgid "Parent issue"
+msgstr "crwdns9737042:0crwdne9737042:0"
+
+#: src/app/report-chart.js:300
+msgid "Pie chart"
+msgstr "crwdns1476886:0crwdne1476886:0"
+
+#: src/app/distribution-report-types.js:31
+msgid "Project"
+msgstr "crwdns9697802:0crwdne9697802:0"
+
+#: src/app/distribution-report-form.js:370
+msgid "Projects"
+msgstr "crwdns9375682:0crwdne9375682:0"
+
+#: ../../components/src/report-form-controls/report-issues-filter.js:30
+msgid "Query"
+msgstr "crwdns9737044:0crwdne9737044:0"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:37
+msgid "Recommended groups and teams"
+msgstr "crwdns9737046:0crwdne9737046:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:370
+#: src/app/content.js:48
+msgid "Remove widget"
+msgstr "crwdns933122:0crwdne933122:0"
+
+#: src/app/distribution-report-form.js:419
+msgid "Report name"
+msgstr "crwdns933130:0crwdne933130:0"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:145
+msgid "Reset to default (owner)"
+msgstr "crwdns9737048:0crwdne9737048:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "crwdns933132:0crwdne933132:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:340
+msgid "Select YouTrack"
+msgstr "crwdns9737050:0crwdne9737050:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:142
+msgid "Select report"
+msgstr "crwdns9737052:0crwdne9737052:0"
+
+#: src/app/distribution-report-form.js:348
+msgid "Sharing settings"
+msgstr "crwdns9375686:0crwdne9375686:0"
+
+#: src/app/distribution-report-form.js:281
+msgid "Show distribution by"
+msgstr "crwdns9375688:0crwdne9375688:0"
+
+#: src/app/distribution-report-form.js:299
+msgid "Show totals for {{aggregationPolicy}}"
+msgstr "crwdns1253930:0{{aggregationPolicy}}crwdne1253930:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "crwdns933144:0crwdne933144:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "crwdns933146:0crwdne933146:0"
+
+#: src/app/report-chart.js:288
+msgid "Table"
+msgstr "crwdns933148:0crwdne933148:0"
+
+#: src/app/content.js:116
+msgid "The report cannot be calculated: the filters in the report settings return too many issues"
+msgstr "crwdns933150:0crwdne933150:0"
+
+#: src/app/content.js:121
+msgid "There aren't any issues that match the filters in the report settings"
+msgstr "crwdns933152:0crwdne933152:0"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:132
+msgid "This field does not exist in some of the selected projects"
+msgstr "crwdns9737054:0crwdne9737054:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:42
+msgid "This month"
+msgstr "crwdns9737056:0crwdne9737056:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:38
+msgid "This week"
+msgstr "crwdns9737058:0crwdne9737058:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:46
+msgid "This year"
+msgstr "crwdns9737060:0crwdne9737060:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:24
+msgid "Today"
+msgstr "crwdns9737062:0crwdne9737062:0"
+
+#: src/app/report-chart.js:249
+msgid "Total"
+msgstr "crwdns1253932:0crwdne1253932:0"
+
+#: src/app/content.js:128
+msgid "Total issues count"
+msgstr "crwdns1253934:0crwdne1253934:0"
+
+#: src/app/content.js:131
+msgid "Total votes count"
+msgstr "crwdns1253936:0crwdne1253936:0"
+
+#: src/app/content.js:134
+msgid "Total {{fieldName}}"
+msgstr "crwdns1253938:0{{fieldName}}crwdne1253938:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:26
+msgid "Unnamed"
+msgstr "crwdns9737064:0crwdne9737064:0"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:39
+msgid "Users"
+msgstr "crwdns9737066:0crwdne9737066:0"
+
+#: ../../components/src/report-model/report-time-scales.js:10
+msgid "Week"
+msgstr "crwdns9737068:0crwdne9737068:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "crwdns933160:0crwdne933160:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "crwdns933162:0{{minutesCount}}crwdne933162:0"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:18
+msgid "Work author"
+msgstr "crwdns9737070:0crwdne9737070:0"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:13
+msgid "Work type"
+msgstr "crwdns9737072:0crwdne9737072:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:29
+msgid "Yesterday"
+msgstr "crwdns9737074:0crwdne9737074:0"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:42
+msgid "You do not have access to edit report settings."
+msgstr "crwdns9737076:0crwdne9737076:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "crwdns933164:0crwdne933164:0"
+
+#: src/app/distribution-report-form.js:265
+msgid "and"
+msgstr "crwdns9697804:0crwdne9697804:0"
+
+#: src/app/report-chart-sort-order.js:31
+msgid "asc"
+msgstr "crwdns933166:0crwdne933166:0"
+
+#: src/app/report-chart-sort-order.js:49
+msgid "by count"
+msgstr "crwdns933170:0crwdne933170:0"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:26
+msgid "clone"
+msgstr "crwdns9737078:0crwdne9737078:0"
+
+#: src/app/report-chart-sort-order.js:31
+msgid "desc"
+msgstr "crwdns933174:0crwdne933174:0"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:23
+msgid "estimation"
+msgstr "crwdns9737080:0crwdne9737080:0"
+
+#: ../../components/src/spent-time-value/spent-time-value.js:28
+msgid "h"
+msgstr "crwdns9737082:0crwdne9737082:0"
+
+#: ../../components/src/spent-time-value/spent-time-value.js:19
+msgid "m"
+msgstr "crwdns9737084:0crwdne9737084:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:20
+msgid "me"
+msgstr "crwdns9737086:0crwdne9737086:0"
+
+#: src/app/report-chart-sort-order.js:50
+msgid "natural"
+msgstr "crwdns933180:0crwdne933180:0"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:47
+msgid "overdue"
+msgstr "crwdns9737088:0crwdne9737088:0"
+
+#: ../../components/src/report-model/report-model.js:127
+msgid "project"
+msgstr "crwdns9737090:0crwdne9737090:0"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:34
+msgid "total spent time"
+msgstr "crwdns9737092:0crwdne9737092:0"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:52
+msgid "{{ifYouWantToCustomizeYourOwnCopyOfThisReportPlaceholder}} clone it"
+msgstr "crwdns9737094:0{{ifYouWantToCustomizeYourOwnCopyOfThisReportPlaceholder}}crwdne9737094:0"
+
+#: ../../components/src/issue-link/issue-link.js:26
+msgid "{{minCount}}m"
+msgstr "crwdns9761438:0{{minCount}}crwdne9761438:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "crwdns933186:0{{minutesCount}}crwdne933186:0"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:118
+msgid "＋Add field"
+msgstr "crwdns9737098:0crwdne9737098:0"
+

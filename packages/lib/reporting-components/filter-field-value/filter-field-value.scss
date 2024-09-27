@@ -1,0 +1,29 @@
+@import '~@jetbrains/ring-ui/components/global/global';
+
+.filter-field-label {
+  float: left;
+  overflow-x: hidden;
+
+  max-width: 100%;
+
+  cursor: default;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  & > div {
+    max-width: 100%;
+
+    button {
+      overflow: hidden;
+
+      max-width: 100%;
+
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.issue-summary {
+  margin-left: 10px;
+}

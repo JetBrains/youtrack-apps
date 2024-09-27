@@ -1,0 +1,103 @@
+@import "~@jetbrains/ring-ui/components/global/global";
+
+.spent-time-progress {
+  &__labels {
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  &__label-sum {
+    overflow: hidden;
+
+    min-width: 8*$ring-unit;
+    max-width: 100%;
+
+    text-align: right;
+
+    text-overflow: ellipsis;
+  }
+
+  &__label-details {
+    overflow: hidden;
+    flex-grow: 2;
+
+    min-width: 0;
+    margin-left: 2px;
+
+    text-align: left;
+
+    text-overflow: ellipsis;
+
+    font-size: 11px;
+  }
+
+  &__label-detail {
+    margin-right: 6px;
+    padding-bottom: 1px;
+    padding-left: 2px;
+
+    &_spent {
+      border-left: 2px solid var(--ring-icon-success-color);
+    }
+
+    &_estimated {
+      border-left: 2px solid var(--ring-icon-disabled-color);
+    }
+
+    &_overdue {
+      border-left: 2px solid var(--ring-icon-warning-color);
+    }
+  }
+
+  &__placeholder {
+    position: absolute;
+    right: 2px;
+    bottom: -2px;
+    left: 2px;
+
+    height: 2px;
+
+    background-color: var(--ring-border-disabled-color);
+
+    &_overdue {
+      background-color: var(--ring-icon-warning-color);
+    }
+  }
+
+  &__wrapper {
+    position: relative;
+
+    cursor: default;
+  }
+
+  &__bar {
+    height: 2px;
+
+    background-color: #59a869;
+  }
+
+  &__mark {
+    display: inline-block;
+
+    width: $ring-unit;
+    height: $ring-unit;
+
+    margin-right: 3px;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    &_overdue {
+      background-color: var(--ring-icon-warning-color);
+    }
+
+    &_estimated {
+      background-color: var(--ring-border-disabled-color);
+    }
+
+    &_spent {
+      background-color: var(--ring-icon-success-color);
+    }
+  }
+}

@@ -5,6 +5,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ringUiWebpackConfig = require('@jetbrains/ring-ui/webpack.config');
 
 const pkgConfig = require('./package.json').config;
+const babelConfig = require('./package.json').babel;
 
 const PATHS = {
   issuesList: {
@@ -16,6 +17,11 @@ const PATHS = {
     key: 'youtrack-activities-widget',
     sources: join(__dirname, 'widgets/youtrack-activities-widget'),
     outDir: 'widgets/youtrack-activities-widget'
+  },
+  distributionReports: {
+    key: 'distribution-reports',
+    sources: join(__dirname, 'widgets/distribution-reports'),
+    outDir: 'widgets/distribution-reports'
   }
 };
 
@@ -31,7 +37,8 @@ const webpackConfig = () => ({
   mode: 'development',
   entry: {
     [PATHS.issuesList.key]: `${PATHS.issuesList.sources}/app/app.js`,
-    [PATHS.recentActivity.key]: `${PATHS.recentActivity.sources}/app/app.js`
+    [PATHS.recentActivity.key]: `${PATHS.recentActivity.sources}/app/app.js`,
+    [PATHS.distributionReports.key]: `${PATHS.distributionReports.sources}/app/app.js`
   },
   output: {
     path: resolve(__dirname, pkgConfig.dist),
@@ -44,9 +51,39 @@ const webpackConfig = () => ({
       chunks: 'all'
     }
   },
+  resolve: {
+    alias: {
+      react: resolve('./node_modules/react'),
+      'react-dom': resolve('./node_modules/react-dom'),
+      'prop-types': resolve('./node_modules/prop-types'),
+      classnames: resolve('./node_modules/classnames'),
+      '@jetbrains/hub-widget-ui': resolve('./node_modules/@jetbrains/hub-widget-ui'),
+      'hub-dashboard-addons': resolve('./node_modules/hub-dashboard-addons'),
+      '@jetbrains/ring-ui': resolve('./node_modules/@jetbrains/ring-ui'),
+      mout: resolve('./node_modules/mout'),
+      fecha: resolve('./node_modules/fecha'),
+    }
+  },
   module: {
     rules: [
       ...ringUiWebpackConfig.config.module.rules,
+      {
+        test: /\.scss$/,
+        include: [
+          join(__dirname, '../lib/reporting-components'),
+          ...SOURCES
+        ],
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: require('sass') // Dart implementation of SASS compiler
+            }
+          }
+        ]
+      },
       {
         test: /\.css$/,
         exclude: [ringUiWebpackConfig.componentsPath],
@@ -64,9 +101,14 @@ const webpackConfig = () => ({
         test: /\.js$/,
         include: [
           join(__dirname, 'node_modules/chai-as-promised'),
+          join(__dirname, '../lib/reporting-components'),
           ...SOURCES
         ],
-        loader: 'babel-loader?cacheDirectory'
+        loader: 'babel-loader',
+        options: {
+          presets: [require.resolve('@jetbrains/babel-preset-jetbrains')],
+          plugins: [require.resolve('babel-plugin-transform-decorators-legacy')]
+        }
       },
       {
         test: /\.po$/,

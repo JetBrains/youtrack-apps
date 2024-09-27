@@ -1,0 +1,421 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: zu\n"
+"X-Crowdin-File: /widgets/youtrack-issue-distribution-report-widget/youtrack-issue-distribution-report-widget.pot\n"
+"X-Crowdin-File-ID: 266770\n"
+"Language-Team: Zulu\n"
+"Language: zu_ZA\n"
+"PO-Revision-Date: 2022-06-29 11:15\n"
+
+#: ../../components/src/report-form-controls/report-projects.js:53
+msgid "Add project"
+msgstr "crwdns12676290:0crwdne12676290:0"
+
+#: ../../components/src/report-form-controls/report-users.js:29
+msgid "Add user"
+msgstr "crwdns12676292:0crwdne12676292:0"
+
+#: ../../components/src/report-form-controls/report-work-types.js:44
+msgid "Add work type"
+msgstr "crwdns12676294:0crwdne12676294:0"
+
+#: ../../components/src/report-form-controls/report-projects.js:54
+msgid "All projects"
+msgstr "crwdns12676296:0crwdne12676296:0"
+
+#: ../../components/src/report-form-controls/report-users.js:30
+msgid "All users"
+msgstr "crwdns12676298:0crwdne12676298:0"
+
+#: ../../components/src/report-form-controls/report-work-types.js:45
+msgid "All work types"
+msgstr "crwdns12676300:0crwdne12676300:0"
+
+#: src/app/distribution-report-types.js:34
+msgid "Assignee"
+msgstr "crwdns12676302:0crwdne12676302:0"
+
+#: src/app/report-chart.js:277
+msgid "Bars"
+msgstr "crwdns12676304:0crwdne12676304:0"
+
+#: src/app/content.js:101
+msgid "Calculating..."
+msgstr "crwdns12676306:0crwdne12676306:0"
+
+#: src/app/distribution-report-form.js:358
+msgid "Can edit"
+msgstr "crwdns12676308:0crwdne12676308:0"
+
+#: src/app/distribution-report-form.js:349
+msgid "Can view and use"
+msgstr "crwdns12676310:0crwdne12676310:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "crwdns12676312:0crwdne12676312:0"
+
+#: src/app/content.js:77
+msgid "Cannot find YouTrack installation"
+msgstr "crwdns12676314:0crwdne12676314:0"
+
+#: src/app/content.js:82
+msgid "Cannot find any issue distribution report"
+msgstr "crwdns12676316:0crwdne12676316:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:52
+msgid "Cannot find any time tracking reports"
+msgstr "crwdns12676318:0crwdne12676318:0"
+
+#: src/app/content.js:86
+msgid "Cannot load selected report"
+msgstr "crwdns12676320:0crwdne12676320:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:239
+msgid "Cannot save report"
+msgstr "crwdns12676322:0crwdne12676322:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:248
+msgid "Cannot update widget"
+msgstr "crwdns12676324:0crwdne12676324:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:130
+msgid "Create new report"
+msgstr "crwdns12676326:0crwdne12676326:0"
+
+#: ../../components/src/report-form-controls/report-period.js:21
+msgid "Custom dates interval"
+msgstr "crwdns12676328:0crwdne12676328:0"
+
+#: ../../components/src/report-model/report-time-scales.js:6
+msgid "Day"
+msgstr "crwdns12676330:0crwdne12676330:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:135
+msgid "Display existing report"
+msgstr "crwdns12676332:0crwdne12676332:0"
+
+#: src/app/content.js:67
+msgid "Edit settings"
+msgstr "crwdns12676334:0crwdne12676334:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:120
+msgid "Failed to find proper YouTrack installation"
+msgstr "crwdns12676336:0crwdne12676336:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:362
+msgid "Failed to load data from selected YouTrack"
+msgstr "crwdns12676338:0crwdne12676338:0"
+
+#: src/app/distribution-report-form.js:392
+msgid "Filter issues"
+msgstr "crwdns12676340:0crwdne12676340:0"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:131
+msgid "Filter users, groups, and teams"
+msgstr "crwdns12676342:0crwdne12676342:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:6
+msgid "Fixed"
+msgstr "crwdns12676344:0crwdne12676344:0"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:38
+msgid "Groups and teams"
+msgstr "crwdns12676346:0crwdne12676346:0"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:47
+msgid "If you want to customize your own copy of this report, {{cloneItPlaceholder}}"
+msgstr "crwdns12676348:0{{cloneItPlaceholder}}crwdne12676348:0"
+
+#: src/app/widget.js:58
+msgid "Issue Distribution Report"
+msgstr "crwdns12676350:0crwdne12676350:0"
+
+#: src/app/distribution-report-form.js:307
+msgid "Issues"
+msgstr "crwdns12676352:0crwdne12676352:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "crwdns12676354:0crwdne12676354:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "crwdns12676356:0crwdne12676356:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:54
+msgid "Last month"
+msgstr "crwdns12676358:0crwdne12676358:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:50
+msgid "Last week"
+msgstr "crwdns12676360:0crwdne12676360:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:34
+msgid "Last working day"
+msgstr "crwdns12676362:0crwdne12676362:0"
+
+#: ../../components/src/report-model/report-time-scales.js:14
+msgid "Month"
+msgstr "crwdns12676364:0crwdne12676364:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:27
+msgid "New report"
+msgstr "crwdns12676366:0crwdne12676366:0"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:60
+msgid "No grouping"
+msgstr "crwdns12676368:0crwdne12676368:0"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:15
+msgid "No value"
+msgstr "crwdns12676370:0crwdne12676370:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "crwdns12676372:0crwdne12676372:0"
+
+#: src/app/content.js:89
+msgid "Oops... Something went wrong =("
+msgstr "crwdns12676374:0crwdne12676374:0"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:38
+msgid "Other groups and teams"
+msgstr "crwdns12676376:0crwdne12676376:0"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:19
+#: ../../components/src/sharing-setting/sharing-setting.js:20
+msgid "Owner"
+msgstr "crwdns12676378:0crwdne12676378:0"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:23
+msgid "Parent issue"
+msgstr "crwdns12676380:0crwdne12676380:0"
+
+#: src/app/report-chart.js:300
+msgid "Pie chart"
+msgstr "crwdns12676382:0crwdne12676382:0"
+
+#: src/app/distribution-report-types.js:31
+msgid "Project"
+msgstr "crwdns12676384:0crwdne12676384:0"
+
+#: src/app/distribution-report-form.js:370
+msgid "Projects"
+msgstr "crwdns12676386:0crwdne12676386:0"
+
+#: ../../components/src/report-form-controls/report-issues-filter.js:30
+msgid "Query"
+msgstr "crwdns12676388:0crwdne12676388:0"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:37
+msgid "Recommended groups and teams"
+msgstr "crwdns12676390:0crwdne12676390:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:370
+#: src/app/content.js:48
+msgid "Remove widget"
+msgstr "crwdns12676392:0crwdne12676392:0"
+
+#: src/app/distribution-report-form.js:419
+msgid "Report name"
+msgstr "crwdns12676394:0crwdne12676394:0"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:145
+msgid "Reset to default (owner)"
+msgstr "crwdns12676396:0crwdne12676396:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "crwdns12676398:0crwdne12676398:0"
+
+#: ../../components/src/base-configuration/base-configuration.js:340
+msgid "Select YouTrack"
+msgstr "crwdns12676400:0crwdne12676400:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:142
+msgid "Select report"
+msgstr "crwdns12676402:0crwdne12676402:0"
+
+#: src/app/distribution-report-form.js:348
+msgid "Sharing settings"
+msgstr "crwdns12676404:0crwdne12676404:0"
+
+#: src/app/distribution-report-form.js:281
+msgid "Show distribution by"
+msgstr "crwdns12676406:0crwdne12676406:0"
+
+#: src/app/distribution-report-form.js:299
+msgid "Show totals for {{aggregationPolicy}}"
+msgstr "crwdns12676408:0{{aggregationPolicy}}crwdne12676408:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "crwdns12676410:0crwdne12676410:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "crwdns12676412:0crwdne12676412:0"
+
+#: src/app/report-chart.js:288
+msgid "Table"
+msgstr "crwdns12676414:0crwdne12676414:0"
+
+#: src/app/content.js:116
+msgid "The report cannot be calculated: the filters in the report settings return too many issues"
+msgstr "crwdns12676416:0crwdne12676416:0"
+
+#: src/app/content.js:121
+msgid "There aren't any issues that match the filters in the report settings"
+msgstr "crwdns12676418:0crwdne12676418:0"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:132
+msgid "This field does not exist in some of the selected projects"
+msgstr "crwdns12676420:0crwdne12676420:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:42
+msgid "This month"
+msgstr "crwdns12676422:0crwdne12676422:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:38
+msgid "This week"
+msgstr "crwdns12676424:0crwdne12676424:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:46
+msgid "This year"
+msgstr "crwdns12676426:0crwdne12676426:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:24
+msgid "Today"
+msgstr "crwdns12676428:0crwdne12676428:0"
+
+#: src/app/report-chart.js:249
+msgid "Total"
+msgstr "crwdns12676430:0crwdne12676430:0"
+
+#: src/app/content.js:128
+msgid "Total issues count"
+msgstr "crwdns12676432:0crwdne12676432:0"
+
+#: src/app/content.js:131
+msgid "Total votes count"
+msgstr "crwdns12676434:0crwdne12676434:0"
+
+#: src/app/content.js:134
+msgid "Total {{fieldName}}"
+msgstr "crwdns12676436:0{{fieldName}}crwdne12676436:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:26
+msgid "Unnamed"
+msgstr "crwdns12676438:0crwdne12676438:0"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:39
+msgid "Users"
+msgstr "crwdns12676440:0crwdne12676440:0"
+
+#: ../../components/src/report-model/report-time-scales.js:10
+msgid "Week"
+msgstr "crwdns12676442:0crwdne12676442:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "crwdns12676444:0crwdne12676444:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "crwdns12676446:0{{minutesCount}}crwdne12676446:0"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:18
+msgid "Work author"
+msgstr "crwdns12676448:0crwdne12676448:0"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:13
+msgid "Work type"
+msgstr "crwdns12676450:0crwdne12676450:0"
+
+#: ../../components/src/report-model/report-time-ranges.js:29
+msgid "Yesterday"
+msgstr "crwdns12676452:0crwdne12676452:0"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:42
+msgid "You do not have access to edit report settings."
+msgstr "crwdns12676454:0crwdne12676454:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "crwdns12676456:0crwdne12676456:0"
+
+#: src/app/distribution-report-form.js:265
+msgid "and"
+msgstr "crwdns12676458:0crwdne12676458:0"
+
+#: src/app/report-chart-sort-order.js:31
+msgid "asc"
+msgstr "crwdns12676460:0crwdne12676460:0"
+
+#: src/app/report-chart-sort-order.js:49
+msgid "by count"
+msgstr "crwdns12676462:0crwdne12676462:0"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:26
+msgid "clone"
+msgstr "crwdns12676464:0crwdne12676464:0"
+
+#: src/app/report-chart-sort-order.js:31
+msgid "desc"
+msgstr "crwdns12676466:0crwdne12676466:0"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:23
+msgid "estimation"
+msgstr "crwdns12676468:0crwdne12676468:0"
+
+#: ../../components/src/spent-time-value/spent-time-value.js:28
+msgid "h"
+msgstr "crwdns12676470:0crwdne12676470:0"
+
+#: ../../components/src/spent-time-value/spent-time-value.js:19
+msgid "m"
+msgstr "crwdns12676472:0crwdne12676472:0"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:20
+msgid "me"
+msgstr "crwdns12676474:0crwdne12676474:0"
+
+#: src/app/report-chart-sort-order.js:50
+msgid "natural"
+msgstr "crwdns12676476:0crwdne12676476:0"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:47
+msgid "overdue"
+msgstr "crwdns12676478:0crwdne12676478:0"
+
+#: ../../components/src/report-model/report-model.js:127
+msgid "project"
+msgstr "crwdns12676480:0crwdne12676480:0"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:34
+msgid "total spent time"
+msgstr "crwdns12676482:0crwdne12676482:0"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:52
+msgid "{{ifYouWantToCustomizeYourOwnCopyOfThisReportPlaceholder}} clone it"
+msgstr "crwdns12676484:0{{ifYouWantToCustomizeYourOwnCopyOfThisReportPlaceholder}}crwdne12676484:0"
+
+#: ../../components/src/issue-link/issue-link.js:26
+msgid "{{minCount}}m"
+msgstr "crwdns12676486:0{{minCount}}crwdne12676486:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "crwdns12676488:0{{minutesCount}}crwdne12676488:0"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:118
+msgid "＋Add field"
+msgstr "crwdns12676490:0crwdne12676490:0"
+

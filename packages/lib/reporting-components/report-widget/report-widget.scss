@@ -1,0 +1,44 @@
+@import '~@jetbrains/ring-ui/components/global/global';
+
+body {
+  color: var(--ring-text-color);
+}
+
+.report-widget {
+  &__icon {
+    position: relative;
+    top: -3px;
+
+    &_btn {
+      cursor: pointer;
+
+      &:hover {
+        color: var(--ring-link-hover-color);
+      }
+    }
+  }
+
+  &__progress {
+    position: absolute;
+    top: 43%;
+    left: 0;
+
+    width: 100%;
+
+    transform: translate(0, -43%);
+    text-align: center;
+  }
+
+  &__progress-bar {
+    max-width: 80%;
+    margin: $ring-unit auto;
+  }
+
+  &__disabled {
+    color: var(--ring-disabled-color);
+  }
+
+  &__input-label-compensation-hack {
+    margin-top: $ring-unit;
+  }
+}

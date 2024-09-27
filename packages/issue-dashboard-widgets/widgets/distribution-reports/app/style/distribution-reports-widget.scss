@@ -1,0 +1,87 @@
+@import '~@jetbrains/ring-ui/components/global/global';
+
+.distribution-reports-widget {
+  &__label {
+    margin-right: $ring-unit;
+  }
+
+  &__axis-label {
+    cursor: default;
+
+    color: var(--ring-pale-control-color);
+
+    font-size: var(--ring-font-size-smaller);
+  }
+
+  &__action {
+    cursor: pointer;
+
+    color: var(--ring-secondary-color);
+
+    & button {
+      color: var(--ring-secondary-color);
+    }
+
+    &:hover {
+      color: var(--ring-link-hover-color);
+    }
+  }
+
+  &__filter-field-selector {
+    margin-right: 4px;
+
+    white-space: nowrap;
+  }
+
+  &__filter-field-controls {
+    white-space: nowrap;
+  }
+
+  &__transpose-icon {
+    margin-right: 8px;
+    margin-left: 2px;
+  }
+
+  &__filter-field-title {
+    margin-right: 4px;
+
+    white-space: nowrap;
+  }
+
+  &__filter-fields {
+    margin-top: 14px;
+
+    line-height: 3 * $ring-unit;
+  }
+
+  &__filter-field-presentation {
+    display: inline-block;
+    overflow-x: hidden;
+
+    max-width: 18 * $ring-unit;
+
+    vertical-align: top;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &_error {
+      border-bottom: 1px dotted var(--ring-error-color);
+      box-shadow: inset 0 -1px 0 0 var(--ring-warning-color);
+    }
+  }
+
+  &__distribution-report-form {
+    margin-top: 3 * $ring-unit;
+  }
+
+  &__icon {
+    &_btn {
+      cursor: pointer;
+
+      &:hover {
+        color: var(--ring-link-hover-color);
+      }
+    }
+  }
+}

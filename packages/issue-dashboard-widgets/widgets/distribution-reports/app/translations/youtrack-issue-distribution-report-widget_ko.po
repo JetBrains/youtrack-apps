@@ -1,0 +1,421 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: ko\n"
+"X-Crowdin-File: /widgets/youtrack-issue-distribution-report-widget/youtrack-issue-distribution-report-widget.pot\n"
+"X-Crowdin-File-ID: 35340\n"
+"Language-Team: Korean\n"
+"Language: ko_KR\n"
+"PO-Revision-Date: 2023-01-31 23:50\n"
+
+#: ../../components/src/report-form-controls/report-projects.js:53
+msgid "Add project"
+msgstr "프로젝트 추가"
+
+#: ../../components/src/report-form-controls/report-users.js:29
+msgid "Add user"
+msgstr "사용자 추가"
+
+#: ../../components/src/report-form-controls/report-work-types.js:44
+msgid "Add work type"
+msgstr "작업 유형 추가"
+
+#: ../../components/src/report-form-controls/report-projects.js:54
+msgid "All projects"
+msgstr "모든 프로젝트"
+
+#: ../../components/src/report-form-controls/report-users.js:30
+msgid "All users"
+msgstr "모든 사용자"
+
+#: ../../components/src/report-form-controls/report-work-types.js:45
+msgid "All work types"
+msgstr "모든 작업 유형"
+
+#: src/app/distribution-report-types.js:34
+msgid "Assignee"
+msgstr "담당자"
+
+#: src/app/report-chart.js:277
+msgid "Bars"
+msgstr "표시줄"
+
+#: src/app/content.js:101
+msgid "Calculating..."
+msgstr "계산 중..."
+
+#: src/app/distribution-report-form.js:358
+msgid "Can edit"
+msgstr "편집할 수 있음"
+
+#: src/app/distribution-report-form.js:349
+msgid "Can view and use"
+msgstr "편집 및 사용 가능"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "취소"
+
+#: src/app/content.js:77
+msgid "Cannot find YouTrack installation"
+msgstr "YouTrack 설치를 찾을 수 없습니다"
+
+#: src/app/content.js:82
+msgid "Cannot find any issue distribution report"
+msgstr "이슈 분포 보고서를 찾을 수 없습니다"
+
+#: ../../components/src/base-configuration/base-configuration.js:52
+msgid "Cannot find any time tracking reports"
+msgstr "시간 추적 보고서를 찾을 수 없습니다"
+
+#: src/app/content.js:86
+msgid "Cannot load selected report"
+msgstr "선택한 보고서를 불러올 수 없습니다"
+
+#: ../../components/src/base-configuration/base-configuration.js:239
+msgid "Cannot save report"
+msgstr "보고서를 저장할 수 없습니다"
+
+#: ../../components/src/base-configuration/base-configuration.js:248
+msgid "Cannot update widget"
+msgstr "위젯을 업데이트할 수 없습니다"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:130
+msgid "Create new report"
+msgstr "새 보고서 생성"
+
+#: ../../components/src/report-form-controls/report-period.js:21
+msgid "Custom dates interval"
+msgstr "사용자 지정 날짜 간격"
+
+#: ../../components/src/report-model/report-time-scales.js:6
+msgid "Day"
+msgstr "일"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:135
+msgid "Display existing report"
+msgstr "기존 보고서 표시"
+
+#: src/app/content.js:67
+msgid "Edit settings"
+msgstr "설정 편집"
+
+#: ../../components/src/base-configuration/base-configuration.js:120
+msgid "Failed to find proper YouTrack installation"
+msgstr "적절한 YouTrack 설치본을 찾는 데 실패했습니다"
+
+#: ../../components/src/base-configuration/base-configuration.js:362
+msgid "Failed to load data from selected YouTrack"
+msgstr "선택된 YouTrack에서 데이터를 불러오는 데 실패했습니다"
+
+#: src/app/distribution-report-form.js:392
+msgid "Filter issues"
+msgstr "이슈 필터링"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:131
+msgid "Filter users, groups, and teams"
+msgstr "사용자, 그룹 및 팀 필터링"
+
+#: ../../components/src/report-model/report-time-ranges.js:6
+msgid "Fixed"
+msgstr "수정됨"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:38
+msgid "Groups and teams"
+msgstr "그룹 및 팀"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:47
+msgid "If you want to customize your own copy of this report, {{cloneItPlaceholder}}"
+msgstr "이 보고서의 사본을 사용자화하려면 {{cloneItPlaceholder}}"
+
+#: src/app/widget.js:58
+msgid "Issue Distribution Report"
+msgstr "이슈 분포 현황 보고서"
+
+#: src/app/distribution-report-form.js:307
+msgid "Issues"
+msgstr "이슈"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "1월|2월|3월|4월|5월|6월|7월|8월|9월|10월|11월|12월"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "1월|2월|3월|4월|5월|6월|7월|8월|9월|10월|11월|12월"
+
+#: ../../components/src/report-model/report-time-ranges.js:54
+msgid "Last month"
+msgstr "지난 달"
+
+#: ../../components/src/report-model/report-time-ranges.js:50
+msgid "Last week"
+msgstr "지난 주"
+
+#: ../../components/src/report-model/report-time-ranges.js:34
+msgid "Last working day"
+msgstr "최근 작업일"
+
+#: ../../components/src/report-model/report-time-scales.js:14
+msgid "Month"
+msgstr "월"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:27
+msgid "New report"
+msgstr "신규 보고서"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:60
+msgid "No grouping"
+msgstr "그룹화 없음"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:15
+msgid "No value"
+msgstr "값 없음"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "죄송합니다. 오류가 발생했습니다."
+
+#: src/app/content.js:89
+msgid "Oops... Something went wrong =("
+msgstr "이런... 오류가 발생했습니다 =("
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:38
+msgid "Other groups and teams"
+msgstr "기타 그룹 및 팀"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:19
+#: ../../components/src/sharing-setting/sharing-setting.js:20
+msgid "Owner"
+msgstr "소유자"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:23
+msgid "Parent issue"
+msgstr "상위 이슈"
+
+#: src/app/report-chart.js:300
+msgid "Pie chart"
+msgstr "파이 차트"
+
+#: src/app/distribution-report-types.js:31
+msgid "Project"
+msgstr "프로젝트"
+
+#: src/app/distribution-report-form.js:370
+msgid "Projects"
+msgstr "프로젝트"
+
+#: ../../components/src/report-form-controls/report-issues-filter.js:30
+msgid "Query"
+msgstr "쿼리"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:37
+msgid "Recommended groups and teams"
+msgstr "권장 그룹 및 팀"
+
+#: ../../components/src/base-configuration/base-configuration.js:370
+#: src/app/content.js:48
+msgid "Remove widget"
+msgstr "위젯 제거"
+
+#: src/app/distribution-report-form.js:419
+msgid "Report name"
+msgstr "보고서 이름"
+
+#: ../../components/src/sharing-setting/sharing-setting.js:145
+msgid "Reset to default (owner)"
+msgstr "기본 (소유자)로 초기화"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "저장"
+
+#: ../../components/src/base-configuration/base-configuration.js:340
+msgid "Select YouTrack"
+msgstr "YouTrack 선택"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:142
+msgid "Select report"
+msgstr "보고서 선택"
+
+#: src/app/distribution-report-form.js:348
+msgid "Sharing settings"
+msgstr "공유 설정"
+
+#: src/app/distribution-report-form.js:281
+msgid "Show distribution by"
+msgstr "분포 표시 방식"
+
+#: src/app/distribution-report-form.js:299
+msgid "Show totals for {{aggregationPolicy}}"
+msgstr "{{aggregationPolicy}}의 합계 표시"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "일요일|월요일|화요일|수요일|목요일|금요일|토요일"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "일|월|화|수|목|금|토"
+
+#: src/app/report-chart.js:288
+msgid "Table"
+msgstr "테이블"
+
+#: src/app/content.js:116
+msgid "The report cannot be calculated: the filters in the report settings return too many issues"
+msgstr "보고서를 계산할 수 없습니다. 보고서 설정의 필터링이 너무 많은 이슈를 반환합니다."
+
+#: src/app/content.js:121
+msgid "There aren't any issues that match the filters in the report settings"
+msgstr "보고서 설정의 필터에 해당하는 이슈가 없습니다."
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:132
+msgid "This field does not exist in some of the selected projects"
+msgstr "선택한 프로젝트 중 일부에 이 필드가 존재하지 않습니다"
+
+#: ../../components/src/report-model/report-time-ranges.js:42
+msgid "This month"
+msgstr "이번 달"
+
+#: ../../components/src/report-model/report-time-ranges.js:38
+msgid "This week"
+msgstr "이번 주"
+
+#: ../../components/src/report-model/report-time-ranges.js:46
+msgid "This year"
+msgstr "올해"
+
+#: ../../components/src/report-model/report-time-ranges.js:24
+msgid "Today"
+msgstr "오늘"
+
+#: src/app/report-chart.js:249
+msgid "Total"
+msgstr "합계"
+
+#: src/app/content.js:128
+msgid "Total issues count"
+msgstr "총 이슈 개수"
+
+#: src/app/content.js:131
+msgid "Total votes count"
+msgstr "총 투표수"
+
+#: src/app/content.js:134
+msgid "Total {{fieldName}}"
+msgstr "총 {{fieldName}}"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:26
+msgid "Unnamed"
+msgstr "이름 없음"
+
+#: ../../components/src/sharing-setting/make-dropdown-options.js:39
+msgid "Users"
+msgstr "사용자"
+
+#: ../../components/src/report-model/report-time-scales.js:10
+msgid "Week"
+msgstr "주"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "위젯은 1분마다 새로고침됩니다"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "위젯은 {{minutesCount}}분마다 새로고침됩니다"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:18
+msgid "Work author"
+msgstr "작업 작성자"
+
+#: ../../components/src/report-form-controls/report-grouping-control.js:13
+msgid "Work type"
+msgstr "작업 유형"
+
+#: ../../components/src/report-model/report-time-ranges.js:29
+msgid "Yesterday"
+msgstr "어제"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:42
+msgid "You do not have access to edit report settings."
+msgstr "보고서 설정을 편집할 액세스가 없습니다."
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "오전|오후"
+
+#: src/app/distribution-report-form.js:265
+msgid "and"
+msgstr "그리고"
+
+#: src/app/report-chart-sort-order.js:31
+msgid "asc"
+msgstr "오름차순"
+
+#: src/app/report-chart-sort-order.js:49
+msgid "by count"
+msgstr "개수로 정렬"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:26
+msgid "clone"
+msgstr "복제"
+
+#: src/app/report-chart-sort-order.js:31
+msgid "desc"
+msgstr "내림차순"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:23
+msgid "estimation"
+msgstr "예측 시간"
+
+#: ../../components/src/spent-time-value/spent-time-value.js:28
+msgid "h"
+msgstr "시"
+
+#: ../../components/src/spent-time-value/spent-time-value.js:19
+msgid "m"
+msgstr "분"
+
+#: ../../components/src/report-form-controls/report-configuration-tabs.js:20
+msgid "me"
+msgstr "나"
+
+#: src/app/report-chart-sort-order.js:50
+msgid "natural"
+msgstr "자연 정렬"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:47
+msgid "overdue"
+msgstr "기한 경과"
+
+#: ../../components/src/report-model/report-model.js:127
+msgid "project"
+msgstr "프로젝트"
+
+#: ../../components/src/spent-time-progress/spent-time-progress.js:34
+msgid "total spent time"
+msgstr "총 소요 시간"
+
+#: ../../components/src/report-form-controls/no-edit-permissions-warning.js:52
+msgid "{{ifYouWantToCustomizeYourOwnCopyOfThisReportPlaceholder}} clone it"
+msgstr "{{ifYouWantToCustomizeYourOwnCopyOfThisReportPlaceholder}} 복제하세요"
+
+#: ../../components/src/issue-link/issue-link.js:26
+msgid "{{minCount}}m"
+msgstr "{{minCount}}분"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}}분"
+
+#: ../../components/src/filter-fields-selector/filter-fields-selector.js:118
+msgid "＋Add field"
+msgstr "＋필드 추가"
+

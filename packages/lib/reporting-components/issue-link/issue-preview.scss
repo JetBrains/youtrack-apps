@@ -1,0 +1,140 @@
+@import '~@jetbrains/ring-ui/components/global/global';
+
+.yt-issue-preview {
+  display: flex;
+
+  overflow: hidden;
+  flex-direction: row;
+
+  width: 350px;
+
+  margin-bottom: -1*$ring-unit;
+  padding: 0 $ring-unit;
+
+  text-align: left;
+
+  font-size: var(--ring-font-size-smaller);
+
+  line-height: var(--ring-line-height-lowest);
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__priority-wrapper {
+    flex-basis: 20px;
+  }
+
+  &__header {
+    display: flex;
+  }
+
+  .yt-issue-preview__loader {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .yt-issue-preview__priority {
+    display: inline-block;
+
+    width: 17px;
+    height: 17px;
+
+    text-align: center;
+    vertical-align: middle;
+
+    border-radius: var(--ring-border-radius);
+
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  &__id {
+    padding: 0 $ring-unit/2 0 $ring-unit;
+
+    font-size: var(--ring-font-size);
+  }
+
+  &__summary {
+    word-break: break-word;
+
+    color: var(--ring-text-color);
+  }
+
+  &__fields {
+    display: table;
+
+    width: 100%;
+    margin-top: $ring-unit;
+
+    table-layout: fixed;
+
+    font-size: var(--ring-font-size-smaller);
+  }
+
+  &__field {
+    position: relative;
+
+    display: table-cell;
+    overflow: hidden;
+
+    padding: 0 $ring-unit 12px $ring-unit;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &::before {
+      position: absolute;
+      top: $ring-unit/2;
+      left: 2px;
+
+      display: inline-block;
+
+      height: 1em;
+
+      content: '';
+
+      border-left: 1px solid var(--ring-line-color);
+    }
+
+    &:first-child::before {
+      border-left-color: transparent;
+    }
+  }
+
+  &__field-marker {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    display: flex;
+
+    height: 5px;
+  }
+
+  &__field-sample {
+    display: inline-block;
+
+    width: 100%;
+
+    border: 1px solid var(--ring-popup-background-color);
+    border-top-left-radius: var(--ring-border-radius);
+
+    border-top-right-radius: var(--ring-border-radius);
+    box-shadow: -1px 0 0 var(--ring-popup-background-color);
+
+    &.yt-issue-preview__field-sample:not(:first-child) {
+      margin-left: 2px;
+    }
+
+    &.yt-issue-preview__field-sample:first-child {
+      margin-left: 4px;
+    }
+
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}

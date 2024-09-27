@@ -1,0 +1,10 @@
+{
+  "name": "youtrack-apps-lib",
+  "version": "1.0.0",
+  "private": true,
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+
+  }
+}
