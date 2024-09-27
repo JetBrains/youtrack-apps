@@ -15,9 +15,16 @@ ringUiWebpackConfig.loaders.svgSpriteLoader.include.push(
 );
 
 
+const WIDGETS_PATHS = {
+  issuesList: 'youtrack-issues-list'
+};
+
+
 const webpackConfig = () => ({
   mode: 'development',
-  entry: `${componentsPath}/app/app.js`,
+  entry: {
+    [WIDGETS_PATHS.issuesList]: `${componentsPath}/app/app.js`
+  },
   resolve: {
     mainFields: ['module', 'browser', 'main'],
     alias: {
@@ -28,7 +35,7 @@ const webpackConfig = () => ({
   },
   output: {
     path: resolve(__dirname, pkgConfig.dist),
-    filename: '[name].js',
+    filename: pathData => `widgets/${pathData.chunk.name}/[name].js`,
     devtoolModuleFilenameTemplate: '[absolute-resource-path]'
   },
   module: {
@@ -88,10 +95,13 @@ const webpackConfig = () => ({
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'html-loader?interpolate!issues-list-widget/src/index.html'
+      template: 'html-loader?interpolate!issues-list-widget/src/index.html',
+      filename: `widgets/${WIDGETS_PATHS.issuesList}/index.html`
     }),
     new CopyWebpackPlugin([
-      'manifest.json'
+      'manifest.json',
+      'youtrack.svg',
+      {from: `${componentsPath}/widget-settings.json`, to: `widgets/${WIDGETS_PATHS.issuesList}`}
     ], {})
   ]
 });
