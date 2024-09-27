@@ -100,15 +100,14 @@ const webpackConfig = () => ({
     }
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: `html-loader?interpolate!${PATHS.issuesList.sources}/index.html`,
-      chunks: [PATHS.issuesList.key],
-      filename: `${PATHS.issuesList.outDir}/index.html`
-    }),
-    new HtmlWebpackPlugin({
-      template: `html-loader?interpolate!${PATHS.recentActivity.sources}/index.html`,
-      chunks: [PATHS.recentActivity.key],
-      filename: `${PATHS.recentActivity.outDir}/index.html`
+    ...Object.values(PATHS).map(({sources, key, outDir}) => {
+      const keys = Object.values(PATHS).map(path => path.key);
+
+      return new HtmlWebpackPlugin({
+        template: `html-loader?interpolate!${sources}/index.html`,
+        excludeChunks: keys.filter(k => k !== key), // Exclude other entry point chunks!
+        filename: `${outDir}/index.html`
+      });
     }),
     new CopyWebpackPlugin([
       'manifest.json',
