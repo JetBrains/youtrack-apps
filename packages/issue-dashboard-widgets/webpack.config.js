@@ -104,7 +104,7 @@ const webpackConfig = () => ({
       const keys = Object.values(PATHS).map(path => path.key);
 
       return new HtmlWebpackPlugin({
-        template: `html-loader?interpolate!${sources}/index.html`,
+        template: `${sources}/index.html`,
         excludeChunks: keys.filter(k => k !== key), // Exclude other entry point chunks!
         filename: `${outDir}/index.html`
       });
