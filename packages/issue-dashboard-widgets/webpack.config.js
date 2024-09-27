@@ -36,7 +36,13 @@ const webpackConfig = () => ({
   output: {
     path: resolve(__dirname, pkgConfig.dist),
     filename: pathData => `widgets/${pathData.chunk.name}/[name].js`,
+    chunkFilename: 'widgets/shared/[name].[chunkhash:4].js',
     devtoolModuleFilenameTemplate: '[absolute-resource-path]'
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
   },
   module: {
     rules: [

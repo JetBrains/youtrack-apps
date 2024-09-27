@@ -7,7 +7,7 @@
   },
   "scripts": {
     "start": "NODE_OPTIONS=--openssl-legacy-provider webpack serve",
-    "build": "rm -rf dist && NODE_OPTIONS=--openssl-legacy-provider webpack --mode development",
+    "build": "rm -rf dist && NODE_OPTIONS=--openssl-legacy-provider webpack --mode production",
     "upload": "youtrack-app upload dist",
     "test": "karma start",
     "lint": "eslint . --quiet=true && npm run stylelint",
