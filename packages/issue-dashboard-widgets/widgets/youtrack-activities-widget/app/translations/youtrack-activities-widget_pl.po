@@ -1,0 +1,269 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: pl\n"
+"X-Crowdin-File: /widgets/youtrack-activities-widget/default.pot\n"
+"X-Crowdin-File-ID: 419394\n"
+"Language-Team: Polish\n"
+"Language: pl_PL\n"
+"PO-Revision-Date: 2024-02-04 13:51\n"
+
+#: src/app/edit-form-category-selector.js:54
+msgid "Activity Categories"
+msgstr ""
+
+#: src/app/edit-form-query-toolbar.js:69
+msgid "Activity is only shown for issues that match the search criteria"
+msgstr ""
+
+#: src/app/edit-form-user-selector.js:92
+msgid "Any user"
+msgstr ""
+
+#: src/app/content-attachment-activity.js:78
+msgid "Attachment"
+msgstr "Załącznik"
+
+#: src/app/components/categories.js:11
+msgid "Attachments"
+msgstr "Załączniki"
+
+#: src/app/activities-content.js:74
+msgid "Can't load information from service."
+msgstr "Nie można załadować informacji z usługi."
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: src/app/edit-form-category-selector.js:45
+msgid "Category"
+msgstr ""
+
+#: src/app/edit-form-user-selector.js:75
+msgid "Change authors"
+msgstr ""
+
+#: src/app/components/categories.js:13
+msgid "Comments"
+msgstr "Komentarze"
+
+#: src/app/activities-widget.js:172
+msgid "Could not load new activities"
+msgstr ""
+
+#: src/app/control-load-more.js:32
+msgid "Could not request more activities"
+msgstr ""
+
+#: src/app/components/categories.js:10
+msgid "Custom fields"
+msgstr "Pola niestandardowe"
+
+#: src/app/components/categories.js:6
+msgid "Deleted/Restored issues"
+msgstr ""
+
+#: src/app/components/categories.js:9
+msgid "Description"
+msgstr "Opis"
+
+#: src/app/activities-content.js:155
+msgid "Description changed"
+msgstr ""
+
+#: src/app/components/collapsible-block.js:37
+msgid "Details"
+msgstr "Szczegóły"
+
+#: src/app/activities-content.js:63
+msgid "Edit widget filters"
+msgstr ""
+
+#: src/app/edit-form-query-toolbar.js:63
+msgid "Enter a search query"
+msgstr ""
+
+#: src/app/activities-widget.js:259
+msgid "Issue Activity Feed"
+msgstr ""
+
+#: src/app/activities-widget.js:258
+msgid "Issue Activity Feed —"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Styczeń|Luty|Marzec|Kwiecień|Maj|Czerwiec|Lipiec|Sierpień|Wrzesień|Październik|Listopad|Grudzień"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Sty|Lut|Mar|Kwi|Maj|Cze|Lip|Sie|Wrz|Paź|Lis|Gru"
+
+#: src/app/components/categories.js:12
+msgid "Links"
+msgstr ""
+
+#: src/app/components/categories.js:4
+msgid "New issues"
+msgstr ""
+
+#: src/app/content-work-items-activity.js:67
+msgid "No type"
+msgstr "Brak typu"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Ups. Coś poszło nie tak..."
+
+#: src/app/components/activity-stream-link.js:29
+msgid "Open in issue"
+msgstr ""
+
+#: src/app/components/categories.js:7
+#: src/app/content-project-activity.js:23
+msgid "Project"
+msgstr "Projekt"
+
+#: src/app/components/categories.js:5
+msgid "Resolved/reopened issues"
+msgstr ""
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "Zapisz"
+
+#: src/app/edit-form-youtrack-selector.js:95
+msgid "Select YouTrack"
+msgstr "Wybierz YouTrack"
+
+#: src/app/edit-form-category-selector.js:57
+msgid "Select which types of updates are shown in the activity feed"
+msgstr ""
+
+#: src/app/edit-form-optional-title.js:44
+msgid "Set optional title"
+msgstr "Ustaw opcjonalny tytuł"
+
+#: src/app/components/issue-card.js:288
+#: src/app/control-load-more.js:52
+msgid "Show more"
+msgstr "Pokaż więcej"
+
+#: src/app/components/categories.js:15
+msgid "Sprints"
+msgstr ""
+
+#: src/app/components/categories.js:8
+msgid "Summary"
+msgstr "Podsumowanie"
+
+#: src/app/activities-content.js:148
+msgid "Summary changed"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Niedziela|Poniedziałek|Wtorek|Środa|Czwartek|Piątek|Sobota"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "N|Po|Wt|Śr|Cz|Pt|So"
+
+#: src/app/components/categories.js:14
+msgid "Tags"
+msgstr "Tagi"
+
+#: src/app/activities-content.js:53
+msgid "There hasn't been any activity that matches the filters for this widget within the last 90 days"
+msgstr ""
+
+#: src/app/content-project-activity.js:17
+msgid "Unknown"
+msgstr "Nieznane"
+
+#: src/app/components/categories.js:17
+msgid "VCS changes"
+msgstr ""
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "Widżet jest odświeżany co minutę"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Widżet jest odświeżany co {{minutesCount}} min"
+
+#: src/app/components/categories.js:16
+msgid "Work items"
+msgstr ""
+
+#: src/app/content-custom-field-activity.js:15
+msgid "[Empty value]"
+msgstr "[Pusta wartość]"
+
+#: src/app/content-custom-field-activity.js:17
+msgid "[Removed field]"
+msgstr ""
+
+#: src/app/content-custom-field-activity.js:16
+msgid "[Unknown format]"
+msgstr ""
+
+#: src/app/content-work-items-activity.js:75
+msgid "added work item"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "am|pm"
+
+#: src/app/content-comment-activity.js:22
+msgid "commented"
+msgstr "skomentowano"
+
+#: src/app/content-vcs-activity.js:22
+msgid "committed changes"
+msgstr ""
+
+#: src/app/content-created-activity.js:17
+msgid "created issue"
+msgstr ""
+
+#: src/app/content-modified-activity.js:16
+msgid "deleted"
+msgstr ""
+
+#: src/app/content-custom-field-activity.js:38
+msgid "h"
+msgstr "g"
+
+#: src/app/content-custom-field-activity.js:36
+msgid "m"
+msgstr "m"
+
+#: src/app/content-resolved-activity.js:20
+msgid "reopened issue"
+msgstr ""
+
+#: src/app/content-resolved-activity.js:18
+msgid "resolved issue"
+msgstr ""
+
+#: src/app/content-modified-activity.js:16
+msgid "restored"
+msgstr ""
+
+#: src/app/content-default-activity.js:78
+msgid "updated"
+msgstr "zaktualizowano"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} min"
+

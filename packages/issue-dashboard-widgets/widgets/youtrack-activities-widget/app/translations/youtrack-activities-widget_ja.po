@@ -1,0 +1,257 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: ja\n"
+"X-Crowdin-File: /widgets/youtrack-activities-widget/default.pot\n"
+"X-Crowdin-File-ID: 112408\n"
+"Language-Team: Japanese\n"
+"Language: ja_JP\n"
+"PO-Revision-Date: 2023-07-28 12:17\n"
+
+#: src/app/edit-form-category-selector.js:54
+msgid "Activity Categories"
+msgstr "アクティビティカテゴリ"
+
+#: src/app/edit-form-query-toolbar.js:69
+msgid "Activity is only shown for issues that match the search criteria"
+msgstr "アクティビティは検索条件と一致する課題にのみ表示されます"
+
+#: src/app/edit-form-user-selector.js:92
+msgid "Any user"
+msgstr "任意のユーザー"
+
+#: src/app/content-attachment-activity.js:78
+msgid "Attachment"
+msgstr "アタッチメント"
+
+#: src/app/components/categories.js:10
+msgid "Attachments"
+msgstr "添付ファイル"
+
+#: src/app/activities-content.js:73
+msgid "Can't load information from service."
+msgstr "サービスから情報を読み込むことができません。"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "取り消す"
+
+#: src/app/edit-form-category-selector.js:45
+msgid "Category"
+msgstr "カテゴリ"
+
+#: src/app/edit-form-user-selector.js:75
+msgid "Change authors"
+msgstr "作者を変更"
+
+#: src/app/components/categories.js:12
+msgid "Comments"
+msgstr "コメント"
+
+#: src/app/activities-widget.js:172
+msgid "Could not load new activities"
+msgstr "新しいアクティビティを読み込めませんでした"
+
+#: src/app/control-load-more.js:32
+msgid "Could not request more activities"
+msgstr "さらなるアクティビティを要求できませんでした"
+
+#: src/app/components/categories.js:9
+msgid "Custom fields"
+msgstr "カスタムフィールド"
+
+#: src/app/components/categories.js:8
+msgid "Description"
+msgstr "説明"
+
+#: src/app/activities-content.js:154
+msgid "Description changed"
+msgstr "説明が変更されました"
+
+#: src/app/components/collapsible-block.js:37
+msgid "Details"
+msgstr "詳細"
+
+#: src/app/activities-content.js:62
+msgid "Edit widget filters"
+msgstr "ウィジェットフィルタを編集"
+
+#: src/app/edit-form-query-toolbar.js:63
+msgid "Enter a search query"
+msgstr "検索クエリを入力してください"
+
+#: src/app/activities-widget.js:259
+msgid "Issue Activity Feed"
+msgstr "課題アクティビティフィード"
+
+#: src/app/activities-widget.js:258
+msgid "Issue Activity Feed —"
+msgstr "課題アクティビティフィード —"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月"
+
+#: src/app/components/categories.js:11
+msgid "Links"
+msgstr "リンク"
+
+#: src/app/components/categories.js:4
+msgid "New issues"
+msgstr "新しい課題"
+
+#: src/app/content-work-items-activity.js:67
+msgid "No type"
+msgstr "タイプなし"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "エラー！不明なエラーが発生しました…"
+
+#: src/app/components/activity-stream-link.js:29
+msgid "Open in issue"
+msgstr "課題で開く"
+
+#: src/app/components/categories.js:6
+#: src/app/content-project-activity.js:23
+msgid "Project"
+msgstr "プロジェクト"
+
+#: src/app/components/categories.js:5
+msgid "Resolved/reopened issues"
+msgstr "解決済み/再開された課題"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "保存"
+
+#: src/app/edit-form-youtrack-selector.js:95
+msgid "Select YouTrack"
+msgstr "YouTrackを選択"
+
+#: src/app/edit-form-category-selector.js:57
+msgid "Select which types of updates are shown in the activity feed"
+msgstr "アクティビティフィードに表示する更新の種類を選択してください"
+
+#: src/app/edit-form-optional-title.js:44
+msgid "Set optional title"
+msgstr "タイトルを設定（任意）"
+
+#: src/app/components/issue-card.js:288
+#: src/app/control-load-more.js:52
+msgid "Show more"
+msgstr "その他を表示"
+
+#: src/app/components/categories.js:14
+msgid "Sprints"
+msgstr "スプリント"
+
+#: src/app/components/categories.js:7
+msgid "Summary"
+msgstr "概要"
+
+#: src/app/activities-content.js:147
+msgid "Summary changed"
+msgstr "概要が変更されました"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "日曜日|月曜日|火曜日|水曜日|木曜日|金曜日|土曜日"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "日|月|火|水|木|金|土"
+
+#: src/app/components/categories.js:13
+msgid "Tags"
+msgstr "タグ"
+
+#: src/app/activities-content.js:52
+msgid "There hasn't been any activity that matches the filters for this widget within the last 90 days"
+msgstr "過去90日以内にこのウィジェットのフィルタに一致するアクティビティはありませんでした"
+
+#: src/app/content-project-activity.js:17
+msgid "Unknown"
+msgstr "不明"
+
+#: src/app/components/categories.js:16
+msgid "VCS changes"
+msgstr "VCSの変更"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "ウィジェットは1分ごとに更新されます"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "ウィジェットは{{minutesCount}}分ごとに更新されます"
+
+#: src/app/components/categories.js:15
+msgid "Work items"
+msgstr "作業項目"
+
+#: src/app/content-custom-field-activity.js:15
+msgid "[Empty value]"
+msgstr "[空の値]"
+
+#: src/app/content-custom-field-activity.js:17
+msgid "[Removed field]"
+msgstr "[削除されたフィールド]"
+
+#: src/app/content-custom-field-activity.js:16
+msgid "[Unknown format]"
+msgstr "[不明な形式]"
+
+#: src/app/content-work-items-activity.js:75
+msgid "added work item"
+msgstr "が作業項目を追加しました"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "午前|午後"
+
+#: src/app/content-comment-activity.js:22
+msgid "commented"
+msgstr "がコメントをしました"
+
+#: src/app/content-vcs-activity.js:22
+msgid "committed changes"
+msgstr "が変更をコミットしました"
+
+#: src/app/content-created-activity.js:17
+msgid "created issue"
+msgstr "が課題を作成しました"
+
+#: src/app/content-custom-field-activity.js:38
+msgid "h"
+msgstr "時間"
+
+#: src/app/content-custom-field-activity.js:36
+msgid "m"
+msgstr "分"
+
+#: src/app/content-resolved-activity.js:20
+msgid "reopened issue"
+msgstr "が課題を再開しました"
+
+#: src/app/content-resolved-activity.js:18
+msgid "resolved issue"
+msgstr "が課題を解決しました"
+
+#: src/app/content-default-activity.js:78
+msgid "updated"
+msgstr "更新日"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} 分"
+

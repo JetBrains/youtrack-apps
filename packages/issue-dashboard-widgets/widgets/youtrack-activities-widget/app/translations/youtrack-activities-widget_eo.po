@@ -1,0 +1,257 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: eo\n"
+"X-Crowdin-File: /widgets/youtrack-activities-widget/default.pot\n"
+"X-Crowdin-File-ID: 112408\n"
+"Language-Team: Esperanto\n"
+"Language: eo_UY\n"
+"PO-Revision-Date: 2023-07-28 12:17\n"
+
+#: src/app/edit-form-category-selector.js:54
+msgid "Activity Categories"
+msgstr "crwdns2792684:0crwdne2792684:0"
+
+#: src/app/edit-form-query-toolbar.js:69
+msgid "Activity is only shown for issues that match the search criteria"
+msgstr "crwdns272127126:0crwdne272127126:0"
+
+#: src/app/edit-form-user-selector.js:92
+msgid "Any user"
+msgstr "crwdns272127128:0crwdne272127128:0"
+
+#: src/app/content-attachment-activity.js:78
+msgid "Attachment"
+msgstr "crwdns272127130:0crwdne272127130:0"
+
+#: src/app/components/categories.js:10
+msgid "Attachments"
+msgstr "crwdns2792688:0crwdne2792688:0"
+
+#: src/app/activities-content.js:73
+msgid "Can't load information from service."
+msgstr "crwdns2792692:0crwdne2792692:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "crwdns2792694:0crwdne2792694:0"
+
+#: src/app/edit-form-category-selector.js:45
+msgid "Category"
+msgstr "crwdns272127132:0crwdne272127132:0"
+
+#: src/app/edit-form-user-selector.js:75
+msgid "Change authors"
+msgstr "crwdns272127134:0crwdne272127134:0"
+
+#: src/app/components/categories.js:12
+msgid "Comments"
+msgstr "crwdns2792696:0crwdne2792696:0"
+
+#: src/app/activities-widget.js:172
+msgid "Could not load new activities"
+msgstr "crwdns272127136:0crwdne272127136:0"
+
+#: src/app/control-load-more.js:32
+msgid "Could not request more activities"
+msgstr "crwdns272127138:0crwdne272127138:0"
+
+#: src/app/components/categories.js:9
+msgid "Custom fields"
+msgstr "crwdns2792698:0crwdne2792698:0"
+
+#: src/app/components/categories.js:8
+msgid "Description"
+msgstr "crwdns2792700:0crwdne2792700:0"
+
+#: src/app/activities-content.js:154
+msgid "Description changed"
+msgstr "crwdns272127140:0crwdne272127140:0"
+
+#: src/app/components/collapsible-block.js:37
+msgid "Details"
+msgstr "crwdns2792702:0crwdne2792702:0"
+
+#: src/app/activities-content.js:62
+msgid "Edit widget filters"
+msgstr "crwdns272127142:0crwdne272127142:0"
+
+#: src/app/edit-form-query-toolbar.js:63
+msgid "Enter a search query"
+msgstr "crwdns272127144:0crwdne272127144:0"
+
+#: src/app/activities-widget.js:259
+msgid "Issue Activity Feed"
+msgstr "crwdns272127146:0crwdne272127146:0"
+
+#: src/app/activities-widget.js:258
+msgid "Issue Activity Feed —"
+msgstr "crwdns272127148:0crwdne272127148:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "crwdns2792710:0crwdne2792710:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "crwdns2792712:0crwdne2792712:0"
+
+#: src/app/components/categories.js:11
+msgid "Links"
+msgstr "crwdns2792714:0crwdne2792714:0"
+
+#: src/app/components/categories.js:4
+msgid "New issues"
+msgstr "crwdns2792718:0crwdne2792718:0"
+
+#: src/app/content-work-items-activity.js:67
+msgid "No type"
+msgstr "crwdns2792722:0crwdne2792722:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "crwdns2792726:0crwdne2792726:0"
+
+#: src/app/components/activity-stream-link.js:29
+msgid "Open in issue"
+msgstr "crwdns272127150:0crwdne272127150:0"
+
+#: src/app/components/categories.js:6
+#: src/app/content-project-activity.js:23
+msgid "Project"
+msgstr "crwdns2792728:0crwdne2792728:0"
+
+#: src/app/components/categories.js:5
+msgid "Resolved/reopened issues"
+msgstr "crwdns272127152:0crwdne272127152:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "crwdns2792732:0crwdne2792732:0"
+
+#: src/app/edit-form-youtrack-selector.js:95
+msgid "Select YouTrack"
+msgstr "crwdns2792734:0crwdne2792734:0"
+
+#: src/app/edit-form-category-selector.js:57
+msgid "Select which types of updates are shown in the activity feed"
+msgstr "crwdns272127154:0crwdne272127154:0"
+
+#: src/app/edit-form-optional-title.js:44
+msgid "Set optional title"
+msgstr "crwdns272127156:0crwdne272127156:0"
+
+#: src/app/components/issue-card.js:288
+#: src/app/control-load-more.js:52
+msgid "Show more"
+msgstr "crwdns2792738:0crwdne2792738:0"
+
+#: src/app/components/categories.js:14
+msgid "Sprints"
+msgstr "crwdns2792740:0crwdne2792740:0"
+
+#: src/app/components/categories.js:7
+msgid "Summary"
+msgstr "crwdns2792742:0crwdne2792742:0"
+
+#: src/app/activities-content.js:147
+msgid "Summary changed"
+msgstr "crwdns272127158:0crwdne272127158:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "crwdns2792744:0crwdne2792744:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "crwdns2792746:0crwdne2792746:0"
+
+#: src/app/components/categories.js:13
+msgid "Tags"
+msgstr "crwdns2792748:0crwdne2792748:0"
+
+#: src/app/activities-content.js:52
+msgid "There hasn't been any activity that matches the filters for this widget within the last 90 days"
+msgstr "crwdns272127160:0crwdne272127160:0"
+
+#: src/app/content-project-activity.js:17
+msgid "Unknown"
+msgstr "crwdns272127162:0crwdne272127162:0"
+
+#: src/app/components/categories.js:16
+msgid "VCS changes"
+msgstr "crwdns272127164:0crwdne272127164:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "crwdns2792756:0crwdne2792756:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "crwdns2792758:0{{minutesCount}}crwdne2792758:0"
+
+#: src/app/components/categories.js:15
+msgid "Work items"
+msgstr "crwdns2792760:0crwdne2792760:0"
+
+#: src/app/content-custom-field-activity.js:15
+msgid "[Empty value]"
+msgstr "crwdns2792762:0crwdne2792762:0"
+
+#: src/app/content-custom-field-activity.js:17
+msgid "[Removed field]"
+msgstr "crwdns2792764:0crwdne2792764:0"
+
+#: src/app/content-custom-field-activity.js:16
+msgid "[Unknown format]"
+msgstr "crwdns272127166:0crwdne272127166:0"
+
+#: src/app/content-work-items-activity.js:75
+msgid "added work item"
+msgstr "crwdns272127168:0crwdne272127168:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "crwdns2792768:0crwdne2792768:0"
+
+#: src/app/content-comment-activity.js:22
+msgid "commented"
+msgstr "crwdns272127170:0crwdne272127170:0"
+
+#: src/app/content-vcs-activity.js:22
+msgid "committed changes"
+msgstr "crwdns2792770:0crwdne2792770:0"
+
+#: src/app/content-created-activity.js:17
+msgid "created issue"
+msgstr "crwdns272127172:0crwdne272127172:0"
+
+#: src/app/content-custom-field-activity.js:38
+msgid "h"
+msgstr "crwdns2792772:0crwdne2792772:0"
+
+#: src/app/content-custom-field-activity.js:36
+msgid "m"
+msgstr "crwdns2792774:0crwdne2792774:0"
+
+#: src/app/content-resolved-activity.js:20
+msgid "reopened issue"
+msgstr "crwdns272127174:0crwdne272127174:0"
+
+#: src/app/content-resolved-activity.js:18
+msgid "resolved issue"
+msgstr "crwdns272127176:0crwdne272127176:0"
+
+#: src/app/content-default-activity.js:78
+msgid "updated"
+msgstr "crwdns2792776:0crwdne2792776:0"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "crwdns2792778:0{{minutesCount}}crwdne2792778:0"
+

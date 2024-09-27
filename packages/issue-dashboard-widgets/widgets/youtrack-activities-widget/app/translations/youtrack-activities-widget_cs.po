@@ -1,0 +1,269 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: cs\n"
+"X-Crowdin-File: /widgets/youtrack-activities-widget/default.pot\n"
+"X-Crowdin-File-ID: 419394\n"
+"Language-Team: Czech\n"
+"Language: cs_CZ\n"
+"PO-Revision-Date: 2024-02-04 13:49\n"
+
+#: src/app/edit-form-category-selector.js:54
+msgid "Activity Categories"
+msgstr "Kategorie aktivit"
+
+#: src/app/edit-form-query-toolbar.js:69
+msgid "Activity is only shown for issues that match the search criteria"
+msgstr "Aktivita se zobrazuje pouze u problémů, které odpovídají kritériím vyhledávání"
+
+#: src/app/edit-form-user-selector.js:92
+msgid "Any user"
+msgstr "Libovolný uživatel"
+
+#: src/app/content-attachment-activity.js:78
+msgid "Attachment"
+msgstr "Příloha"
+
+#: src/app/components/categories.js:11
+msgid "Attachments"
+msgstr "Přílohy"
+
+#: src/app/activities-content.js:74
+msgid "Can't load information from service."
+msgstr "Nelze načíst data ze služby."
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: src/app/edit-form-category-selector.js:45
+msgid "Category"
+msgstr "Kategorie"
+
+#: src/app/edit-form-user-selector.js:75
+msgid "Change authors"
+msgstr "Změna autorů"
+
+#: src/app/components/categories.js:13
+msgid "Comments"
+msgstr "Komentáře"
+
+#: src/app/activities-widget.js:172
+msgid "Could not load new activities"
+msgstr "Nelze načíst nové aktivity"
+
+#: src/app/control-load-more.js:32
+msgid "Could not request more activities"
+msgstr "Nelze požádat o další aktivity"
+
+#: src/app/components/categories.js:10
+msgid "Custom fields"
+msgstr "Vlastní políčka"
+
+#: src/app/components/categories.js:6
+msgid "Deleted/Restored issues"
+msgstr ""
+
+#: src/app/components/categories.js:9
+msgid "Description"
+msgstr "Popis"
+
+#: src/app/activities-content.js:155
+msgid "Description changed"
+msgstr "Změna popisu"
+
+#: src/app/components/collapsible-block.js:37
+msgid "Details"
+msgstr "Podrobnosti"
+
+#: src/app/activities-content.js:63
+msgid "Edit widget filters"
+msgstr "Upravit filtry widgetů"
+
+#: src/app/edit-form-query-toolbar.js:63
+msgid "Enter a search query"
+msgstr "Zadejte vyhledávací dotaz"
+
+#: src/app/activities-widget.js:259
+msgid "Issue Activity Feed"
+msgstr "Informační kanál o aktivitách problémů"
+
+#: src/app/activities-widget.js:258
+msgid "Issue Activity Feed —"
+msgstr "Informační kanál o aktivitách problému —"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Leden|Únor|Březen|Duben|Květen|Červen|Červenec|Srpen|Září|Říjen|Listopad|Prosinec"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Led|Úno|Bře|Dub|Kvě|Čer|Čvc|Srp|Zář|Říj|Lis|Pro"
+
+#: src/app/components/categories.js:12
+msgid "Links"
+msgstr "Odkazy"
+
+#: src/app/components/categories.js:4
+msgid "New issues"
+msgstr "Nové případy"
+
+#: src/app/content-work-items-activity.js:67
+msgid "No type"
+msgstr "Žádný typ"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Jejda! Něco se pokazilo…"
+
+#: src/app/components/activity-stream-link.js:29
+msgid "Open in issue"
+msgstr "Otevřít v případu"
+
+#: src/app/components/categories.js:7
+#: src/app/content-project-activity.js:23
+msgid "Project"
+msgstr "Projekt"
+
+#: src/app/components/categories.js:5
+msgid "Resolved/reopened issues"
+msgstr "Vyřešené/znovu otevřené případy"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "Uložit"
+
+#: src/app/edit-form-youtrack-selector.js:95
+msgid "Select YouTrack"
+msgstr "Vyberte YouTrack"
+
+#: src/app/edit-form-category-selector.js:57
+msgid "Select which types of updates are shown in the activity feed"
+msgstr "Vyberte, které typy aktualizací se budou zobrazovat v informačním kanálu o aktivitách"
+
+#: src/app/edit-form-optional-title.js:44
+msgid "Set optional title"
+msgstr "Nastavit volitelný název"
+
+#: src/app/components/issue-card.js:288
+#: src/app/control-load-more.js:52
+msgid "Show more"
+msgstr "Zobrazit další"
+
+#: src/app/components/categories.js:15
+msgid "Sprints"
+msgstr "Sprinty"
+
+#: src/app/components/categories.js:8
+msgid "Summary"
+msgstr "Souhrn"
+
+#: src/app/activities-content.js:148
+msgid "Summary changed"
+msgstr "Souhrn byl změněn"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Neděle|Pondělí|Úterý|Středa|Čtvrtek|Pátek|Sobota"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Ne|Po|Út|St|Čt|Pá|So"
+
+#: src/app/components/categories.js:14
+msgid "Tags"
+msgstr "Štítky"
+
+#: src/app/activities-content.js:53
+msgid "There hasn't been any activity that matches the filters for this widget within the last 90 days"
+msgstr "Za posledních 90 dní nebyla zaznamenána žádná aktivita, která by odpovídala filtrům pro tento widget"
+
+#: src/app/content-project-activity.js:17
+msgid "Unknown"
+msgstr "Neznámé"
+
+#: src/app/components/categories.js:17
+msgid "VCS changes"
+msgstr "Změny VCS"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "Widget se aktualizuje každou minutu"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Widget se aktualizuje každých {{minutesCount}} minut"
+
+#: src/app/components/categories.js:16
+msgid "Work items"
+msgstr "Výkazů práce"
+
+#: src/app/content-custom-field-activity.js:15
+msgid "[Empty value]"
+msgstr "[Prázdná hodnota]"
+
+#: src/app/content-custom-field-activity.js:17
+msgid "[Removed field]"
+msgstr "[Odstraněné políčko]"
+
+#: src/app/content-custom-field-activity.js:16
+msgid "[Unknown format]"
+msgstr "[Neznámý formát]"
+
+#: src/app/content-work-items-activity.js:75
+msgid "added work item"
+msgstr "přidaná pracovní položka"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "dopol|odpol"
+
+#: src/app/content-comment-activity.js:22
+msgid "commented"
+msgstr "komentováno"
+
+#: src/app/content-vcs-activity.js:22
+msgid "committed changes"
+msgstr "potvrzené změny"
+
+#: src/app/content-created-activity.js:17
+msgid "created issue"
+msgstr "vytvořené problémy"
+
+#: src/app/content-modified-activity.js:16
+msgid "deleted"
+msgstr ""
+
+#: src/app/content-custom-field-activity.js:38
+msgid "h"
+msgstr "h"
+
+#: src/app/content-custom-field-activity.js:36
+msgid "m"
+msgstr "m"
+
+#: src/app/content-resolved-activity.js:20
+msgid "reopened issue"
+msgstr "znovu otevřené problémy"
+
+#: src/app/content-resolved-activity.js:18
+msgid "resolved issue"
+msgstr "vyřešené problémy"
+
+#: src/app/content-modified-activity.js:16
+msgid "restored"
+msgstr ""
+
+#: src/app/content-default-activity.js:78
+msgid "updated"
+msgstr "aktualizováno"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} min"
+

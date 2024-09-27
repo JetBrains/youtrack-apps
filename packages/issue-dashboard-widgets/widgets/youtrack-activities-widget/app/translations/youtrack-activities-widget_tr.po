@@ -1,0 +1,269 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /widgets/youtrack-activities-widget/default.pot\n"
+"X-Crowdin-File-ID: 419394\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"PO-Revision-Date: 2024-02-04 13:51\n"
+
+#: src/app/edit-form-category-selector.js:54
+msgid "Activity Categories"
+msgstr "Aktivite Kategorileri"
+
+#: src/app/edit-form-query-toolbar.js:69
+msgid "Activity is only shown for issues that match the search criteria"
+msgstr ""
+
+#: src/app/edit-form-user-selector.js:92
+msgid "Any user"
+msgstr "Herhangi bir kullanıcı"
+
+#: src/app/content-attachment-activity.js:78
+msgid "Attachment"
+msgstr "Ek"
+
+#: src/app/components/categories.js:11
+msgid "Attachments"
+msgstr "Ekler"
+
+#: src/app/activities-content.js:74
+msgid "Can't load information from service."
+msgstr "Hizmetten bilgi yüklenemiyor."
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "İptal"
+
+#: src/app/edit-form-category-selector.js:45
+msgid "Category"
+msgstr "Kategori"
+
+#: src/app/edit-form-user-selector.js:75
+msgid "Change authors"
+msgstr "Yazarları değiştir"
+
+#: src/app/components/categories.js:13
+msgid "Comments"
+msgstr "Yorumlar"
+
+#: src/app/activities-widget.js:172
+msgid "Could not load new activities"
+msgstr "Yeni aktiviteler yüklenemedi"
+
+#: src/app/control-load-more.js:32
+msgid "Could not request more activities"
+msgstr "Daha fazla aktivite talep edilemedi"
+
+#: src/app/components/categories.js:10
+msgid "Custom fields"
+msgstr "Özel alanlar"
+
+#: src/app/components/categories.js:6
+msgid "Deleted/Restored issues"
+msgstr ""
+
+#: src/app/components/categories.js:9
+msgid "Description"
+msgstr "Açıklama"
+
+#: src/app/activities-content.js:155
+msgid "Description changed"
+msgstr "Açıklama değiştirildi"
+
+#: src/app/components/collapsible-block.js:37
+msgid "Details"
+msgstr "Detaylar"
+
+#: src/app/activities-content.js:63
+msgid "Edit widget filters"
+msgstr "Widget filtrelerini düzenle"
+
+#: src/app/edit-form-query-toolbar.js:63
+msgid "Enter a search query"
+msgstr "Arama sorgusu girin"
+
+#: src/app/activities-widget.js:259
+msgid "Issue Activity Feed"
+msgstr ""
+
+#: src/app/activities-widget.js:258
+msgid "Issue Activity Feed —"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Oca|Şub|Mar|Nis|May|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara"
+
+#: src/app/components/categories.js:12
+msgid "Links"
+msgstr "Bağlantılar"
+
+#: src/app/components/categories.js:4
+msgid "New issues"
+msgstr ""
+
+#: src/app/content-work-items-activity.js:67
+msgid "No type"
+msgstr ""
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Hay aksi! Bir şeyler ters gitti..."
+
+#: src/app/components/activity-stream-link.js:29
+msgid "Open in issue"
+msgstr ""
+
+#: src/app/components/categories.js:7
+#: src/app/content-project-activity.js:23
+msgid "Project"
+msgstr "Proje"
+
+#: src/app/components/categories.js:5
+msgid "Resolved/reopened issues"
+msgstr ""
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "Kaydet"
+
+#: src/app/edit-form-youtrack-selector.js:95
+msgid "Select YouTrack"
+msgstr "YouTrack'i seçin"
+
+#: src/app/edit-form-category-selector.js:57
+msgid "Select which types of updates are shown in the activity feed"
+msgstr ""
+
+#: src/app/edit-form-optional-title.js:44
+msgid "Set optional title"
+msgstr "İsteğe bağlı başlık belirleyin"
+
+#: src/app/components/issue-card.js:288
+#: src/app/control-load-more.js:52
+msgid "Show more"
+msgstr "Daha fazla göster"
+
+#: src/app/components/categories.js:15
+msgid "Sprints"
+msgstr ""
+
+#: src/app/components/categories.js:8
+msgid "Summary"
+msgstr "Özet"
+
+#: src/app/activities-content.js:148
+msgid "Summary changed"
+msgstr "Özet değiştirildi"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Pazar|Pazartesi|Salı|Çarşamba|Perşembe|Cuma|Cumartesi"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Paz|Pzt|Sal|Çrş|Prş|Cum|Cmt"
+
+#: src/app/components/categories.js:14
+msgid "Tags"
+msgstr "Etiketler"
+
+#: src/app/activities-content.js:53
+msgid "There hasn't been any activity that matches the filters for this widget within the last 90 days"
+msgstr "Son 90 gün içinde bu widget'ın filtreleriyle eşleşen herhangi bir aktivite olmadı"
+
+#: src/app/content-project-activity.js:17
+msgid "Unknown"
+msgstr "Bilinmeyen"
+
+#: src/app/components/categories.js:17
+msgid "VCS changes"
+msgstr "VCS değişiklikleri"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "Widget dakikada bir yenilenir"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Widget {{minutesCount}} dakikada bir yenilenir"
+
+#: src/app/components/categories.js:16
+msgid "Work items"
+msgstr "İş ögeleri"
+
+#: src/app/content-custom-field-activity.js:15
+msgid "[Empty value]"
+msgstr "[Boş değer]"
+
+#: src/app/content-custom-field-activity.js:17
+msgid "[Removed field]"
+msgstr "[Kaldırılan alan]"
+
+#: src/app/content-custom-field-activity.js:16
+msgid "[Unknown format]"
+msgstr ""
+
+#: src/app/content-work-items-activity.js:75
+msgid "added work item"
+msgstr "iş ögesi ekledi"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "öö|ös"
+
+#: src/app/content-comment-activity.js:22
+msgid "commented"
+msgstr "yorum yapıldı"
+
+#: src/app/content-vcs-activity.js:22
+msgid "committed changes"
+msgstr ""
+
+#: src/app/content-created-activity.js:17
+msgid "created issue"
+msgstr ""
+
+#: src/app/content-modified-activity.js:16
+msgid "deleted"
+msgstr ""
+
+#: src/app/content-custom-field-activity.js:38
+msgid "h"
+msgstr "sa"
+
+#: src/app/content-custom-field-activity.js:36
+msgid "m"
+msgstr "dk"
+
+#: src/app/content-resolved-activity.js:20
+msgid "reopened issue"
+msgstr ""
+
+#: src/app/content-resolved-activity.js:18
+msgid "resolved issue"
+msgstr ""
+
+#: src/app/content-modified-activity.js:16
+msgid "restored"
+msgstr ""
+
+#: src/app/content-default-activity.js:78
+msgid "updated"
+msgstr "güncellendi"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} dk"
+

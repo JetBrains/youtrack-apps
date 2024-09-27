@@ -1,0 +1,269 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: uk\n"
+"X-Crowdin-File: /widgets/youtrack-activities-widget/default.pot\n"
+"X-Crowdin-File-ID: 419394\n"
+"Language-Team: Ukrainian\n"
+"Language: uk_UA\n"
+"PO-Revision-Date: 2024-02-04 13:51\n"
+
+#: src/app/edit-form-category-selector.js:54
+msgid "Activity Categories"
+msgstr "Категорії дій"
+
+#: src/app/edit-form-query-toolbar.js:69
+msgid "Activity is only shown for issues that match the search criteria"
+msgstr "Дії відображаються лише для завдань, які відповідають умовам пошуку"
+
+#: src/app/edit-form-user-selector.js:92
+msgid "Any user"
+msgstr "Будь-який користувач"
+
+#: src/app/content-attachment-activity.js:78
+msgid "Attachment"
+msgstr "Вкладення"
+
+#: src/app/components/categories.js:11
+msgid "Attachments"
+msgstr "Вкладення"
+
+#: src/app/activities-content.js:74
+msgid "Can't load information from service."
+msgstr "Не вдалося завантажити інформацію із сервісу."
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: src/app/edit-form-category-selector.js:45
+msgid "Category"
+msgstr "Категорія"
+
+#: src/app/edit-form-user-selector.js:75
+msgid "Change authors"
+msgstr "Змінити авторів"
+
+#: src/app/components/categories.js:13
+msgid "Comments"
+msgstr "Коментарі"
+
+#: src/app/activities-widget.js:172
+msgid "Could not load new activities"
+msgstr "Не вдалося завантажити нові дії"
+
+#: src/app/control-load-more.js:32
+msgid "Could not request more activities"
+msgstr "Не вдалось отримати дані про інші дії"
+
+#: src/app/components/categories.js:10
+msgid "Custom fields"
+msgstr "Користувацькі поля"
+
+#: src/app/components/categories.js:6
+msgid "Deleted/Restored issues"
+msgstr ""
+
+#: src/app/components/categories.js:9
+msgid "Description"
+msgstr "Опис"
+
+#: src/app/activities-content.js:155
+msgid "Description changed"
+msgstr "Опис змінено"
+
+#: src/app/components/collapsible-block.js:37
+msgid "Details"
+msgstr "Деталі"
+
+#: src/app/activities-content.js:63
+msgid "Edit widget filters"
+msgstr "Редагувати фільтри віджета"
+
+#: src/app/edit-form-query-toolbar.js:63
+msgid "Enter a search query"
+msgstr "Введіть пошуковий запит"
+
+#: src/app/activities-widget.js:259
+msgid "Issue Activity Feed"
+msgstr "Стрічка активності завдання"
+
+#: src/app/activities-widget.js:258
+msgid "Issue Activity Feed —"
+msgstr "Стрічка дій із завданням —"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Січень|Лютий|Березень|Квітень|Травень|Червень|Липень|Серпень|Вересень|Жовтень|Листопад|Грудень"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Січ|Лют|Бер|Кві|Тра|Чер|Лип|Сер|Вер|Жов|Лис|Гру"
+
+#: src/app/components/categories.js:12
+msgid "Links"
+msgstr "Посилання"
+
+#: src/app/components/categories.js:4
+msgid "New issues"
+msgstr "Нові завдання"
+
+#: src/app/content-work-items-activity.js:67
+msgid "No type"
+msgstr "Немає типу"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Отакої! Щось пішло не так…"
+
+#: src/app/components/activity-stream-link.js:29
+msgid "Open in issue"
+msgstr "Відкрити у завданні"
+
+#: src/app/components/categories.js:7
+#: src/app/content-project-activity.js:23
+msgid "Project"
+msgstr "Проєкт"
+
+#: src/app/components/categories.js:5
+msgid "Resolved/reopened issues"
+msgstr "Виконані/перевідкриті завдання"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "Зберегти"
+
+#: src/app/edit-form-youtrack-selector.js:95
+msgid "Select YouTrack"
+msgstr "Виберіть YouTrack"
+
+#: src/app/edit-form-category-selector.js:57
+msgid "Select which types of updates are shown in the activity feed"
+msgstr "Вибір типів оновлень, які відображатимуться у стрічці активності"
+
+#: src/app/edit-form-optional-title.js:44
+msgid "Set optional title"
+msgstr "Додати необовʼязкову назву"
+
+#: src/app/components/issue-card.js:288
+#: src/app/control-load-more.js:52
+msgid "Show more"
+msgstr "Показати більше"
+
+#: src/app/components/categories.js:15
+msgid "Sprints"
+msgstr "Спринти"
+
+#: src/app/components/categories.js:8
+msgid "Summary"
+msgstr "Назва"
+
+#: src/app/activities-content.js:148
+msgid "Summary changed"
+msgstr "Назву змінено"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Неділя|Понеділок|Вівторок|Середа|Четвер|Пʼятниця|Субота"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Нд|Пн|Вт|Ср|Чт|Пт|Сб"
+
+#: src/app/components/categories.js:14
+msgid "Tags"
+msgstr "Мітки"
+
+#: src/app/activities-content.js:53
+msgid "There hasn't been any activity that matches the filters for this widget within the last 90 days"
+msgstr "За останні 90 днів не відбулося жодних дій, які відповідають фільтрам для цього віджета"
+
+#: src/app/content-project-activity.js:17
+msgid "Unknown"
+msgstr "Невідомо"
+
+#: src/app/components/categories.js:17
+msgid "VCS changes"
+msgstr "Зміни VCS"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "Віджет оновлюється щохвилини"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Віджет оновлюється кожні {{minutesCount}} хв"
+
+#: src/app/components/categories.js:16
+msgid "Work items"
+msgstr "Робочі елементи"
+
+#: src/app/content-custom-field-activity.js:15
+msgid "[Empty value]"
+msgstr "[Пусте значення]"
+
+#: src/app/content-custom-field-activity.js:17
+msgid "[Removed field]"
+msgstr "[Вилучене поле]"
+
+#: src/app/content-custom-field-activity.js:16
+msgid "[Unknown format]"
+msgstr "[Невідомий формат]"
+
+#: src/app/content-work-items-activity.js:75
+msgid "added work item"
+msgstr "додано робочий елемент"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "дп|пп"
+
+#: src/app/content-comment-activity.js:22
+msgid "commented"
+msgstr "прокоментував(-ла)"
+
+#: src/app/content-vcs-activity.js:22
+msgid "committed changes"
+msgstr "зафіксовані зміни"
+
+#: src/app/content-created-activity.js:17
+msgid "created issue"
+msgstr "створені завдання"
+
+#: src/app/content-modified-activity.js:16
+msgid "deleted"
+msgstr ""
+
+#: src/app/content-custom-field-activity.js:38
+msgid "h"
+msgstr "г"
+
+#: src/app/content-custom-field-activity.js:36
+msgid "m"
+msgstr "хв"
+
+#: src/app/content-resolved-activity.js:20
+msgid "reopened issue"
+msgstr "перевідкриті завдання"
+
+#: src/app/content-resolved-activity.js:18
+msgid "resolved issue"
+msgstr "виконані завдання"
+
+#: src/app/content-modified-activity.js:16
+msgid "restored"
+msgstr ""
+
+#: src/app/content-default-activity.js:78
+msgid "updated"
+msgstr "оновлено"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} хв"
+

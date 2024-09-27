@@ -1,0 +1,257 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: ko\n"
+"X-Crowdin-File: /widgets/youtrack-activities-widget/default.pot\n"
+"X-Crowdin-File-ID: 112408\n"
+"Language-Team: Korean\n"
+"Language: ko_KR\n"
+"PO-Revision-Date: 2023-07-28 12:17\n"
+
+#: src/app/edit-form-category-selector.js:54
+msgid "Activity Categories"
+msgstr "활동 카테고리"
+
+#: src/app/edit-form-query-toolbar.js:69
+msgid "Activity is only shown for issues that match the search criteria"
+msgstr "검색 조건에 맞는 이슈에 해당하는 활동만 표시됩니다"
+
+#: src/app/edit-form-user-selector.js:92
+msgid "Any user"
+msgstr "모든 사용자"
+
+#: src/app/content-attachment-activity.js:78
+msgid "Attachment"
+msgstr "첨부 파일"
+
+#: src/app/components/categories.js:10
+msgid "Attachments"
+msgstr "첨부 파일"
+
+#: src/app/activities-content.js:73
+msgid "Can't load information from service."
+msgstr "서비스에서 정보를 불러올 수 없습니다."
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "취소"
+
+#: src/app/edit-form-category-selector.js:45
+msgid "Category"
+msgstr "카테고리"
+
+#: src/app/edit-form-user-selector.js:75
+msgid "Change authors"
+msgstr "작성자 변경"
+
+#: src/app/components/categories.js:12
+msgid "Comments"
+msgstr "코멘트"
+
+#: src/app/activities-widget.js:172
+msgid "Could not load new activities"
+msgstr "새로운 활동을 불러올 수 없습니다"
+
+#: src/app/control-load-more.js:32
+msgid "Could not request more activities"
+msgstr "활동을 더 요청할 수 없습니다"
+
+#: src/app/components/categories.js:9
+msgid "Custom fields"
+msgstr "사용자 지정 필드"
+
+#: src/app/components/categories.js:8
+msgid "Description"
+msgstr "설명"
+
+#: src/app/activities-content.js:154
+msgid "Description changed"
+msgstr "설명 변경됨"
+
+#: src/app/components/collapsible-block.js:37
+msgid "Details"
+msgstr "세부 정보"
+
+#: src/app/activities-content.js:62
+msgid "Edit widget filters"
+msgstr "위젯 필터 편집"
+
+#: src/app/edit-form-query-toolbar.js:63
+msgid "Enter a search query"
+msgstr "검색 쿼리 입력"
+
+#: src/app/activities-widget.js:259
+msgid "Issue Activity Feed"
+msgstr "이슈 활동 피드"
+
+#: src/app/activities-widget.js:258
+msgid "Issue Activity Feed —"
+msgstr "이슈 활동 피드 —"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "1월|2월|3월|4월|5월|6월|7월|8월|9월|10월|11월|12월"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "1월|2월|3월|4월|5월|6월|7월|8월|9월|10월|11월|12월"
+
+#: src/app/components/categories.js:11
+msgid "Links"
+msgstr "링크"
+
+#: src/app/components/categories.js:4
+msgid "New issues"
+msgstr "새 이슈"
+
+#: src/app/content-work-items-activity.js:67
+msgid "No type"
+msgstr "유형 없음"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "죄송합니다. 오류가 발생했습니다."
+
+#: src/app/components/activity-stream-link.js:29
+msgid "Open in issue"
+msgstr "이슈에서 열기"
+
+#: src/app/components/categories.js:6
+#: src/app/content-project-activity.js:23
+msgid "Project"
+msgstr "프로젝트"
+
+#: src/app/components/categories.js:5
+msgid "Resolved/reopened issues"
+msgstr "해결된/다시 열린 이슈"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "저장"
+
+#: src/app/edit-form-youtrack-selector.js:95
+msgid "Select YouTrack"
+msgstr "YouTrack 선택"
+
+#: src/app/edit-form-category-selector.js:57
+msgid "Select which types of updates are shown in the activity feed"
+msgstr "활동 피드에 표시될 활동 유형 선택"
+
+#: src/app/edit-form-optional-title.js:44
+msgid "Set optional title"
+msgstr "추가 제목 설정"
+
+#: src/app/components/issue-card.js:288
+#: src/app/control-load-more.js:52
+msgid "Show more"
+msgstr "더보기"
+
+#: src/app/components/categories.js:14
+msgid "Sprints"
+msgstr "스프린트"
+
+#: src/app/components/categories.js:7
+msgid "Summary"
+msgstr "요약"
+
+#: src/app/activities-content.js:147
+msgid "Summary changed"
+msgstr "요약 변경됨"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "일요일|월요일|화요일|수요일|목요일|금요일|토요일"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "일|월|화|수|목|금|토"
+
+#: src/app/components/categories.js:13
+msgid "Tags"
+msgstr "태그"
+
+#: src/app/activities-content.js:52
+msgid "There hasn't been any activity that matches the filters for this widget within the last 90 days"
+msgstr "지난 90일 동안 이 위젯에 대해 필터와 일치하는 활동이 없었습니다"
+
+#: src/app/content-project-activity.js:17
+msgid "Unknown"
+msgstr "알 수 없음"
+
+#: src/app/components/categories.js:16
+msgid "VCS changes"
+msgstr "VCS 변경사항"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "위젯은 1분마다 새로고침됩니다"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "위젯은 {{minutesCount}}분마다 새로고침됩니다"
+
+#: src/app/components/categories.js:15
+msgid "Work items"
+msgstr "작업 항목"
+
+#: src/app/content-custom-field-activity.js:15
+msgid "[Empty value]"
+msgstr "[빈 값]"
+
+#: src/app/content-custom-field-activity.js:17
+msgid "[Removed field]"
+msgstr "[제거된 필드]"
+
+#: src/app/content-custom-field-activity.js:16
+msgid "[Unknown format]"
+msgstr "[알 수 없는 포맷]"
+
+#: src/app/content-work-items-activity.js:75
+msgid "added work item"
+msgstr "추가된 작업 항목"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "오전|오후"
+
+#: src/app/content-comment-activity.js:22
+msgid "commented"
+msgstr "코멘트 달림"
+
+#: src/app/content-vcs-activity.js:22
+msgid "committed changes"
+msgstr "커밋된 변경사항"
+
+#: src/app/content-created-activity.js:17
+msgid "created issue"
+msgstr "생성된 이슈"
+
+#: src/app/content-custom-field-activity.js:38
+msgid "h"
+msgstr "시"
+
+#: src/app/content-custom-field-activity.js:36
+msgid "m"
+msgstr "분"
+
+#: src/app/content-resolved-activity.js:20
+msgid "reopened issue"
+msgstr "다시 열린 이슈"
+
+#: src/app/content-resolved-activity.js:18
+msgid "resolved issue"
+msgstr "해결된 이슈"
+
+#: src/app/content-default-activity.js:78
+msgid "updated"
+msgstr "업데이트됨"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}}분"
+

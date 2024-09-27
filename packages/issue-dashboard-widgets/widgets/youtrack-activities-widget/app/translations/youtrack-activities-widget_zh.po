@@ -1,0 +1,257 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /widgets/youtrack-activities-widget/default.pot\n"
+"X-Crowdin-File-ID: 112408\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2023-07-28 12:16\n"
+
+#: src/app/edit-form-category-selector.js:54
+msgid "Activity Categories"
+msgstr "活动类别"
+
+#: src/app/edit-form-query-toolbar.js:69
+msgid "Activity is only shown for issues that match the search criteria"
+msgstr "仅显示符合搜索条件的问题的活动"
+
+#: src/app/edit-form-user-selector.js:92
+msgid "Any user"
+msgstr "任何用户"
+
+#: src/app/content-attachment-activity.js:78
+msgid "Attachment"
+msgstr "附件"
+
+#: src/app/components/categories.js:10
+msgid "Attachments"
+msgstr "附件"
+
+#: src/app/activities-content.js:73
+msgid "Can't load information from service."
+msgstr "无法从服务中加载信息。"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "取消"
+
+#: src/app/edit-form-category-selector.js:45
+msgid "Category"
+msgstr "类别"
+
+#: src/app/edit-form-user-selector.js:75
+msgid "Change authors"
+msgstr "更改作者"
+
+#: src/app/components/categories.js:12
+msgid "Comments"
+msgstr "评论"
+
+#: src/app/activities-widget.js:172
+msgid "Could not load new activities"
+msgstr "无法加载新活动"
+
+#: src/app/control-load-more.js:32
+msgid "Could not request more activities"
+msgstr "无法请求更多活动"
+
+#: src/app/components/categories.js:9
+msgid "Custom fields"
+msgstr "自定义字段"
+
+#: src/app/components/categories.js:8
+msgid "Description"
+msgstr "描述"
+
+#: src/app/activities-content.js:154
+msgid "Description changed"
+msgstr "描述已更改"
+
+#: src/app/components/collapsible-block.js:37
+msgid "Details"
+msgstr "详情"
+
+#: src/app/activities-content.js:62
+msgid "Edit widget filters"
+msgstr "编辑微件筛选器"
+
+#: src/app/edit-form-query-toolbar.js:63
+msgid "Enter a search query"
+msgstr "输入搜索查询"
+
+#: src/app/activities-widget.js:259
+msgid "Issue Activity Feed"
+msgstr "问题活动 Feed"
+
+#: src/app/activities-widget.js:258
+msgid "Issue Activity Feed —"
+msgstr "问题活动 Feed —"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "1 月|2 月|3 月|4 月|5 月|6 月|7 月|8 月|9 月|10 月|11 月|12 月"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "1 月|2 月|3 月|4 月|5 月|6 月|7 月|8 月|9 月|10 月|11 月|12 月"
+
+#: src/app/components/categories.js:11
+msgid "Links"
+msgstr "链接"
+
+#: src/app/components/categories.js:4
+msgid "New issues"
+msgstr "新问题"
+
+#: src/app/content-work-items-activity.js:67
+msgid "No type"
+msgstr "无类型"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "哎呀，出了些问题…"
+
+#: src/app/components/activity-stream-link.js:29
+msgid "Open in issue"
+msgstr "在问题中打开"
+
+#: src/app/components/categories.js:6
+#: src/app/content-project-activity.js:23
+msgid "Project"
+msgstr "项目"
+
+#: src/app/components/categories.js:5
+msgid "Resolved/reopened issues"
+msgstr "已解决/重新打开的问题"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "保存"
+
+#: src/app/edit-form-youtrack-selector.js:95
+msgid "Select YouTrack"
+msgstr "选择 YouTrack"
+
+#: src/app/edit-form-category-selector.js:57
+msgid "Select which types of updates are shown in the activity feed"
+msgstr "选择在活动 Feed 中显示哪些类型的动态"
+
+#: src/app/edit-form-optional-title.js:44
+msgid "Set optional title"
+msgstr "设置可选标题"
+
+#: src/app/components/issue-card.js:288
+#: src/app/control-load-more.js:52
+msgid "Show more"
+msgstr "显示更多"
+
+#: src/app/components/categories.js:14
+msgid "Sprints"
+msgstr "冲刺"
+
+#: src/app/components/categories.js:7
+msgid "Summary"
+msgstr "摘要"
+
+#: src/app/activities-content.js:147
+msgid "Summary changed"
+msgstr "摘要已更改"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "星期日|星期一|星期二|星期三|星期四|星期五|星期六"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "周日|周一|周二|周三|周四|周五|周六"
+
+#: src/app/components/categories.js:13
+msgid "Tags"
+msgstr "标签"
+
+#: src/app/activities-content.js:52
+msgid "There hasn't been any activity that matches the filters for this widget within the last 90 days"
+msgstr "在过去 90 天内没有任何活动与此微件的筛选器匹配"
+
+#: src/app/content-project-activity.js:17
+msgid "Unknown"
+msgstr "未知"
+
+#: src/app/components/categories.js:16
+msgid "VCS changes"
+msgstr "VCS 更改"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "微件每分钟刷新一次"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "微件每 {{minutesCount}} 分钟刷新一次"
+
+#: src/app/components/categories.js:15
+msgid "Work items"
+msgstr "工作项"
+
+#: src/app/content-custom-field-activity.js:15
+msgid "[Empty value]"
+msgstr "[空值]"
+
+#: src/app/content-custom-field-activity.js:17
+msgid "[Removed field]"
+msgstr "[移除字段]"
+
+#: src/app/content-custom-field-activity.js:16
+msgid "[Unknown format]"
+msgstr "[未知格式]"
+
+#: src/app/content-work-items-activity.js:75
+msgid "added work item"
+msgstr "添加的工作项"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "上午|下午"
+
+#: src/app/content-comment-activity.js:22
+msgid "commented"
+msgstr "评论"
+
+#: src/app/content-vcs-activity.js:22
+msgid "committed changes"
+msgstr "已提交的更改"
+
+#: src/app/content-created-activity.js:17
+msgid "created issue"
+msgstr "创建的问题"
+
+#: src/app/content-custom-field-activity.js:38
+msgid "h"
+msgstr "时"
+
+#: src/app/content-custom-field-activity.js:36
+msgid "m"
+msgstr "分"
+
+#: src/app/content-resolved-activity.js:20
+msgid "reopened issue"
+msgstr "重新打开的问题"
+
+#: src/app/content-resolved-activity.js:18
+msgid "resolved issue"
+msgstr "已解决的问题"
+
+#: src/app/content-default-activity.js:78
+msgid "updated"
+msgstr "已更新"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} 分钟"
+

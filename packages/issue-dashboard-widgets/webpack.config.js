@@ -11,8 +11,15 @@ const PATHS = {
     key: 'youtrack-issues-list',
     sources: join(__dirname, 'widgets/youtrack-issues-list/src'),
     outDir: 'widgets/youtrack-issues-list'
+  },
+  recentActivity: {
+    key: 'youtrack-activities-widget',
+    sources: join(__dirname, 'widgets/youtrack-activities-widget'),
+    outDir: 'widgets/youtrack-activities-widget'
   }
 };
+
+const SOURCES = [PATHS.issuesList.sources, PATHS.recentActivity.sources];
 
 // Patch @jetbrains/ring-ui svg-sprite-loader config
 ringUiWebpackConfig.loaders.svgSpriteLoader.include.push(
@@ -23,7 +30,8 @@ ringUiWebpackConfig.loaders.svgSpriteLoader.include.push(
 const webpackConfig = () => ({
   mode: 'development',
   entry: {
-    [PATHS.issuesList.key]: `${PATHS.issuesList.sources}/app/app.js`
+    [PATHS.issuesList.key]: `${PATHS.issuesList.sources}/app/app.js`,
+    [PATHS.recentActivity.key]: `${PATHS.recentActivity.sources}/app/app.js`
   },
   output: {
     path: resolve(__dirname, pkgConfig.dist),
@@ -50,13 +58,13 @@ const webpackConfig = () => ({
         test: /\.js$/,
         include: [
           join(__dirname, 'node_modules/chai-as-promised'),
-          PATHS.issuesList.sources
+          ...SOURCES
         ],
         loader: 'babel-loader?cacheDirectory'
       },
       {
         test: /\.po$/,
-        include: PATHS.issuesList.sources,
+        include: SOURCES,
         use: [
           'json-loader',
           {
@@ -88,12 +96,19 @@ const webpackConfig = () => ({
   plugins: [
     new HtmlWebpackPlugin({
       template: `html-loader?interpolate!${PATHS.issuesList.sources}/index.html`,
+      chunks: [PATHS.issuesList.key],
       filename: `${PATHS.issuesList.outDir}/index.html`
+    }),
+    new HtmlWebpackPlugin({
+      template: `html-loader?interpolate!${PATHS.recentActivity.sources}/index.html`,
+      chunks: [PATHS.recentActivity.key],
+      filename: `${PATHS.recentActivity.outDir}/index.html`
     }),
     new CopyWebpackPlugin([
       'manifest.json',
       'youtrack.svg',
-      {from: `${PATHS.issuesList.sources}/widget-settings.json`, to: PATHS.issuesList.outDir}
+      {from: `${PATHS.issuesList.sources}/widget-settings.json`, to: PATHS.issuesList.outDir},
+      {from: `${PATHS.recentActivity.sources}/widget-settings.json`, to: PATHS.recentActivity.outDir}
     ], {})
   ]
 });
