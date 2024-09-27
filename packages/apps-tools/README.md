@@ -70,6 +70,8 @@ does not specify the app name, the name of the directory is used as the name of 
 
 Specify values for the `--host` and `--token` parameters to gain authorized access to YouTrack.
 
+Use `--open` to open the app settings in the browser after the upload is complete.
+
 ### Verify
 
 `youtrack-app verify <dir> [--schema, --manifest]`

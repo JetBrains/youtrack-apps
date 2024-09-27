@@ -41,14 +41,27 @@ export async function upload(config: Config, appDir?: string) {
 
     try {
       const res = await fetch(requestParams);
+
       if (!res.ok) {
         const error = await prepareErrorMessage(res);
         throw new Error(error);
       }
+
+      const {id} = (await res.json()) as unknown as {id: string};
+      const appLink = `${config.host}/admin/apps?selected=${id}&tab=settings`;
+
       if (isCreate) {
         console.log(i18n('App "' + appName + '" created'));
       } else {
         console.log(i18n('App "' + appName + '" uploaded'));
+      }
+
+      if (config.open) {
+        // using dynamic import as we compile to cjs
+        const {default: openInBrowser} = await import('open');
+        await openInBrowser(appLink);
+      } else {
+        console.log(i18n(`To configure the app please proceed to: ${appLink}`));
       }
     } catch (error) {
       if (isErrorWithStatusCodeAndData(error) && error.statusCode === 404 && !isCreate) {

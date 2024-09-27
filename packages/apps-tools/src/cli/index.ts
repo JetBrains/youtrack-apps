@@ -25,6 +25,7 @@ export async function run(argv = process.argv) {
     overwrite: args.overwrite || null,
     manifest: args.manifest || null,
     schema: args.schema || null,
+    open: args.open || null,
     cwd: process.cwd(),
   };
 

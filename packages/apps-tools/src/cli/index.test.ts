@@ -70,6 +70,7 @@ describe('index', function () {
       schema: null,
       overwrite: null,
       output: null,
+      open: null,
     };
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation();

@@ -7,6 +7,7 @@ export interface Config {
   overwrite: string | null;
   manifest: string | null;
   schema: string | null;
+  open: string | null;
   cwd: string;
 }
 
