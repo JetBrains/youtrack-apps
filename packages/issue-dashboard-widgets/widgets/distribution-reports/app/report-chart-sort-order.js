@@ -36,13 +36,6 @@ class ReportChartSortOrder extends React.Component {
     DistributionReportAxises.SortOrder.All.map(sortOrder =>
       ReportChartSortOrder.sortOrderToSelectOption(sortOrder, orientation));
 
-  static propTypes = {
-    sortOrder: PropTypes.string,
-    orientation: PropTypes.number,
-    disabled: PropTypes.bool,
-    onChange: PropTypes.func
-  };
-
   static getSortOrderTypePresentation = sortOrder => (
     (sortOrder === DistributionReportAxises.SortOrder.ByCount.Asc ||
       sortOrder === DistributionReportAxises.SortOrder.ByCount.Desc)
@@ -64,6 +57,13 @@ class ReportChartSortOrder extends React.Component {
     return arrowsRelatedToOrientation.Desc;
   };
 
+  static propTypes = {
+    sortOrder: PropTypes.string,
+    orientation: PropTypes.number,
+    disabled: PropTypes.bool,
+    onChange: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
 
@@ -75,7 +75,8 @@ class ReportChartSortOrder extends React.Component {
     };
   }
 
-  componentWillReceiveProps(props) {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillReceiveProps(props) {
     this.setState({
       sortOrder: props.sortOrder,
       orientation: props.orientation
@@ -110,9 +111,9 @@ class ReportChartSortOrder extends React.Component {
     return (
       <span>
         <span>
-          { ReportChartSortOrder.getArrow(sortOrder, orientation) }
+          {ReportChartSortOrder.getArrow(sortOrder, orientation)}
         </span>&nbsp;
-        { ReportChartSortOrder.getSortOrderTypePresentation(sortOrder) }
+        {ReportChartSortOrder.getSortOrderTypePresentation(sortOrder)}
       </span>
     );
   }
@@ -129,13 +130,13 @@ class ReportChartSortOrder extends React.Component {
     return (
       <span>
         <Link
-          pseudo={true}
+          pseudo
           onClick={this.openSortOrderSelector}
         >
           <span>
-            { ReportChartSortOrder.getArrow(sortOrder, orientation) }
+            {ReportChartSortOrder.getArrow(sortOrder, orientation)}
           </span>&nbsp;
-          { ReportChartSortOrder.getSortOrderTypePresentation(sortOrder) }
+          {ReportChartSortOrder.getSortOrderTypePresentation(sortOrder)}
           <ChevronDownIcon
             size={ChevronDownIcon.Size.Size12}
           />
@@ -144,7 +145,7 @@ class ReportChartSortOrder extends React.Component {
           ref={this.onRenderSortOrderSelector}
           data={options}
           selected={ReportChartSortOrder.sortOrderToSelectOption(sortOrder)}
-          filter={true}
+          filter
           onSelect={this.changeSortOrder}
           type={RerenderableSelect.Type.CUSTOM}
         />

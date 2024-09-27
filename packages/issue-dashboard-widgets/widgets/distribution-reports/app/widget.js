@@ -18,8 +18,7 @@ import {
 } from '../../../../lib/reporting-components/resources/resources';
 import fetcher from '../../../../lib/reporting-components/fetcher/fetcher';
 
-import Configuration
-  from './configuration';
+import Configuration from './configuration';
 import {getReportTypePathPrefix} from './distribution-report-types';
 import DistributionReportAxises from './distribution-report-axises';
 import Content from './content';
@@ -350,11 +349,13 @@ class DistributionReportsWidget extends React.Component {
 
   renderConfigurationForm() {
     const submitForm = async (selectedReportId, refreshPeriod, youTrack) => {
+      // eslint-disable-next-line react/no-access-state-in-setstate
       const reportIsChanged = selectedReportId !== (this.state.report || {}).id;
       this.setState({
         youTrack,
         isLoading: reportIsChanged,
         isConfiguring: false,
+        // eslint-disable-next-line react/no-access-state-in-setstate
         report: reportIsChanged ? null : this.state.report,
         error: ReportModel.ErrorTypes.OK
       }, async () => {

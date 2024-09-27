@@ -10,10 +10,10 @@ import {
 import {i18n} from 'hub-dashboard-addons/dist/localization';
 
 import FilterFieldsSelector
-  from '../../../../lib/reporting-components/filter-fields-selector/filter-fields-selector';
+from '../../../../lib/reporting-components/filter-fields-selector/filter-fields-selector';
 import BackendTypes from '../../../../lib/reporting-components/backend-types/backend-types';
 import SharingSetting from
-  '../../../../lib/reporting-components/sharing-setting/sharing-setting';
+'../../../../lib/reporting-components/sharing-setting/sharing-setting';
 import {loadUsers, loadVisibilityUserGroups} from '../../../../lib/reporting-components/resources/resources';
 import StandardFormGroup from '../../../../lib/reporting-components/report-form-controls/standard-form-group';
 import ReportIssuesFilter from '../../../../lib/reporting-components/report-form-controls/report-issues-filter';
@@ -29,16 +29,6 @@ import {
 import DistributionReportAxises from './distribution-report-axises';
 
 class DistributionReportForm extends React.Component {
-  static propTypes = {
-    report: PropTypes.object,
-    onValidStateChange: PropTypes.func,
-    onReportSettingsChange: PropTypes.func,
-    disabled: PropTypes.bool,
-    currentUser: PropTypes.object,
-    fetchYouTrack: PropTypes.func,
-    fetchHub: PropTypes.func
-  };
-
   static isNewReport = report => !report.id;
 
   static canShowSecondaryAxisOption = report =>
@@ -79,6 +69,16 @@ class DistributionReportForm extends React.Component {
     model: project
   });
 
+  static propTypes = {
+    report: PropTypes.object,
+    onValidStateChange: PropTypes.func,
+    onReportSettingsChange: PropTypes.func,
+    disabled: PropTypes.bool,
+    currentUser: PropTypes.object,
+    fetchYouTrack: PropTypes.func,
+    fetchHub: PropTypes.func
+  };
+
   constructor(props) {
     super(props);
 
@@ -96,7 +96,8 @@ class DistributionReportForm extends React.Component {
     );
   }
 
-  componentWillReceiveProps(props) {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillReceiveProps(props) {
     this.setState({
       disabled: props.disabled,
       currentUser: props.currentUser,
@@ -209,11 +210,11 @@ class DistributionReportForm extends React.Component {
       <div>
         <span className="distribution-reports-widget__filter-field-selector">
           {
-            report.yaxis &&
-            <span className="distribution-reports-widget__axis-label">
-              {'↓'}
-            </span>
-          }
+            report.yaxis && (
+              <span className="distribution-reports-widget__axis-label">
+                {'↓'}
+              </span>
+            )}
           <FilterFieldsSelector
             selectedField={
               DistributionReportAxises.getMainAxis(report).field
@@ -225,33 +226,33 @@ class DistributionReportForm extends React.Component {
           />
         </span>
         {
-          report.yaxis &&
-          <CompareIcon
-            className="distribution-reports-widget__icon distribution-reports-widget__icon_btn distribution-reports-widget__transpose-icon"
-            onClick={this.changeAxisPlaces}
-            color={CompareIcon.Color.GRAY}
-            size={CompareIcon.Size.Size16}
-          />
-        }
-        {
-          DistributionReportForm.canShowSecondaryAxisOption(report) &&
-          <span className="distribution-reports-widget__filter-field-selector">
-            <span className="distribution-reports-widget__axis-label">
-              {report.yaxis ? '→' : ''}
-            </span>
-            <FilterFieldsSelector
-              selectedField={
-                report.yaxis
-                  ? DistributionReportAxises.getSecondaryAxis(report).field
-                  : undefined
-              }
-              projects={report.projects}
-              onChange={this.changeSplittingBarsFilterField}
-              filterFieldsSource={filterFieldsSource}
-              canBeEmpty={DistributionReportForm.isNewReport(report)}
+          report.yaxis && (
+            <CompareIcon
+              className="distribution-reports-widget__icon distribution-reports-widget__icon_btn distribution-reports-widget__transpose-icon"
+              onClick={this.changeAxisPlaces}
+              color={CompareIcon.Color.GRAY}
+              size={CompareIcon.Size.Size16}
             />
-          </span>
-        }
+          )}
+        {
+          DistributionReportForm.canShowSecondaryAxisOption(report) && (
+            <span className="distribution-reports-widget__filter-field-selector">
+              <span className="distribution-reports-widget__axis-label">
+                {report.yaxis ? '→' : ''}
+              </span>
+              <FilterFieldsSelector
+                selectedField={
+                  report.yaxis
+                    ? DistributionReportAxises.getSecondaryAxis(report).field
+                    : undefined
+                }
+                projects={report.projects}
+                onChange={this.changeSplittingBarsFilterField}
+                filterFieldsSource={filterFieldsSource}
+                canBeEmpty={DistributionReportForm.isNewReport(report)}
+              />
+            </span>
+          )}
       </div>
     );
   }
@@ -266,7 +267,7 @@ class DistributionReportForm extends React.Component {
 
     return (
       <div className="distribution-reports-widget__filter-fields">
-        { labels }
+        {labels}
       </div>
     );
   }
@@ -303,7 +304,7 @@ class DistributionReportForm extends React.Component {
           projects={report.projects}
           onChange={this.changeAggregationPolicy}
           filterFieldsSource={aggregationFilterFieldsSource}
-          canBeEmpty={true}
+          canBeEmpty
           placeholder={i18n('Issues')}
           disabled={disabled}
         />
@@ -408,20 +409,20 @@ class DistributionReportForm extends React.Component {
     return (
       <div className="ring-form">
         {
-          !disabled &&
-          <StandardFormGroup
-            label={'Name'}
-            inputCompensationHack={true}
-          >
-            <Input
-              size={InputSize.FULL}
-              value={report.name}
-              placeholder={i18n('Report name')}
-              onChange={this.changeReportName}
-              compact={true}
-            />
-          </StandardFormGroup>
-        }
+          !disabled && (
+            <StandardFormGroup
+              label={'Name'}
+              inputCompensationHack
+            >
+              <Input
+                size={InputSize.FULL}
+                value={report.name}
+                placeholder={i18n('Report name')}
+                onChange={this.changeReportName}
+                compact
+              />
+            </StandardFormGroup>
+          )}
         {this.renderProjectsSelectorBlock()}
         {this.renderFilterIssuesBlock()}
         {this.renderIssueDistributionFieldsBlock()}

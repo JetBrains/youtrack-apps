@@ -1,4 +1,5 @@
-nv.models.flexPie = function() {
+/* eslint-disable */
+nv.models.flexPie = function () {
   /*jshint ignore:start*/
   /*eslint-disable*/
   'use strict';

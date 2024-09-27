@@ -19,6 +19,17 @@ import './nv-flex-pie-chart';
 const X_AXIS_HEIGHT = 22;
 
 class ReportChart extends React.Component {
+  static PresentationModes = {
+    Bars: 'DEFAULT',
+    Table: 'MATRIX',
+    Pie: 'PIE'
+  };
+
+  static LineHeight = 22; // eslint-disable-line no-magic-numbers
+
+  static getBarsChartHeight = columns =>
+    ReportChart.LineHeight * columns.length + X_AXIS_HEIGHT;
+
   static propTypes = {
     reportData: PropTypes.object,
     presentationMode: PropTypes.string,
@@ -32,17 +43,6 @@ class ReportChart extends React.Component {
     homeUrl: PropTypes.string
   };
 
-  static PresentationModes = {
-    Bars: 'DEFAULT',
-    Table: 'MATRIX',
-    Pie: 'PIE'
-  };
-
-  static LineHeight = 22; // eslint-disable-line no-magic-numbers
-
-  static getBarsChartHeight = columns =>
-    ReportChart.LineHeight * columns.length + X_AXIS_HEIGHT;
-
   constructor(props) {
     super(props);
 
@@ -55,7 +55,8 @@ class ReportChart extends React.Component {
     };
   }
 
-  componentWillReceiveProps(props) {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillReceiveProps(props) {
     if (props.reportData) {
       this.setState(
         {reportData: props.reportData},
@@ -128,7 +129,7 @@ class ReportChart extends React.Component {
         onMouseOver={this.getOnLineMouseOverCallback(idx)}
         key={`report-label-size-${idx}`}
       >
-        { sizePresentation }
+        {sizePresentation}
       </div>
     );
   }
@@ -147,7 +148,7 @@ class ReportChart extends React.Component {
         onMouseOver={this.getOnLineMouseOverCallback(idx)}
         key={`report-label-percents-${idx}`}
       >
-        { getSizeInPercents(column.size) }
+        {getSizeInPercents(column.size)}
       </div>
     );
   }
@@ -230,7 +231,7 @@ class ReportChart extends React.Component {
               }
             </div>
           </div>
-          { this.renderChartBody(chartHeight) }
+          {this.renderChartBody(chartHeight)}
         </div>
       </div>
     );
@@ -263,7 +264,7 @@ class ReportChart extends React.Component {
           style={{height: ReportChart.LineHeight, lineHeight: `${ReportChart.LineHeight}px`}}
         >
           <div className="report-chart__label report-chart__label_title">
-            { title }
+            {title}
           </div>
           <div className="report-chart__title-settings">
             <ButtonGroup>
@@ -274,32 +275,32 @@ class ReportChart extends React.Component {
                   ReportChart.PresentationModes.Bars
                 )}
               >
-                { i18n('Bars') }
+                {i18n('Bars')}
               </Button>
               {
-                isTwoDimensionalChart &&
-                <Button
-                  className="report-chart__chart-type-switcher"
-                  active={mode === ReportChart.PresentationModes.Table}
-                  onClick={getOnChangeReportPresentationCallback(
-                    ReportChart.PresentationModes.Table
-                  )}
-                >
-                  { i18n('Table') }
-                </Button>
-              }
+                isTwoDimensionalChart && (
+                  <Button
+                    className="report-chart__chart-type-switcher"
+                    active={mode === ReportChart.PresentationModes.Table}
+                    onClick={getOnChangeReportPresentationCallback(
+                      ReportChart.PresentationModes.Table
+                    )}
+                  >
+                    {i18n('Table')}
+                  </Button>
+                )}
               {
-                !isTwoDimensionalChart &&
-                <Button
-                  className="report-chart__chart-type-switcher"
-                  active={mode === ReportChart.PresentationModes.Pie}
-                  onClick={getOnChangeReportPresentationCallback(
-                    ReportChart.PresentationModes.Pie
-                  )}
-                >
-                  { i18n('Pie chart') }
-                </Button>
-              }
+                !isTwoDimensionalChart && (
+                  <Button
+                    className="report-chart__chart-type-switcher"
+                    active={mode === ReportChart.PresentationModes.Pie}
+                    onClick={getOnChangeReportPresentationCallback(
+                      ReportChart.PresentationModes.Pie
+                    )}
+                  >
+                    {i18n('Pie chart')}
+                  </Button>
+                )}
             </ButtonGroup>
           </div>
         </div>
@@ -311,11 +312,11 @@ class ReportChart extends React.Component {
               orientation={ReportChartSortOrder.Orientation.Vertical}
             />
             {
-              this.state.reportMainAxisLabel &&
-              <span className="report-chart__sort-order-label">
-                { `(${this.state.reportMainAxisLabel})` }
-              </span>
-            }
+              this.state.reportMainAxisLabel && (
+                <span className="report-chart__sort-order-label">
+                  {`(${this.state.reportMainAxisLabel})`}
+                </span>
+              )}
           </div>
           <div className="report-chart__sort-order report-chart__sort-order_secondary">
             <ReportChartSortOrder
@@ -324,11 +325,11 @@ class ReportChart extends React.Component {
               orientation={ReportChartSortOrder.Orientation.Horizontal}
             />
             {
-              this.state.reportSecondaryAxisLabel &&
-              <span className="report-chart__sort-order-label">
-                { `(${this.state.reportSecondaryAxisLabel})` }
-              </span>
-            }
+              this.state.reportSecondaryAxisLabel && (
+                <span className="report-chart__sort-order-label">
+                  {`(${this.state.reportSecondaryAxisLabel})`}
+                </span>
+              )}
           </div>
         </div>
         {this.renderChartArea()}

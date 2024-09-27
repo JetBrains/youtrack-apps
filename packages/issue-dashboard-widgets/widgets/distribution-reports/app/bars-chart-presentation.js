@@ -28,7 +28,8 @@ class BarsChartPresentation extends React.Component {
     };
   }
 
-  componentWillReceiveProps(props) {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillReceiveProps(props) {
     const {reportData} = props;
 
     if (reportData) {

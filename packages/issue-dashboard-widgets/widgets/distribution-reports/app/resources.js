@@ -1,5 +1,5 @@
 import BackendTypes
-  from '../../../../lib/reporting-components/backend-types/backend-types';
+from '../../../../lib/reporting-components/backend-types/backend-types';
 
 const REPORT_FILTER_FIELDS_FIELDS = 'id,name,presentation,localizedName,customField(fieldType(presentation))';
 

@@ -40,14 +40,14 @@ class Content extends React.Component {
         message={message}
       >
         {
-          this.props.editable &&
-          <Link
-            pseudo={true}
-            onClick={removeWidget}
-          >
-            {i18n('Remove widget')}
-          </Link>
-        }
+          this.props.editable && (
+            <Link
+              pseudo
+              onClick={removeWidget}
+            >
+              {i18n('Remove widget')}
+            </Link>
+          )}
       </EmptyWidget>
     );
   }
@@ -59,14 +59,14 @@ class Content extends React.Component {
         message={message}
       >
         {
-          this.props.editable &&
-          <Link
-            pseudo={true}
-            onClick={this.props.onOpenSettings}
-          >
-            {i18n('Edit settings')}
-          </Link>
-        }
+          this.props.editable && (
+            <Link
+              pseudo
+              onClick={this.props.onOpenSettings}
+            >
+              {i18n('Edit settings')}
+            </Link>
+          )}
       </EmptyWidget>
     );
   }

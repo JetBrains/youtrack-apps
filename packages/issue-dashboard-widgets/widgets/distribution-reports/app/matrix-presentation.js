@@ -27,7 +27,8 @@ class MatrixPresentation extends React.Component {
     };
   }
 
-  componentWillReceiveProps(props) {
+  // eslint-disable-next-line camelcase
+  UNSAFE_componentWillReceiveProps(props) {
     if (props.reportData) {
       this.setState({
         matrixModel: DistributionReportModel.getBarsChartModel(props.reportData)
@@ -77,11 +78,11 @@ class MatrixPresentation extends React.Component {
         onClick={onClick}
       >
         {
-          (sizeValue > 0) &&
-          <Link pseudo={true}>
-            {sizePresentation}
-          </Link>
-        }
+          (sizeValue > 0) && (
+            <Link pseudo>
+              {sizePresentation}
+            </Link>
+          )}
         {
           (sizeValue === 0) &&
           <span>{sizePresentation}</span>

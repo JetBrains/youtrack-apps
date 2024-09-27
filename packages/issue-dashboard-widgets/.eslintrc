@@ -10,6 +10,7 @@
     "browser": true
   },
   "rules": {
-    "import/no-commonjs": "off"
+    "import/no-commonjs": "off",
+    "react/jsx-no-bind": "off"
   }
 }

@@ -5,7 +5,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ringUiWebpackConfig = require('@jetbrains/ring-ui/webpack.config');
 
 const pkgConfig = require('./package.json').config;
-const babelConfig = require('./package.json').babel;
 
 const PATHS = {
   issuesList: {
@@ -61,7 +60,7 @@ const webpackConfig = () => ({
       'hub-dashboard-addons': resolve('./node_modules/hub-dashboard-addons'),
       '@jetbrains/ring-ui': resolve('./node_modules/@jetbrains/ring-ui'),
       mout: resolve('./node_modules/mout'),
-      fecha: resolve('./node_modules/fecha'),
+      fecha: resolve('./node_modules/fecha')
     }
   },
   module: {
