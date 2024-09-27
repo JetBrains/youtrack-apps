@@ -6,7 +6,13 @@ const ringUiWebpackConfig = require('@jetbrains/ring-ui/webpack.config');
 
 const pkgConfig = require('./package.json').config;
 
-const componentsPath = join(__dirname, 'widgets/youtrack-issues-list/src');
+const PATHS = {
+  issuesList: {
+    key: 'youtrack-issues-list',
+    sources: join(__dirname, 'widgets/youtrack-issues-list/src'),
+    outDir: 'widgets/youtrack-issues-list'
+  }
+};
 
 // Patch @jetbrains/ring-ui svg-sprite-loader config
 ringUiWebpackConfig.loaders.svgSpriteLoader.include.push(
@@ -14,16 +20,10 @@ ringUiWebpackConfig.loaders.svgSpriteLoader.include.push(
   require('@jetbrains/icons')
 );
 
-
-const WIDGETS_PATHS = {
-  issuesList: 'youtrack-issues-list'
-};
-
-
 const webpackConfig = () => ({
   mode: 'development',
   entry: {
-    [WIDGETS_PATHS.issuesList]: `${componentsPath}/app/app.js`
+    [PATHS.issuesList.key]: `${PATHS.issuesList.sources}/app/app.js`
   },
   resolve: {
     mainFields: ['module', 'browser', 'main'],
@@ -58,13 +58,13 @@ const webpackConfig = () => ({
         test: /\.js$/,
         include: [
           join(__dirname, 'node_modules/chai-as-promised'),
-          componentsPath
+          PATHS.issuesList.sources
         ],
         loader: 'babel-loader?cacheDirectory'
       },
       {
         test: /\.po$/,
-        include: componentsPath,
+        include: PATHS.issuesList.sources,
         use: [
           'json-loader',
           {
@@ -95,13 +95,13 @@ const webpackConfig = () => ({
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: `html-loader?interpolate!${componentsPath}/index.html`,
-      filename: `widgets/${WIDGETS_PATHS.issuesList}/index.html`
+      template: `html-loader?interpolate!${PATHS.issuesList.sources}/index.html`,
+      filename: `${PATHS.issuesList.outDir}/index.html`
     }),
     new CopyWebpackPlugin([
       'manifest.json',
       'youtrack.svg',
-      {from: `${componentsPath}/widget-settings.json`, to: `widgets/${WIDGETS_PATHS.issuesList}`}
+      {from: `${PATHS.issuesList.sources}/widget-settings.json`, to: PATHS.issuesList.outDir}
     ], {})
   ]
 });
