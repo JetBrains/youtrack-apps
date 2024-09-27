@@ -22,7 +22,7 @@ const PATHS = {
 const SOURCES = [PATHS.issuesList.sources, PATHS.recentActivity.sources];
 
 // Patch @jetbrains/ring-ui svg-sprite-loader config
-ringUiWebpackConfig.loaders.svgSpriteLoader.include.push(
+ringUiWebpackConfig.loaders.svgInlineLoader.include.push(
   require('@jetbrains/logos'),
   require('@jetbrains/icons')
 );
