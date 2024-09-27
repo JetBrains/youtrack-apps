@@ -9,7 +9,7 @@ const pkgConfig = require('./package.json').config;
 const PATHS = {
   issuesList: {
     key: 'youtrack-issues-list',
-    sources: join(__dirname, 'widgets/youtrack-issues-list/src'),
+    sources: join(__dirname, 'widgets/youtrack-issues-list'),
     outDir: 'widgets/youtrack-issues-list'
   },
   recentActivity: {
