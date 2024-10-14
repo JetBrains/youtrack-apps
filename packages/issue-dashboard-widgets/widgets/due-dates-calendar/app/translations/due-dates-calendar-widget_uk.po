@@ -1,0 +1,152 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: uk\n"
+"X-Crowdin-File: /widgets/due-dates-calendar-widget/default.pot\n"
+"X-Crowdin-File-ID: 267290\n"
+"Language-Team: Ukrainian\n"
+"Language: uk_UA\n"
+"PO-Revision-Date: 2023-07-31 09:09\n"
+
+#: src/app/due_dates_calendar_widget.js:378
+msgid "Can't load information from service."
+msgstr "Не вдалося завантажити інформацію із сервісу."
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: src/app/calendar_toolbar.js:44
+msgid "Day"
+msgstr "День"
+
+#: src/app/due_dates_calendar_widget.js:97
+msgid "Due Date Calendar Widget"
+msgstr "Віджет календаря термінів"
+
+#: src/app/edit-form.js:411
+#: src/app/edit-form.js:49
+msgid "Everything"
+msgstr "Усе"
+
+#: src/app/edit-form.js:532
+msgid "Field used to apply color scheme"
+msgstr "Поле, що слугує для застосування колірної схеми"
+
+#: src/app/edit-form.js:518
+msgid "Field used to schedule due dates"
+msgstr "Поле, що слугує для планування термінів"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Січень|Лютий|Березень|Квітень|Травень|Червень|Липень|Серпень|Вересень|Жовтень|Листопад|Грудень"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Січ|Лют|Бер|Кві|Тра|Чер|Лип|Сер|Вер|Жов|Лис|Гру"
+
+#: src/app/calendar_toolbar.js:49
+msgid "Month"
+msgstr "Місяць"
+
+#: src/app/due_dates_calendar_widget.js:387
+msgid "No issues corresponding your query, project and schedule field."
+msgstr "Немає завдань, що відповідають вашим полям запиту, проєкту та розкладу."
+
+#: src/app/edit-form.js:341
+msgid "No projects"
+msgstr "Немає проєктів"
+
+#: src/app/edit-form.js:343
+msgid "No saved searches"
+msgstr "Немає збережених пошуків"
+
+#: src/app/edit-form.js:342
+msgid "No tags"
+msgstr "Немає міток"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Отакої! Щось пішло не так…"
+
+#: src/app/edit-form.js:493
+msgid "Optional title"
+msgstr "Необовʼязкова назва"
+
+#: src/app/edit-form.js:430
+msgid "Projects"
+msgstr "Проєкти"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "Зберегти"
+
+#: src/app/edit-form.js:442
+msgid "Saved searches"
+msgstr "Збережені пошуки"
+
+#: src/app/edit-form.js:517
+msgid "Select an available date type field"
+msgstr "Виберіть доступне поле типу «дата»"
+
+#: src/app/edit-form.js:110
+msgid "Selected YouTrack service is not available"
+msgstr "Вибраний сервіс YouTrack недоступний"
+
+#: src/app/edit-form.js:496
+msgid "Set optional title"
+msgstr "Додати необовʼязкову назву"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Неділя|Понеділок|Вівторок|Середа|Четвер|Пʼятниця|Субота"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Нд|Пн|Вт|Ср|Чт|Пт|Сб"
+
+#: src/app/edit-form.js:436
+msgid "Tags"
+msgstr "Мітки"
+
+#: src/app/calendar_toolbar.js:32
+msgid "Today"
+msgstr "Сьогодні"
+
+#: src/app/edit-form.js:417
+msgid "Type search query"
+msgstr "Введіть пошуковий запит"
+
+#: src/app/calendar_toolbar.js:48
+msgid "Week"
+msgstr "Тиждень"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "Віджет оновлюється щохвилини"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Віджет оновлюється кожні {{minutesCount}} хв"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "дп|пп"
+
+#: src/app/due_dates_calendar_widget.js:77
+msgid "issues"
+msgstr "завдання"
+
+#: src/app/due_dates_calendar_widget.js:654
+msgid "more"
+msgstr "більше"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} хв"
+

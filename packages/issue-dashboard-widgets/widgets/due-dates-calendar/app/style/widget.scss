@@ -1,0 +1,62 @@
+@import '~@jetbrains/ring-ui/components/global/global';
+
+.issues-list-widget {
+  color: var(--ring-text-color);
+
+  &__filter {
+    margin: 0 0 $ring-unit 4px;
+  }
+
+  &__filters-switcher {
+    margin: $ring-unit 0;
+  }
+
+  &__no-filters {
+    margin: $ring-unit 4px;
+
+    color: var(--ring-secondary-color);
+  }
+
+  &__filters-list {
+    min-height: 4 * $ring-unit;
+    margin-bottom: 6 * $ring-unit;
+  }
+
+  $search-context-width: $ring-unit * 12;
+
+  &__search-context {
+    display: inline-block;
+    float: left;
+
+    width: $search-context-width;
+
+    & [data-test~="ring-select__button"] {
+      border-radius: 3px 0 0 3px;
+    }
+  }
+
+  &__search-query {
+    width: 100%;
+    width: calc(100% - #{$search-context-width});
+
+    margin-left: $search-context-width;
+
+    vertical-align: top;
+  }
+
+  &__load-more {
+    margin: 4px 0;
+    padding: 4px 0;
+
+    text-align: center;
+
+    border: 1px dashed var(--ring-borders-color);
+    border-radius: 3px;
+
+    font-size: var(--ring-font-size-smaller);
+
+    &:hover {
+      border-color: var(--ring-pale-control-color);
+    }
+  }
+}
