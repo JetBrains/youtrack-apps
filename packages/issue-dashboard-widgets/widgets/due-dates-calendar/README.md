@@ -2,7 +2,7 @@
 Renders a calendar showing issue with Due Dates set to some particular date.
 It is possible to configure query for the issues that will be shown 
 Works in YouTrack 2018.1+, Hub 2018.1+, Upsource 2018.1+.
-![](https://github.com/olegbakhirev/due-dates-calendar-widget/blob/master/widget.png) 
+![](./widget.png) 
 
 # Development
 
