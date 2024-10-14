@@ -1,0 +1,152 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: it\n"
+"X-Crowdin-File: /widgets/due-dates-calendar-widget/default.pot\n"
+"X-Crowdin-File-ID: 267290\n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"PO-Revision-Date: 2023-07-31 09:09\n"
+
+#: src/app/due_dates_calendar_widget.js:378
+msgid "Can't load information from service."
+msgstr "Impossibile caricare informazioni dal servizio."
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "Annulla"
+
+#: src/app/calendar_toolbar.js:44
+msgid "Day"
+msgstr "Giorno"
+
+#: src/app/due_dates_calendar_widget.js:97
+msgid "Due Date Calendar Widget"
+msgstr "Widget Calendario data di scadenza"
+
+#: src/app/edit-form.js:411
+#: src/app/edit-form.js:49
+msgid "Everything"
+msgstr "Qualsiasi"
+
+#: src/app/edit-form.js:532
+msgid "Field used to apply color scheme"
+msgstr "Campo utilizzato per applicare la combinazione di colori"
+
+#: src/app/edit-form.js:518
+msgid "Field used to schedule due dates"
+msgstr "Campo utilizzato per pianificare le date di scadenza"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Gennaio|Febbraio|Marzo|Aprile|Maggio|Giugno|Luglio|Agosto|Settembre|Ottobre|Novembre|Dicembre"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Gen|Feb|Mar|Apr|Mag|Giu|Lug|Ago|Set|Ott|Nov|Dic"
+
+#: src/app/calendar_toolbar.js:49
+msgid "Month"
+msgstr "Mese"
+
+#: src/app/due_dates_calendar_widget.js:387
+msgid "No issues corresponding your query, project and schedule field."
+msgstr "Nessun ticket corrispondente ai campi query, progetto e pianificazione."
+
+#: src/app/edit-form.js:341
+msgid "No projects"
+msgstr "Nessun progetto"
+
+#: src/app/edit-form.js:343
+msgid "No saved searches"
+msgstr "Nessuna ricerca salvata"
+
+#: src/app/edit-form.js:342
+msgid "No tags"
+msgstr "Nessun tag"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Oops! Qualcosa è andato storto..."
+
+#: src/app/edit-form.js:493
+msgid "Optional title"
+msgstr "Titolo facoltativo"
+
+#: src/app/edit-form.js:430
+msgid "Projects"
+msgstr "Progetti"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "Salva"
+
+#: src/app/edit-form.js:442
+msgid "Saved searches"
+msgstr "Ricerche salvate"
+
+#: src/app/edit-form.js:517
+msgid "Select an available date type field"
+msgstr "Seleziona un campo tipo di data disponibile"
+
+#: src/app/edit-form.js:110
+msgid "Selected YouTrack service is not available"
+msgstr "Il servizio YouTrack selezionato non è disponibile"
+
+#: src/app/edit-form.js:496
+msgid "Set optional title"
+msgstr "Imposta titolo facoltativo"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Domenica|Lunedi|Martedi|Mercoledi|Giovedi|Venerdi|Sabato"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Dom|Lun|Mar|Mer|Gio|Ven|Sab"
+
+#: src/app/edit-form.js:436
+msgid "Tags"
+msgstr "Tag"
+
+#: src/app/calendar_toolbar.js:32
+msgid "Today"
+msgstr "Oggi"
+
+#: src/app/edit-form.js:417
+msgid "Type search query"
+msgstr "Digitare la query di ricerca"
+
+#: src/app/calendar_toolbar.js:48
+msgid "Week"
+msgstr "Settimana"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "Il widget si aggiorna ogni minuto"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Il widget si aggiorna ogni {{minutesCount}} minuti"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "am|pm"
+
+#: src/app/due_dates_calendar_widget.js:77
+msgid "issues"
+msgstr ""
+
+#: src/app/due_dates_calendar_widget.js:654
+msgid "more"
+msgstr "altro"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} min"
+

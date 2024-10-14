@@ -1,0 +1,152 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: ja\n"
+"X-Crowdin-File: /widgets/due-dates-calendar-widget/default.pot\n"
+"X-Crowdin-File-ID: 220756\n"
+"Language-Team: Japanese\n"
+"Language: ja_JP\n"
+"PO-Revision-Date: 2023-07-26 17:10\n"
+
+#: src/app/due_dates_calendar_widget.js:378
+msgid "Can't load information from service."
+msgstr "サービスから情報を読み込むことができません。"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "取り消す"
+
+#: src/app/calendar_toolbar.js:44
+msgid "Day"
+msgstr "日"
+
+#: src/app/due_dates_calendar_widget.js:97
+msgid "Due Date Calendar Widget"
+msgstr "期日カレンダーウィジェット"
+
+#: src/app/edit-form.js:411
+#: src/app/edit-form.js:49
+msgid "Everything"
+msgstr "すべて"
+
+#: src/app/edit-form.js:532
+msgid "Field used to apply color scheme"
+msgstr "カラースキームの適用に使用されるフィールド"
+
+#: src/app/edit-form.js:518
+msgid "Field used to schedule due dates"
+msgstr "期日の計画に使用されるフィールド"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月"
+
+#: src/app/calendar_toolbar.js:49
+msgid "Month"
+msgstr "月"
+
+#: src/app/due_dates_calendar_widget.js:387
+msgid "No issues corresponding your query, project and schedule field."
+msgstr "あなたのクエリ、プロジェクト、およびスケジュールフィールドに対応する課題はありません。"
+
+#: src/app/edit-form.js:341
+msgid "No projects"
+msgstr "プロジェクトがありません"
+
+#: src/app/edit-form.js:343
+msgid "No saved searches"
+msgstr "保存した検索条件はありません"
+
+#: src/app/edit-form.js:342
+msgid "No tags"
+msgstr "タグなし"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "不明なエラーが発生しました..."
+
+#: src/app/edit-form.js:493
+msgid "Optional title"
+msgstr "タイトル（省略可）"
+
+#: src/app/edit-form.js:430
+msgid "Projects"
+msgstr "プロジェクト"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "保存"
+
+#: src/app/edit-form.js:442
+msgid "Saved searches"
+msgstr "保存した検索条件"
+
+#: src/app/edit-form.js:517
+msgid "Select an available date type field"
+msgstr "使用可能な日付タイプフィールドを選択してください"
+
+#: src/app/edit-form.js:110
+msgid "Selected YouTrack service is not available"
+msgstr "選択されたYouTrackサービスはご利用いただけません"
+
+#: src/app/edit-form.js:496
+msgid "Set optional title"
+msgstr "タイトル（省略可）を設定"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "日曜日|月曜日|火曜日|水曜日|木曜日|金曜日|土曜日"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "日|月|火|水|木|金|土"
+
+#: src/app/edit-form.js:436
+msgid "Tags"
+msgstr "タグ"
+
+#: src/app/calendar_toolbar.js:32
+msgid "Today"
+msgstr "今日"
+
+#: src/app/edit-form.js:417
+msgid "Type search query"
+msgstr "検索クエリを入力"
+
+#: src/app/calendar_toolbar.js:48
+msgid "Week"
+msgstr "週"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "ウィジェットは1分ごとに更新されます"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "ウィジェットは{{minutesCount}}分ごとに更新されます"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "am|pm"
+
+#: src/app/due_dates_calendar_widget.js:77
+msgid "issues"
+msgstr "課題"
+
+#: src/app/due_dates_calendar_widget.js:654
+msgid "more"
+msgstr "もっと"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} 分"
+

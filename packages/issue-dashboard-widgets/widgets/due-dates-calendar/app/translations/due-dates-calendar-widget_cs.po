@@ -1,0 +1,152 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: cs\n"
+"X-Crowdin-File: /widgets/due-dates-calendar-widget/default.pot\n"
+"X-Crowdin-File-ID: 267290\n"
+"Language-Team: Czech\n"
+"Language: cs_CZ\n"
+"PO-Revision-Date: 2023-07-31 09:08\n"
+
+#: src/app/due_dates_calendar_widget.js:378
+msgid "Can't load information from service."
+msgstr "Nelze načíst data ze služby."
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: src/app/calendar_toolbar.js:44
+msgid "Day"
+msgstr "Den"
+
+#: src/app/due_dates_calendar_widget.js:97
+msgid "Due Date Calendar Widget"
+msgstr "Kalendář termínů"
+
+#: src/app/edit-form.js:411
+#: src/app/edit-form.js:49
+msgid "Everything"
+msgstr "Vše"
+
+#: src/app/edit-form.js:532
+msgid "Field used to apply color scheme"
+msgstr "Políčko určující barvy položek"
+
+#: src/app/edit-form.js:518
+msgid "Field used to schedule due dates"
+msgstr "Políčko označující termíny položek"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Leden|Únor|Březen|Duben|Květen|Červen|Červenec|Srpen|Září|Říjen|Listopad|Prosinec"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Led|Úno|Bře|Dub|Kvě|Čer|Čvc|Srp|Zář|Říj|Lis|Pro"
+
+#: src/app/calendar_toolbar.js:49
+msgid "Month"
+msgstr "Měsíc"
+
+#: src/app/due_dates_calendar_widget.js:387
+msgid "No issues corresponding your query, project and schedule field."
+msgstr "Nebyly nalezeny případy odpovídající vašemu dotazu, projektu a políčku termínu."
+
+#: src/app/edit-form.js:341
+msgid "No projects"
+msgstr "Žádné projekty"
+
+#: src/app/edit-form.js:343
+msgid "No saved searches"
+msgstr "Žádná uložená hledání"
+
+#: src/app/edit-form.js:342
+msgid "No tags"
+msgstr "Žádné štítky"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Jejda! Něco se pokazilo…"
+
+#: src/app/edit-form.js:493
+msgid "Optional title"
+msgstr "Volitelný název"
+
+#: src/app/edit-form.js:430
+msgid "Projects"
+msgstr "Projekty"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "Uložit"
+
+#: src/app/edit-form.js:442
+msgid "Saved searches"
+msgstr "Uložená hledání"
+
+#: src/app/edit-form.js:517
+msgid "Select an available date type field"
+msgstr "Vyberte z dostupných políček typu \"datum\""
+
+#: src/app/edit-form.js:110
+msgid "Selected YouTrack service is not available"
+msgstr "Vybraná služba YouTrack není k dispozici"
+
+#: src/app/edit-form.js:496
+msgid "Set optional title"
+msgstr "Nastavit volitelný název"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Neděle|Pondělí|Úterý|Středa|Čtvrtek|Pátek|Sobota"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Ne|Po|Út|St|Čt|Pá|So"
+
+#: src/app/edit-form.js:436
+msgid "Tags"
+msgstr "Štítky"
+
+#: src/app/calendar_toolbar.js:32
+msgid "Today"
+msgstr "dnes"
+
+#: src/app/edit-form.js:417
+msgid "Type search query"
+msgstr "Zadejte vyhledávací dotaz"
+
+#: src/app/calendar_toolbar.js:48
+msgid "Week"
+msgstr "Týden"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "Widget se aktualizuje každou minutu"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "Widget se aktualizuje každých {{minutesCount}} minut"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "dopol|odpol"
+
+#: src/app/due_dates_calendar_widget.js:77
+msgid "issues"
+msgstr "případy"
+
+#: src/app/due_dates_calendar_widget.js:654
+msgid "more"
+msgstr "více"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}} min"
+

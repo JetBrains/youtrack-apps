@@ -21,6 +21,11 @@ const PATHS = {
     key: 'distribution-reports',
     sources: join(__dirname, 'widgets/distribution-reports'),
     outDir: 'widgets/distribution-reports'
+  },
+  dueDatesCalendar: {
+    key: 'due-dates-calendar',
+    sources: join(__dirname, 'widgets/due-dates-calendar'),
+    outDir: 'widgets/due-dates-calendar'
   }
 };
 

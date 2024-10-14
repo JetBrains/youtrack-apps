@@ -1,0 +1,152 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: ko\n"
+"X-Crowdin-File: /widgets/due-dates-calendar-widget/default.pot\n"
+"X-Crowdin-File-ID: 220756\n"
+"Language-Team: Korean\n"
+"Language: ko_KR\n"
+"PO-Revision-Date: 2023-07-26 17:11\n"
+
+#: src/app/due_dates_calendar_widget.js:378
+msgid "Can't load information from service."
+msgstr "서비스에서 정보를 불러올 수 없습니다."
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:58
+msgid "Cancel"
+msgstr "취소"
+
+#: src/app/calendar_toolbar.js:44
+msgid "Day"
+msgstr "일"
+
+#: src/app/due_dates_calendar_widget.js:97
+msgid "Due Date Calendar Widget"
+msgstr "기한 캘린더 위젯"
+
+#: src/app/edit-form.js:411
+#: src/app/edit-form.js:49
+msgid "Everything"
+msgstr "전체"
+
+#: src/app/edit-form.js:532
+msgid "Field used to apply color scheme"
+msgstr "색 구성표 적용에 사용되는 필드"
+
+#: src/app/edit-form.js:518
+msgid "Field used to schedule due dates"
+msgstr "기한을 정할 때 사용되는 필드"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "1월|2월|3월|4월|5월|6월|7월|8월|9월|10월|11월|12월"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "1월|2월|3월|4월|5월|6월|7월|8월|9월|10월|11월|12월"
+
+#: src/app/calendar_toolbar.js:49
+msgid "Month"
+msgstr "월"
+
+#: src/app/due_dates_calendar_widget.js:387
+msgid "No issues corresponding your query, project and schedule field."
+msgstr "해당 쿼리, 프로젝트, 일정 필드에 맞는 이슈가 없습니다."
+
+#: src/app/edit-form.js:341
+msgid "No projects"
+msgstr "프로젝트가 없습니다"
+
+#: src/app/edit-form.js:343
+msgid "No saved searches"
+msgstr "저장된 검색이 없습니다"
+
+#: src/app/edit-form.js:342
+msgid "No tags"
+msgstr "태그가 없습니다"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "죄송합니다. 오류가 발생했습니다."
+
+#: src/app/edit-form.js:493
+msgid "Optional title"
+msgstr "추가 제목"
+
+#: src/app/edit-form.js:430
+msgid "Projects"
+msgstr "프로젝트"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/configuration-form/configuration-form.js:47
+msgid "Save"
+msgstr "저장"
+
+#: src/app/edit-form.js:442
+msgid "Saved searches"
+msgstr "저장된 검색"
+
+#: src/app/edit-form.js:517
+msgid "Select an available date type field"
+msgstr "사용 가능한 날짜 유형 필드 선택"
+
+#: src/app/edit-form.js:110
+msgid "Selected YouTrack service is not available"
+msgstr "선택한 YouTrack 서비스를 사용할 수 없습니다"
+
+#: src/app/edit-form.js:496
+msgid "Set optional title"
+msgstr "추가 제목 설정"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "일요일|월요일|화요일|수요일|목요일|금요일|토요일"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "일|월|화|수|목|금|토"
+
+#: src/app/edit-form.js:436
+msgid "Tags"
+msgstr "태그"
+
+#: src/app/calendar_toolbar.js:32
+msgid "Today"
+msgstr "오늘"
+
+#: src/app/edit-form.js:417
+msgid "Type search query"
+msgstr "검색 쿼리 입력"
+
+#: src/app/calendar_toolbar.js:48
+msgid "Week"
+msgstr "주"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:69
+msgid "Widget refreshes every minute"
+msgstr "위젯은 1분마다 새로고침됩니다"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:70
+msgid "Widget refreshes every {{minutesCount}} minutes"
+msgstr "위젯은 {{minutesCount}}분마다 새로고침됩니다"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "오전|오후"
+
+#: src/app/due_dates_calendar_widget.js:77
+msgid "issues"
+msgstr "이슈"
+
+#: src/app/due_dates_calendar_widget.js:654
+msgid "more"
+msgstr "더보기"
+
+#: node_modules/@jetbrains/hub-widget-ui/src/refresh-period/refresh-period.js:64
+msgid "{{minutesCount}} min"
+msgstr "{{minutesCount}}분"
+
