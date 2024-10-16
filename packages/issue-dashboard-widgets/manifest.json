@@ -1,7 +1,7 @@
 {
-  "name": "issue-dashboard-widgets",
-  "title": "Issue Dashboard Widgets",
-  "description": "A set of dashboard widgets that provide various issue views. The set includes widgets for viewing an issue list, an issue distribution report, an issue activity feed, or a due date calendar for issues.",
+  "name": "issues-list-markdown-widget",
+  "title": "Issue List Markdown Widget",
+  "description": "Issue List widget for Markdown",
   "version": "1.0.0",
   "icon": "youtrack.svg",
   "minYouTrackVersion": "2024.3.0",
@@ -17,39 +17,7 @@
       "description": "Displays a list of YouTrack issues that match a search query.",
       "indexPath": "youtrack-issues-list/index.html",
       "settingsSchemaPath": "youtrack-issues-list/widget-settings.json",
-      "extensionPoint": "DASHBOARD_WIDGET"
-    },
-    {
-      "key": "distribution-reports",
-      "name": "Issue Distribution Report",
-      "description": "Displays a distribution report for YouTrack issues. The widget settings let you build the report directly on a dashboard or project overview page.",
-      "indexPath": "distribution-reports/index.html",
-      "settingsSchemaPath": "distribution-reports/widget-settings.json",
-      "extensionPoint": "DASHBOARD_WIDGET",
-      "defaultDimensions": {
-        "height" : "3fr",
-        "width" : "4fr"
-      }
-    },
-    {
-      "key": "due-dates-calendar",
-      "name": "Due Date Calendar",
-      "description": "Displays a calendar for the current list of issues that match a search query, saved search, project, or tag.",
-      "indexPath": "due-dates-calendar/index.html",
-      "settingsSchemaPath": "due-dates-calendar/widget-settings.json",
-      "extensionPoint": "DASHBOARD_WIDGET",
-      "defaultDimensions": {
-        "height" : "4fr",
-        "width" : "4fr"
-      }
-    },
-    {
-      "key": "youtrack-activities-widget",
-      "name": "Issue Activity Feed",
-      "description": "Shows activities in selected categories for issues that match the specified search criteria.",
-      "indexPath": "youtrack-activities-widget/index.html",
-      "settingsSchemaPath": "youtrack-activities-widget/widget-settings.json",
-      "extensionPoint": "DASHBOARD_WIDGET"
+      "extensionPoint": "MARKDOWN"
     }
   ]
 }

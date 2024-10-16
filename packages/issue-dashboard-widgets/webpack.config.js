@@ -12,21 +12,21 @@ const PATHS = {
     sources: join(__dirname, 'widgets/youtrack-issues-list'),
     outDir: 'widgets/youtrack-issues-list'
   },
-  recentActivity: {
-    key: 'youtrack-activities-widget',
-    sources: join(__dirname, 'widgets/youtrack-activities-widget'),
-    outDir: 'widgets/youtrack-activities-widget'
-  },
-  distributionReports: {
-    key: 'distribution-reports',
-    sources: join(__dirname, 'widgets/distribution-reports'),
-    outDir: 'widgets/distribution-reports'
-  },
-  dueDatesCalendar: {
-    key: 'due-dates-calendar',
-    sources: join(__dirname, 'widgets/due-dates-calendar'),
-    outDir: 'widgets/due-dates-calendar'
-  }
+  // recentActivity: {
+  //   key: 'youtrack-activities-widget',
+  //   sources: join(__dirname, 'widgets/youtrack-activities-widget'),
+  //   outDir: 'widgets/youtrack-activities-widget'
+  // },
+  // distributionReports: {
+  //   key: 'distribution-reports',
+  //   sources: join(__dirname, 'widgets/distribution-reports'),
+  //   outDir: 'widgets/distribution-reports'
+  // },
+  // dueDatesCalendar: {
+  //   key: 'due-dates-calendar',
+  //   sources: join(__dirname, 'widgets/due-dates-calendar'),
+  //   outDir: 'widgets/due-dates-calendar'
+  // }
 };
 
 const SOURCES = Object.values(PATHS).map(({sources}) => sources);
@@ -39,6 +39,7 @@ ringUiWebpackConfig.loaders.svgInlineLoader.include.push(
 
 const webpackConfig = () => ({
   mode: 'development',
+  devtool: 'eval-source-map',
   entry: {
     ...Object.keys(PATHS).reduce((acc, key) => {
       if (PATHS[key].sources && PATHS[key].key) {
