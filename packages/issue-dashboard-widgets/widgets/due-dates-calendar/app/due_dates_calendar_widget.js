@@ -607,10 +607,56 @@ class DueDatesCalendarWidget extends React.Component {
     }
   };
 
-
   moveEvent = async ({event, start, end}) => {
     const {events} = this.state;
     const prevEvents = events;
+
+    //calculate correct end to avoid issue with event prolongation on drag
+    const newEnd =
+      event.end.getTime() + start.getTime() - event.start.getTime();
+
+    const idx = events.indexOf(event);
+    const updatedEvent = {...event, start, end: new Date(newEnd)};
+    const updatedEvents = [...events];
+    updatedEvents.splice(idx, 1, updatedEvent);
+    this.setState({
+      events: updatedEvents
+    });
+
+    try {
+      // update start date
+      await updateIssueScheduleField(
+        this.fetchYouTrack,
+        event.dbIssueId,
+        event.issueScheduleFieldDbId,
+        toUtcMidday(start));
+      // update event end date if field different
+      if (event.issueEventEndFieldDbId !== event.issueScheduleFieldDbId) {
+        await updateIssueScheduleField(
+          this.fetchYouTrack,
+          event.dbIssueId,
+          event.issueEventEndFieldDbId,
+          newEnd);
+      }
+    } catch (error) {
+      this.setState({
+        events: prevEvents
+      });
+    }
+  }
+
+  resizeEvent = async ({event, start, end}) => {
+    const {events} = this.state;
+    const prevEvents = events;
+
+    const idx = events.indexOf(event);
+    const updatedEvent = {...event, start, end};
+    const updatedEvents = [...events];
+    updatedEvents.splice(idx, 1, updatedEvent);
+    this.setState({
+      events: updatedEvents
+    });
+
     try {
       // update start date
       await updateIssueScheduleField(
@@ -626,20 +672,6 @@ class DueDatesCalendarWidget extends React.Component {
           event.issueEventEndFieldDbId,
           toUtcMidday(end));
       }
-
-      const idx = events.indexOf(event);
-      // eslint-disable-next-line max-len
-      const updatedEvent = event.issueEventEndFieldDbId !== event.issueScheduleFieldDbId
-        ? {...event, start, end}
-        : {...event, start, end: start};
-
-
-      const updatedEvents = [...events];
-      updatedEvents.splice(idx, 1, updatedEvent);
-      this.setState({
-        events: updatedEvents
-      });
-
     } catch (error) {
       this.setState({
         events: prevEvents
@@ -691,7 +723,7 @@ class DueDatesCalendarWidget extends React.Component {
           events={this.state.events}
           draggableAccessor={this.eventUpdatable}
           onEventDrop={this.moveEvent}
-          onEventResize={this.moveEvent}
+          onEventResize={this.resizeEvent}
           resizableAccessor={this.canResize}
           className={calendarClasses}
           views={['month', 'week', 'day']}
