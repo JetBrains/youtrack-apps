@@ -33,12 +33,19 @@
 }
 
 .rbc-event {
-  height: 16px;
   min-height: 16px;
 
   border-radius: 3px;
 
   background-color: transparent;
+
+  margin-top: 4px;
+  padding: 0;
+
+  border: none !important;
+
+  font-size: 11px !important;
+  line-height: normal !important;
 }
 
 .rbc-row-segment {
@@ -72,30 +79,6 @@
   color: var(--ring-link-hover-color);
 }
 
-//.rbc-event {
-//  height: 16px;
-//  margin-top: 4px;
-//  padding: 0;
-//
-//  border: none;
-//  background-color: transparent;
-//
-//  font-size: 11px;
-//  line-height: normal;
-//}
-//
-.rbc-event {
-  height: 16px;
-  margin-top: 4px;
-  padding: 0;
-
-  border: none !important;
-  background-color: transparent;
-
-  font-size: 11px !important;
-  line-height: normal !important;
-}
-
 .rbc-event-content:hover {
   text-decoration: none;
 
@@ -107,7 +90,7 @@
 }
 
 .rbc-event-content {
-  height: 16px;
+  //height: 16px;
   margin-right: 0;
   margin-left: 0;
 }

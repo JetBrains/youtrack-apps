@@ -100,9 +100,13 @@ class DueDatesCalendarWidget extends React.Component {
         youTrack,
         scheduleField,
         eventEndField) => {
+        const issuesQuery = scheduleField === eventEndField
+          ? `has: {${scheduleField}}`
+          : `has: {${scheduleField}} and has: {${eventEndField}}`;
+
         let displayedTitle =
             title ||
-            `${DueDatesCalendarWidget.getFullSearchPresentation(context, search)} has: {${scheduleField} .. ${eventEndField}}`;
+            `${DueDatesCalendarWidget.getFullSearchPresentation(context, search)} ${issuesQuery}`;
         if (issuesCount) {
           const superScriptIssuesCount =
                 `${issuesCount}`.split('').map(DueDatesCalendarWidget.digitToUnicodeSuperScriptDigit).join('');
@@ -111,7 +115,7 @@ class DueDatesCalendarWidget extends React.Component {
         return {
           text: displayedTitle,
           href: youTrack && DueDatesCalendarWidget.getIssueListLink(
-            youTrack.homeUrl, context, `${search} has: {${scheduleField} .. ${eventEndField}}`
+            youTrack.homeUrl, context, `${search} ${issuesQuery}`
           )
         };
       };
@@ -419,7 +423,10 @@ class DueDatesCalendarWidget extends React.Component {
     const currentScheduleField = scheduleField || this.state.scheduleField;
     const currentEventEndField = eventEndField || this.state.eventEndField;
     try {
-      await this.loadIssuesCount(`${currentSearch} has: {${currentScheduleField}} or has: {${currentEventEndField}}`, currentContext);
+      const issuesQuery = currentScheduleField === currentEventEndField
+        ? `has: {${currentScheduleField}}`
+        : `has: {${currentScheduleField}} and has: {${currentEventEndField}}`;
+      await this.loadIssuesCount(`${currentSearch} ${issuesQuery}`, currentContext);
     } catch (error) {
       this.setState({isEmptyQueryResultError: true, issuesCount: 0});
     }
@@ -610,7 +617,6 @@ class DueDatesCalendarWidget extends React.Component {
   moveEvent = async ({event, start, end}) => {
     const {events} = this.state;
     const prevEvents = events;
-
     //calculate correct end to avoid issue with event prolongation on drag
     const newEnd =
       event.end.getTime() + start.getTime() - event.start.getTime();
@@ -625,11 +631,12 @@ class DueDatesCalendarWidget extends React.Component {
 
     try {
       // update start date
+      const newStartTime = this.state.isDateAndTime? start.getTime() : toUtcMidday(start)
       await updateIssueScheduleField(
         this.fetchYouTrack,
         event.dbIssueId,
         event.issueScheduleFieldDbId,
-        toUtcMidday(start));
+        newStartTime);
       // update event end date if field different
       if (event.issueEventEndFieldDbId !== event.issueScheduleFieldDbId) {
         await updateIssueScheduleField(
@@ -648,7 +655,6 @@ class DueDatesCalendarWidget extends React.Component {
   resizeEvent = async ({event, start, end}) => {
     const {events} = this.state;
     const prevEvents = events;
-
     const idx = events.indexOf(event);
     const updatedEvent = {...event, start, end};
     const updatedEvents = [...events];
@@ -658,19 +664,21 @@ class DueDatesCalendarWidget extends React.Component {
     });
 
     try {
+      const newStartTime = this.state.isDateAndTime? start.getTime() : toUtcMidday(start)
       // update start date
       await updateIssueScheduleField(
         this.fetchYouTrack,
         event.dbIssueId,
         event.issueScheduleFieldDbId,
-        toUtcMidday(start));
+        newStartTime);
       // update event end date if field different
       if (event.issueEventEndFieldDbId !== event.issueScheduleFieldDbId) {
+        const newEndTime = this.state.isDateAndTime? end.getTime() : toUtcMidday(new Date(end))
         await updateIssueScheduleField(
           this.fetchYouTrack,
           event.dbIssueId,
           event.issueEventEndFieldDbId,
-          toUtcMidday(end));
+          newEndTime);
       }
     } catch (error) {
       this.setState({

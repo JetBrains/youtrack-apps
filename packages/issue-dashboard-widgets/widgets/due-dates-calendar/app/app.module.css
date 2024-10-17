@@ -65,7 +65,6 @@
   overflow: hidden;
 
   max-width: 100%;
-  height: 16px !important;
   padding: 0 4px;
 
   white-space: nowrap;
@@ -97,7 +96,7 @@
   flex-direction: column;
 
   width: 100%;
-  height: 16px;
+  height: 100%;
 
   border: 1px solid;
   border-radius: 3px;
@@ -164,6 +163,7 @@
 
 :global(.issue-dropdown) {
   width: 100%;
+  height: 100%;
 }
 
 :global(.popup-customfields-block) {
