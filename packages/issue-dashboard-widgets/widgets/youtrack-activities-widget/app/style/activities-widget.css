@@ -342,6 +342,7 @@
 
 .aw__entry__user-activity__data__content {
   line-height: 22px;
+  word-break: break-word;
 }
 
 .aw__activity__change__field-name {
