@@ -4,8 +4,8 @@ import 'hub-dashboard-addons/dashboard.css';
 import React from 'react';
 import {render} from 'react-dom';
 import DashboardAddons from 'hub-dashboard-addons';
-import ConfigWrapper from '@jetbrains/hub-widget-ui/dist/config-wrapper';
 
+import ConfigWrapper from './custom-config-wrapper';
 import IssuesListWidget from './issues-list-widget';
 import {initTranslations} from './translations';
 
