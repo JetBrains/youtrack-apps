@@ -52,20 +52,8 @@ export default tseslint.config(
           allowConstantExport: true,
         },
       ],
-
-      "react/jsx-no-literals": "off",
-
-      "max-len": [
-        "error",
-        {
-          code: 120,
-          ignoreComments: true,
-          ignoreTemplateLiterals: true,
-          ignoreRegExpLiterals: true,
-          ignorePattern: "\"(?=([^\"]|\"){40,}\")|'(?=([^']|'){40,}')",
-        },
-      ],
-    },
+      "react/jsx-no-literals": "off"
+    }
   },
   {
     files: ["src/*.js"],
