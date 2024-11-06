@@ -14,6 +14,9 @@
     "lint": "eslint . --quiet=true && npm run stylelint",
     "stylelint": "stylelint --ignore-path .gitignore **/*.css",
     "ci-test": "npm run lint && xvfb-maybe karma start --teamcity",
+    "release:bump-version": "commit-and-tag-version --bumpFiles public/manifest.json --packageFiles public/manifest.json",
+    "release:ci": "npm run release:bump-version && npm run build && npm run pack && npm run upload:marketplace && git push --follow-tags origin main",
+    "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer $pluginsRepositoryToken\" -F \"pluginId=$pluginRepositoryID\" -F \"file=@issue-dashboard-widgets.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin",
     "i18n:extract": "angular-gettext-cli --files \"{src/**/*.js,node_modules/hub-dashboard-addons/components/**/*.js,node_modules/@jetbrains/hub-widget-ui/src/**/*.js}\" --dest src/app/translations/default.pot --marker-name=i18n --module-method-plural=plural --module-name=i18n"
   },
   "babel": {
@@ -74,6 +77,7 @@
     "chai-enzyme": "1.0.0-beta.1",
     "chai-spies": "1.0.0",
     "cheerio": "=1.0.0-rc.3",
+    "commit-and-tag-version": "^12.5.0",
     "copy-webpack-plugin": "4.6.0",
     "electron": "^32.1.2",
     "enzyme": "3.11.0",
@@ -103,6 +107,12 @@
     "webpack-cli": "4.10.0",
     "webpack-dev-server": "4.15.2",
     "xvfb-maybe": "0.2.1"
+  },
+  "commit-and-tag-version": {
+    "skip": {
+      "tag": true,
+      "changelog": true
+    }
   },
   "engines": {
     "node": ">=20.16.0"
