@@ -175,7 +175,7 @@ module.exports = {
       };
     }
 
-    injectWidget(newWidget, args.cwd);
+    injectWidget(newWidget, args.cwd ?? '');
 
     return result;
   },
