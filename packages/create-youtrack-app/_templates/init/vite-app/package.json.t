@@ -29,7 +29,7 @@
     "@jetbrains/youtrack-apps-tools": "^0.0.1",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.13.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.1",
@@ -38,7 +38,7 @@
     "globals": "^15.11.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-    "vite": "^5.4.1",
-    "vite-plugin-static-copy": "^1.0.6"
+    "vite": "^6.0.1",
+    "vite-plugin-static-copy": "^2.2.0"
   }
 }
