@@ -15,7 +15,7 @@
     "upload": "youtrack-app upload dist"
   },
   "dependencies": {
-    "@jetbrains/ring-ui-built": "^6.0.56",
+    "@jetbrains/ring-ui-built": "^7.0.8",
     "core-js": "3.38.0",
     "date-fns": "^3.6.0",
     "react": "^18.3.1",
