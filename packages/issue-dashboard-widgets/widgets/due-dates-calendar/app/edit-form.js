@@ -547,7 +547,7 @@ class EditForm extends React.Component {
             <Select
               className="ring-form__group"
               label={i18n('Select an available date type field')}
-              selectedLabel={i18n('Field used to schedule due dates')}
+              selectedLabel={i18n('Field for scheduling start dates')}
               size={InputSize.FULL}
               data={this.state.availableScheduleFields}
               selected={{label: this.state.scheduleField}}
@@ -562,7 +562,7 @@ class EditForm extends React.Component {
             <Select
               className="ring-form__group"
               label={i18n('Select an available end date field')}
-              selectedLabel={i18n('Field used to show end date of issues')}
+              selectedLabel={i18n('Field for scheduling end dates')}
               size={InputSize.FULL}
               data={this.state.availableScheduleFields.filter(
                 field => field.isDateAndTime === this.state.isDateAndTime)}
@@ -577,7 +577,7 @@ class EditForm extends React.Component {
           !errorMessage && (
             <Select
               className="ring-form__group"
-              selectedLabel={i18n('Field used to apply color scheme')}
+              selectedLabel={i18n('Field for applying color scheme')}
               size={InputSize.FULL}
               data={this.state.availableEventFields}
               selected={{label: this.state.colorField}}
