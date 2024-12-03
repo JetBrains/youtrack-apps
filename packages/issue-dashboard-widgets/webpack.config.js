@@ -39,7 +39,7 @@ ringUiWebpackConfig.loaders.svgInlineLoader.include.push(
 
 const webpackConfig = () => ({
   mode: 'development',
-  devtool: 'eval-source-map',
+  devtool: false,
   entry: {
     ...Object.keys(PATHS).reduce((acc, key) => {
       if (PATHS[key].sources && PATHS[key].key) {
