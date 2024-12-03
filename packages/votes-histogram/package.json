@@ -9,7 +9,7 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "echo 'no tests'",
-    "release:bump-version": "commit-and-tag-version --bumpFiles manifest.json --packageFiles manifest.json",
+    "release:bump-version": "commit-and-tag-version --release-as patch --bumpFiles manifest.json --packageFiles manifest.json",
     "release:ci": "npm run release:bump-version && npm run build && npm run pack && npm run upload:marketplace && git push --follow-tags origin main",
     "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer $pluginsRepositoryToken\" -F \"pluginId=$pluginRepositoryID\" -F \"file=@youtrack-votes-app.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin",
     "upload": "youtrack-workflow upload src --host http://localhost:8088",

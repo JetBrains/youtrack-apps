@@ -2,7 +2,7 @@
   "name": "issues-list-markdown-widget",
   "title": "Issue List Markdown Widget",
   "description": "Issue List widget for Markdown",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icon": "youtrack.svg",
   "minYouTrackVersion": "2024.3.0",
   "vendor": {

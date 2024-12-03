@@ -1,5 +1,6 @@
 const { validateNotEmpty } = require("../../utils");
 const { PERMISSIONS } = require("../../consts");
+const { injectWidget } = require("./inject-manifest");
 
 const extensionPoints = [
   {
@@ -142,7 +143,7 @@ module.exports = {
         });
     }
 
-    return {
+    const result = {
       key,
       name,
       permissions,
@@ -154,5 +155,28 @@ module.exports = {
       width,
       height,
     };
+
+    const newWidget = {
+      key,
+      name,
+      indexPath: result.indexPath,
+      extensionPoint,
+      iconPath: `${result.folderName}/widget-icon.svg`,
+      description,
+    };
+
+    if (permissions) {
+      newWidget.permissions = permissions;
+    }
+    if (addDimensions) {
+      newWidget.expectedDimensions = {
+        width,
+        height,
+      };
+    }
+
+    injectWidget(newWidget, args.cwd ?? '');
+
+    return result;
   },
 };
