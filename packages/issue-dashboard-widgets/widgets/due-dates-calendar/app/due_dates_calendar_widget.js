@@ -230,7 +230,7 @@ class DueDatesCalendarWidget extends React.Component {
       title,
       search: search || '',
       context,
-      date: date ? new Date(date) : new Date(),
+      date: new Date(),
       view,
       scheduleField,
       eventEndField,
