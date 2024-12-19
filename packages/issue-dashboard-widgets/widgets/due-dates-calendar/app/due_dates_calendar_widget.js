@@ -456,7 +456,8 @@ class DueDatesCalendarWidget extends React.Component {
     const endDate = moment(currentDate).endOf('month').endOf('week').format('YYYY-MM-DD');
     const issuesQuery = scheduleField === eventEndField
       ? `${search} ${scheduleField}: ${startDate} .. ${endDate}`
-      : `${search} ${scheduleField}: ${startDate} .. ${endDate} and  ${eventEndField}: ${startDate} .. ${endDate}`;
+      : `${search} ((${scheduleField}: ${startDate} .. ${endDate} or ${eventEndField}: ${startDate} .. ${endDate}) or (${scheduleField}: * .. ${startDate} and ${eventEndField}: ${endDate} .. *))`;
+
     const isDateAndTime = this.state.isDateAndTime;
 
     const issues = await loadIssues(
@@ -631,7 +632,7 @@ class DueDatesCalendarWidget extends React.Component {
 
     try {
       // update start date
-      const newStartTime = this.state.isDateAndTime? start.getTime() : toUtcMidday(start)
+      const newStartTime = this.state.isDateAndTime? start.getTime() : toUtcMidday(start);
       await updateIssueScheduleField(
         this.fetchYouTrack,
         event.dbIssueId,
@@ -664,7 +665,7 @@ class DueDatesCalendarWidget extends React.Component {
     });
 
     try {
-      const newStartTime = this.state.isDateAndTime? start.getTime() : toUtcMidday(start)
+      const newStartTime = this.state.isDateAndTime ? start.getTime() : toUtcMidday(start);
       // update start date
       await updateIssueScheduleField(
         this.fetchYouTrack,
@@ -673,7 +674,7 @@ class DueDatesCalendarWidget extends React.Component {
         newStartTime);
       // update event end date if field different
       if (event.issueEventEndFieldDbId !== event.issueScheduleFieldDbId) {
-        const newEndTime = this.state.isDateAndTime? end.getTime() : toUtcMidday(new Date(end))
+        const newEndTime = this.state.isDateAndTime ? end.getTime() : toUtcMidday(new Date(end));
         await updateIssueScheduleField(
           this.fetchYouTrack,
           event.dbIssueId,
