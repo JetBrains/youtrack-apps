@@ -33,7 +33,7 @@
     },
     {
       "key": "due-dates-calendar",
-      "name": "Due Date Calendar",
+      "name": "Calendar Widget",
       "description": "Displays a calendar for the current list of issues that match a search query, saved search, project, or tag.",
       "indexPath": "due-dates-calendar/index.html",
       "settingsSchemaPath": "due-dates-calendar/widget-settings.json",
