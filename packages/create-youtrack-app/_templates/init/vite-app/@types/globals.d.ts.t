@@ -19,7 +19,9 @@ interface BaseAPILayer {
   alert: (...args: Parameters<(typeof AlertService)['addAlert']>) => void;
   enterModalMode: Promise<() => void>;
   exitModalMode: Promise<() => void>;
+  /** @deprecated use "closeWidget()" method instead */
   collapse: () => void;
+  closeWidget: () => void;
 }
 
 /*
