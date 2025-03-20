@@ -6,7 +6,7 @@ type AppAPI = {
   onConfigure?: () => void;
 }
 
-import type AlertService from '@jetbrains/ring-ui-built/components/alert-service/alert-service';
+import type AlertType from '@jetbrains/ring-ui-built/components/alert/alert';
 import type {RequestParams} from '@jetbrains/ring-ui-built/components/http/http';
 
 export interface HubService {
@@ -16,12 +16,10 @@ export interface HubService {
 }
 
 interface BaseAPILayer {
-  alert: (...args: Parameters<(typeof AlertService)['addAlert']>) => void;
+  alert: (message: string, type?: AlertType | undefined, timeout?: number) => void;
   enterModalMode: Promise<() => void>;
   exitModalMode: Promise<() => void>;
-  /** @deprecated use "closeWidget()" method instead */
   collapse: () => void;
-  closeWidget: () => void;
 }
 
 /*
@@ -62,7 +60,7 @@ export interface EmbeddableWidgetAPI extends PluginEndpointAPILayer {
 
   loadServices: (applicationName: string) => Promise<HubService[]>;
 
-  alert: (...args: Parameters<(typeof AlertService)['addAlert']>) => Promise<void>;
+  alert: BaseAPILayer['alert'];
   removeWidget: () => void;
 }
 
