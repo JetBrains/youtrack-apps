@@ -35,7 +35,8 @@
     "enquirer": "^2.4.1",
     "execa": "^5.0.0",
     "hygen": "^6.2.11",
-    "minimist": "^1.2.8"
+    "minimist": "^1.2.8",
+    "@jetbrains/youtrack-scripting-api": "^2022.1.46592"
   },
   "devDependencies": {
     "@biomejs/biome": "1.8.3",
