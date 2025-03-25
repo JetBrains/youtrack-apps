@@ -94,7 +94,7 @@
     "karma-sourcemap-loader": "0.3.7",
     "karma-teamcity-reporter": "1.1.0",
     "karma-webpack": "4.0.2",
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "mocha": "9.2.0",
     "postcss-flexbugs-fixes": "^4.2.1",
     "react-test-renderer": "16.2.0",
