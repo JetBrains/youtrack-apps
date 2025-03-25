@@ -17,8 +17,8 @@ export interface HubService {
 
 interface BaseAPILayer {
   alert: (message: string, type?: AlertType | undefined, timeout?: number) => void;
-  enterModalMode: Promise<() => void>;
-  exitModalMode: Promise<() => void>;
+  enterModalMode: () => Promise<void>;
+  exitModalMode: () => Promise<void>;
   /** @deprecated use "closeWidget()" method instead */
   collapse: () => void;
   closeWidget: () => void;
