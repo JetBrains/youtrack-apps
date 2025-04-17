@@ -454,9 +454,10 @@ class DueDatesCalendarWidget extends React.Component {
     const currentDate = moment(this.state.date);
     const startDate = moment(currentDate).startOf('month').startOf('week').format('YYYY-MM-DD');
     const endDate = moment(currentDate).endOf('month').endOf('week').format('YYYY-MM-DD');
+    const searchPrefix = search && search.trim() ? `${search} AND` : '';
     const issuesQuery = scheduleField === eventEndField
-      ? `${search} ${scheduleField}: ${startDate} .. ${endDate}`
-      : `${search} ((${scheduleField}: ${startDate} .. ${endDate} or ${eventEndField}: ${startDate} .. ${endDate}) or (${scheduleField}: * .. ${startDate} and ${eventEndField}: ${endDate} .. *))`;
+      ? `${searchPrefix} ${scheduleField}: ${startDate} .. ${endDate}`
+      : `${searchPrefix} ((${scheduleField}: ${startDate} .. ${endDate} or ${eventEndField}: ${startDate} .. ${endDate}) or (${scheduleField}: * .. ${startDate} and ${eventEndField}: ${endDate} .. *))`;
 
     const isDateAndTime = this.state.isDateAndTime;
 
@@ -799,4 +800,3 @@ function toUtcMidday(date) {
 
 
 export default DueDatesCalendarWidget;
-
