@@ -1,0 +1,21 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-project-team-widgets\n"
+
+#: src/app/app.js:65
+msgid "This widget is a placeholder for the Access Eraser widget."
+msgstr ""
+
+#: src/app/app.js:66
+msgid "Save"
+msgstr ""
+
+#: src/app/app.js:67
+msgid "Cancel"
+msgstr ""
+
+#: src/app/app.js:77
+msgid "This is a placeholder for the Access Eraser widget."
+msgstr ""

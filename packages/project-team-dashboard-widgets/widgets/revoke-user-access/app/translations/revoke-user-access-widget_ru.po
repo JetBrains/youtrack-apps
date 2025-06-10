@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: ru\n"
+"X-Crowdin-File: /widgets/revoke-user-access-widget/default.pot\n"
+"X-Crowdin-File-ID: 28504\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"PO-Revision-Date: 2023-07-25 14:27\n"
+
+#: src/app/LoginsTable.js:22
+msgid "Auth Module"
+msgstr "Модуль аутентификации"
+
+#: src/app/SelectedUserForm.js:65
+msgid "Finish"
+msgstr "Завершить"
+
+#: src/app/GroupsTable.js:12
+msgid "Groups"
+msgstr "Группы"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "январь|февраль|март|апрель|май|июнь|июль|август|сентябрь|октябрь|ноябрь|декабрь"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "янв|фев|мар|апр|мая|июн|июл|авг|сен|окт|ноя|дек"
+
+#: src/app/UserSearch.js:68
+msgid "Load more"
+msgstr "Загрузить еще"
+
+#: src/app/LoginsTable.js:11
+msgid "Logins"
+msgstr "Логины"
+
+#: src/app/ProjectRolesTable.js:25
+msgid "Project"
+msgstr "Проект"
+
+#: src/app/ProjectRolesTable.js:12
+msgid "Project Roles"
+msgstr "Роли в проектах"
+
+#: src/app/SelectedUserForm.js:62
+msgid "Revoke selected items"
+msgstr "Отозвать выбранное"
+
+#: src/app/UserSearch.js:46
+msgid "Search user"
+msgstr "Поиск пользователя"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "воскресенье|понедельник|вторник|среда|четверг|пятница|суббота"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "вс|пн|вт|ср|чт|пт|сб"
+
+#: src/app/TeamsTable.js:12
+msgid "Teams"
+msgstr "Команды"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "ДП|ПП"
+
+#: src/app/UserProperties.js:37
+msgid "banned"
+msgstr "заблокирован"
+
+#: src/app/UserProperties.js:57
+msgid "email not verified"
+msgstr "почта не проверена"
+
+#: src/app/UserProperties.js:57
+msgid "email verified"
+msgstr "почта проверена"
+

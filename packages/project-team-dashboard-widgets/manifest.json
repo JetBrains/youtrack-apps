@@ -1,0 +1,35 @@
+{
+  "name": "project-team-dashboard-widgets",
+  "title": "Project Team Dashboard Widgets",
+  "description": "A set of dashboard widgets for managing project teams. The set includes widgets for viewing and managing project team members.",
+  "version": "1.0.0",
+  "icon": "youtrack.svg",
+  "minYouTrackVersion": "2024.3.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "hub-project-team-widget",
+      "name": "Project Team",
+      "description": "Displays a list of users who are members of a project team.",
+      "indexPath": "widgets/hub-project-team-widget/index.html",
+      "settingsSchemaPath": "widgets/hub-project-team-widget/widget-settings.json",
+      "extensionPoint": "DASHBOARD_WIDGET"
+    },
+    {
+      "key": "revoke-user-access",
+      "name": "Access Eraser",
+      "description": "Quickly restrict user access rights by revoking memberships in groups and teams, revoking project roles, or deleting credentials.",
+      "indexPath": "widgets/revoke-user-access/index.html",
+      "settingsSchemaPath": "widgets/revoke-user-access/widget-settings.json",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "defaultDimensions": {
+        "height" : "3fr",
+        "width" : "4fr"
+      }
+    }
+  ]
+}
