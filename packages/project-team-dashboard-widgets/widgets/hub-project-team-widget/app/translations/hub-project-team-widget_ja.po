@@ -1,0 +1,63 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: ja\n"
+"X-Crowdin-File: /widgets/hub-project-team-widget/default.pot\n"
+"X-Crowdin-File-ID: 28502\n"
+"Language-Team: Japanese\n"
+"Language: ja_JP\n"
+"PO-Revision-Date: 2023-07-28 12:24\n"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "1月|2月|3月|4月|5月|6月|7月|8月|9月|10月|11月|12月"
+
+#: src/app/app.js:202
+msgid "Select a project"
+msgstr "プロジェクトの選択"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "日曜日|月曜日|火曜日|水曜日|木曜日|金曜日|土曜日"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "日|月|火|水|木|金|土"
+
+#: src/app/app.js:213
+msgid "The {{projectName}} project team doesn't have any members"
+msgstr "\"{{projectName}}\" プロジェクトのチームにはメンバーがいません"
+
+#: src/app/app.js:217
+msgid "This project team doesn't have any members"
+msgstr "このプロジェクトのチームにはメンバーがいません"
+
+#: src/app/app.js:230
+msgid "You don't have permission to view basic profile data for other users"
+msgstr "他のユーザーの基本的なプロフィールデータを表示する権限がありません"
+
+#: src/app/app.js:229
+msgid "You don't have permission to view basic project data"
+msgstr "基本的なプロジェクトデータを表示する権限がありません"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "am|pm"
+
+#: src/app/app.js:285
+msgid "project owner"
+msgstr "プロジェクトオーナー"
+
+#: src/app/app.js:296
+msgid "team"
+msgstr "チーム"
+

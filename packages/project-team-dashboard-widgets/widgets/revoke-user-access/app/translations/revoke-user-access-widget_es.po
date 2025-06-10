@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: es-ES\n"
+"X-Crowdin-File: /widgets/revoke-user-access-widget/default.pot\n"
+"X-Crowdin-File-ID: 28504\n"
+"Language-Team: Spanish\n"
+"Language: es_ES\n"
+"PO-Revision-Date: 2023-07-25 14:27\n"
+
+#: src/app/LoginsTable.js:22
+msgid "Auth Module"
+msgstr "Módulo de aut."
+
+#: src/app/SelectedUserForm.js:65
+msgid "Finish"
+msgstr "Finalizar"
+
+#: src/app/GroupsTable.js:12
+msgid "Groups"
+msgstr "Grupos"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Ene|Feb|Mar|Abr|May|Jun|Jul|Ago|Sep|Oct|Nov|Dic"
+
+#: src/app/UserSearch.js:68
+msgid "Load more"
+msgstr "Cargar más"
+
+#: src/app/LoginsTable.js:11
+msgid "Logins"
+msgstr "Inicios de sesión"
+
+#: src/app/ProjectRolesTable.js:25
+msgid "Project"
+msgstr "Proyecto"
+
+#: src/app/ProjectRolesTable.js:12
+msgid "Project Roles"
+msgstr "Funciones del proyecto"
+
+#: src/app/SelectedUserForm.js:62
+msgid "Revoke selected items"
+msgstr "Revocar elementos seleccionados"
+
+#: src/app/UserSearch.js:46
+msgid "Search user"
+msgstr "Buscar usuario"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Domingo|Lunes|Martes|Miércoles|Jueves|Viernes|Sábado"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Dom|Lun|Mar|Mié|Jue|Vie|Sáb"
+
+#: src/app/TeamsTable.js:12
+msgid "Teams"
+msgstr "Equipos"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "a. m. |p. m."
+
+#: src/app/UserProperties.js:37
+msgid "banned"
+msgstr "prohibido"
+
+#: src/app/UserProperties.js:57
+msgid "email not verified"
+msgstr "correo electrónico no verificado"
+
+#: src/app/UserProperties.js:57
+msgid "email verified"
+msgstr "correo electrónico verificado"
+

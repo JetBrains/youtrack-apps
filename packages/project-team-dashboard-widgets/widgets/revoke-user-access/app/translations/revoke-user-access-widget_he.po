@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=4; plural=n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3;\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: he\n"
+"X-Crowdin-File: /widgets/revoke-user-access-widget/default.pot\n"
+"X-Crowdin-File-ID: 419918\n"
+"Language-Team: Hebrew\n"
+"Language: he_IL\n"
+"PO-Revision-Date: 2023-08-10 07:18\n"
+
+#: src/app/LoginsTable.js:22
+msgid "Auth Module"
+msgstr "מודול אימות"
+
+#: src/app/SelectedUserForm.js:65
+msgid "Finish"
+msgstr "סיום"
+
+#: src/app/GroupsTable.js:12
+msgid "Groups"
+msgstr "קבוצות"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "ינואר|פברואר|מרץ|אפריל|מאי|יוני|יולי|אוגוסט|ספטמבר|אוקטובר|נובמבר|דצמבר"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "ינו'|פבר'|מרץ|אפר'|מאי|יונ'|יול'|אוג'|ספט'|אוק'|נוב'|דצמ'"
+
+#: src/app/UserSearch.js:68
+msgid "Load more"
+msgstr "לטעון עוד"
+
+#: src/app/LoginsTable.js:11
+msgid "Logins"
+msgstr "כניסות"
+
+#: src/app/ProjectRolesTable.js:25
+msgid "Project"
+msgstr "פרויקט"
+
+#: src/app/ProjectRolesTable.js:12
+msgid "Project Roles"
+msgstr "תפקידים בפרויקט"
+
+#: src/app/SelectedUserForm.js:62
+msgid "Revoke selected items"
+msgstr "ביטול הפריטים שנבחרו"
+
+#: src/app/UserSearch.js:46
+msgid "Search user"
+msgstr "חיפוש משתמש"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "ראשון|שני|שלישי|רביעי|חמישי|שישי|שבת"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "א'|ב'|ג'|ד'|ה'|ו'|ש'"
+
+#: src/app/TeamsTable.js:12
+msgid "Teams"
+msgstr "צוותים"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "לפנ\"צ|אחה\"צ"
+
+#: src/app/UserProperties.js:37
+msgid "banned"
+msgstr "נחסם"
+
+#: src/app/UserProperties.js:57
+msgid "email not verified"
+msgstr "כתובת הדוא\"ל לא אומתה"
+
+#: src/app/UserProperties.js:57
+msgid "email verified"
+msgstr "כתובת הדוא\"ל אומתה"
+
