@@ -21,12 +21,6 @@ const PATHS = {
 
 const SOURCES = Object.values(PATHS).map(({sources}) => sources);
 
-// Patch @jetbrains/ring-ui svg-sprite-loader config
-ringUiWebpackConfig.loaders.svgSpriteLoader.include.push(
-  require('@jetbrains/logos'),
-  require('@jetbrains/icons')
-);
-
 const webpackConfig = () => ({
   mode: 'development',
   entry: {
