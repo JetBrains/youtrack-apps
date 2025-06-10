@@ -2,7 +2,7 @@
   "name": "project-team-dashboard-widgets",
   "title": "Project Team Dashboard Widgets",
   "description": "A set of dashboard widgets for managing project teams. The set includes widgets for viewing and managing project team members.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "icon": "youtrack.svg",
   "minYouTrackVersion": "2024.3.0",
   "vendor": {
