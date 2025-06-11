@@ -77,8 +77,7 @@ const webpackConfig = () => ({
         ],
         loader: 'babel-loader',
         options: {
-          presets: [require.resolve('@jetbrains/babel-preset-jetbrains')],
-          // plugins: [require.resolve('babel-plugin-transform-decorators-legacy')]
+          presets: [require.resolve('@jetbrains/babel-preset-jetbrains')]
         }
       },
       {
