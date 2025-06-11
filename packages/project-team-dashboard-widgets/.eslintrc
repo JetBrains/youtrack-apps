@@ -1,0 +1,17 @@
+{
+  "parser": "babel-eslint",
+  "extends": [
+    "@jetbrains",
+    "@jetbrains/eslint-config/es6",
+    "@jetbrains/eslint-config/node"
+  ],
+  "env": {
+    "node": true,
+    "browser": true
+  },
+  "rules": {
+    "import/no-commonjs": "off",
+    "no-unused-vars": "off",
+    "max-len": "off"
+  }
+}
