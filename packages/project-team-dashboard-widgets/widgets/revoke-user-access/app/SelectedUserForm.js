@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import MultiTable from '@jetbrains/ring-ui/components/table/multitable';
 import Panel from '@jetbrains/ring-ui/components/panel/panel';
 import Button from '@jetbrains/ring-ui/components/button/button';
 import {i18n} from 'hub-dashboard-addons/dist/localization';
@@ -39,7 +38,7 @@ const SelectedUserForm = (
       hubService={hubService}
     />
     <div className={styles.userMultiTable}>
-      <MultiTable>
+      <div>
         <Optional data={selectedUser.groups}>
           <GroupsTable/>
         </Optional>
@@ -52,7 +51,7 @@ const SelectedUserForm = (
         <Optional data={selectedUser.details}>
           <LoginsTable/>
         </Optional>
-      </MultiTable>
+      </div>
     </div>
     <Panel className={styles.widgetFooter}>
       <Button
