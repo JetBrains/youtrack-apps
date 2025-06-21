@@ -1,0 +1,63 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=4; plural=((n%10==1 && n%100!=11) ? 0 : ((n%10 >= 2 && n%10 <=4 && (n%100 < 12 || n%100 > 14)) ? 1 : ((n%10 == 0 || (n%10 >= 5 && n%10 <=9)) || (n%100 >= 11 && n%100 <= 14)) ? 2 : 3));\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: ru\n"
+"X-Crowdin-File: /widgets/hub-project-team-widget/default.pot\n"
+"X-Crowdin-File-ID: 28502\n"
+"Language-Team: Russian\n"
+"Language: ru_RU\n"
+"PO-Revision-Date: 2023-07-28 12:25\n"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "январь|февраль|март|апрель|май|июнь|июль|август|сентябрь|октябрь|ноябрь|декабрь"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "янв|фев|мар|апр|мая|июн|июл|авг|сен|окт|ноя|дек"
+
+#: src/app/app.js:202
+msgid "Select a project"
+msgstr "Выберите проект"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "воскресенье|понедельник|вторник|среда|четверг|пятница|суббота"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "вс|пн|вт|ср|чт|пт|сб"
+
+#: src/app/app.js:213
+msgid "The {{projectName}} project team doesn't have any members"
+msgstr "В команде проекта {{projectName}} нет участников"
+
+#: src/app/app.js:217
+msgid "This project team doesn't have any members"
+msgstr "В команде проекта нет участников"
+
+#: src/app/app.js:230
+msgid "You don't have permission to view basic profile data for other users"
+msgstr "У вас нет разрешений на просмотр основных данных профилей других пользователей"
+
+#: src/app/app.js:229
+msgid "You don't have permission to view basic project data"
+msgstr "У вас нет разрешений на просмотр основных данных о проекте"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "ДП|ПП"
+
+#: src/app/app.js:285
+msgid "project owner"
+msgstr "владелец проекта"
+
+#: src/app/app.js:296
+msgid "team"
+msgstr "команда"
+

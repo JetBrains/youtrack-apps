@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+
+#: src/app/app.js:86
+msgid "1 member"
+msgid_plural "{{$count}} members"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/app/app.js:179
+msgid "Cancel"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:104
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:103
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr ""
+
+#: src/app/app.js:177
+msgid "Save"
+msgstr ""
+
+#: src/app/app.js:168
+msgid "Select a project"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:102
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:101
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr ""
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:105
+msgid "am|pm"
+msgstr ""
+
+#: src/app/app.js:210
+msgid "project owner"
+msgstr ""

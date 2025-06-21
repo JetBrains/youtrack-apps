@@ -1,0 +1,77 @@
+{
+  "name": "youtrack-project-team-widgets",
+  "version": "1.1.0",
+  "private": true,
+  "config": {
+    "dist": "./dist"
+  },
+  "scripts": {
+    "start": "NODE_OPTIONS=--openssl-legacy-provider webpack serve",
+    "build": "rm -rf dist && NODE_OPTIONS=--openssl-legacy-provider webpack --mode development",
+    "pack": "rm -rf project-team-dashboard-widgets.zip && cd dist && zip -r ../project-team-dashboard-widgets .",
+    "upload": "youtrack-app upload dist",
+    "lint": "eslint . --quiet=true && npm run stylelint",
+    "test": "echo \"No tests defined\"",
+    "stylelint": "stylelint --ignore-path .gitignore **/*.css",
+    "release:bump-version": "commit-and-tag-version --release-as patch --bumpFiles manifest.json --packageFiles manifest.json",
+    "release:ci": "npm run release:bump-version && npm run build && npm run pack && npm run upload:marketplace && git push --follow-tags origin main",
+    "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer $pluginsRepositoryToken\" -F \"pluginId=$pluginRepositoryID\" -F \"file=@project-team-dashboard-widgets.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin",
+    "i18n:extract": "angular-gettext-cli --files \"{widgets/**/*.js,node_modules/hub-dashboard-addons/components/**/*.js,node_modules/@jetbrains/hub-widget-ui/src/**/*.js}\" --dest widgets/translations/default.pot --marker-name=i18n --module-method-plural=plural --module-name=i18n"
+  },
+  "babel": {
+    "presets": "@jetbrains/jetbrains"
+  },
+  "dependencies": {
+    "@jetbrains/babel-preset-jetbrains": "1.0.1",
+    "@jetbrains/hub-widget-ui": "2.0.1",
+    "@jetbrains/icons": "1.24.3",
+    "@jetbrains/logos": "1.0.5",
+    "@jetbrains/ring-ui": "2.0.38",
+    "angular-gettext-cli": "1.2.0",
+    "angular-gettext-loader": "1.0.1",
+    "babel-core": "6.26.0",
+    "babel-loader": "7.1.2",
+    "babel-polyfill": "6.26.0",
+    "classnames": "^2.2.6",
+    "core-js": "^2.5.1",
+    "css-loader": "0.28.9",
+    "html-loader": "0.5.5",
+    "hub-dashboard-addons": "^1.0.2",
+    "postcss-cssnext": "3.1.0",
+    "postcss-import": "12.0.1",
+    "postcss-loader": "2.1.0",
+    "postcss-modules-values-replace": "3.0.1",
+    "prop-types": "15.8.1",
+    "react": "16.8.1",
+    "react-dom": "16.8.1",
+    "react-redux": "^5.1.2",
+    "redbox-react": "1.5.0",
+    "redux": "^4.2.1",
+    "redux-act": "^1.8.0"
+  },
+  "devDependencies": {
+    "@jetbrains/eslint-config": "2.0.0",
+    "@jetbrains/postcss-require-hover": "^0.1.2",
+    "@jetbrains/stylelint-config": "1.3.2",
+    "@jetbrains/youtrack-apps-tools": "^0.0.1-alpha.12",
+    "babel-eslint": "10.0.1",
+    "copy-webpack-plugin": "4.6.0",
+    "eslint": "4.18.2",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-react": "^7.5.1",
+    "html-webpack-plugin": "3.2.0",
+    "json-loader": "0.5.7",
+    "mini-css-extract-plugin": "0.5.0",
+    "postcss-flexbugs-fixes": "^4.2.1",
+    "react-test-renderer": "16.2.0",
+    "style-loader": "^0.23.1",
+    "stylelint": "8.3.0",
+    "webpack": "4.47.0",
+    "webpack-cli": "4.10.0",
+    "webpack-dev-server": "4.15.2",
+    "xvfb-maybe": "0.2.1"
+  },
+  "engines": {
+    "node": ">=20.16.0"
+  }
+}
