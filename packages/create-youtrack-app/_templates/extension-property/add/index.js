@@ -1,6 +1,19 @@
 const { injectJSCallback } = require("../../injectJsCallback");
+const entities = require("@jetbrains/youtrack-scripting-api/entities");
 const fs = require("node:fs");
 const path = require("node:path");
+
+const entitiesTypes = Object.keys(entities).map((entity) => ({
+  name: entity,
+  message: entity,
+}));
+
+const primitiveTypes = ["String", "Integer", "Float", "Boolean"].map(
+  (type) => ({
+    name: type.toLowerCase(),
+    message: type,
+  })
+);
 
 module.exports = {
   prompt: injectJSCallback(injectEntity, ({ prompter, args }) =>
@@ -11,36 +24,30 @@ module.exports = {
         message: "What is the name of the extension property",
       },
       {
-        type: "select",
+        type: "autocomplete",
         name: "type",
         message: "What is the type of the extension property",
-        choices: [
-          {
-            name: "string",
-            message: "String",
-          },
-          { name: "integer", message: "Integer" },
-          { name: "boolean", message: "Boolean" },
-          {
-            name: "Issue",
-            message: "Issue",
-          },
-        ],
+        limit: 6,
+        choices: [...primitiveTypes, ...entitiesTypes],
       },
       {
         type: "confirm",
         name: "isSet",
         message: "Is it a set of values?",
+        skip() {
+          return primitiveTypes.some(
+            (primitive) => primitive.name === this.state.answers.type
+          );
+        },
       },
       {
-        type: "select",
+        type: "autocomplete",
         name: "target",
         message: "What is the target extending entity?",
+        limit: 6,
         choices: [
-          { name: "Issue", message: "Issue" },
-          { name: "Comment", message: "Comment" },
-          { name: "User", message: "User" },
           { name: "AppGlobalStorage", message: "Global Storage" },
+          ...entitiesTypes,
         ],
       },
     ]),
