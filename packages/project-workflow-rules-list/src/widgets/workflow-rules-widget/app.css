@@ -1,0 +1,60 @@
+.widget {
+  align-items: start;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+}
+
+.rules-table {
+    margin-top: 16px;
+}
+
+.table-line {
+    color: #999;
+    font-size: 12px;
+    margin-left: 2px;
+    line-height: normal;
+    margin-bottom: 10px
+}
+
+.disabled-row .ruleTitleColumn {
+    color: #999 !important;
+}
+
+.ruleTitleColumn.ruleTitleColumn.ruleTitleColumn {
+    width: 100%;
+    min-width: calc(var(--ring-unit) * 20);
+    max-width: 0;
+}
+
+.appTitleColumn.appTitleColumn.appTitleColumn {
+    width: 60%;
+    min-width: calc(var(--ring-unit) * 15);
+    max-width: 0;
+}
+
+.actionsColumn.actionsColumn.actionsColumn {
+    max-width: 100%;
+}
+
+/* Enable text selection in table cells */
+.rules-table td,
+.rules-table td div,
+.rules-table td span,
+.rules-table td * {
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+}
+
+/* Exclude interactive elements from text selection */
+.rules-table button,
+.rules-table [role="button"],
+.rules-table input,
+.rules-table label,
+.rules-table a {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+}

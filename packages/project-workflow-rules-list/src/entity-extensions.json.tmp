@@ -1,0 +1,11 @@
+{
+  "entityTypeExtensions": [
+    {
+      "entityType": "Issue",
+
+      "properties": {
+       
+      }
+    }
+  ]
+}
