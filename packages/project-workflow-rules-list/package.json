@@ -9,7 +9,7 @@
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "pack": "rm -rf project-workflow-rules-list-app.zip && cd dist && npx --yes bestzip ../project-workflow-rules-list-app.zip *",
+    "pack": "rm -rf workflow-rules-list-app.zip && cd dist && zip -r ../workflow-rules-list-app.zip .",
     "upload": "npm run build && youtrack-app upload dist"
   },
   "dependencies": {
