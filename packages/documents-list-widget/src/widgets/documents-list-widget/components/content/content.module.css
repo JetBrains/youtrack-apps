@@ -1,0 +1,3 @@
+.tabsContainer {
+    padding: 0 calc(var(--ring-unit) * 2);
+}

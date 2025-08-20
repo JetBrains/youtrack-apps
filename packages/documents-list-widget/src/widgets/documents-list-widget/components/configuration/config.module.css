@@ -1,0 +1,28 @@
+.tabConfig {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--ring-unit) * 2);
+    margin-top: calc(var(--ring-unit) * 2);
+    padding-top: calc(var(--ring-unit) * 2);
+    border-top: 1px solid var(--ring-popup-border-color);
+}
+
+.tabConfigItem {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--ring-unit) * 2);
+}
+
+.documentSearch {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--ring-unit);
+}
+
+.btnContainer {
+    display: flex;
+    flex-direction: row;
+    margin-top: var(--ring-unit);
+    gap: var(--ring-unit);
+}

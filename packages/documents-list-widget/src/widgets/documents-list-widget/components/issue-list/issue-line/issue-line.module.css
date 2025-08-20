@@ -1,0 +1,159 @@
+.issue {
+    display: flex;
+    flex-direction: row;
+
+    position: relative;
+    overflow-x: hidden;
+    margin: 2px -4px;
+    padding: 5px;
+    line-height: 20px;
+
+    &.issueExpanded {
+        flex-direction: column;
+        background-color: var(--ring-content-background-color);
+        box-shadow: 0 1px 4px var(--ring-borders-color);
+    }
+}
+
+.issueHighlighted .issueToggle {
+    display: inline-block;
+}
+
+.issueExpanded .issueToggle {
+    top: 0;
+    display: inline-block;
+}
+
+.fieldValue {
+    display: table-cell;
+}
+
+.fieldAvatar {
+    position: relative;
+    top: 5px;
+
+    width: calc(2 * var(--ring-unit));
+    height: calc(2 * var(--ring-unit));
+
+    margin-top: calc(-1 * var(--ring-unit));
+    margin-left: var(--ring-unit);
+
+    border-radius: 3px;
+}
+
+.fieldValue .coloredField.fieldColor {
+    position: static;
+    height: 12px;
+    margin-left: var(--ring-unit);
+}
+
+.widgetFields.fieldsFix {
+    padding-right: 4px;
+}
+
+.widgetFields {
+    display: table;
+
+    min-width: calc(var(--ring-unit) * 20);
+    max-width: calc(var(--ring-unit) * 50);
+
+    padding: 4px 6px 0 4px;
+
+    text-align: left;
+    font-size: var(--ring-font-size-smaller);
+}
+
+.fieldRow {
+    display: table-row-group;
+}
+
+.widgetField {
+    display: table-row;
+    padding: 0 6px;
+}
+
+.fieldTitle {
+    display: table-cell;
+
+    padding-right: calc(2 * var(--ring-unit));
+    padding-bottom: 2px;
+
+    color: var(--ring-secondary-color);
+}
+
+.coloredField {
+    position: absolute;
+    top: 6px;
+
+    display: inline-block;
+
+    width: 15px;
+    height: 13px;
+
+    cursor: default;
+
+    text-align: center;
+    vertical-align: text-bottom;
+    white-space: nowrap;
+
+    border: 1px solid transparent;
+    border-radius: 2px;
+
+    background-color: var(--ring-sidebar-background-color);
+
+    font-size: 10px;
+
+    line-height: 13px;
+}
+
+.issueInfo {
+    display: inline-block;
+
+    font-size: var(--ring-font-size);
+
+    padding-right: calc(2 * var(--ring-unit));
+    padding-left: calc(3 * var(--ring-unit));
+}
+
+.issueId {
+    white-space: nowrap;
+
+    &.resolved {
+        color: var(--ring-secondary-color);
+        text-decoration: line-through;
+
+        &:hover {
+            color: var(--ring-secondary-color);
+            text-decoration: line-through underline;
+        }
+    }
+}
+
+.summary {
+    margin-left: var(--ring-unit);
+
+    &.resolved,
+    &.resolved:hover {
+        color: var(--ring-secondary-color);
+    }
+}
+
+.issueToggle {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    display: none;
+    width: calc(3 * var(--ring-unit));
+    cursor: pointer;
+    white-space: nowrap;
+    background-color: var(--ring-content-background-color);
+}
+
+.chevronIcon {
+    color: var(--ring-icon-secondary-color);
+}
+
+.issueExpandedBlock {
+    margin-bottom: 2px;
+    margin-left: 20px;
+}

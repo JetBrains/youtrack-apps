@@ -1,0 +1,27 @@
+{
+  "name": "documents-list",
+  "title": "Documents List",
+  "description": "",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://www.jetbrains.com"
+  },
+  "icon": "icon.svg",
+  "widgets": [
+
+    {
+      "key": "documents-list",
+      "name": "Documents List",
+      "indexPath": "documents-list-widget/index.html",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "iconPath": "documents-list-widget/widget-icon.svg",
+      "settingsSchemaPath": "documents-list-widget/settings.json",
+      "description": "Displays lists of issues and articles on customizable tabs.",
+      "defaultDimensions": {
+        "height": "2fr",
+        "width": "4fr"
+      }
+    }
+  ]
+}

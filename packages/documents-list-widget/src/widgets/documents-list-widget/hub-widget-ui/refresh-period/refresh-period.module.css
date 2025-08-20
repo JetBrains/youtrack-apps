@@ -1,0 +1,33 @@
+.refreshPeriod {
+  float: right;
+
+  margin-top: var(--ring-unit);
+  margin-right: calc(var(--ring-unit) / 2);
+
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+
+  color: var(--ring-dark-secondary-color);
+
+  font-size: var(--ring-font-size-smaller);
+  line-height: 10px;
+}
+
+.button {
+  cursor: pointer;
+}
+
+.button:hover {
+  color: var(--ring-link-hover-color);
+}
+
+.up {
+  top: -4px;
+  right: -2px;
+}
+
+.down {
+  bottom: -4px;
+  left: -10px;
+}

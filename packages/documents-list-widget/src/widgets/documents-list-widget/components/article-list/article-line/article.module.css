@@ -1,0 +1,15 @@
+.articleLine {
+    display: flex;
+    align-items: center;
+    cursor: default;
+    padding: 5px;
+    margin: 2px -4px;
+}
+
+.icon {
+    margin-right: var(--ring-unit);
+    display: flex;
+    align-items: center;
+    color: var(--ring-icon-color);
+    height: 20px;
+}

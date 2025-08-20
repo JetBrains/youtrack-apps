@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Documents List",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title",
+      "description": "Title of the widget."
+    },
+    "tabsConfig": {
+      "type": "string",
+      "title": "Tabs",
+      "description": "Customizable tabs that count and display document lists. Each tab configuration requires a tab title, document type, and search query."
+    },
+    "refreshPeriod": {
+      "type": "number",
+      "title": "Refresh Period",
+      "description": "Refresh period of the widget."
+    }
+  },
+  "required": ["tabsConfig"]
+}

@@ -1,0 +1,33 @@
+.empty {
+  position: absolute;
+  top: 50%;
+  left: 0;
+
+  width: 100%;
+
+  transform: translate(0, -50%);
+
+  text-align: center;
+}
+
+.face {
+  white-space: nowrap;
+
+  color: var(--ring-text-color);
+
+  font-size: 19px;
+}
+
+.message {
+  margin-top: calc(var(--ring-unit) * 3);
+
+  color: var(--ring-text-color);
+
+  font-size: var(--ring-font-size);
+}
+
+.additionalContent {
+  margin-top: var(--ring-unit);
+
+  font-size: var(--ring-font-size-smaller);
+}
