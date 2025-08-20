@@ -18,6 +18,11 @@ const QUERY_ASSIST_FIELDS =
 export const DOCUMENTS_PACK_SIZE = 6;
 export const SINGLE_VIEW_PACK_SIZE = 7; // Compensates for the extra space when tabs are absent from UI
 
+export const DEFAULT_DATE_FORMATS: DateFormats = {
+  datePattern: 'd MMM yyyy',
+  pattern: 'd MMM yyyy HH:mm',
+};
+
 export const getDocumentLink = (documentType: string, id: string) => {
     return `/${documentType}/${id}`;
 };
@@ -86,12 +91,10 @@ export default class API {
             `users/me/profiles/general?fields=${DATE_PRESENTATION_SETTINGS}`,
         );
         const dateFormats = generalUserProfile?.dateFieldFormat ?? {};
-        const toFechaFormat = (pattern?: string) =>
-            (pattern || '').replace(/y/g, 'Y').replace(/d/g, 'D').replace('aaa', 'A');
 
         return {
-            datePattern: toFechaFormat(dateFormats.datePattern),
-            dateTimePattern: toFechaFormat(dateFormats.dateTimePattern),
+            datePattern: dateFormats?.datePattern || DEFAULT_DATE_FORMATS.datePattern,
+            pattern: dateFormats?.pattern || DEFAULT_DATE_FORMATS.pattern,
         };
     }
 }

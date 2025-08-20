@@ -6,7 +6,7 @@ export interface Color {
 
 export interface DateFormats {
     datePattern: string;
-    dateTimePattern: string;
+    pattern: string;
 }
 
 export interface FieldValue {

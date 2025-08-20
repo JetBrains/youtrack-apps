@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import fecha from 'fecha';
+import {format} from 'date-fns';
 import Link from '@jetbrains/ring-ui-built/components/link/link';
 import Tooltip from '@jetbrains/ring-ui-built/components/tooltip/tooltip';
 import Icon from '@jetbrains/ring-ui-built/components/icon/icon';
@@ -21,7 +21,7 @@ const toArray = <T,>(value: T | T[]): T[] => (Array.isArray(value) ? value : [va
 const getName = (field: FieldValue): string => field.localizedName || field.name || '';
 
 const getDatePresentation = (timestamp: Date, dateFormats: DateFormats, withTime: boolean): string => {
-    return fecha.format(timestamp, withTime ? dateFormats.dateTimePattern : dateFormats.datePattern);
+    return format(timestamp, withTime ? dateFormats.pattern : dateFormats.datePattern);
 };
 
 const getValuePresentation = (issueField: IssueField, dateFormats: DateFormats): string => {

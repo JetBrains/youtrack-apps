@@ -5,11 +5,11 @@ import DocumentList from '../documents-list/document-list';
 import {COUNTER_DELAY_MS} from '../content/content';
 import {useWidgetContext} from '../../widget-context.ts';
 import {i18n} from '@jetbrains/youtrack-apps-tools/dist/lib/i18n/i18n';
+import {DEFAULT_DATE_FORMATS} from '../../api';
 
 interface Props {
     tabId: string;
     searchQuery: string;
-    dateFormats?: DateFormats;
     packSize: number;
     onCountUpdate: (tabId: string, count: number) => void;
     editable: boolean;
@@ -20,10 +20,6 @@ const IssueList = (props: Props) => {
     const {
         tabId,
         searchQuery,
-        dateFormats: defaultDateFormats = {
-            datePattern: 'MMM D, YYYY',
-            dateTimePattern: 'MMM D, YYYY h:mm A',
-        },
         packSize,
         onCountUpdate,
         editable,
@@ -35,7 +31,7 @@ const IssueList = (props: Props) => {
     const [issues, setIssues] = useState<Issue[]>([]);
     const [issuesCount, setIssuesCount] = useState(0);
     const [expandedIssueId, setExpandedIssueId] = useState<string | null>(null);
-    const [dateFormats, setDateFormats] = useState<DateFormats>(defaultDateFormats);
+    const [dateFormats, setDateFormats] = useState<DateFormats>(DEFAULT_DATE_FORMATS);
 
     const [isLoading, setIsLoading] = useState(true);
     const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -62,10 +58,7 @@ const IssueList = (props: Props) => {
 
                 setIssues(fetchedIssues);
                 setIssuesCount(fetchedCount);
-                setDateFormats({
-                    datePattern: fetchedDateFormats.datePattern ?? defaultDateFormats.datePattern,
-                    dateTimePattern: fetchedDateFormats.dateTimePattern ?? defaultDateFormats.dateTimePattern,
-                });
+                setDateFormats(fetchedDateFormats);
 
                 onCountUpdate(tabId, fetchedCount);
             } catch {
@@ -76,7 +69,7 @@ const IssueList = (props: Props) => {
         };
 
         fetchData();
-    }, [searchQuery, packSize, api, onCountUpdate, tabId, defaultDateFormats.datePattern, defaultDateFormats.dateTimePattern]);
+    }, [searchQuery, packSize, api, onCountUpdate, tabId]);
 
     const onLoadMoreIssues = useCallback(async () => {
         setIsLoadingMore(true);
