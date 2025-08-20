@@ -27,7 +27,7 @@ const toYTConfig = (widgetConfig: WidgetConfig): YTConfig => ({
 
 export const useWidget = () => {
     const apiRef = useRef<API | null>(null);
-    const dashboardApiRef = useRef<EmbeddableWidgetAPI | null>(null);
+    const appsApiRef = useRef<EmbeddableWidgetAPI | null>(null);
 
     const [isRegistered, setIsRegistered] = useState(false);
     const [isConfiguring, setIsConfiguring] = useState(false);
@@ -41,11 +41,11 @@ export const useWidget = () => {
     const refresh = () => setRefreshKey(prev => prev + 1);
 
     const loadConfig = useCallback(async (): Promise<WidgetConfig | null> => {
-        if (!dashboardApiRef.current) {
+        if (!appsApiRef.current) {
             return null;
         }
 
-        const storedConfig = await dashboardApiRef.current.readConfig<YTConfig>();
+        const storedConfig = await appsApiRef.current.readConfig<YTConfig>();
         if (!storedConfig?.tabsConfig) {
             return null;
         }
@@ -53,33 +53,33 @@ export const useWidget = () => {
     }, []);
 
     const saveConfig = useCallback(async (widgetConfig: WidgetConfig): Promise<void> => {
-        if (!dashboardApiRef.current) {
+        if (!appsApiRef.current) {
             return;
         }
 
-        await dashboardApiRef.current.storeConfig(toYTConfig(widgetConfig));
+        await appsApiRef.current.storeConfig(toYTConfig(widgetConfig));
         setConfig(widgetConfig);
 
         if (widgetConfig.title) {
-            await dashboardApiRef.current.setTitle(widgetConfig.title, '');
+            await appsApiRef.current.setTitle(widgetConfig.title, '');
         }
         setRefreshKey(0);
         setIsConfiguring(false);
     }, []);
 
     const onConfigSubmit = useCallback(async (newConfig: WidgetConfig) => {
-        if (!dashboardApiRef.current) {
+        if (!appsApiRef.current) {
             return;
         }
 
         setIsLoading(true);
-        await dashboardApiRef.current.clearError();
+        await appsApiRef.current.clearError();
         await saveConfig(newConfig);
         setIsLoading(false);
     }, [saveConfig]);
 
     const onConfigCancel = useCallback(async () => {
-        if (!dashboardApiRef.current) {
+        if (!appsApiRef.current) {
             return;
         }
 
@@ -88,7 +88,7 @@ export const useWidget = () => {
         if (configuration) {
             setConfig(configuration);
         } else {
-            dashboardApiRef.current.removeWidget();
+          appsApiRef.current.removeWidget();
         }
     }, [loadConfig]);
 
@@ -100,18 +100,18 @@ export const useWidget = () => {
             });
 
             apiRef.current = new API(host);
-            dashboardApiRef.current = host as EmbeddableWidgetAPI;
+            appsApiRef.current = host as EmbeddableWidgetAPI;
 
             setIsLoading(true);
             try {
-                const storedConfig = await dashboardApiRef.current.readConfig<YTConfig>();
+                const storedConfig = await appsApiRef.current.readConfig<YTConfig>();
 
                 if (storedConfig?.tabsConfig) {
                     const configuration = toWidgetConfig(storedConfig);
                     setConfig(configuration);
                 } else {
                     setIsConfiguring(true);
-                    dashboardApiRef.current.enterConfigMode();
+                    appsApiRef.current.enterConfigMode();
                 }
             } catch (e: unknown) {
                 alertService.error(e instanceof Error ? e.message : 'Failed to load');
@@ -127,7 +127,7 @@ export const useWidget = () => {
 
     return {
         api: apiRef.current,
-        dashboardApi: dashboardApiRef.current,
+        appsApi: appsApiRef.current,
         isRegistered,
         isConfiguring,
         setIsConfiguring,

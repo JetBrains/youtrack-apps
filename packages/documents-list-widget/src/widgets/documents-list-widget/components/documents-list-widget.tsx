@@ -10,7 +10,7 @@ import {DEFAULT_REFRESH_PERIOD_SEC, useWidget} from '../hooks/useWidget';
 const DocumentsListWidget = () => {
     const {
         api,
-        dashboardApi,
+        appsApi,
         isRegistered,
         isConfiguring,
         setIsConfiguring,
@@ -54,17 +54,17 @@ const DocumentsListWidget = () => {
         [refreshKey, config.tabs, setIsConfiguring]
     );
 
-    if (!isRegistered || !api || !dashboardApi) {
+    if (!isRegistered || !api || !appsApi) {
         return null;
     }
 
     const widgetTitle = isConfiguring ? i18n('Documents List') : config.title;
 
     return (
-      <WidgetContext.Provider value={{ api, dashboardApi }}>
+      <WidgetContext.Provider value={{api, appsApi}}>
         <ConfigurableWidget
           isConfiguring={isConfiguring}
-          dashboardApi={dashboardApi}
+          dashboardApi={appsApi}
           widgetTitle={widgetTitle}
           Configuration={Configuration}
           Content={widgetContent}
