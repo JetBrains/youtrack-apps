@@ -10,6 +10,8 @@ const ISSUE_FIELD_VALUE_FIELDS =
 const ISSUE_FIELD_FIELDS = `id,value(${ISSUE_FIELD_VALUE_FIELDS}),projectCustomField(${PROJECT_CUSTOM_FIELD_FIELDS})`;
 const ISSUE_FIELDS = `id,idReadable,summary,resolved,fields(${ISSUE_FIELD_FIELDS})`;
 
+const ARTICLE_FIELDS = `id,idReadable,summary`
+
 const QUERY_ASSIST_FIELDS =
     'query,caret,styleRanges(start,length,style),suggestions(options,prefix,option,suffix,description,matchingStart,matchingEnd,caret,completionStart,completionEnd,group,icon)';
 
@@ -59,7 +61,7 @@ export default class API {
     async loadArticles(query: string, skip: number, packSize: number): Promise<Article[]> {
         const encodedQuery = encodeURIComponent(query);
         return await this.host.fetchYouTrack(
-            `articles?query=${encodedQuery}&fields=${ISSUE_FIELDS}&$top=${packSize}&$skip=${skip}`,
+            `articles?query=${encodedQuery}&fields=${ARTICLE_FIELDS}&$top=${packSize}&$skip=${skip}`,
         );
     }
 
