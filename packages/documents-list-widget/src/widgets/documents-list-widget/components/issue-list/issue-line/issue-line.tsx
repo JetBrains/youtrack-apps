@@ -55,11 +55,7 @@ const getValuableIssueFields = (issue: Issue): IssueField[] => {
     return (issue.fields || [])
         .filter((field: IssueField) => toArray(field.value || []).length > 0)
         .filter((field: IssueField) => {
-            const valueType =
-                field.projectCustomField &&
-                field.projectCustomField.field &&
-                field.projectCustomField.field.fieldType &&
-                field.projectCustomField.field.fieldType.valueType;
+            const valueType = field.projectCustomField?.field?.fieldType?.valueType;
             return valueType !== 'text';
         });
 };
