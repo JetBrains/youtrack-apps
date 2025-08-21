@@ -25,8 +25,8 @@ const getDatePresentation = (timestamp: Date, dateFormats: DateFormats, withTime
 };
 
 const getValuePresentation = (issueField: IssueField, dateFormats: DateFormats): string => {
-    const field = issueField.projectCustomField && issueField.projectCustomField.field;
-    const fieldType = (field && field.fieldType && field.fieldType.valueType) || '';
+    const field = issueField.projectCustomField?.field;
+    const fieldType = (field?.fieldType?.valueType) || '';
 
     return toArray(issueField.value || [])
         .map((value: FieldValue) => {
@@ -48,7 +48,7 @@ const getValuePresentation = (issueField: IssueField, dateFormats: DateFormats):
 const getFirstLetter = (value: FieldValue): string => (getName(value) || 'c')[0].toUpperCase();
 
 const isColoredValue = (value: FieldValue): boolean => {
-    return !!(value.color && value.color.id && parseInt(value.color.id, 10) > 0);
+    return !!(value.color?.id && parseInt(value.color.id, 10) > 0);
 };
 
 const getValuableIssueFields = (issue: Issue): IssueField[] => {
@@ -66,7 +66,7 @@ const getColoredSquareModel = (issue: Issue): ColoredSquareModel | null => {
         if (!coloredValue) {
             return null;
         }
-        const fieldName = getName(issueField.projectCustomField.field || ({} as FieldValue));
+        const fieldName = getName(issueField.projectCustomField?.field || ({} as FieldValue));
         return {
             style: fieldColorToCss(coloredValue.color as Color),
             letter: getFirstLetter(coloredValue),
@@ -75,9 +75,9 @@ const getColoredSquareModel = (issue: Issue): ColoredSquareModel | null => {
         };
     };
 
-    const bundleFields = (issue.fields || []).filter((issueField: IssueField) => !!issueField.projectCustomField.bundle);
+    const bundleFields = (issue.fields || []).filter((issueField: IssueField) => !!issueField.projectCustomField?.bundle);
     const priorityField = bundleFields.find((issueField: IssueField) => {
-        const field = issueField.projectCustomField.field || {};
+        const field = issueField.projectCustomField?.field || {};
         return (field.name || '').toLowerCase() === 'priority';
     });
     if (priorityField) {
