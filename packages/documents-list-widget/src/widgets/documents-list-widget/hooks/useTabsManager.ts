@@ -21,14 +21,17 @@ const initializeTabs = (tabs: DocumentListTab[]) =>
 export const useTabsManager = (initialTabs: DocumentListTab[]) => {
     const [configTabs, setConfigTabs] = useState<DocumentListTab[]>(() => initializeTabs(initialTabs));
     const [activeTab, setActiveTab] = useState(configTabs[0].id);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const addNewTab = useCallback(() => {
+        setErrorMessage('');
         const newTab = createNewTab();
         setConfigTabs(prevTabs => [...prevTabs, newTab]);
         setActiveTab(newTab.id);
     }, []);
 
     const deleteTab = useCallback((tabToDelete: string) => {
+        setErrorMessage('');
         setConfigTabs(prevTabs => {
             const updatedTabs = prevTabs.filter(tab => tab.id !== tabToDelete);
 
@@ -41,6 +44,7 @@ export const useTabsManager = (initialTabs: DocumentListTab[]) => {
     }, []);
 
     const updateTab = useCallback((tabId: string, update: Partial<DocumentListTab>) => {
+        setErrorMessage('');
         setConfigTabs(prevTabs => prevTabs.map(tab => (tab.id === tabId ? {...tab, ...update} : tab)));
     }, []);
 
@@ -78,5 +82,7 @@ export const useTabsManager = (initialTabs: DocumentListTab[]) => {
         onSearchQueryChange,
         onDocumentTypeChange,
         onTabSelect,
+        errorMessage,
+        setErrorMessage,
     };
 };

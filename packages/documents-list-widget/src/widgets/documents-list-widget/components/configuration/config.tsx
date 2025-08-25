@@ -7,6 +7,8 @@ import ConfigurationForm from '../../hub-widget-ui/configuration-form/configurat
 import RefreshPeriod from '../../hub-widget-ui/refresh-period/refresh-period';
 import {DocumentListTab, useTabsManager} from '../../hooks/useTabsManager';
 import {i18n} from '@jetbrains/youtrack-apps-tools/dist/lib/i18n/i18n';
+import httpErrorHandler from '../../hub-widget-ui/http-error-handler/http-error-handler';
+import {useWidgetContext} from '../../widget-context.ts';
 
 import styles from './config.module.css';
 
@@ -25,6 +27,8 @@ interface Props extends WidgetConfig {
 const Config = (props: Props) => {
     const {title, tabs, refreshPeriod, isLoading, onSubmit, onCancel} = props;
 
+    const {api} = useWidgetContext();
+
     const [widgetTitle, setWidgetTitle] = useState(title);
     const [widgetRefreshPeriod, setWidgetRefreshPeriod] = useState(refreshPeriod);
 
@@ -37,6 +41,8 @@ const Config = (props: Props) => {
         onSearchQueryChange,
         onDocumentTypeChange,
         onTabSelect,
+        errorMessage,
+        setErrorMessage,
     } = useTabsManager(tabs);
 
     const onWidgetTitleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,17 +63,30 @@ const Config = (props: Props) => {
 
     const renderRefreshPeriod = <RefreshPeriod seconds={widgetRefreshPeriod} onChange={onChangeRefreshPeriod}/>;
 
-    const onSubmitForm = useCallback(() => {
-        return onSubmit({
-            title: widgetTitle,
-            tabs: configTabs,
-            refreshPeriod: widgetRefreshPeriod,
+    const onSubmitForm = useCallback(async() => {
+      try {
+        for (const tab of configTabs) {
+          if (tab.documentType === 'Issue') {
+            await api.loadIssues(tab.searchQuery, 0, 1)
+          } else {
+            await api.loadArticles(tab.searchQuery, 0, 1)
+          }
+        }
+
+        await onSubmit({
+          title: widgetTitle,
+          tabs: configTabs,
+          refreshPeriod: widgetRefreshPeriod,
         });
-    }, [onSubmit, widgetTitle, configTabs, widgetRefreshPeriod]);
+      } catch (error) {
+        setErrorMessage(httpErrorHandler.getMessage(error))
+      }
+    }, [onSubmit, widgetTitle, configTabs, widgetRefreshPeriod, api, setErrorMessage]);
 
     return (
       <ConfigurationForm
-        isInvalid={isConfigInvalid}
+        warning={errorMessage}
+        isInvalid={isConfigInvalid || Boolean(errorMessage)}
         isLoading={isLoading}
         panelControls={renderRefreshPeriod}
         onSave={onSubmitForm}
