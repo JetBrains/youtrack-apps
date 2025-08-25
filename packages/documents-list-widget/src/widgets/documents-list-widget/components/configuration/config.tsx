@@ -105,7 +105,7 @@ const Config = (props: Props) => {
         <div className={styles.tabConfig}>
           <Tabs selected={activeTab} onSelect={onTabSelect}>
             {configTabs.map((tab, index) => (
-              <Tab key={tab.id} id={tab.id} title={tab.title || `Tab ${index + 1}`}>
+              <Tab key={tab.id} id={tab.id} title={tab.title.trim() || `Tab ${index + 1}`}>
                 <TabConfiguration
                   tabTitle={tab.title}
                   searchQuery={tab.searchQuery}
