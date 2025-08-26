@@ -24,6 +24,9 @@ const ArticleLine = ({article}: Props) => {
         <div className={styles.icon}>
           <Icon glyph={articleIcon}/>
         </div>
+        <Link className={styles.articleId} href={articleUrl} target="_blank">
+          {article.idReadable}
+        </Link>
         <Link key={`article-summary-${article.id}`} href={articleUrl} target="_blank">
           {article.summary}
         </Link>

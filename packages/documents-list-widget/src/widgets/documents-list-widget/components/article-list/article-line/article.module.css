@@ -1,15 +1,19 @@
 .articleLine {
-    display: flex;
-    align-items: center;
-    cursor: default;
-    padding: 5px;
-    margin: 2px -4px;
+  display: flex;
+  align-items: center;
+  cursor: default;
+  padding: 5px;
+  margin: 2px -4px;
 }
 
 .icon {
-    margin-right: var(--ring-unit);
-    display: flex;
-    align-items: center;
-    color: var(--ring-icon-color);
-    height: 20px;
+  margin-right: calc(var(--ring-unit) / 2);
+  display: flex;
+  align-items: center;
+  color: var(--ring-icon-color);
+  height: 20px;
+}
+
+.articleId {
+  margin-right: var(--ring-unit);
 }
