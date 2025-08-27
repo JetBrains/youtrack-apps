@@ -11,70 +11,68 @@ import styles from './documents-list.module.css';
 type DocumentType = Issue | Article;
 
 interface Props<T extends DocumentType> {
-    documents: T[];
-    totalDocumentCount: number;
-    renderDocuments: (document: T) => React.ReactElement;
-    isLoading: boolean;
-    isLoadingMore: boolean;
-    onLoadMore: () => void;
-    editable: boolean;
-    onEdit: () => void;
-    error: boolean;
-    emptyMessage: string;
+  documents: T[];
+  totalDocumentCount: number;
+  renderDocuments: (document: T) => React.ReactElement;
+  isLoading: boolean;
+  isLoadingMore: boolean;
+  onLoadMore: () => void;
+  editable: boolean;
+  onTabEdit: () => void;
+  error: boolean;
+  emptyMessage: string;
 }
 
 const DocumentsList = <T extends DocumentType>(props: Props<T>) => {
-    const {
-        documents,
-        totalDocumentCount,
-        renderDocuments,
-        isLoading,
-        isLoadingMore,
-        onLoadMore,
-        editable,
-        onEdit,
-        error,
-        emptyMessage,
-    } = props;
+  const {
+    documents,
+    totalDocumentCount,
+    renderDocuments,
+    isLoading,
+    isLoadingMore,
+    onLoadMore,
+    editable,
+    onTabEdit,
+    error,
+    emptyMessage,
+  } = props;
 
-    if (error) {
-        return <EmptyWidget face={EmptyWidgetFaces.ERROR} message={"Can't load information from service"}/>;
-    }
+  if (error) {
+    return <EmptyWidget face={EmptyWidgetFaces.ERROR} message={"Can't load information from service"}/>;
+  }
 
-    if (isLoading) {
-        return <LoaderInline/>;
-    }
+  if (isLoading) {
+    return <LoaderInline/>;
+  }
 
-    if (documents.length === 0) {
-        return (
-          <EmptyWidget face={EmptyWidgetFaces.OK} message={emptyMessage}>
-            {editable && (
-            <Link pseudo onClick={onEdit}>
-              {i18n('Edit search query')}
-            </Link>
-                )}
-          </EmptyWidget>
-        );
-    }
-
-    const loadMoreCount = totalDocumentCount - documents.length;
-
+  if (documents.length === 0) {
     return (
-      <>
-        {documents.map(document => (
-          <div key={document.id}>{renderDocuments(document)}</div>
-            ))}
-
-        {loadMoreCount > 0 &&
-                (isLoadingMore ? (
-                  <LoaderInline/>
-                ) : (
-                  <Link pseudo onClick={onLoadMore} className={styles.loadMore}>
-                    {i18n('Show more')}
-                  </Link>
-                ))}
-      </>
+      <EmptyWidget face={EmptyWidgetFaces.OK} message={emptyMessage}>
+        {editable && (
+          <Link pseudo onClick={onTabEdit}>
+            {i18n('Edit search query')}
+          </Link>
+        )}
+      </EmptyWidget>
     );
+  }
+
+  const loadMoreCount = totalDocumentCount - documents.length;
+
+  return (
+    <>
+      {documents.map(document => renderDocuments(document))}
+
+      {loadMoreCount > 0 &&
+        (isLoadingMore ? (
+          <LoaderInline/>
+        ) : (
+          <Link pseudo onClick={onLoadMore} className={styles.loadMore}>
+            {i18n('Show more')}
+          </Link>
+        ))}
+    </>
+  );
 };
 
 export default DocumentsList;
