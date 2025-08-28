@@ -1,13 +1,10 @@
+/* custom styles for .empty */
 .empty {
-  position: absolute;
-  top: 50%;
-  left: 0;
-
-  width: 100%;
-
-  transform: translate(0, -50%);
-
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: calc(var(--ring-unit) * 6);
 }
 
 .face {
