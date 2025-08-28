@@ -1,6 +1,9 @@
+.articleInfo {
+  display: inline-block;
+}
+
 .articleLine {
   display: flex;
-  align-items: center;
   cursor: default;
   padding: 5px;
   margin: 2px -4px;
@@ -8,10 +11,8 @@
 
 .icon {
   margin-right: calc(var(--ring-unit) / 2);
-  display: flex;
-  align-items: center;
   color: var(--ring-icon-color);
-  height: 20px;
+  height: calc(var(--ring-unit) * 2.5);
 }
 
 .articleId {
