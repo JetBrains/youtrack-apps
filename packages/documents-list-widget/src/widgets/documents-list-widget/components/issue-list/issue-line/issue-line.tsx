@@ -175,7 +175,7 @@ const IssueLine = ({issue, expanded, dateFormats, onClick}: IssueLineProps) => {
           </span>
         )}
 
-        <div className={styles.issueInfo}>
+        <div className={classNames(styles.issueInfo, {[styles.noColoredSquare]: !coloredSquare})}>
           <Link className={classNames(styles.issueId, {[styles.resolved]: resolved})} href={issueUrl} target="_blank">
             {issue.idReadable}
           </Link>

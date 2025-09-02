@@ -106,6 +106,10 @@
     font-size: var(--ring-font-size);
     padding: 0 calc(2 * var(--ring-unit)) 0 var(--ring-unit);
 
+    &.noColoredSquare {
+      padding: 0 calc(2 * var(--ring-unit)) 0 calc(3 * var(--ring-unit));
+    }
+
     .issueId {
       white-space: nowrap;
 
