@@ -1,4 +1,5 @@
 /* eslint-disable no-magic-numbers */
+/* eslint-disable no-undef */
 import {expect} from 'chai';
 
 import toSuperDigitsString from './super-digits.js';
