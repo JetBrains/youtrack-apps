@@ -11,7 +11,7 @@
     "build": "tsc -p tsconfig.app.json && vite build && youtrack-app validate dist",
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
-    "pack": "rm -rf <%= appName %>.zip && npx --yes bestzip <%= appName %>.zip dist/*",
+    "pack": "rm -rf <%= appName %>.zip && cd dist/ && bestzip ../<%= appName %>.zip *",
     "upload": "youtrack-app upload dist"
   },
   "dependencies": {
@@ -29,6 +29,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "bestzip": "^2.2.1",
     "eslint": "^9.13.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.1",
