@@ -1,0 +1,20 @@
+.articleInfo {
+  display: inline-block;
+}
+
+.articleLine {
+  display: flex;
+  cursor: default;
+  padding: 5px;
+  margin: 2px -4px;
+}
+
+.icon {
+  margin-right: calc(var(--ring-unit) / 2);
+  color: var(--ring-icon-color);
+  height: calc(var(--ring-unit) * 2.5);
+}
+
+.articleId {
+  margin-right: var(--ring-unit);
+}

@@ -1,0 +1,15 @@
+.tabCounter {
+    position: relative;
+    margin-left: var(--ring-unit);
+    color: var(--ring-secondary-color);
+    font-weight: normal;
+}
+
+.counterLoader {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 14px;
+    transform: translateY(-50%);
+}

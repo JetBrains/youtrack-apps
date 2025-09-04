@@ -1,13 +1,5 @@
-module.exports = () => ({
+module.exports = {
   plugins: [
-    require('postcss-modules-values-replace')({}),
-    require('postcss-cssnext')({
-      features: {
-        calc: {
-          mediaQueries: true
-        },
-        customProperties: false
-      }
-    })
+    require('postcss-nesting')()
   ]
-});
+};
