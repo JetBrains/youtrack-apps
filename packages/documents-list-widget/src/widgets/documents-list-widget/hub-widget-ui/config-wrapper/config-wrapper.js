@@ -12,6 +12,7 @@ function ConfigWrapper(dashboardApi, configFields) {
           const stored = (response || {}).customWidgetConfig;
           try {
             config = stored ? JSON.parse(stored) : null;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (e) {
             // noop
           }

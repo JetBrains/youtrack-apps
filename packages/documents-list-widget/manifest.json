@@ -1,12 +1,13 @@
 {
   "name": "documents-list",
   "title": "Documents List",
-  "description": "",
+  "description": "Displays lists of issues and articles on customizable tabs.",
   "$schema": "https://json.schemastore.org/youtrack-app.json",
   "vendor": {
     "name": "JetBrains s.r.o.",
     "url": "https://www.jetbrains.com"
   },
+  "version": "1.0.0",
   "icon": "icon.svg",
   "widgets": [
 
