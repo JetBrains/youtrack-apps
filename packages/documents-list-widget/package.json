@@ -11,7 +11,7 @@
     "release:bump-version": "commit-and-tag-version --release-as patch --bumpFiles manifest.json --packageFiles manifest.json",
     "release:ci": "npm run release:bump-version && npm run build && npm run pack && npm run upload:marketplace && git push --follow-tags origin main",
     "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer $pluginsRepositoryToken\" -F \"pluginId=$pluginRepositoryID\" -F \"file=@documents-list-widget.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin",
-    "pack": "rm -rf documents-list-widget.zip && npx --yes bestzip documents-list-widget.zip dist/*",
+    "pack": "rm -rf documents-list-widget.zip && cd dist/ && bestzip ../documents-list-widget.zip *",
     "upload": "youtrack-app upload dist"
   },
   "dependencies": {
