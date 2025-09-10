@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: tr\n"
+"X-Crowdin-File: /widgets/revoke-user-access-widget/default.pot\n"
+"X-Crowdin-File-ID: 419918\n"
+"Language-Team: Turkish\n"
+"Language: tr_TR\n"
+"PO-Revision-Date: 2023-08-10 07:19\n"
+
+#: src/app/LoginsTable.js:22
+msgid "Auth Module"
+msgstr "Kimlik Doğrulama Modülü"
+
+#: src/app/SelectedUserForm.js:65
+msgid "Finish"
+msgstr "Bitir"
+
+#: src/app/GroupsTable.js:12
+msgid "Groups"
+msgstr "Gruplar"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Oca|Şub|Mar|Nis|May|Haz|Tem|Ağu|Eyl|Eki|Kas|Ara"
+
+#: src/app/UserSearch.js:68
+msgid "Load more"
+msgstr "Daha fazlasını yükle"
+
+#: src/app/LoginsTable.js:11
+msgid "Logins"
+msgstr "Girişler"
+
+#: src/app/ProjectRolesTable.js:25
+msgid "Project"
+msgstr "Proje"
+
+#: src/app/ProjectRolesTable.js:12
+msgid "Project Roles"
+msgstr "Proje Rolleri"
+
+#: src/app/SelectedUserForm.js:62
+msgid "Revoke selected items"
+msgstr "Seçili ögeleri iptal et"
+
+#: src/app/UserSearch.js:46
+msgid "Search user"
+msgstr "Kullanıcı ara"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Pazar|Pazartesi|Salı|Çarşamba|Perşembe|Cuma|Cumartesi"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Paz|Pzt|Sal|Çrş|Prş|Cum|Cmt"
+
+#: src/app/TeamsTable.js:12
+msgid "Teams"
+msgstr "Takımlar"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "öö|ös"
+
+#: src/app/UserProperties.js:37
+msgid "banned"
+msgstr "engellendi"
+
+#: src/app/UserProperties.js:57
+msgid "email not verified"
+msgstr "e-posta doğrulanmadı"
+
+#: src/app/UserProperties.js:57
+msgid "email verified"
+msgstr "e-posta doğrulandı"
+
