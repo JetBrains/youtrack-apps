@@ -13,15 +13,17 @@ if [ "${NPM_DIST_TAG:-}" != "" ]; then
   TAG_RAW="$NPM_DIST_TAG"
   # Sanitize dist-tag for npm/version prerelease id compatibility
   # Keep alnum, dot and dash; convert slashes/underscores/spaces to dash
+  # NPM dist-tags must not contain slashes, underscores, or spaces; these are replaced with dashes ('-') for compatibility.
+  # The 'tr' command replaces each of '/', '_', and ' ' with '-', ensuring the tag is valid for npm publish.
   TAG_SANITIZED="$(echo "$TAG_RAW" | tr '/_ ' '---' | tr -cd '[:alnum:].-')"
-  PRERELEASE_ID="$TAG_SANITIZED"
 
-  echo "Tagged release (NPM_DIST_TAG='${TAG_RAW}', prerelease id='${PRERELEASE_ID}')."
+
+  echo "Tagged release (NPM_DIST_TAG='${TAG_RAW}', prerelease id='${TAG_SANITIZED}')."
   echo "Creating prerelease and publishing under dist-tag '${TAG_SANITIZED}' (latest won't be affected)."
 
-  npx commit-and-tag-version --prerelease "$PRERELEASE_ID"
+  npx commit-and-tag-version --prerelease "$TAG_SANITIZED"
 
-  git push --follow-tags
+  git push --follow-tags origin "$BRANCH"
 
   npm publish --tag "$TAG_SANITIZED"
 
