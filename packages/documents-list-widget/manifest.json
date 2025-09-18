@@ -1,6 +1,6 @@
 {
   "name": "documents-list",
-  "title": "Documents List",
+  "title": "Document List",
   "description": "Displays lists of issues and articles on customizable tabs.",
   "$schema": "https://json.schemastore.org/youtrack-app.json",
   "vendor": {
@@ -13,7 +13,7 @@
 
     {
       "key": "documents-list",
-      "name": "Documents List",
+      "name": "Document List",
       "indexPath": "documents-list-widget/index.html",
       "extensionPoint": "DASHBOARD_WIDGET",
       "iconPath": "documents-list-widget/widget-icon.svg",
