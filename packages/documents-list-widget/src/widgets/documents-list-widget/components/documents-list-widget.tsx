@@ -53,7 +53,7 @@ const DocumentsListWidget = () => {
     return null;
   }
 
-  const widgetTitle = isConfiguring ? i18n('Documents List') : config.title;
+  const widgetTitle = isConfiguring ? i18n('Document List') : config.title;
 
   return (
     <WidgetContext.Provider value={{api, appsApi}}>
