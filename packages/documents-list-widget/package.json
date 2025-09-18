@@ -8,7 +8,10 @@
     "build": "tsc -p tsconfig.app.json && vite build && youtrack-app validate dist",
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
-    "pack": "rm -rf documents-list-widget.zip && npx --yes bestzip documents-list-widget.zip dist/*",
+    "release:bump-version": "commit-and-tag-version --release-as patch --bumpFiles manifest.json --packageFiles manifest.json",
+    "release:ci": "npm run release:bump-version && npm run build && npm run pack && npm run upload:marketplace && git push --follow-tags origin main",
+    "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer $pluginsRepositoryToken\" -F \"pluginId=$pluginRepositoryID\" -F \"file=@documents-list-widget.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin",
+    "pack": "rm -rf documents-list-widget.zip && cd dist/ && bestzip ../documents-list-widget.zip *",
     "upload": "youtrack-app upload dist"
   },
   "dependencies": {
@@ -33,6 +36,8 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "bestzip": "^2.2.1",
+    "commit-and-tag-version": "^12.6.0",
     "eslint": "^9.13.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.1",

@@ -7,10 +7,9 @@
     "name": "JetBrains s.r.o.",
     "url": "https://www.jetbrains.com"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icon": "icon.svg",
   "widgets": [
-
     {
       "key": "documents-list",
       "name": "Document List",
