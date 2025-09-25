@@ -1,5 +1,5 @@
 project_id: 137
-base_path: "."
+base_url: "https://jetbrains.crowdin.com"
 
 preserve_hierarchy: true
 
