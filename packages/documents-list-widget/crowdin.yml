@@ -1,5 +1,5 @@
-"project_identifier_env": CROWDIN_PROJECT_IDENTIFIER
-"api_key_env" : CROWDIN_API_KEY
+"project_id": CROWDIN_PROJECT_IDENTIFIER
+"api_token" : CROWDIN_API_KEY
 "base_path" : "."
 
 "preserve_hierarchy": true
