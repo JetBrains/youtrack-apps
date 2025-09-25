@@ -12,12 +12,12 @@ msgstr ""
 msgid "Article"
 msgstr ""
 
-#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:111
-msgid "Document type"
+#: src/widgets/documents-list-widget/components/documents-list-widget.tsx:56
+msgid "Document List"
 msgstr ""
 
-#: src/widgets/documents-list-widget/components/documents-list-widget.tsx:56
-msgid "Documents List"
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:111
+msgid "Document type"
 msgstr ""
 
 #: src/widgets/documents-list-widget/components/documents-list/document-list.tsx:53

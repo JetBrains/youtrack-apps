@@ -1,13 +1,9 @@
-"project_id": CROWDIN_PROJECT_IDENTIFIER
-"api_token" : CROWDIN_API_KEY
-"base_path" : "."
+project_id: 137
+base_path: "."
 
-"preserve_hierarchy": true
+preserve_hierarchy: true
 
-files: [
- {
-  "source" : "/translations/default.pot",
-  "dest": "/widgets/documents-list-widget/default.pot",
-  "translation" : "/translations/translations_%two_letters_code%.po",
- }
-]
+files:
+  - source: "/translations/default.pot"
+    dest: "/widgets/documents-list-widget/default.pot"
+    translation: "/translations/translations_%two_letters_code%.po"
