@@ -8,7 +8,7 @@ import timeIcon from '@jetbrains/icons/time';
 import Icon from '@jetbrains/ring-ui/components/icon';
 
 import styles from './refresh-period.module.css';
-import {i18n} from 'hub-dashboard-addons/dist/localization';
+import {i18n} from '@lib/i18n/i18n';
 
 const REFRESH_PERIOD_MINUTE = 60; // eslint-disable-line no-magic-numbers
 

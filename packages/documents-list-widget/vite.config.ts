@@ -2,6 +2,7 @@ import {resolve} from 'node:path';
 import {defineConfig} from 'vite';
 import {viteStaticCopy} from 'vite-plugin-static-copy';
 import react from '@vitejs/plugin-react';
+import {poTransformPlugin} from '../lib/tools/vite-po-transform-plugin.ts';
 
 /*
       See https://vitejs.dev/config/
@@ -10,6 +11,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [
     react(),
+    poTransformPlugin(),
     viteStaticCopy({
       targets: [
         {
@@ -51,8 +53,9 @@ export default defineConfig({
     }
   },
   resolve: {
-  alias: {
-    '@jetbrains/ring-ui': '@jetbrains/ring-ui-built' // for hub-widget-ui folder
+    alias: {
+      '@jetbrains/ring-ui': '@jetbrains/ring-ui-built', // for hub-widget-ui folder
+      '@lib': resolve(__dirname, '../lib')
+    }
   }
-}
 });

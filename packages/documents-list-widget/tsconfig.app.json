@@ -15,6 +15,12 @@
     "jsx": "react-jsx",
     "allowJs": true,
 
+    /* Path mapping */
+    "baseUrl": ".",
+    "paths": {
+      "@lib/*": ["../lib/*"]
+    },
+
     /* Linting */
     "strict": true
   },
