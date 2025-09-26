@@ -1,4 +1,4 @@
-import {i18n} from 'hub-dashboard-addons/dist/localization';
+import {i18n} from '@lib/i18n/i18n';
 
 function getDefaultMessage() {
   return i18n('Oops! Something went wrong...');

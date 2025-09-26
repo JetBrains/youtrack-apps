@@ -36,14 +36,6 @@ msgstr ""
 msgid "Issue"
 msgstr ""
 
-#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
-msgid "January|February|March|April|May|June|July|August|September|October|November|December"
-msgstr ""
-
-#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
-msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
-msgstr ""
-
 #: src/widgets/documents-list-widget/components/article-list/article-list.tsx:84
 msgid "No articles found"
 msgstr ""
@@ -68,18 +60,6 @@ msgstr ""
 msgid "Show more"
 msgstr ""
 
-#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
-msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
-msgstr ""
-
-#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
-msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
-msgstr ""
-
 #: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:102
 msgid "Tab name"
-msgstr ""
-
-#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
-msgid "am|pm"
 msgstr ""

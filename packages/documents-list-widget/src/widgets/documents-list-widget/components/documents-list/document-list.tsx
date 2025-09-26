@@ -4,9 +4,9 @@ import Link from '@jetbrains/ring-ui-built/components/link/link';
 import EmptyWidget, {EmptyWidgetFaces} from '../../hub-widget-ui/empty-widget/empty-widget';
 import type {Issue} from '../issue-list/types/issue-types';
 import type {Article} from '../article-list/article-line/article-line';
-import {i18n} from '@jetbrains/youtrack-apps-tools/dist/lib/i18n/i18n';
-
+import {i18n} from '@lib/i18n/i18n';
 import styles from './documents-list.module.css';
+
 
 type DocumentType = Issue | Article;
 

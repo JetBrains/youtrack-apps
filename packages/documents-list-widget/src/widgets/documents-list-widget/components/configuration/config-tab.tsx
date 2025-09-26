@@ -11,9 +11,9 @@ import type {
 } from '@jetbrains/ring-ui-built/components/query-assist/query-assist';
 import {useDebounce} from '../../hooks/useDebounce';
 import {useWidgetContext} from '../../widget-context.ts';
-import {i18n} from '@jetbrains/youtrack-apps-tools/dist/lib/i18n/i18n';
-
+import {i18n} from '@lib/i18n/i18n';
 import styles from './config.module.css';
+
 
 export type DocumentType = 'Issue' | 'Article';
 
