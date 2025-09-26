@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 // Plugin to handle .po files similar to angular-gettext-loader
 export const poTransformPlugin = () => {
@@ -29,13 +30,23 @@ export const poTransformPlugin = () => {
     return translations
   }
 
+  const extractLocaleFromPath = (filePath: string): string | null => {
+    // Extract locale from filename (e.g., '/path/to/youtrack-issues-list-widget_ru.po' -> 'ru')
+    const match = path.basename(filePath).match(/^([^_]+)_(\w+)\.po$/)
+    return match ? match[2] : null
+  }
+
   return {
     name: 'po-transform',
     load(id: string): string | null {
       if (id.endsWith('.po')) {
         const content = fs.readFileSync(id, 'utf-8')
         const translations = parsePoFile(content)
-        return `export default ${JSON.stringify(translations)};`
+        const locale = extractLocaleFromPath(id)
+
+        // Export both the translations and the extracted locale
+        return `export default ${JSON.stringify(translations)};
+export const locale = ${JSON.stringify(locale)};`
       }
       return null
     }
