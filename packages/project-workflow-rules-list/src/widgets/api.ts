@@ -5,22 +5,23 @@ export class API {
   constructor(private host: HostAPI) {}
 
   getWorkflowRules(): Promise<PluggableObjectUsage[]> {
-    const fields = 'id,enabled,priority,isBroken,' +
+    const fields = 'id,enabled,priority,isBroken,errors,' +
       'pluggableObject(id,name,title,typeAlias),' +
       'configuration(isActive,enabled,missingRequiredSettings,' +
-      'app(id,name,title,icon,globalConfig(enabled,missingRequiredSettings)))';
+      'app(id,name,title,icon,autoAttach,globalConfig(enabled,missingRequiredSettings))),' +
+      'problems(message)';
     const projectId = YTApp.entity?.id;
     return this.host.fetchYouTrack<PluggableObjectUsage[]>(
       `admin/projects/${projectId}/pluggableObjectUsages`,
       {
-        query: { fields }
+        query: { fields, '$top': -1 }
       }
     );
   }
 
-  updateWorkflowRuleEnabled(ruleId: string, enabled: boolean): Promise<void> {
+  updateWorkflowRuleEnabled(ruleId: string, enabled: boolean): Promise<{errors?: string[]}> {
     const projectId = YTApp.entity?.id;
-    return this.host.fetchYouTrack(
+    return this.host.fetchYouTrack<{errors?: string[]}>(
       `admin/projects/${projectId}/pluggableObjectUsages/${ruleId}`,
       {
         method: "POST",

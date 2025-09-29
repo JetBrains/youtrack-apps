@@ -13,6 +13,7 @@ export interface App {
   name: string;
   icon: string | null;
   title: string;
+  autoAttach?: boolean;
   globalConfig: GlobalConfig;
   $type: string;
 }
@@ -33,12 +34,20 @@ export interface PluggableObject {
   $type: string;
 }
 
+export interface Problem {
+  message: string;
+}
+
 export interface PluggableObjectUsage {
   id: string;
   isBroken: boolean;
   enabled: boolean;
   priority: number;
+  autoAttach: boolean;
   pluggableObject: PluggableObject;
   configuration: Configuration;
+  problems?: Problem[];
+  errors?: string[];
+  lastError?: string;
   $type: string;
 }
