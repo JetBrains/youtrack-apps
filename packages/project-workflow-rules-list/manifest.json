@@ -1,0 +1,22 @@
+{
+  "name": "project-workflows",
+  "title": "Project Workflow Rules",
+  "description": "This app displays all project workflow rules within the project settings and allows reordering of on-change rule execution.",
+  "version": "0.0.1",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "vendor": {
+    "name": "JetBrains s.r.o",
+    "url": "https://www.jetbrains.com"
+  },
+  "icon": "icon.svg",
+  "widgets": [
+    {
+      "key": "all-workflow-rules",
+      "name": "Workflow Rules List",
+      "indexPath": "workflow-rules-widget/index.html",
+      "extensionPoint": "PROJECT_SETTINGS",
+      "description": "This widget appears as a tab in Project Settings and displays all workflow rules for the current project. Besides showing the rules 'Active' state, it allows users to reorder the execution of on-change rules.",
+      "iconPath": "workflow-rules-widget/widget-icon.svg"
+    }
+  ]
+}
