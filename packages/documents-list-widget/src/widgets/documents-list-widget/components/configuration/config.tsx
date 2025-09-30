@@ -6,7 +6,7 @@ import TabConfiguration from './config-tab';
 import ConfigurationForm from '../../hub-widget-ui/configuration-form/configuration-form';
 import RefreshPeriod from '../../hub-widget-ui/refresh-period/refresh-period';
 import {DocumentListTab, useTabsManager} from '../../hooks/useTabsManager';
-import {i18n} from '@jetbrains/youtrack-apps-tools/dist/lib/i18n/i18n';
+import {i18n} from '@lib/i18n/i18n';
 import httpErrorHandler from '../../hub-widget-ui/http-error-handler/http-error-handler';
 import {useWidgetContext} from '../../widget-context.ts';
 

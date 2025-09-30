@@ -4,8 +4,7 @@ import IssueLine from './issue-line/issue-line';
 import DocumentList from '../documents-list/document-list';
 import {COUNTER_DELAY_MS} from '../content/content';
 import {useWidgetContext} from '../../widget-context.ts';
-import {i18n} from '@jetbrains/youtrack-apps-tools/dist/lib/i18n/i18n';
-import {DEFAULT_DATE_FORMATS} from '../../api';
+import {i18n} from '@lib/i18n/i18n';import {DEFAULT_DATE_FORMATS} from '../../api';
 
 interface Props {
   tabId: string;
