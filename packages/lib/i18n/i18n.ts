@@ -144,8 +144,6 @@ type I18nFunction = {
 export const i18n = I18N_INSTANCE.translate.bind(I18N_INSTANCE) as I18nFunction;
 i18n.plural = I18N_INSTANCE.translatePlural.bind(I18N_INSTANCE);
 
-export const i18nTimeIdentifiers = {};
-
 // Declare fecha interface to avoid type errors
 interface FechaI18n {
   dayNamesShort: string[];
@@ -165,6 +163,7 @@ interface Fecha {
   masks: FechaMasks;
 }
 
+// @deprecated Use another date library
 export function configureFecha(fecha: Fecha): void {
   if (typeof fecha !== 'undefined') {
     fecha.i18n.dayNamesShort = i18n('Sun|Mon|Tue|Wed|Thu|Fri|Sat').split('|');
