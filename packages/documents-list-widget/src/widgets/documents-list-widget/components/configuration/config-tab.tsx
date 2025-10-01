@@ -13,6 +13,7 @@ import {useDebounce} from '../../hooks/useDebounce';
 import {useWidgetContext} from '../../widget-context.ts';
 import {i18n} from '@lib/i18n/i18n';
 import styles from './config.module.css';
+import classNames from 'classnames';
 
 
 export type DocumentType = 'Issue' | 'Article';
@@ -94,6 +95,9 @@ const TabConfiguration = (props: Props) => {
         [onSearchQueryChange],
     );
 
+    const emptyTabTitle = tabTitle.trim() === '' ? i18n('Tab name is required') : undefined;
+    const emptyQueryAssist = searchQuery.trim() === '';
+
     return (
       <div className={styles.tabConfigItem}>
         <Input
@@ -102,6 +106,7 @@ const TabConfiguration = (props: Props) => {
           label={i18n('Tab name')}
           placeholder={i18n('Enter a name for this tab')}
           value={tabTitle}
+          error={emptyTabTitle}
           onClear={onTabTitleClear}
           onChange={onTabTitleChange}
         />
@@ -117,8 +122,10 @@ const TabConfiguration = (props: Props) => {
           />
 
           <QueryAssist
+            autoOpen
             disabled={isLoading}
             query={searchQuery}
+            className={classNames({[styles.emptyQueryAssist]: emptyQueryAssist})}
             placeholder={i18n('Enter search request')}
             onChange={onQueryAssistInputChange}
             dataSource={queryAssistDataSource}
