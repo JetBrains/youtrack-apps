@@ -9,7 +9,7 @@
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "pack": "rm -rf workflow-rules-list-app.zip && cd dist && zip -r ../workflow-rules-list-app.zip .",
+    "pack": "rm -rf workflow-rules-list-app.zip && cd dist/ && bestzip ../workflow-rules-list-app.zip *",
     "upload": "npm run build && youtrack-app upload dist"
   },
   "dependencies": {
@@ -34,6 +34,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "bestzip": "^2.2.1",
     "eslint": "^9.13.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-react": "^7.34.1",
