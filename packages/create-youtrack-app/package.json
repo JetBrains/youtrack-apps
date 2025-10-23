@@ -1,6 +1,6 @@
 {
   "name": "@jetbrains/create-youtrack-app",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A scaffolding utility that generates a YouTrack app",
   "main": "index.js",
   "bin": {
@@ -26,7 +26,7 @@
     "generate:test": "bash scripts/generate-test-app.sh",
     "test": "bash scripts/generate-and-test.sh",
     "build": "echo 'no build required'",
-    "release:ci": "commit-and-tag-version --release-as patch && git push --follow-tags origin main && npm publish"
+    "release:ci": "bash scripts/release-ci.sh"
   },
   "author": "Andrey Skladchikov",
   "license": "Apache-2.0",

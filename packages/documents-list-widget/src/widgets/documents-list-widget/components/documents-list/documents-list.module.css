@@ -1,0 +1,3 @@
+.loadMore {
+    padding: var(--ring-unit) var(--ring-unit) var(--ring-unit) calc(3 * var(--ring-unit));
+}

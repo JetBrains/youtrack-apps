@@ -1,0 +1,30 @@
+.configurationButtonsPanel.configurationButtonsPanel {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  background-color: var(--ring-content-background-color);
+  box-shadow: 0 -6px 10px -8px var(--ring-borders-color);
+
+  padding: calc(var(--ring-unit) * 2) calc(var(--ring-unit) * 2) calc(var(--ring-unit) * 4);
+}
+
+.configurationWarning {
+  margin-top: -8px;
+  margin-bottom: 4px;
+
+  color: var(--ring-warning-color);
+}
+
+.configurationWarningIcon {
+  position: relative;
+  top: -2px;
+
+  margin-right: 6px;
+}
+
+.configurationFormContent {
+  padding: 0 calc(var(--ring-unit) * 2);
+  margin-bottom: 50px;
+}

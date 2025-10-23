@@ -1,0 +1,30 @@
+/* custom styles for .empty */
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-top: calc(var(--ring-unit) * 6);
+}
+
+.face {
+  white-space: nowrap;
+
+  color: var(--ring-text-color);
+
+  font-size: 19px;
+}
+
+.message {
+  margin-top: calc(var(--ring-unit) * 3);
+
+  color: var(--ring-text-color);
+
+  font-size: var(--ring-font-size);
+}
+
+.additionalContent {
+  margin-top: var(--ring-unit);
+
+  font-size: var(--ring-font-size-smaller);
+}

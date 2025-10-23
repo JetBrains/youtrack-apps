@@ -1,0 +1,32 @@
+@keyframes wave-animation {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.loader {
+    display: inline-block;
+    position: relative;
+    background-color: var(--ring-tag-background-color);
+    border-radius: var(--ring-border-radius);
+    overflow: hidden;
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+                to right,
+                rgba(255, 255, 255, 0),
+                var(--ring-content-background-color),
+                rgba(255, 255, 255, 0)
+        );
+        animation: wave-animation 2000ms infinite;
+    }
+}

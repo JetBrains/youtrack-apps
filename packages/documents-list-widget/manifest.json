@@ -1,0 +1,27 @@
+{
+  "name": "documents-list",
+  "title": "Document List Widget",
+  "description": "Add customized lists of issues and articles to YouTrack dashboards. Display and filter information across one or multiple projects, and configure individual list views within each widget tab.",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://www.jetbrains.com"
+  },
+  "version": "1.0.2",
+  "icon": "icon.svg",
+  "widgets": [
+    {
+      "key": "documents-list",
+      "name": "Document List Widget",
+      "indexPath": "documents-list-widget/index.html",
+      "extensionPoint": "DASHBOARD_WIDGET",
+      "iconPath": "documents-list-widget/widget-icon.svg",
+      "settingsSchemaPath": "documents-list-widget/settings.json",
+      "description": "Displays lists of issues and articles on customizable tabs.",
+      "defaultDimensions": {
+        "height": "2fr",
+        "width": "4fr"
+      }
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: a7446adbb853c41eeb8eaf77c95f351b\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: a7446adbb853c41eeb8eaf77c95f351b\n"
+"X-Crowdin-Project-ID: 137\n"
+"X-Crowdin-Language: ja\n"
+"X-Crowdin-File: /widgets/documents-list-widget/default.pot\n"
+"X-Crowdin-File-ID: 1172881\n"
+"Language-Team: Japanese\n"
+"Language: ja_JP\n"
+"PO-Revision-Date: 2025-10-22 11:16\n"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:131
+msgid "Add another tab"
+msgstr "別のタブを追加"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:62
+msgid "Article"
+msgstr "記事"
+
+#: src/widgets/documents-list-widget/components/documents-list-widget.tsx:56
+msgid "Document List"
+msgstr "ドキュメントリスト"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:111
+msgid "Document type"
+msgstr "ドキュメントタイプ"
+
+#: src/widgets/documents-list-widget/components/documents-list/document-list.tsx:53
+msgid "Edit search query"
+msgstr "検索クエリの編集"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:103
+msgid "Enter a name for this tab"
+msgstr "このタブの名前を入力してください"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:122
+msgid "Enter search request"
+msgstr "検索リクエストを入力"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:61
+msgid "Issue"
+msgstr "課題"
+
+#: src/widgets/documents-list-widget/components/article-list/article-list.tsx:84
+msgid "No articles found"
+msgstr "記事が見つかりません"
+
+#: src/widgets/documents-list-widget/components/issue-list/issue-list.tsx:109
+msgid "No issues found"
+msgstr "課題が見つかりません"
+
+#: src/widgets/documents-list-widget/hub-widget-ui/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "不明なエラーが発生しました..."
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:138
+msgid "Remove this tab"
+msgstr "このタブを除去"
+
+#: src/widgets/documents-list-widget/components/configuration/config.tsx:100
+msgid "Set a custom title for this widget (optional)"
+msgstr "このウィジェットのカスタムタイトルを設定 (省略可)"
+
+#: src/widgets/documents-list-widget/components/documents-list/document-list.tsx:71
+msgid "Show more"
+msgstr "その他を表示"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:102
+msgid "Tab name"
+msgstr "タブ名"
+
