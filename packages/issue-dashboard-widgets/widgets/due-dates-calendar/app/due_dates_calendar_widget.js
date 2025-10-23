@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable complexity */
 /* eslint-disable react/no-access-state-in-setstate */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -205,7 +207,6 @@ class DueDatesCalendarWidget extends React.Component {
     const refreshPeriod =
           this.props.configWrapper.getFieldValue('refreshPeriod');
     const title = this.props.configWrapper.getFieldValue('title');
-    const date = this.props.configWrapper.getFieldValue('date');
     const view = this.props.configWrapper.getFieldValue('view');
 
 
@@ -616,7 +617,7 @@ class DueDatesCalendarWidget extends React.Component {
     }
   };
 
-  moveEvent = async ({event, start, end}) => {
+  moveEvent = async ({event, start}) => {
     const {events} = this.state;
     const prevEvents = events;
     //calculate correct end to avoid issue with event prolongation on drag
@@ -633,7 +634,7 @@ class DueDatesCalendarWidget extends React.Component {
 
     try {
       // update start date
-      const newStartTime = this.state.isDateAndTime? start.getTime() : toUtcMidday(start);
+      const newStartTime = this.state.isDateAndTime ? start.getTime() : toUtcMidday(start);
       await updateIssueScheduleField(
         this.fetchYouTrack,
         event.dbIssueId,
