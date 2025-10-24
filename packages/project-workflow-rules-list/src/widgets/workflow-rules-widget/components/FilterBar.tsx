@@ -33,7 +33,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           id="workflow-rules-filter"
           className="filter-bar__input"
           type="text"
-          placeholder="Filter rules (e.g. group: action and autoAttach: true)"
+          placeholder="Filter rules by name or attribute, like &quot;group: action&quot; or &quot;autoAttach: true&quot;"
           value={filterQuery}
           onChange={onFilterChange}
         />
@@ -48,7 +48,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </Tooltip>
       </div>
     </div>
-    <div className="filter-bar__presets" role="group" aria-label="Filter presets">
+    <div className="filter-bar__presets" role="group" aria-label="Predefined filters">
       {presets.map((preset) => {
         const isActive = activePresetId === preset.id;
         return (
