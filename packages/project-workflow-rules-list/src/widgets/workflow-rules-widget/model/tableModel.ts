@@ -41,7 +41,7 @@ export const getGroupTitle = (groupName: GroupKey): string => {
   const titles: Record<GroupKey, string> = {
     "on-change": "On-Change Rules",
     "on-schedule": "On-Schedule Rules",
-    statemachine: "State Machine Rules",
+    statemachine: "State-Machine Rules",
     action: "Action Rules",
   };
   return titles[groupName];
@@ -388,16 +388,16 @@ const calculateActiveStatus = (rule: PluggableObjectUsage) => {
 const collectActiveIssues = (status: ReturnType<typeof calculateActiveStatus>) => {
   const issues = [] as string[];
   if (!status.enabled) {
-    issues.push("Rule is disabled");
+    issues.push("Rule is inactive");
   }
   if (!status.notIsBroken) {
     issues.push("Rule requirements are not met");
   }
   if (!status.configEnabled) {
-    issues.push("App is disabled in Project App Settings");
+    issues.push("App is deactivated in the project settings");
   }
   if (!status.notConfigMissingRequiredSettings) {
-    issues.push("Missing required settings in Project App Settings");
+    issues.push("App settings required at the project level have not been set");
   }
   return issues;
 };
@@ -405,10 +405,10 @@ const collectActiveIssues = (status: ReturnType<typeof calculateActiveStatus>) =
 const collectGlobalIssues = (status: ReturnType<typeof calculateActiveStatus>) => {
   const issues = [] as string[];
   if (!status.globalConfigEnabled) {
-    issues.push("App is disabled in App Settings");
+    issues.push("App is deactivated at the global level");
   }
   if (!status.notGlobalConfigMissingRequiredSettings) {
-    issues.push("Missing required App Settings");
+    issues.push("App settings required at the global level have not been set");
   }
   return issues;
 };

@@ -165,15 +165,15 @@ const RuleCellsComponent: React.FC<RuleCellsProps> = ({
       <div className="rules-grid__cell inlineActionsColumn">
         <Button
           short
-          title="Move to highest priority"
-          aria-label={`Move ${item.rule} to highest priority`}
+          title="Set as highest priority"
+          aria-label={`Set the ${item.rule} rule as the highest priority`}
           onClick={() => onMoveToTop(item.id)}
           icon={MOVE_ORDER_TOP_GLYPH}
         />
         <Button
           short
-          title="Move to lowest priority"
-          aria-label={`Move ${item.rule} to lowest priority`}
+          title="Set as lowest priority"
+          aria-label={`Set the ${item.rule} rule as the lowest priority`}
           onClick={() => onMoveToBottom(item.id)}
           icon={MOVE_ORDER_BOTTOM_GLYPH}
         />
@@ -242,7 +242,7 @@ const SortableRuleRowComponent: React.FC<SortableRuleRowProps> = (props) => {
             <Button
               icon={dragIcon}
               short
-              title="Drag to reorder rule execution priority"
+              title="Drag to change priority"
               disabled={!dragEnabled}
             />
           </span>
@@ -335,7 +335,7 @@ const renderPriorityHeader = (
   <div className="rules-grid__cell priorityColumn">
     <div className="priorityHeader">
       {renderSortButton(groupName, "priority", "Priority", sortState, onSort)}
-      <Tooltip title="On-change rules are executed according to their priority. Higher priority rules are executed first.">
+      <Tooltip title="On-change rules run according to their priority. Rules with higher priority values run before rules with lower priority.">
         <Button icon={infoIcon} short iconSize={14} title="Priority help" />
       </Tooltip>
     </div>
@@ -358,7 +358,7 @@ const renderHeader = (
       {renderSortButton(groupName, "active", "Active", sortState, onSort)}
     </div>
     <div className="rules-grid__cell autoAttachColumn">
-      {renderSortButton(groupName, "autoAttach", "Auto Attach", sortState, onSort)}
+      {renderSortButton(groupName, "autoAttach", "Auto-Attached", sortState, onSort)}
     </div>
     <div className="rules-grid__cell enabledColumn">
       {renderSortButton(groupName, "enabled", "Enabled", sortState, onSort)}
