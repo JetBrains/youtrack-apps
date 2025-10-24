@@ -7,7 +7,7 @@
     "name": "JetBrains s.r.o.",
     "url": "https://www.jetbrains.com"
   },
-  "version": "1.0.2",
+  "version": "1.0.3",
   "icon": "icon.svg",
   "widgets": [
     {
