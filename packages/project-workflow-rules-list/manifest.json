@@ -2,7 +2,7 @@
   "name": "project-workflows",
   "title": "Workflow Rule Manager",
   "description": "This app helps you manage workflow rules in your projects, all in one place:\n\n* Set the order for running on-change rules (requires YouTrack version 2025.3 or later).\n* Review rule requirement errors.\n* Activate and deactivate rules directly in the list.\n* Open rules in the built-in JavaScript editor.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "$schema": "https://json.schemastore.org/youtrack-app.json",
   "vendor": {
     "name": "JetBrains s.r.o",
