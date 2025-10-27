@@ -9,6 +9,9 @@
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
+    "release:bump-version": "commit-and-tag-version --release-as patch --bumpFiles manifest.json --packageFiles manifest.json",
+    "release:ci": "npm run release:bump-version && npm run build && npm run pack && npm run upload:marketplace && git push --follow-tags origin main",
+    "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer $pluginsRepositoryToken\" -F \"pluginId=$pluginRepositoryID\" -F \"file=@workflow-rules-list-app.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin",
     "pack": "rm -rf workflow-rules-list-app.zip && cd dist/ && bestzip ../workflow-rules-list-app.zip *",
     "upload": "npm run build && youtrack-app upload dist"
   },
