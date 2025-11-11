@@ -58,19 +58,34 @@ function runHygen(hygenArgs = argv) {
     message: 'Choose your development approach:',
     choices: [
       {
-        name: 'standard',
-        message: 'Standard (Basic widgets and backend.js)',
+        name: 'js',
+        message: 'JavaScript (Basic widgets and backend.js)',
         hint: 'Simple approach with traditional backend.js file'
       },
       {
-        name: 'enhanced-dx',
-        message: 'Enhanced DX (TypeScript backend with file-based routing)',
+        name: 'ts',
+        message: 'TypeScript (Enhanced DX with file-based routing)',
         hint: 'Advanced approach with type-safe APIs, file-based routing, and Zod validation'
       }
     ]
   }).run();
 
-  const appRes = await runHygen(["init", appType, ...argv]);
+  const { Input } = require("enquirer");
+  const appName = await new Input({
+    name: 'appName',
+    message: 'Enter your app name:',
+    initial: 'my-youtrack-app'
+  }).run();
+
+  // Auto-generate other required parameters
+  const title = appName.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  const description = `A YouTrack app created with ${appType === 'ts' ? 'TypeScript' : 'JavaScript'}`;
+  const vendor = 'VendorName';
+  const vendorUrl = 'https://vendor.com';
+
+  // Map js/ts to actual template names
+  const templateName = appType === 'js' ? 'vite-app' : 'enhanced-dx';
+  const appRes = await runHygen(["init", templateName, "--appName", appName, "--title", title, "--description", description, "--vendor", vendor, "--vendorUrl", vendorUrl, ...argv]);
   if (!appRes.success) {
     return;
   }
@@ -78,21 +93,12 @@ function runHygen(hygenArgs = argv) {
   console.log(`
 ====================================
 
-Let's add your first widget!
-To add more widgets later, run the following command: ${chalk.magenta('npx @jetbrains/create-youtrack-app widget add')}
+Your enhanced-dx app has been created with demo examples!
+To add more widgets later, run: ${chalk.magenta('npx @jetbrains/create-youtrack-app widget add')}
+To add app settings later, run: ${chalk.magenta('npx @jetbrains/create-youtrack-app settings init')}
 
 ====================================
   `);
-  await runHygen(["widget", "add", ...argv]);
-
-  if (
-    await new Confirm({
-      initial: true,
-      message: `Would you like your app to have its own settings (to define these settings later, run ${chalk.magenta('npx @jetbrains/create-youtrack-app settings init')})`,
-    }).run()
-  ) {
-    await runHygen(["settings", "init", ...argv]);
-  }
 
   console.log(`
 ${chalk.bold('======= Your app has been created! =======')}
@@ -104,8 +110,8 @@ Please wait for just a moment. Dependencies are being installed by npm ${chalk.m
   installProcess.stdout.pipe(process.stdout);
   await installProcess;
 
-  const buildCommand = appType === 'enhanced-dx' ? 'npm run build' : 'npm run build';
-  const additionalInfo = appType === 'enhanced-dx' ? `
+  const buildCommand = 'npm run build';
+  const additionalInfo = appType === 'ts' ? `
 
 ${chalk.bold('🚀 Enhanced DX Features:')}
 - Type-safe API endpoints with automatic type generation
