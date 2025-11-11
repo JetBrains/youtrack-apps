@@ -12,6 +12,9 @@ export default defineConfig({
     build: {
         outDir: './dist',
         emptyOutDir: true, // empty dist dir, as backend build runs first
+        // Disable minification by default for easier debugging in workflow editor
+        // Enable minification by setting VITE_MINIFY=true: VITE_MINIFY=true vite build
+        minify: process.env.VITE_MINIFY === 'true',
     lib: {
         entry: [],
         name: 'router',

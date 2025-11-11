@@ -66,22 +66,21 @@ export default function youtrackRouter(): Plugin {
             const relativePath = path.relative(routerRoot, route.filePath);
             const parsedPath = path.parse(relativePath);
             const fileName = path.join(parsedPath.dir, parsedPath.name).replace(/[\\/]/g, '-');
-            return `{
-              method: "${route.method}",
-              path: "${route.path}",
-              scope: "${route.scope}",
-              handle: require("./${fileName}.js")
-            }`;
+            return `    {
+            method: "${route.method}",
+            path: "${route.path}",
+            scope: "${route.scope}",
+            handle: require("./${fileName}.js")
+        }`;
           }).join(',\n');
 
-          const fileContent = `
-            exports.httpHandler = {
-              endpoints: [
-                ${endpoints}
-              ],
-              requirements: require("./requirements.js").requirements
-            };
-          `;
+          const fileContent = `exports.httpHandler = {
+    endpoints: [
+    ${endpoints}
+    ],
+    requirements: require("./requirements.js").requirements
+};
+`;
 
           this.emitFile({
             type: 'asset',

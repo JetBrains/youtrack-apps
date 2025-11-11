@@ -75,6 +75,9 @@ export default defineConfig({
     copyPublicDir: false,
     target: ["es2022"],
     assetsDir: "widgets/assets",
+    // Disable minification by default for easier debugging in workflow editor
+    // Enable minification by setting VITE_MINIFY=true: VITE_MINIFY=true vite build
+    minify: process.env.VITE_MINIFY === 'true',
     rollupOptions: {
       input: {
         // List every widget entry point here
