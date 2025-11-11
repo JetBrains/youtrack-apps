@@ -1,6 +1,7 @@
 {
   "name": "@jetbrains/youtrack-enhanced-dx-tools",
   "version": "0.0.1",
+  "type": "module",
   "description": "Enhanced DX tools and plugins for YouTrack apps with TypeScript support",
   "repository": {
     "type": "git",
@@ -8,9 +9,24 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./api": {
+      "types": "./dist/api/index.d.ts",
+      "default": "./dist/api/index.js"
+    },
+    "./youtrack-types": {
+      "types": "./youtrack-types.d.ts",
+      "default": "./youtrack-types.d.ts"
+    }
+  },
   "files": [
     "dist",
-    "templates"
+    "templates",
+    "youtrack-types.d.ts"
   ],
   "author": "JetBrains",
   "license": "Apache-2.0",

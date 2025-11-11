@@ -49,6 +49,7 @@ to: package.json
     "eslint-plugin-react-refresh": "^0.4.6",
     "globals": "^15.11.0",
     "nodemon": "^3.1.4",
+    "ts-to-zod": "^3.15.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.0.1",
     "vite": "^6.0.1",
