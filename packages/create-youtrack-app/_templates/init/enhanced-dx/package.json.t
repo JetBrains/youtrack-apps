@@ -19,7 +19,7 @@ to: package.json
     "pack": "rm -rf <%= appName %>.zip && npx --yes bestzip <%= appName %>.zip dist/*",
     "upload": "youtrack-app upload dist",
 
-    "upload-local": "youtrack-app upload dist --host http://localhost:8088/youtrack --token $YOUTRACK_TOKEN",
+    "upload-local": "set -a && source .env && set +a && youtrack-app upload dist --host $YOUTRACK_HOST --token $YOUTRACK_TOKEN",
     "update": "npm run build && npm run upload-local",
     "watch:build": "nodemon --watch src --ext ts,tsx,css,json,js --ignore 'src/api/api.d.ts' --ignore 'src/api/api.zod.ts' --exec 'npm run build:nolint && npm run upload-local'",
     "watch-update": "npm run watch:build"
