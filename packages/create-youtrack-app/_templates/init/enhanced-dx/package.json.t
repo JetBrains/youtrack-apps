@@ -21,8 +21,7 @@ to: package.json
 
     "upload-local": "set -a && source .env && set +a && youtrack-app upload dist --host $YOUTRACK_HOST --token $YOUTRACK_TOKEN",
     "update": "npm run build && npm run upload-local",
-    "watch:build": "nodemon --watch src --ext ts,tsx,css,json,js --ignore 'src/api/api.d.ts' --ignore 'src/api/api.zod.ts' --exec 'npm run build:nolint && npm run upload-local'",
-    "watch-update": "npm run watch:build"
+    "watch:build": "nodemon --watch src --ext ts,tsx,css,json,js --ignore 'src/api/api.d.ts' --ignore 'src/api/api.zod.ts' --exec 'npm run build:nolint && npm run upload-local'"
   },
   "dependencies": {
     "@jetbrains/ring-ui-built": "^7.0.8",
