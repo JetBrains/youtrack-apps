@@ -1,0 +1,39 @@
+{
+  "name": "@jetbrains/youtrack-enhanced-dx-tools",
+  "version": "0.0.1",
+  "description": "Enhanced DX tools and plugins for YouTrack apps with TypeScript support",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JetBrains/youtrack-apps.git"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "author": "JetBrains",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.3.0",
+    "ts-morph": "^26.0.0",
+    "ts-to-zod": "^3.15.0",
+    "vite": "^6.0.1",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^24.0.14",
+    "typescript": "^5.7.2"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint src --ext .ts",
+    "test": "echo 'no tests'"
+  },
+  "engines": {
+    "node": ">=18.20.4"
+  }
+}

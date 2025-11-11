@@ -33,6 +33,19 @@ src/
 └── app-id.ts             # App identifier
 ```
 
+## 🛠 Enhanced DX Tools
+
+This app uses `@jetbrains/youtrack-enhanced-dx-tools` package which provides:
+
+- **Vite plugins** for automatic API generation and routing
+- **TypeScript utilities** for type-safe backend development
+- **Zod integration** for runtime validation
+
+The tools are automatically configured and ready to use. You can update them with:
+```bash
+npm update @jetbrains/youtrack-enhanced-dx-tools
+```
+
 ## 🛠 Development Workflow
 
 ### 1. Creating API Endpoints
@@ -63,7 +76,7 @@ export type ProjectSettingsRes = {
 
 export default function handle(ctx: CtxGet<ProjectSettingsReq, ProjectSettingsRes>): void {
     const { projectId } = ctx.request.query;
-    
+
     ctx.response.json({
         projectId,
         projectName: ctx.project.name || 'Unknown Project',

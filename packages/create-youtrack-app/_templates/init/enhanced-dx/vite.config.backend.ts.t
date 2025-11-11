@@ -3,8 +3,7 @@ to: vite.config.backend.ts
 ---
 import {defineConfig} from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import youtrackApiGenerator from './vite-plugin-youtrack-api-generator';
-import youtrackRouter from './vite-plugin-youtrack-router';
+import { youtrackApiGenerator, youtrackRouter } from '@jetbrains/youtrack-enhanced-dx-tools';
 import path from 'node:path';
 
 
