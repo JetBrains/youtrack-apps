@@ -42,7 +42,7 @@ ${chalk.bold('Features:')}
   - ${chalk.magenta('const host = await YTApp.register(); const api = createApi(host);')}
   - ${chalk.magenta('const result = await api.project.demo.GET({ projectId: "ABC", message: "hello" });')}
 
-• ${chalk.bold('Zod Validation:')} Runtime validation in development mode. Use ${chalk.magenta('NODE_ENV=development npm run watch:build')}
+• ${chalk.bold('Zod Validation:')} Runtime validation in development mode. Use ${chalk.magenta('npm run watch:build')}
 
 • ${chalk.bold('Vite-powered:')} Custom plugins handle routing and type generation
   - api plugin: ${chalk.bold('vite-plugin-youtrack-api-generator.ts')}
