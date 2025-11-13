@@ -61,7 +61,8 @@ const FIELD_ALIASES: Record<string, string> = {
   name: "rule",
   title: "rule",
   app: "app",
-  appname: "appName",
+  appname: "app",
+  appName: "app",
   appid: "appId",
   id: "id",
   priority: "priority",
@@ -238,8 +239,6 @@ const TEXT_FIELDS: Map<string, (row: TableRowData) => string> = new Map([
   ["rule", (row) => row.rule],
   ["title", (row) => row.rule],
   ["name", (row) => row.rule],
-  ["app", (row) => row.app],
-  ["appName", (row) => row.appName],
   ["appId", (row) => row.appId],
   ["appid", (row) => row.appId],
   ["id", (row) => row.id],
@@ -258,9 +257,16 @@ const matchesText = (row: TableRowData, value: string | boolean | number) =>
   matchStringIncludes(row.app, value) ||
   matchStringIncludes(row.id, value);
 
+const matchesApp = (row: TableRowData, value: string | boolean | number) =>
+  matchStringIncludes(row.appName, value) || matchStringIncludes(row.appTitle, value);
+
 const evaluateToken = (row: TableRowData, token: FilterToken, groupName: GroupKey) => {
   if (token.field === "group") {
     return matchStringIncludes(groupName, token.value);
+  }
+
+  if (token.field === "app") {
+    return matchesApp(row, token.value);
   }
 
   const textResolver = TEXT_FIELDS.get(token.field);
