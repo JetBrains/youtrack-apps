@@ -61,7 +61,8 @@ const FIELD_ALIASES: Record<string, string> = {
   name: "rule",
   title: "rule",
   app: "app",
-  appname: "appName",
+  appname: "app",
+  appName: "app",
   appid: "appId",
   id: "id",
   priority: "priority",
@@ -238,8 +239,6 @@ const TEXT_FIELDS: Map<string, (row: TableRowData) => string> = new Map([
   ["rule", (row) => row.rule],
   ["title", (row) => row.rule],
   ["name", (row) => row.rule],
-  ["app", (row) => row.app],
-  ["appName", (row) => row.appName],
   ["appId", (row) => row.appId],
   ["appid", (row) => row.appId],
   ["id", (row) => row.id],
@@ -258,9 +257,16 @@ const matchesText = (row: TableRowData, value: string | boolean | number) =>
   matchStringIncludes(row.app, value) ||
   matchStringIncludes(row.id, value);
 
+const matchesApp = (row: TableRowData, value: string | boolean | number) =>
+  matchStringIncludes(row.appName, value) || matchStringIncludes(row.appTitle, value);
+
 const evaluateToken = (row: TableRowData, token: FilterToken, groupName: GroupKey) => {
   if (token.field === "group") {
     return matchStringIncludes(groupName, token.value);
+  }
+
+  if (token.field === "app") {
+    return matchesApp(row, token.value);
   }
 
   const textResolver = TEXT_FIELDS.get(token.field);
@@ -308,29 +314,29 @@ export const evaluateFilterQuery = (rows: TableRowData[], groupName: GroupKey, q
   return rows.filter((row) => buildEvaluationChain(row, tokens, groupName));
 };
 
-const resolveRuleTitle = (rule: PluggableObjectUsage) =>
-  pickFirstString(rule.pluggableObject?.title, rule.pluggableObject?.name, rule.id) ?? rule.id;
+const resolveRuleTitle = (ruleUsage: PluggableObjectUsage) =>
+  pickFirstString(ruleUsage.pluggableObject?.title, ruleUsage.pluggableObject?.name, ruleUsage.id) ?? ruleUsage.id;
 
-const resolveAppTitle = (rule: PluggableObjectUsage) =>
-  pickFirstString(rule.configuration?.app?.title, rule.configuration?.app?.name) ?? "";
+const resolveAppTitle = (ruleUsage: PluggableObjectUsage) =>
+  pickFirstString(ruleUsage.configuration?.app?.title, ruleUsage.configuration?.app?.name) ?? "";
 
-const resolveAppName = (rule: PluggableObjectUsage) => rule.configuration?.app?.name ?? "";
+const resolveAppName = (ruleUsage: PluggableObjectUsage) => ruleUsage.configuration?.app?.name ?? "";
 
-const resolveWorkflowRuleName = (rule: PluggableObjectUsage) =>
-  pickFirstString(rule.pluggableObject?.name, rule.pluggableObject?.title, rule.id) ?? rule.id;
+const resolveWorkflowRuleName = (ruleUsage: PluggableObjectUsage) =>
+  pickFirstString(ruleUsage.pluggableObject?.name, ruleUsage.pluggableObject?.title, ruleUsage.id) ?? ruleUsage.id;
 
-const resolveRuleSubtitle = (rule: PluggableObjectUsage, appName: string, appTitle: string) => {
+const resolveRuleSubtitle = (ruleUsage: PluggableObjectUsage, appName: string, appTitle: string) => {
   const workflowName = pickFirstString(appName, appTitle) ?? "";
-  const ruleName = resolveWorkflowRuleName(rule);
+  const ruleName = resolveWorkflowRuleName(ruleUsage);
   const parts = [workflowName, ruleName].filter((value) => value && value.length > 0) as string[];
-  return parts.length > 0 ? parts.join("/") : rule.id;
+  return parts.length > 0 ? parts.join("/") : ruleUsage.id;
 };
 
-const buildRuleMeta = (rule: PluggableObjectUsage) => {
-  const appTitle = resolveAppTitle(rule);
-  const appName = resolveAppName(rule);
-  const ruleTitle = resolveRuleTitle(rule);
-  const ruleSubtitle = resolveRuleSubtitle(rule, appName, appTitle);
+const buildRuleMeta = (ruleUsage: PluggableObjectUsage) => {
+  const appTitle = resolveAppTitle(ruleUsage);
+  const appName = resolveAppName(ruleUsage);
+  const ruleTitle = resolveRuleTitle(ruleUsage);
+  const ruleSubtitle = resolveRuleSubtitle(ruleUsage, appName, appTitle);
   return {
     ruleTitle,
     ruleSubtitle,
@@ -357,20 +363,20 @@ const compareBoolean = (a: boolean | null | undefined, b: boolean | null | undef
   return ascending ? normalizedA - normalizedB : normalizedB - normalizedA;
 };
 
-const isRuleEnabled = (rule: PluggableObjectUsage) => rule.enabled;
-const isRuleHealthy = (rule: PluggableObjectUsage) => !rule.isBroken;
-const isProjectAppEnabled = (rule: PluggableObjectUsage) => rule.configuration.enabled;
-const hasProjectAppSettings = (rule: PluggableObjectUsage) => !rule.configuration.missingRequiredSettings;
-const isGlobalAppEnabled = (rule: PluggableObjectUsage) => rule.configuration.app.globalConfig.enabled;
-const hasGlobalAppSettings = (rule: PluggableObjectUsage) => !rule.configuration.app.globalConfig.missingRequiredSettings;
+const isRuleEnabled = (ruleUsage: PluggableObjectUsage) => ruleUsage.enabled;
+const isRuleHealthy = (ruleUsage: PluggableObjectUsage) => !ruleUsage.isBroken;
+const isProjectAppEnabled = (ruleUsage: PluggableObjectUsage) => ruleUsage.configuration.enabled;
+const hasProjectAppSettings = (ruleUsage: PluggableObjectUsage) => !ruleUsage.configuration.missingRequiredSettings;
+const isGlobalAppEnabled = (ruleUsage: PluggableObjectUsage) => ruleUsage.configuration.app.globalConfig.enabled;
+const hasGlobalAppSettings = (ruleUsage: PluggableObjectUsage) => !ruleUsage.configuration.app.globalConfig.missingRequiredSettings;
 
-const calculateActiveStatus = (rule: PluggableObjectUsage) => {
-  const enabled = isRuleEnabled(rule);
-  const healthy = isRuleHealthy(rule);
-  const projectEnabled = isProjectAppEnabled(rule);
-  const projectConfigured = hasProjectAppSettings(rule);
-  const globalEnabled = isGlobalAppEnabled(rule);
-  const globalConfigured = hasGlobalAppSettings(rule);
+const calculateActiveStatus = (ruleUsage: PluggableObjectUsage) => {
+  const enabled = isRuleEnabled(ruleUsage);
+  const healthy = isRuleHealthy(ruleUsage);
+  const projectEnabled = isProjectAppEnabled(ruleUsage);
+  const projectConfigured = hasProjectAppSettings(ruleUsage);
+  const globalEnabled = isGlobalAppEnabled(ruleUsage);
+  const globalConfigured = hasGlobalAppSettings(ruleUsage);
 
   const isActive = enabled && healthy && projectEnabled && projectConfigured && globalEnabled && globalConfigured;
 
@@ -420,24 +426,24 @@ const generateActiveTooltip = (status: ReturnType<typeof calculateActiveStatus>)
   return [...collectActiveIssues(status), ...collectGlobalIssues(status)];
 };
 
-const resolveErrors = (rule: PluggableObjectUsage) => {
-  const inlineErrors = rule.errors ?? [];
-  const problemMessages = rule.problems?.map((problem) => problem.message) ?? [];
+const resolveErrors = (ruleUsage: PluggableObjectUsage) => {
+  const inlineErrors = ruleUsage.errors ?? [];
+  const problemMessages = ruleUsage.problems?.map((problem) => problem.message) ?? [];
   return [...inlineErrors, ...problemMessages];
 };
 
 const normalizePriority = (value: number | null | undefined) =>
   typeof value === "number" && Number.isFinite(value) ? value : 0;
 
-const mapRow = (rule: PluggableObjectUsage): TableRowData => {
-  const { ruleTitle, ruleSubtitle, appTitle, appName } = buildRuleMeta(rule);
-  const activeStatus = calculateActiveStatus(rule);
+const mapRow = (ruleUsage: PluggableObjectUsage): TableRowData => {
+  const { ruleTitle, ruleSubtitle, appTitle, appName } = buildRuleMeta(ruleUsage);
+  const activeStatus = calculateActiveStatus(ruleUsage);
   const activeTooltip = generateActiveTooltip(activeStatus);
-  const isDisabled = !rule.enabled || !activeStatus.isActive;
-  const errors = resolveErrors(rule);
+  const isDisabled = !ruleUsage.enabled || !activeStatus.isActive;
+  const errors = resolveErrors(ruleUsage);
 
   return {
-    id: rule.id,
+    id: ruleUsage.pluggableObject?.id ?? ruleUsage.id,
     rule: ruleTitle,
     ruleSubtitle,
     app: appName,
@@ -445,22 +451,22 @@ const mapRow = (rule: PluggableObjectUsage): TableRowData => {
     appName,
     isDisabled,
     isActive: activeStatus.isActive,
-    enabled: rule.enabled,
-    isBroken: rule.isBroken,
-    configEnabled: rule.configuration.enabled,
-    configMissingRequiredSettings: rule.configuration.missingRequiredSettings,
-    globalConfigEnabled: rule.configuration.app.globalConfig.enabled,
-    globalConfigMissingRequiredSettings: rule.configuration.app.globalConfig.missingRequiredSettings,
+    enabled: ruleUsage.enabled,
+    isBroken: ruleUsage.isBroken,
+    configEnabled: ruleUsage.configuration.enabled,
+    configMissingRequiredSettings: ruleUsage.configuration.missingRequiredSettings,
+    globalConfigEnabled: ruleUsage.configuration.app.globalConfig.enabled,
+    globalConfigMissingRequiredSettings: ruleUsage.configuration.app.globalConfig.missingRequiredSettings,
     activeTooltip,
-    priority: normalizePriority(rule.priority),
-    appId: rule.configuration.app.id,
-    pluggableObjectId: rule.pluggableObject?.id ?? rule.id,
-    autoAttach: Boolean(rule.configuration?.app?.autoAttach),
+    priority: normalizePriority(ruleUsage.priority),
+    appId: ruleUsage.configuration.app.id,
+    pluggableObjectId: ruleUsage.pluggableObject?.id ?? ruleUsage.id,
+    autoAttach: Boolean(ruleUsage.configuration?.app?.autoAttach),
     errors,
   };
 };
 
-export const makeRowData = (rules: PluggableObjectUsage[]): TableRowData[] => rules.map(mapRow);
+export const makeRowData = (rulesUsages: PluggableObjectUsage[]): TableRowData[] => rulesUsages.map(mapRow);
 
 const ROW_COMPARATORS: Record<SortKey, (a: TableRowData, b: TableRowData, ascending: boolean) => number> = {
   priority: (a, b, asc) => compareNumbers(a.priority, b.priority, asc),
@@ -479,13 +485,13 @@ export const sortData = (data: TableRowData[], sort: { key: SortKey; order: Sort
   return [...data].sort((a, b) => comparator(a, b, ascending));
 };
 
-export const groupRulesByType = (rules: PluggableObjectUsage[]) => ({
-  "on-change": rules
-    .filter((rule) => rule.pluggableObject.typeAlias === "on-change")
+export const groupRulesByType = (rulesUsages: PluggableObjectUsage[]) => ({
+  "on-change": rulesUsages
+    .filter((ruleUsage) => ruleUsage.pluggableObject.typeAlias === "on-change")
     .sort((a, b) => normalizePriority(b.priority) - normalizePriority(a.priority)),
-  action: rules.filter((rule) => rule.pluggableObject.typeAlias === "action"),
-  "on-schedule": rules.filter((rule) => rule.pluggableObject.typeAlias === "on-schedule"),
-  statemachine: rules.filter((rule) => rule.pluggableObject.typeAlias === "statemachine"),
+  action: rulesUsages.filter((ruleUsage) => ruleUsage.pluggableObject.typeAlias === "action"),
+  "on-schedule": rulesUsages.filter((ruleUsage) => ruleUsage.pluggableObject.typeAlias === "on-schedule"),
+  statemachine: rulesUsages.filter((ruleUsage) => ruleUsage.pluggableObject.typeAlias === "statemachine"),
 });
 
 
