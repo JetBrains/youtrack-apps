@@ -115,7 +115,7 @@ const AppComponent: React.FunctionComponent = () => {
       <ul>
         <li><code>group: action and active: true</code></li>
         <li><code>autoAttach: false or enabled: true</code></li>
-        <li><code>-appname: scheduler</code></li>
+        <li><code>-app: app-name</code></li>
       </ul>
       <div>Supported keywords: group, rule, app, appid, id, priority, enabled, autoAttach, active.</div>
     </div>
