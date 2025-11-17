@@ -30,6 +30,31 @@ function serializeFieldValue(value) {
 }
 
 /**
+ * Checks if a built-in property has changed and returns the change details
+ * @param {Object} issue - The issue object
+ * @param {string} propName - Property name (summary, description)
+ * @returns {Object|null} Change details or null if not changed
+ */
+function checkBuiltInPropertyChange(issue, propName) {
+  try {
+    // Use issue.isChanged() for built-in properties
+    if (issue.isChanged && issue.isChanged(propName)) {
+      const oldValue = issue.oldValue(propName);
+      const newValue = issue[propName];
+      
+      return {
+        name: propName,
+        oldValue: String(oldValue || ''),
+        value: String(newValue || '')
+      };
+    }
+  } catch {
+    // Silently skip if not supported
+  }
+  return null;
+}
+
+/**
  * Collects all changed fields from an issue using YouTrack API
  * @param {Object} issue - The issue object
  * @returns {Array<Object>} Array of changed fields with name, oldValue, and value
@@ -37,6 +62,17 @@ function serializeFieldValue(value) {
 function collectChangedFields(issue) {
   const changedFields = [];
 
+  // Check built-in properties (summary, description) first
+  const builtInProperties = ['summary', 'description'];
+  for (let i = 0; i < builtInProperties.length; i++) {
+    const propName = builtInProperties[i];
+    const change = checkBuiltInPropertyChange(issue, propName);
+    if (change) {
+      changedFields.push(change);
+    }
+  }
+
+  // Check custom fields
   if (!issue.fields) {
     return changedFields;
   }
