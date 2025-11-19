@@ -74,7 +74,7 @@ export type ProjectSettingsRes = {
     settings: AppSettings;
 };
 
-export default function handle(ctx: CtxGet<ProjectSettingsReq, ProjectSettingsRes>): void {
+export default function handle(ctx: CtxGet<ProjectSettingsRes, ProjectSettingsReq>): void {
     const { projectId } = ctx.request.query;
 
     ctx.response.json({
@@ -153,8 +153,10 @@ Supported methods: `GET`, `POST`, `PUT`, `DELETE`
 
 ### Context Types
 
-- `CtxGet<Query, Response>` - For GET requests
-- `CtxPost<Body, Response>` - For POST requests
+- `CtxGet<Response, Query?>` - For GET requests (query is optional and last)
+- `CtxPost<Body, Response, Query?>` - For POST requests (query is optional and last)
+- `CtxPut<Body, Response, Query?>` - For PUT requests (query is optional and last)
+- `CtxDelete<Response, Query?>` - For DELETE requests (query is optional and last)
 
 ## 🚀 Deployment
 

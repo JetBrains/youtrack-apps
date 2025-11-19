@@ -25,7 +25,7 @@ export type ProjectDemoRes = {
     timestamp: number;
 };
 
-export default function handle(ctx: CtxGet<ProjectDemoReq, ProjectDemoRes>): void {
+export default function handle(ctx: CtxGet<ProjectDemoRes, ProjectDemoReq>): void {
     const message = ctx.request.getParameter('message') || 'Hello from project demo!';
     const project = ctx.project as Project;
 

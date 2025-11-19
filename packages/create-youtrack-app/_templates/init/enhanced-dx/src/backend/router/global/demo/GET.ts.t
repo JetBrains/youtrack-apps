@@ -11,7 +11,7 @@ export type HealthCheckRes = {
     version: string;
 };
 
-export default function handle(ctx: CtxGet<never, HealthCheckRes>): void {
+export default function handle(ctx: CtxGet<HealthCheckRes>): void {
     ctx.response.json({
         status: 'ok',
         timestamp: new Date().toISOString(),

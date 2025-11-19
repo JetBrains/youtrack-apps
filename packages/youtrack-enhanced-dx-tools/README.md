@@ -37,8 +37,9 @@ export default defineConfig({
 import { ExtractRPCFromHandler, CtxGet, CtxPost } from '@jetbrains/youtrack-enhanced-dx-tools';
 
 // Use the types in your backend handlers
-export const Handle: CtxGet<QueryType, ResponseType> = (ctx) => {
+export const Handle: CtxGet<ResponseType, QueryType> = (ctx) => {
   // Your handler logic
+  // Query is optional and comes last, so you can use: CtxGet<ResponseType>
 };
 ```
 
@@ -62,10 +63,10 @@ Vite plugin that:
 ### Type Utilities
 
 - `ExtractRPCFromHandler<T>` - Extracts RPC signature from handler types
-- `CtxGet<Q, R>` - Context type for GET/DELETE handlers
-- `CtxPost<T, R>` - Context type for POST/PUT handlers
-- `CtxPut<T, R>` - Context type for PUT handlers
-- `CtxDelete<Q, R>` - Context type for DELETE handlers
+- `CtxGet<R, Q?>` - Context type for GET handlers (Response first, Query optional and last)
+- `CtxPost<Body, R, Q?>` - Context type for POST handlers (Body, Response, Query optional and last)
+- `CtxPut<Body, R, Q?>` - Context type for PUT handlers (Body, Response, Query optional and last)
+- `CtxDelete<R, Q?>` - Context type for DELETE handlers (Response first, Query optional and last)
 
 ## Development
 
