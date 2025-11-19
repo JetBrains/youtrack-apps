@@ -33,6 +33,11 @@ After you have generated an app, you may want to add more features. Add new feat
 
 To test locally, run one of the package.json scripts like `npm run widget`. This generator uses [Hygen](https://www.hygen.io/docs/generators) under the hood.
 
+Local development tip: if you want to run your local generator instead of the published package, link it and use the binary directly:
+
+- `cd packages/create-youtrack-app && npm install && npm link`
+- Run `create-youtrack-app` (or `npm exec @jetbrains/create-youtrack-app` inside a project where you first ran `npm link @jetbrains/create-youtrack-app`).
+
 Run `npm test` to check basic generation workflow.
 
 #### Caveats

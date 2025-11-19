@@ -15,7 +15,7 @@ const logger = createComponentLogger("app");
 const AppComponent: React.FunctionComponent = () => {
   const [response, setResponse] = useState<string>('Click a button to test the API...');
   const [loading, setLoading] = useState<boolean>(false);
-  const [projectId, setProjectId] = useState<string>('DEM');
+  const [projectId, setProjectId] = useState<string>('DEMO');
 
   const callGlobalApi = useCallback(async () => {
     setLoading(true);

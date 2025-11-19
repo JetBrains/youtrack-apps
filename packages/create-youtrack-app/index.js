@@ -106,24 +106,14 @@ ${chalk.bold('======= Your app has been created! =======')}
 Please wait for just a moment. Dependencies are being installed by npm ${chalk.magenta('npm install')}:
 `);
 
-  // Build youtrack-enhanced-dx-tools if using enhanced-dx template
-  if (appType === 'ts') {
-    console.log(`Building ${chalk.magenta('@jetbrains/youtrack-enhanced-dx-tools')}...`);
-    const toolsPath = path.resolve(__dirname, "../youtrack-enhanced-dx-tools");
-    try {
-      const buildProcess = execa("npm", ["run", "build"], {cwd: toolsPath});
-      buildProcess.stdout.pipe(process.stdout);
-      await buildProcess;
-      console.log(`✓ Built ${chalk.magenta('@jetbrains/youtrack-enhanced-dx-tools')}`);
-    } catch (error) {
-      console.warn(`Warning: Could not build @jetbrains/youtrack-enhanced-dx-tools: ${error.message}`);
-      console.log(`Continuing with installation...`);
-    }
-  }
 
   const installProcess = execa("npm", ["install"], {cwd});
   installProcess.stdout.pipe(process.stdout);
   await installProcess;
+
+  // No explicit build of @jetbrains/youtrack-enhanced-dx-tools here.
+  // The tools are consumed as Vite plugins and will be resolved/compiled by the app toolchain during dev/build.
+
 
   const buildCommand = 'npm run build';
   const additionalInfo = appType === 'ts' ? `

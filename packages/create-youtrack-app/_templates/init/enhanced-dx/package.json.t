@@ -6,6 +6,7 @@ to: package.json
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "enchancedDX": "true",
   "scripts": {
     "dev": "vite",
     "build:frontend": "vite build",
@@ -25,7 +26,7 @@ to: package.json
   },
   "dependencies": {
     "@jetbrains/ring-ui-built": "^7.0.8",
-    "@jetbrains/youtrack-enhanced-dx-tools": "file:../../youtrack-enhanced-dx-tools",
+    "@jetbrains/youtrack-enhanced-dx-tools": "^0.0.1",
     "core-js": "3.38.0",
     "loglevel": "^1.9.2",
     "react": "^18.3.1",
