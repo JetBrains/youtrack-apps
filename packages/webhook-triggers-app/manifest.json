@@ -1,0 +1,49 @@
+{
+  "name": "webhook-triggers",
+  "title": "Webhook Triggers",
+  "description": "Trigger external webhooks from YouTrack events such as issue creation, updates, deletion, comments (add/edit/delete), work items (add/edit/delete), and attachments (add/remove). Configure multiple webhook URLs per event in project settings.",
+  "version": "1.0.0",
+  "minYouTrackVersion": "2024.3.0",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "vendor": {
+    "name": "JetBrains",
+    "url": "https://www.jetbrains.com"
+  },
+  "icon": "icon.svg",
+  "workflows": [
+    {
+      "path": "on-issue-created.js"
+    },
+    {
+      "path": "on-issue-updated.js"
+    },
+    {
+      "path": "on-issue-deleted.js"
+    },
+    {
+      "path": "on-comment-added.js"
+    },
+    {
+      "path": "on-comment-updated.js"
+    },
+    {
+      "path": "on-comment-deleted.js"
+    },
+    {
+      "path": "on-work-item-added.js"
+    },
+    {
+      "path": "on-work-item-updated.js"
+    },
+    {
+      "path": "on-work-item-deleted.js"
+    },
+    {
+      "path": "on-attachment-added.js"
+    },
+    {
+      "path": "on-attachment-deleted.js"
+    }
+  ],
+  "settings": "settings.json"
+}
