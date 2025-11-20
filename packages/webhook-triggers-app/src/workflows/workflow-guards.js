@@ -19,20 +19,22 @@ function createGuard(settingsKey, customCheck) {
       return false;
     }
 
-    // Check if webhooks are configured
+    // Check if specific event webhooks are configured
     const webhooksStr = ctx.settings[settingsKey];
-    if (!webhooksStr || typeof webhooksStr !== 'string') {
-      console.log('[webhooks] No webhooks configured for ' + settingsKey);
+    const urls = httpModule.parseWebhookUrls(webhooksStr || '');
+
+    // Check if "All Events" webhooks are configured
+    const allEventsWebhooksStr = ctx.settings['webhooksOnAllEvents'];
+    const allEventsUrls = httpModule.parseWebhookUrls(allEventsWebhooksStr || '');
+
+    // Proceed if either specific webhooks or "All Events" webhooks are configured
+    const totalUrls = urls.length + allEventsUrls.length;
+    if (totalUrls === 0) {
+      console.log('[webhooks] No webhooks configured for ' + settingsKey + ' or All Events');
       return false;
     }
 
-    const urls = httpModule.parseWebhookUrls(webhooksStr);
-    if (urls.length === 0) {
-      console.log('[webhooks] No valid webhook URLs found for ' + settingsKey);
-      return false;
-    }
-
-    console.log('[webhooks] Found ' + urls.length + ' webhook URL(s) for ' + settingsKey);
+    console.log('[webhooks] Found ' + totalUrls + ' webhook URL(s) for ' + settingsKey + ' (including All Events)');
     return true;
   };
 }

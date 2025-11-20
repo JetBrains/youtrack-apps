@@ -71,6 +71,13 @@ const EVENTS = {
     key: 'webhooksOnAttachmentDeleted',
     type: 'issueAttachmentDeleted',
     name: 'Attachment Deleted'
+  },
+
+  // All events
+  ALL_EVENTS: {
+    key: 'webhooksOnAllEvents',
+    type: 'allEvents',
+    name: 'All Events'
   }
 };
 

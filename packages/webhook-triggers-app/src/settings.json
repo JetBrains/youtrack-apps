@@ -80,6 +80,13 @@
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
+    },
+    "webhooksOnAllEvents": {
+      "title": "All Events",
+      "description": "Triggered on any event (issue created/updated/deleted, comments, attachments, work items)",
+      "type": "string",
+      "format": "textarea",
+      "x-scope": "PROJECT"
     }
   }
 }

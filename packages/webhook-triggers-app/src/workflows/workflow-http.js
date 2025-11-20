@@ -83,13 +83,35 @@ function sendWebhooks(ctx, settingsKey, payload, eventName) {
   const webhooksStr = ctx.settings[settingsKey] || '';
   const webhookUrls = parseWebhookUrls(webhooksStr);
 
-  if (webhookUrls.length === 0) {
+  // Also check for "All Events" webhooks
+  const allEventsWebhooksStr = ctx.settings['webhooksOnAllEvents'] || '';
+  const allEventsUrls = parseWebhookUrls(allEventsWebhooksStr);
+
+  // Combine both URL lists (removing duplicates)
+  const allUrls = [];
+  const urlSet = {};
+
+  webhookUrls.forEach(function(url) {
+    if (url && url.trim() && !urlSet[url]) {
+      allUrls.push(url);
+      urlSet[url] = true;
+    }
+  });
+
+  allEventsUrls.forEach(function(url) {
+    if (url && url.trim() && !urlSet[url]) {
+      allUrls.push(url);
+      urlSet[url] = true;
+    }
+  });
+
+  if (allUrls.length === 0) {
     console.log('[webhooks] No webhook URLs configured for ' + eventName);
     return;
   }
 
-  console.log('[webhooks] Sending webhooks to ' + webhookUrls.length + ' URL(s)');
-  webhookUrls.forEach(function(url) {
+  console.log('[webhooks] Sending webhooks to ' + allUrls.length + ' URL(s) (including "All Events" webhooks)');
+  allUrls.forEach(function(url) {
     if (url && url.trim()) {
       sendWebhook(url, payload, eventName);
     }
