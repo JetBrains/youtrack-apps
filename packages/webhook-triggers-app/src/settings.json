@@ -3,7 +3,14 @@
   "type": "object",
   "title": "Webhook Triggers Settings",
   "description": "Trigger external webhooks from YouTrack events. Enter multiple URLs separated by commas or one per line. Leave empty to disable.",
+  "required": ["webhookSignature"],
   "properties": {
+    "webhookSignature": {
+      "title": "Webhook Signature",
+      "description": "Secret signature for authentication (required for security).",
+      "type": "string",
+      "x-scope": "PROJECT"
+    },
     "webhooksOnIssueCreated": {
       "title": "Issue Created",
       "description": "Triggered when a new issue is created",

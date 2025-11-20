@@ -3,6 +3,7 @@
  */
 
 const http = require('@jetbrains/youtrack-scripting-api/http');
+const security = require('./workflow-security');
 
 /**
  * Parses comma or newline separated webhook URLs from settings
@@ -52,15 +53,17 @@ function logWebhookError(error, url) {
  * @param {string} url - The webhook URL
  * @param {Object} payload - The data to send
  * @param {string} eventName - Name of the event for logging
+ * @param {string} [signature] - Signature for authentication header
  * @returns {Object|null} The HTTP response or null on error
  */
-function sendWebhook(url, payload, eventName) {
+function sendWebhook(url, payload, eventName, signature) {
   try {
     console.log('[webhooks] Sending ' + eventName + ' webhook to: ' + url);
     console.log('[webhooks] Payload: ' + JSON.stringify(payload));
 
     const connection = new http.Connection(url.trim());
     connection.addHeader('Content-Type', 'application/json');
+    security.addSecurityHeaders(connection, signature);
 
     const postResult = connection.postSync('', '', JSON.stringify(payload));
 
@@ -80,11 +83,17 @@ function sendWebhook(url, payload, eventName) {
  * @param {string} eventName - Name of the event for logging
  */
 function sendWebhooks(ctx, settingsKey, payload, eventName) {
+  // Validate webhook signature
+  const signature = security.validateWebhookSignature(ctx);
+  if (!signature) {
+    return;
+  }
+
   const webhooksStr = ctx.settings[settingsKey] || '';
   const webhookUrls = parseWebhookUrls(webhooksStr);
 
   // Also check for "All Events" webhooks
-  const allEventsWebhooksStr = ctx.settings['webhooksOnAllEvents'] || '';
+  const allEventsWebhooksStr = ctx.settings.webhooksOnAllEvents || '';
   const allEventsUrls = parseWebhookUrls(allEventsWebhooksStr);
 
   // Combine both URL lists (removing duplicates)
@@ -113,7 +122,7 @@ function sendWebhooks(ctx, settingsKey, payload, eventName) {
   console.log('[webhooks] Sending webhooks to ' + allUrls.length + ' URL(s) (including "All Events" webhooks)');
   allUrls.forEach(function(url) {
     if (url && url.trim()) {
-      sendWebhook(url, payload, eventName);
+      sendWebhook(url, payload, eventName, signature);
     }
   });
 }
