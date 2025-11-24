@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import { defineConfig } from "vite";
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from "vite-plugin-static-copy";
+import { youtrackAutoUpload } from '@jetbrains/youtrack-enhanced-dx-tools';
 
 /*
       See https://vitejs.dev/config/
@@ -23,9 +24,17 @@ const dropCrossoriginAttributePlugin = () => {
 };
 
 export default defineConfig({
+  optimizeDeps: {
+    exclude: ['@jetbrains/youtrack-enhanced-dx-tools']
+  },
+  ssr: {
+    noExternal: [],
+    external: ['@jetbrains/youtrack-enhanced-dx-tools']
+  },
   plugins: [
     react(),
     dropCrossoriginAttributePlugin(),
+    youtrackAutoUpload({ enabled: process.env.AUTOUPLOAD === 'true', buildName: 'frontend' }),
     viteStaticCopy({
       targets: [
         {
@@ -40,10 +49,8 @@ export default defineConfig({
           src: "../public/*.*",
           dest: ".",
         },
-        {
-          src: "backend/*.*",
-          dest: ".",
-        },
+        // Note: Backend JS files are already in dist/ from backend build
+        // No need to copy them - frontend build has emptyOutDir: false
       ],
     }),
     viteStaticCopy({
@@ -82,6 +89,16 @@ export default defineConfig({
         // List every widget entry point here
         enhancedDX: resolve(__dirname, 'src/widgets/enhanced-dx/index.html'),
       },
+      external: [
+        // Exclude Vite plugins and their Node.js dependencies from bundling
+        '@jetbrains/youtrack-enhanced-dx-tools',
+        'child_process',
+        'fs-extra',
+        'node:path',
+        'node:fs',
+        'fast-glob',
+        'ts-morph'
+      ]
     },
   },
 });

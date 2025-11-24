@@ -25,14 +25,15 @@ const validate = async (
   loggerFactory?: LoggerFactory,
   zodImport?: () => Promise<{ schema: any }>
 ) => {
-  if (process.env.NODE_ENV !== 'development') {
-    return;
-  }
+  // if (process.env.NODE_ENV !== 'development') {
+  //   return;
+  // }
   if (!zodImport) {
     return; // Skip validation if no zod import provided
   }
   const logger = loggerFactory ? loggerFactory('validation') : undefined;
   try {
+
     const zodSchemas = await zodImport();
 
     let current = zodSchemas.schema;

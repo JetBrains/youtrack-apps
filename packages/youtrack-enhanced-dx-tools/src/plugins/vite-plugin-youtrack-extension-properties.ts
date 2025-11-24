@@ -112,12 +112,12 @@ const runEslintFix = (files: string | string[]) => {
  */
 const getTypeScriptType = (prop: ExtensionProperty, entityTypes: Set<string>): string => {
   const baseType = typeMapping[prop.type] || (youtrackEntityTypes.has(prop.type) ? prop.type : 'unknown');
-  
+
   if (prop.multi) {
     // Multi properties return a Set
     return `Set<${baseType}>`;
   }
-  
+
   return baseType;
 };
 
@@ -146,7 +146,7 @@ const generateGlobalStorageType = (
   entityTypes: Set<string>
 ): string => {
   const extensionPropertiesType = generateExtensionPropertiesType(properties, entityTypes);
-  
+
   return `/**
  * Global storage extension properties for the app
  */
@@ -162,7 +162,7 @@ const generateExtendedEntityType = (
   entityTypes: Set<string>
 ): string => {
   const extensionPropertiesType = generateExtensionPropertiesType(properties, entityTypes);
-  
+
   return `/**
  * Extended ${entityType} with app-specific extension properties
  */
@@ -178,11 +178,14 @@ const generateExtendedEntities = (extensions: EntityExtensions): string => {
   const entityTypes = new Set<string>();
   const imports = new Set<string>();
   const globalStorageExt = extensions.entityTypeExtensions.find(ext => ext.entityType === 'AppGlobalStorage');
-  
-  // Collect all entity types used
+
+  // Collect all entity types that have extensions
+  const extendedEntityTypes = new Set<string>();
+
   extensions.entityTypeExtensions.forEach(ext => {
     if (ext.entityType !== 'AppGlobalStorage') {
       entityTypes.add(ext.entityType);
+      extendedEntityTypes.add(ext.entityType);
     }
     Object.values(ext.properties).forEach(prop => {
       if (youtrackEntityTypes.has(prop.type)) {
@@ -190,6 +193,11 @@ const generateExtendedEntities = (extensions: EntityExtensions): string => {
         imports.add(prop.type);
       }
     });
+  });
+
+  // Add base entity types to imports for extended types
+  extendedEntityTypes.forEach(entityType => {
+    imports.add(entityType);
   });
 
   // Generate imports
@@ -208,7 +216,26 @@ const generateExtendedEntities = (extensions: EntityExtensions): string => {
     ? `\n\n${generateGlobalStorageType(globalStorageExt.properties, entityTypes)}`
     : '';
 
-  return `${importStatements}${extendedTypes}${globalStorageType}`;
+  // Generate ExtendedProperties map with all possible entities
+  const allPossibleEntities = ['Issue', 'Project', 'Article', 'User'];
+  const extendedPropertiesMap = allPossibleEntities.map(entityType => {
+    const hasExtension = extendedEntityTypes.has(entityType);
+    return `  ${entityType}: ${hasExtension ? `Extended${entityType}` : 'never'};`;
+  }).join('\n');
+
+  const hasGlobalStorage = !!globalStorageExt;
+  const globalStorageEntry = `  AppGlobalStorage: ${hasGlobalStorage ? 'AppGlobalStorageExtensionProperties' : 'never'};`;
+
+  const extendedPropertiesType = `\n\n/**
+ * Map of entity types to their extended versions
+ * Extended types have extension properties, others are 'never'
+ */
+export type ExtendedProperties = {
+${extendedPropertiesMap}
+${globalStorageEntry}
+};`;
+
+  return `${importStatements}${extendedTypes}${globalStorageType}${extendedPropertiesType}`;
 };
 
 /**
@@ -240,7 +267,7 @@ export type ExtendedUserCtx<T extends import('@jetbrains/youtrack-enhanced-dx-to
     utilities.push(`/**
  * Issue context with extended entity (includes extension properties)
  */
-export type ExtendedIssueCtx<T extends import('@jetbrains/youtrack-enhanced-dx-tools').IssueCtx> = 
+export type ExtendedIssueCtx<T extends import('@jetbrains/youtrack-enhanced-dx-tools').IssueCtx> =
   Omit<T, 'issue'> & { issue: ExtendedIssue };`);
   }
 
@@ -248,7 +275,7 @@ export type ExtendedIssueCtx<T extends import('@jetbrains/youtrack-enhanced-dx-t
     utilities.push(`/**
  * Project context with extended entity (includes extension properties)
  */
-export type ExtendedProjectCtx<T extends import('@jetbrains/youtrack-enhanced-dx-tools').ProjectCtx> = 
+export type ExtendedProjectCtx<T extends import('@jetbrains/youtrack-enhanced-dx-tools').ProjectCtx> =
   Omit<T, 'project'> & { project: ExtendedProject };`);
   }
 
@@ -256,7 +283,7 @@ export type ExtendedProjectCtx<T extends import('@jetbrains/youtrack-enhanced-dx
     utilities.push(`/**
  * Article context with extended entity (includes extension properties)
  */
-export type ExtendedArticleCtx<T extends import('@jetbrains/youtrack-enhanced-dx-tools').ArticleCtx> = 
+export type ExtendedArticleCtx<T extends import('@jetbrains/youtrack-enhanced-dx-tools').ArticleCtx> =
   Omit<T, 'article'> & { article: ExtendedArticle };`);
   }
 
@@ -264,7 +291,7 @@ export type ExtendedArticleCtx<T extends import('@jetbrains/youtrack-enhanced-dx
     utilities.push(`/**
  * User context with extended entity (includes extension properties)
  */
-export type ExtendedUserCtx<T extends import('@jetbrains/youtrack-enhanced-dx-tools').UserCtx> = 
+export type ExtendedUserCtx<T extends import('@jetbrains/youtrack-enhanced-dx-tools').UserCtx> =
   Omit<T, 'user'> & { user: ExtendedUser };`);
   }
 
@@ -279,8 +306,8 @@ ${utilities.join('\n\n')}
 ${hasGlobalStorage ? `/**
  * Extended global context with app-specific global storage extension properties
  */
-export type ExtendedGlobalCtx<T extends import('@jetbrains/youtrack-enhanced-dx-tools').GlobalCtx> = 
-  Omit<T, 'globalStorage'> & { 
+export type ExtendedGlobalCtx<T extends import('@jetbrains/youtrack-enhanced-dx-tools').GlobalCtx> =
+  Omit<T, 'globalStorage'> & {
     globalStorage: {
       extensionProperties: AppGlobalStorageExtensionProperties;
     };
@@ -347,17 +374,17 @@ const generateTypeAugmentation = (extensions: EntityExtensions): string => {
  * Type augmentation for global context types
  * This file automatically augments the global CtxGet, CtxPost, CtxPut, CtxDelete types
  * to use extended entities when extension properties are defined in entity-extensions.json
- * 
+ *
  * Simply import this file in your backend types or ensure it's included in your tsconfig
  * and the extended entities will be automatically used in all context types.
- * 
+ *
  * @example
  * // In your handler file, just use CtxGetProject as normal:
  * export default function handle(ctx: CtxGetProject<Response, Query>): void {
  *   // ctx.project.extensionProperties.myProperty is now fully typed! 🎉
  *   const value = ctx.project.extensionProperties.myProperty;
  * }
- * 
+ *
  * @see https://www.jetbrains.com/help/youtrack/devportal/apps-extension-properties.html
  */
 
@@ -390,73 +417,94 @@ export default function youtrackExtensionProperties(): Plugin {
   const extensionsPath = path.resolve(process.cwd(), 'entity-extensions.json');
   const srcExtensionsPath = path.resolve(process.cwd(), 'src', 'entity-extensions.json');
   const extendedEntitiesPath = path.resolve(process.cwd(), 'src', 'api', 'extended-entities.d.ts');
+  const contextUtilitiesPath = path.resolve(process.cwd(), 'src', 'api', 'extended-context.d.ts');
+  const typeAugmentationPath = path.resolve(process.cwd(), 'src', 'api', 'extended-types-augmentation.d.ts');
 
-  return {
-    name: 'vite-plugin-youtrack-extension-properties',
-    async buildStart() {
-      // Try to find entity-extensions.json in root or src/
-      let extensionsFile = extensionsPath;
-      if (!await fs.pathExists(extensionsFile)) {
-        extensionsFile = srcExtensionsPath;
-      }
+  const generateTypes = async () => {
+    // Try to find entity-extensions.json in root or src/
+    let extensionsFile = extensionsPath;
+    if (!await fs.pathExists(extensionsFile)) {
+      extensionsFile = srcExtensionsPath;
+    }
 
-      if (!await fs.pathExists(extensionsFile)) {
-        // No extensions file, create empty extended entities file
+    if (!await fs.pathExists(extensionsFile)) {
+      // No extensions file, create empty extended entities file
+      await fs.ensureDir(path.dirname(extendedEntitiesPath));
+      await fs.writeFile(
+        extendedEntitiesPath,
+        '// No extension properties defined\n// Add entity-extensions.json to enable extension property types\n'
+      );
+      console.log('✓ No entity-extensions.json found, created empty extended-entities.d.ts');
+      return;
+    }
+
+    try {
+      // Read and parse entity-extensions.json
+      const extensionsContent = await fs.readFile(extensionsFile, 'utf8');
+      const extensions: EntityExtensions = JSON.parse(extensionsContent);
+
+      if (!extensions.entityTypeExtensions || extensions.entityTypeExtensions.length === 0) {
+        // Empty extensions, create empty file
         await fs.ensureDir(path.dirname(extendedEntitiesPath));
         await fs.writeFile(
           extendedEntitiesPath,
-          '// No extension properties defined\n// Add entity-extensions.json to enable extension property types\n'
+          '// No extension properties defined\n'
         );
-        console.log('✓ No entity-extensions.json found, created empty extended-entities.d.ts');
+        console.log('✓ No extension properties defined');
         return;
       }
 
-      try {
-        // Read and parse entity-extensions.json
-        const extensionsContent = await fs.readFile(extensionsFile, 'utf8');
-        const extensions: EntityExtensions = JSON.parse(extensionsContent);
+      // Generate extended entity types
+      const extendedEntitiesContent = generateExtendedEntities(extensions);
 
-        if (!extensions.entityTypeExtensions || extensions.entityTypeExtensions.length === 0) {
-          // Empty extensions, create empty file
-          await fs.ensureDir(path.dirname(extendedEntitiesPath));
-          await fs.writeFile(
-            extendedEntitiesPath,
-            '// No extension properties defined\n'
-          );
-          console.log('✓ No extension properties defined');
-          return;
+      // Write extended entities file
+      await fs.ensureDir(path.dirname(extendedEntitiesPath));
+      await fs.writeFile(extendedEntitiesPath, extendedEntitiesContent);
+      runEslintFix(extendedEntitiesPath);
+
+      // Generate context utilities
+      const contextUtilitiesContent = generateContextUtilities(extensions);
+      await fs.writeFile(contextUtilitiesPath, contextUtilitiesContent);
+      runEslintFix(contextUtilitiesPath);
+
+      // Generate type augmentation for automatic injection
+      const typeAugmentationContent = generateTypeAugmentation(extensions);
+      await fs.writeFile(typeAugmentationPath, typeAugmentationContent);
+      runEslintFix(typeAugmentationPath);
+
+      console.log('✓ Generated extended entity types, context utilities, and type augmentation from entity-extensions.json');
+    } catch (error) {
+      console.error('[youtrack-extension-properties] Error:', (error as Error).message);
+      // Create fallback file
+      await fs.ensureDir(path.dirname(extendedEntitiesPath));
+      await fs.writeFile(
+        extendedEntitiesPath,
+        `// Error generating extension properties: ${(error as Error).message}\n`
+      );
+    }
+  };
+
+  return {
+    name: 'vite-plugin-youtrack-extension-properties',
+
+    async config(config) {
+      // Add generated files to watch ignore list using chokidar function format
+      return {
+        server: {
+          watch: {
+            ignored: (filepath: string) => {
+              return filepath.includes('extended-entities.d.ts') ||
+                     filepath.includes('extended-context.d.ts') ||
+                     filepath.includes('extended-types-augmentation.d.ts');
+            }
+          }
         }
+      };
+    },
 
-        // Generate extended entity types
-        const extendedEntitiesContent = generateExtendedEntities(extensions);
-
-        // Write extended entities file
-        await fs.ensureDir(path.dirname(extendedEntitiesPath));
-        await fs.writeFile(extendedEntitiesPath, extendedEntitiesContent);
-        runEslintFix(extendedEntitiesPath);
-
-        // Generate context utilities
-        const contextUtilitiesPath = path.resolve(process.cwd(), 'src', 'api', 'extended-context.d.ts');
-        const contextUtilitiesContent = generateContextUtilities(extensions);
-        await fs.writeFile(contextUtilitiesPath, contextUtilitiesContent);
-        runEslintFix(contextUtilitiesPath);
-
-        // Generate type augmentation for automatic injection
-        const typeAugmentationPath = path.resolve(process.cwd(), 'src', 'api', 'extended-types-augmentation.d.ts');
-        const typeAugmentationContent = generateTypeAugmentation(extensions);
-        await fs.writeFile(typeAugmentationPath, typeAugmentationContent);
-        runEslintFix(typeAugmentationPath);
-
-        console.log('✓ Generated extended entity types, context utilities, and type augmentation from entity-extensions.json');
-      } catch (error) {
-        console.error('[youtrack-extension-properties] Error:', (error as Error).message);
-        // Create fallback file
-        await fs.ensureDir(path.dirname(extendedEntitiesPath));
-        await fs.writeFile(
-          extendedEntitiesPath,
-          `// Error generating extension properties: ${(error as Error).message}\n`
-        );
-      }
+    async buildStart() {
+      // Just regenerate on every build - simple and bulletproof
+      await generateTypes();
     }
   };
 }

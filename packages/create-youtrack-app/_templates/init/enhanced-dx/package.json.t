@@ -6,7 +6,7 @@ to: package.json
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "enchancedDX": "true",
+  "enhancedDX": "true",
   "scripts": {
     "dev": "vite",
     "build:frontend": "vite build",
@@ -22,7 +22,10 @@ to: package.json
 
     "upload-local": "set -a && source .env && set +a && youtrack-app upload dist --host $YOUTRACK_HOST --token $YOUTRACK_TOKEN",
     "update": "npm run build && npm run upload-local",
-    "watch:build": "nodemon --watch src --ext ts,tsx,css,json,js --ignore 'src/api/api.d.ts' --ignore 'src/api/api.zod.ts' --exec 'NODE_ENV=development npm run build:nolint && npm run upload-local'"
+    "prepare:watch": "npm run clean && vite -c vite.config.backend.ts build --mode development",
+    "watch:backend": "vite -c vite.config.backend.ts build --watch --mode development",
+    "watch:frontend": "vite build --watch",
+    "watch:build": "npm run prepare:watch && (AUTOUPLOAD=true npm run watch:backend & while [ ! -f src/api/api.d.ts ] || [ ! -f src/api/api.zod.ts ]; do sleep 0.5; done && AUTOUPLOAD=true npm run watch:frontend)"
   },
   "dependencies": {
     "@jetbrains/ring-ui-built": "^7.0.8",

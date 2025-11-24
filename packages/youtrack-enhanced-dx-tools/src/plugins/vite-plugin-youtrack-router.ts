@@ -15,6 +15,54 @@ export default function youtrackRouter(): Plugin {
   const routes: Route[] = [];
   const permissionsByFile = new Map<string, string[]>();
 
+  const collectRouteMetadata = () => {
+    // Clear previous data
+    routes.length = 0;
+    permissionsByFile.clear();
+
+    const routeFiles = glob.sync('**/(GET|POST|PUT|DELETE).ts', {
+      cwd: routerRoot,
+      absolute: true
+    });
+
+    // Collect route metadata
+    routes.push(...routeFiles.map((filePath) => {
+      const relativePath = path.relative(routerRoot, filePath);
+      const parts = relativePath.split(path.sep);
+      const scope = parts[0];
+      const method = path.basename(filePath, '.ts') as Route['method'];
+      const routePath = parts.slice(1, -1).join('/');
+      return {
+        scope,
+        path: routePath,
+        method,
+        filePath
+      };
+    }));
+
+    // Try to parse permissions arrays from source files (optional wrapper)
+    for (const filePath of routeFiles) {
+      try {
+        const src = fs.readFileSync(filePath, 'utf-8');
+        // Match withPermissions(<fn>, [ 'PERM1', "PERM2" ])
+        const match = src.match(/withPermissions\s*\(\s*(?:function|\([^)]*\)\s*=>)[\s\S]*?,\s*\[([\s\S]*?)\]\s*\)/m);
+        if (match && match[1]) {
+          const inside = match[1];
+          const keys = inside
+            .split(',')
+            .map(s => s.trim())
+            .map(s => s.replace(/^['"`]/, '').replace(/['"`]$/, ''))
+            .filter(s => s.length > 0);
+          if (keys.length > 0) {
+            permissionsByFile.set(filePath, keys);
+          }
+        }
+      } catch {
+        // ignore read errors
+      }
+    }
+  };
+
   return {
     name: 'vite-plugin-youtrack-router',
     config(config) {
@@ -61,47 +109,8 @@ export default function youtrackRouter(): Plugin {
       return config;
     },
     async buildStart() {
-      const routeFiles = await glob('**/(GET|POST|PUT|DELETE).ts', {
-        cwd: routerRoot,
-        absolute: true
-      });
-
-      // Collect route metadata
-      routes.push(...routeFiles.map((filePath) => {
-        const relativePath = path.relative(routerRoot, filePath);
-        const parts = relativePath.split(path.sep);
-        const scope = parts[0];
-        const method = path.basename(filePath, '.ts') as Route['method'];
-        const routePath = parts.slice(1, -1).join('/');
-        return {
-          scope,
-          path: routePath,
-          method,
-          filePath
-        };
-      }));
-
-      // Try to parse permissions arrays from source files (optional wrapper)
-      for (const filePath of routeFiles) {
-        try {
-          const src = fs.readFileSync(filePath, 'utf-8');
-          // Match withPermissions(<fn>, [ 'PERM1', "PERM2" ])
-          const match = src.match(/withPermissions\s*\(\s*(?:function|\([^)]*\)\s*=>)[\s\S]*?,\s*\[([\s\S]*?)\]\s*\)/m);
-          if (match && match[1]) {
-            const inside = match[1];
-            const keys = inside
-              .split(',')
-              .map(s => s.trim())
-              .map(s => s.replace(/^['"`]/, '').replace(/['"`]$/, ''))
-              .filter(s => s.length > 0);
-            if (keys.length > 0) {
-              permissionsByFile.set(filePath, keys);
-            }
-          }
-        } catch {
-          // ignore read errors
-        }
-      }
+      // Recollect route metadata on every build
+      collectRouteMetadata();
     },
     generateBundle(options, bundle) {
       const routesByScope = routes.reduce((acc, route) => {

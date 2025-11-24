@@ -12,11 +12,11 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+      "import": "./dist/index.js"
     },
     "./api": {
       "types": "./dist/api/index.d.ts",
-      "default": "./dist/api/index.js"
+      "import": "./dist/api/index.js"
     },
     "./youtrack-types": {
       "types": "./youtrack-types.d.ts",
@@ -25,6 +25,7 @@
   },
   "files": [
     "dist",
+    "src",
     "templates",
     "youtrack-types.d.ts"
   ],
@@ -47,7 +48,8 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint src --ext .ts",
-    "test": "echo 'no tests'"
+    "test": "echo 'no tests'",
+    "prepare": "npm run build"
   },
   "engines": {
     "node": ">=18.20.4"

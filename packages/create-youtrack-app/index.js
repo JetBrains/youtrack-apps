@@ -50,7 +50,7 @@ function runHygen(hygenArgs = argv) {
         const pkgPath = path.join(cwd, 'package.json');
         const hasPkg = fs.existsSync(pkgPath);
         const pkg = hasPkg ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
-        const isEnhancedDX = pkg.enchancedDX === true || pkg.enchancedDX === 'true';
+        const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
 
         if (!isEnhancedDX) {
           // Fallback to legacy templates/flow
@@ -322,7 +322,7 @@ Please wait for just a moment. Dependencies are being installed by npm ${chalk.m
 `);
 
 
-  const installProcess = execa("npm", ["install"], {cwd});
+  const installProcess = execa("npm", ["link", "@jetbrains/youtrack-enhanced-dx-tools"], {cwd});
   installProcess.stdout.pipe(process.stdout);
   await installProcess;
 

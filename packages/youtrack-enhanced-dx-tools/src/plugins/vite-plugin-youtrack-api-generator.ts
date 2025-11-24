@@ -328,71 +328,93 @@ const generateZodSchemas = async (routeFiles: string[]) => {
 export default function youtrackApiGenerator(): Plugin {
   const routerRoot = path.resolve(process.cwd(), 'src/backend/router');
   const apiDtsPath = path.resolve(process.cwd(), 'src/api/api.d.ts');
+  const apiZodPath = path.resolve(process.cwd(), 'src/api/api.zod.ts');
+
+  const generateApi = async () => {
+    const routeFiles = await glob('**/(GET|POST|PUT|DELETE).ts', {
+      cwd: routerRoot,
+      absolute: true
+    });
+
+    const project = new Project();
+    project.addSourceFilesAtPaths(routeFiles);
+
+    const allTypes = new Map<string, { namespaceImports: Set<string>; namedImports: Set<string> }>();
+    const apiStructure: ApiStructureNode = {};
+
+    await Promise.all(
+      project.getSourceFiles().map((sourceFile) =>
+        processRouteFile(
+          sourceFile,
+          routerRoot,
+          apiStructure,
+          allTypes
+        )
+      )
+    );
+
+    const apiDtsFile = project.createSourceFile(apiDtsPath, '', {
+      overwrite: true
+    });
+
+    apiDtsFile.addImportDeclaration({
+      moduleSpecifier: '../backend/types/utility',
+      namedImports: ['ExtractRPCFromHandler']
+    });
+
+    for (const [moduleSpecifier, typeInfo] of allTypes.entries()) {
+      // Prioritize namespace imports over named imports to avoid conflicts
+      // If we have namespace imports, use those exclusively for this module
+      if (typeInfo.namespaceImports.size > 0) {
+        for (const namespaceName of typeInfo.namespaceImports) {
+          apiDtsFile.addImportDeclaration({
+            moduleSpecifier,
+            namespaceImport: namespaceName
+          });
+        }
+      } else if (typeInfo.namedImports.size > 0) {
+        // Only use named imports if we don't have namespace imports for this module
+        apiDtsFile.addImportDeclaration({
+          moduleSpecifier,
+          namedImports: Array.from(typeInfo.namedImports)
+        });
+      }
+    }
+
+    apiDtsFile.addTypeAlias({
+      name: 'ApiRouter',
+      isExported: true,
+      type: formatApiStructure(apiStructure)
+    });
+
+    // Generate Zod schemas BEFORE writing api.d.ts to avoid import resolution errors
+    await generateZodSchemas(routeFiles);
+
+    // Now write the api.d.ts file
+    await fs.writeFile(apiDtsPath, apiDtsFile.getFullText());
+    // Format the generated declaration file
+    runEslintFix(apiDtsPath);
+  };
 
   return {
     name: 'vite-plugin-youtrack-api-generator',
-    async buildStart() {
-      const routeFiles = await glob('**/(GET|POST|PUT|DELETE).ts', {
-        cwd: routerRoot,
-        absolute: true
-      });
 
-      const project = new Project();
-      project.addSourceFilesAtPaths(routeFiles);
-
-      const allTypes = new Map<string, { namespaceImports: Set<string>; namedImports: Set<string> }>();
-      const apiStructure: ApiStructureNode = {};
-
-      await Promise.all(
-        project.getSourceFiles().map((sourceFile) =>
-          processRouteFile(
-            sourceFile,
-            routerRoot,
-            apiStructure,
-            allTypes
-          )
-        )
-      );
-
-      const apiDtsFile = project.createSourceFile(apiDtsPath, '', {
-        overwrite: true
-      });
-
-      apiDtsFile.addImportDeclaration({
-        moduleSpecifier: '../backend/types/utility',
-        namedImports: ['ExtractRPCFromHandler']
-      });
-
-      for (const [moduleSpecifier, typeInfo] of allTypes.entries()) {
-        // Prioritize namespace imports over named imports to avoid conflicts
-        // If we have namespace imports, use those exclusively for this module
-        if (typeInfo.namespaceImports.size > 0) {
-          for (const namespaceName of typeInfo.namespaceImports) {
-            apiDtsFile.addImportDeclaration({
-              moduleSpecifier,
-              namespaceImport: namespaceName
-            });
+    async config() {
+      // Ignore generated API files from watch to prevent loops
+      return {
+        server: {
+          watch: {
+            ignored: (filepath: string) => {
+              return filepath.includes('api.d.ts') || filepath.includes('api.zod.ts');
+            }
           }
-        } else if (typeInfo.namedImports.size > 0) {
-          // Only use named imports if we don't have namespace imports for this module
-          apiDtsFile.addImportDeclaration({
-            moduleSpecifier,
-            namedImports: Array.from(typeInfo.namedImports)
-          });
         }
-      }
+      };
+    },
 
-      apiDtsFile.addTypeAlias({
-        name: 'ApiRouter',
-        isExported: true,
-        type: formatApiStructure(apiStructure)
-      });
-
-      await fs.writeFile(apiDtsPath, apiDtsFile.getFullText());
-      // Format the generated declaration file
-      runEslintFix(apiDtsPath);
-
-      await generateZodSchemas(routeFiles);
+    async buildStart() {
+      // Regenerate API types on every build to pick up route changes
+      await generateApi();
     }
   };
 }
