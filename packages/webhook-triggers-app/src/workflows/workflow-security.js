@@ -25,6 +25,12 @@ function validateWebhookSignature(ctx) {
     return null;
   }
 
+  const minimumLength = 32;
+  if (signature.length < minimumLength) {
+    console.error('[webhooks] ERROR: Webhook signature must be at least 32 characters long.');
+    return null;
+  }
+
   return signature.trim();
 }
 
@@ -43,4 +49,3 @@ function addSecurityHeaders(connection, signature) {
 exports.isSignatureValid = isSignatureValid;
 exports.validateWebhookSignature = validateWebhookSignature;
 exports.addSecurityHeaders = addSecurityHeaders;
-
