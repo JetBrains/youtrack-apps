@@ -24,7 +24,7 @@ function createGuard(settingsKey, customCheck) {
     const urls = httpModule.parseWebhookUrls(webhooksStr || '');
 
     // Check if "All Events" webhooks are configured
-    const allEventsWebhooksStr = ctx.settings['webhooksOnAllEvents'];
+    const allEventsWebhooksStr = ctx.settings.webhooksOnAllEvents;
     const allEventsUrls = httpModule.parseWebhookUrls(allEventsWebhooksStr || '');
 
     // Proceed if either specific webhooks or "All Events" webhooks are configured
