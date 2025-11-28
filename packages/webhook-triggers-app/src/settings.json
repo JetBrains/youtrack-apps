@@ -7,8 +7,9 @@
   "properties": {
     "webhookSignature": {
       "title": "Webhook Signature",
-      "description": "Secret signature for authentication (required for security).",
+      "description": "Secret signature for authentication (required for security). Must be at least 32 characters long.",
       "type": "string",
+      "format": "secret",
       "x-scope": "PROJECT"
     },
     "webhooksOnIssueCreated": {

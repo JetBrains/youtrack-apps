@@ -84,7 +84,7 @@ function sendWebhook(url, payload, eventName, signature) {
  */
 function sendWebhooks(ctx, settingsKey, payload, eventName) {
   // Validate webhook signature
-  const signature = security.validateWebhookSignature(ctx);
+  const signature = ctx.settings.webhookSignature || null;
   if (!signature) {
     return;
   }
