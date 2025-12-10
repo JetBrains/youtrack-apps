@@ -58,9 +58,6 @@ function logWebhookError(error, url) {
  */
 function sendWebhook(url, payload, eventName, signature) {
   try {
-    console.log('[webhooks] Sending ' + eventName + ' webhook to: ' + url);
-    console.log('[webhooks] Payload: ' + JSON.stringify(payload));
-
     const connection = new http.Connection(url.trim());
     connection.addHeader('Content-Type', 'application/json');
     security.addSecurityHeaders(connection, signature);
@@ -86,6 +83,7 @@ function sendWebhooks(ctx, settingsKey, payload, eventName) {
   // Validate webhook signature
   const signature = ctx.settings.webhookSignature || null;
   if (!signature) {
+    console.log('[webhooks] No webhook signature configured for ' + eventName);
     return;
   }
 
