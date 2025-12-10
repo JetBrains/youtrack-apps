@@ -1,21 +1,14 @@
 # YouTrack Webhook Triggers App
 
-Trigger external webhooks from YouTrack events such as issue creation, updates, deletion, comments, work items, and attachments. Supports secure HMAC-SHA256 authentication compatible with n8n and other webhook receivers.
+[![official JetBrains project](https://jb.gg/badges/official-flat-square.svg)](https://github.com/JetBrains#jetbrains-on-github)
+
+Trigger external webhooks from YouTrack events such as issue creation, updates, deletion, comments, work items, and attachments.
 
 ## Features
 
 - **Multiple Event Types**: Issue (create/update/delete), Comments (add/update/delete), Work Items (add/update/delete), Attachments (add/delete)
-- **Secure Authentication**: HMAC-SHA256 signature with timestamp validation
-- **Flexible Configuration**: Per-event webhook URLs or catch-all webhooks
 - **Multiple Webhooks**: Send to multiple URLs per event (comma or newline separated)
-- **Detailed Logging**: Debug-friendly logging for troubleshooting
 
-## Installation
-
-1. Download the app package (`webhook-triggers-app.zip`)
-2. In YouTrack, go to **Administration** > **Apps**
-3. Click **Upload App** and select the zip file
-4. The app will be installed and available in all projects
 
 ## Configuration
 
@@ -28,8 +21,6 @@ The webhook signature is required for security. Generate a strong random secret:
 openssl rand -hex 32
 ```
 
-Example output: `a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2`
-
 **Important**: 
 - Minimum 32 characters required
 - Keep this secret secure - treat it like a password
@@ -41,14 +32,12 @@ Example output: `a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f
 2. Go to **Settings** > **Apps** > **Webhook Triggers**
 3. Configure the following:
 
-#### Required Settings
-
-**Webhook Signature** (Required)
+#### 2.1. Webhook Signature (Required)
 - Paste the secret generated in Step 1
 - This must match the secret configured in your webhook receiver
 - Minimum 32 characters
 
-#### Event-Specific Webhooks
+#### 2.2. Event-Specific Webhooks
 
 Configure webhook URLs for specific events:
 
@@ -68,7 +57,7 @@ Configure webhook URLs for specific events:
 - Multiple URLs: Separate with commas or newlines
 - Example: `https://n8n.example.com/webhook/abc123/webhook`
 
-#### Catch-All Webhooks
+#### 2.3. Catch-All Webhooks
 
 **All Events**: URLs that receive all events regardless of type
 
@@ -96,105 +85,177 @@ Your webhook receiver (e.g., n8n) must be configured to validate the signatures.
 
 ## Webhook Payload Format
 
-The app sends JSON payloads with the following structure:
+All payloads share a common base structure with event-specific fields added.
 
-### Issue Events
+### Base Payload Structure
+
+Every webhook payload includes these fields:
+
+```json
+{
+  "event": "eventType",
+  "timestamp": "2024-12-10T12:00:00.000Z",
+  "id": "2-123",
+  "numberInProject": 123,
+  "summary": "Issue title",
+  "project": {
+    "id": "project-id",
+    "name": "Project Name",
+    "shortName": "PROJECT"
+  }
+}
+```
+
+### User Object Structure
+
+When a user is included in the payload:
+
+```json
+{
+  "id": "user-id",
+  "login": "username",
+  "fullName": "User Name",
+  "email": "user@example.com"
+}
+```
+
+### Issue Created
 
 ```json
 {
   "event": "issueCreated",
-  "issue": {
-    "id": "2-123",
-    "idReadable": "PROJECT-123",
-    "summary": "Issue title",
-    "description": "Issue description",
-    "created": 1732708800000,
-    "updated": 1732708800000,
-    "reporter": {
-      "id": "user-id",
-      "login": "username",
-      "fullName": "User Name",
-      "email": "user@example.com"
-    },
-    "project": {
-      "id": "project-id",
-      "shortName": "PROJECT",
-      "name": "Project Name"
-    }
-  },
-  "project": {
-    "id": "project-id",
-    "shortName": "PROJECT",
-    "name": "Project Name"
-  }
+  "timestamp": "2024-12-10T12:00:00.000Z",
+  "id": "2-123",
+  "numberInProject": 123,
+  "summary": "Issue title",
+  "project": { "id": "...", "name": "...", "shortName": "..." },
+  "description": "Issue description text",
+  "created": 1732708800000,
+  "reporter": { "id": "...", "login": "...", "fullName": "...", "email": "..." }
 }
 ```
 
-Event types:
-- `issueCreated`
-- `issueUpdated`
-- `issueDeleted`
+### Issue Updated
 
-### Comment Events
+```json
+{
+  "event": "issueUpdated",
+  "timestamp": "2024-12-10T12:00:00.000Z",
+  "id": "2-123",
+  "numberInProject": 123,
+  "summary": "Issue title",
+  "project": { "id": "...", "name": "...", "shortName": "..." },
+  "description": "Issue description text",
+  "updated": 1732708800000,
+  "updatedBy": { "id": "...", "login": "...", "fullName": "...", "email": "..." },
+  "changedFields": [
+    {
+      "name": "summary",
+      "oldValue": "Old title",
+      "value": "New title"
+    },
+    {
+      "name": "Priority",
+      "oldValue": { "name": "Normal", "presentation": "Normal" },
+      "value": { "name": "Critical", "presentation": "Critical" }
+    }
+  ]
+}
+```
+
+### Issue Deleted
+
+```json
+{
+  "event": "issueDeleted",
+  "timestamp": "2024-12-10T12:00:00.000Z",
+  "id": "2-123",
+  "numberInProject": 123,
+  "summary": "Issue title",
+  "project": { "id": "...", "name": "...", "shortName": "..." },
+  "description": "Issue description text"
+}
+```
+
+### Comment Added / Updated / Deleted
 
 ```json
 {
   "event": "commentAdded",
-  "issue": { ... },
-  "comment": {
-    "id": "comment-id",
-    "text": "Comment text",
-    "author": { ... },
-    "created": 1732708800000
-  }
+  "timestamp": "2024-12-10T12:00:00.000Z",
+  "id": "2-123",
+  "numberInProject": 123,
+  "summary": "Issue title",
+  "project": { "id": "...", "name": "...", "shortName": "..." },
+  "comments": [
+    {
+      "id": "comment-id",
+      "text": "Full comment text",
+      "textPreview": "Comment preview...",
+      "created": 1732708800000,
+      "updated": 1732708800000,
+      "author": { "id": "...", "login": "...", "fullName": "...", "email": "..." }
+    }
+  ]
 }
 ```
 
-Event types:
-- `commentAdded`
-- `commentUpdated`
-- `commentDeleted`
+Event types: `commentAdded`, `commentUpdated`, `commentDeleted`
 
-### Work Item Events
+### Work Item Added / Updated / Deleted
 
 ```json
 {
   "event": "workItemAdded",
-  "issue": { ... },
-  "workItem": {
-    "id": "work-item-id",
-    "duration": 3600000,
-    "date": 1732708800000,
-    "author": { ... },
-    "description": "Work description"
-  }
+  "timestamp": "2024-12-10T12:00:00.000Z",
+  "id": "2-123",
+  "numberInProject": 123,
+  "summary": "Issue title",
+  "project": { "id": "...", "name": "...", "shortName": "..." },
+  "workItems": [
+    {
+      "id": "work-item-id",
+      "date": 1732708800000,
+      "duration": 3600000,
+      "description": "Work description",
+      "created": 1732708800000,
+      "updated": 1732708800000,
+      "author": { "id": "...", "login": "...", "fullName": "...", "email": "..." },
+      "type": { "id": "type-id", "name": "Development" }
+    }
+  ]
 }
 ```
 
-Event types:
-- `workItemAdded`
-- `workItemUpdated`
-- `workItemDeleted`
+Event types: `workItemAdded`, `workItemUpdated`, `workItemDeleted`
 
-### Attachment Events
+### Attachment Added / Deleted
 
 ```json
 {
   "event": "issueAttachmentAdded",
-  "issue": { ... },
-  "attachment": {
-    "id": "attachment-id",
-    "name": "file.pdf",
-    "mimeType": "application/pdf",
-    "size": 12345,
-    "url": "https://youtrack.example.com/api/files/..."
-  }
+  "timestamp": "2024-12-10T12:00:00.000Z",
+  "id": "2-123",
+  "numberInProject": 123,
+  "summary": "Issue title",
+  "project": { "id": "...", "name": "...", "shortName": "..." },
+  "attachments": [
+    {
+      "id": "attachment-id",
+      "name": "file.pdf",
+      "mimeType": "application/pdf",
+      "size": 12345,
+      "created": 1732708800000,
+      "author": { "id": "...", "login": "...", "fullName": "...", "email": "..." },
+      "url": "https://youtrack.example.com/api/files/..."
+    }
+  ]
 }
 ```
 
-Event types:
-- `issueAttachmentAdded`
-- `issueAttachmentDeleted`
+Event types: `issueAttachmentAdded`, `issueAttachmentDeleted`
+
+> **Note**: The `id` and `url` fields in attachments may not always be available depending on the YouTrack configuration.
 
 ## Security
 
@@ -208,26 +269,6 @@ X-YouTrack-Signature: <your-secret-token>
 ```
 
 The `X-YouTrack-Signature` header contains your configured secret token for authentication.
-
-
-## Compatibility
-
-- **YouTrack**: 2024.3.0 or later
-- **Node.js**: 14+ (for development)
-- **Webhook Receivers**: Any system supporting HMAC-SHA256 validation
-  - n8n (with n8n-nodes-youtrack package)
-  - Custom webhook receivers
-  - Zapier, Make.com, etc. (with custom HMAC validation)
-
-## Support
-
-- **Issues**: TBU
-- **Documentation**: TBU
-- **n8n Integration**: TBU
-
-## License
-
-TBU
 
 ## Credits
 
