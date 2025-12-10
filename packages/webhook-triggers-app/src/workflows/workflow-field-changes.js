@@ -41,7 +41,20 @@ function serializeFieldValue(value) {
       };
     }
 
-    // Period/Duration objects
+    // Period/Duration objects (Joda-Time Period)
+    if (typeof value.getMinutes === 'function' && typeof value.getHours === 'function') {
+      const minutes = value.getMinutes() || 0;
+      const hours = value.getHours() || 0;
+      const days = typeof value.getDays === 'function' ? (value.getDays() || 0) : 0;
+      const weeks = typeof value.getWeeks === 'function' ? (value.getWeeks() || 0) : 0;
+      const totalMinutes = minutes + (hours * 60) + (days * 8 * 60) + (weeks * 5 * 8 * 60);
+      return {
+        minutes: totalMinutes,
+        presentation: value.toString ? value.toString() : (totalMinutes + 'm')
+      };
+    }
+
+    // Period objects with minutes property (fallback)
     if (value.minutes !== undefined) {
       return {
         minutes: value.minutes,
