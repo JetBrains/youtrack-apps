@@ -136,7 +136,7 @@ When a user is included in the payload:
 ```
 
 ### Issue Updated
-
+**Important**: you will see one 'field change' item in changedFields array per webhook request if issue was amended manually via UI.
 ```json
 {
   "event": "issueUpdated",
@@ -153,11 +153,6 @@ When a user is included in the payload:
       "name": "summary",
       "oldValue": "Old title",
       "value": "New title"
-    },
-    {
-      "name": "Priority",
-      "oldValue": { "name": "Normal", "presentation": "Normal" },
-      "value": { "name": "Critical", "presentation": "Critical" }
     }
   ]
 }
