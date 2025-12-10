@@ -20,6 +20,43 @@ function parseWebhookUrls(webhooksStr) {
 }
 
 /**
+ * Gets all webhook URLs for an event, combining event-specific and "All Events" URLs.
+ * Deduplicates URLs to avoid sending multiple times to the same endpoint.
+ * @param {Object} ctx - The workflow context with settings
+ * @param {string} settingsKey - The key in ctx.settings to get webhook URLs from
+ * @returns {Array<string>} Deduplicated array of webhook URLs
+ */
+function getWebhookUrls(ctx, settingsKey) {
+  // Parse event-specific webhooks
+  const webhooksStr = ctx.settings[settingsKey] || '';
+  const eventUrls = parseWebhookUrls(webhooksStr);
+
+  // Parse "All Events" webhooks
+  const allEventsWebhooksStr = ctx.settings.webhooksOnAllEvents || '';
+  const allEventsUrls = parseWebhookUrls(allEventsWebhooksStr);
+
+  // Combine and deduplicate
+  const urlSet = {};
+  const allUrls = [];
+
+  eventUrls.forEach(function(url) {
+    if (url && !urlSet[url]) {
+      allUrls.push(url);
+      urlSet[url] = true;
+    }
+  });
+
+  allEventsUrls.forEach(function(url) {
+    if (url && !urlSet[url]) {
+      allUrls.push(url);
+      urlSet[url] = true;
+    }
+  });
+
+  return allUrls;
+}
+
+/**
  * Logs webhook response details
  * @param {Object} postResult - The HTTP response object
  * @param {string} url - The webhook URL
@@ -83,49 +120,26 @@ function sendWebhooks(ctx, settingsKey, payload, eventName) {
   // Validate webhook signature
   const signature = ctx.settings.webhookSignature || null;
   if (!signature) {
-    console.log('[webhooks] No webhook signature configured for ' + eventName);
+    console.warn('[webhooks] No webhook signature configured - webhooks disabled for ' + eventName);
     return;
   }
 
-  const webhooksStr = ctx.settings[settingsKey] || '';
-  const webhookUrls = parseWebhookUrls(webhooksStr);
-
-  // Also check for "All Events" webhooks
-  const allEventsWebhooksStr = ctx.settings.webhooksOnAllEvents || '';
-  const allEventsUrls = parseWebhookUrls(allEventsWebhooksStr);
-
-  // Combine both URL lists (removing duplicates)
-  const allUrls = [];
-  const urlSet = {};
-
-  webhookUrls.forEach(function(url) {
-    if (url && url.trim() && !urlSet[url]) {
-      allUrls.push(url);
-      urlSet[url] = true;
-    }
-  });
-
-  allEventsUrls.forEach(function(url) {
-    if (url && url.trim() && !urlSet[url]) {
-      allUrls.push(url);
-      urlSet[url] = true;
-    }
-  });
+  // Get all URLs (event-specific + "All Events", deduplicated)
+  const allUrls = getWebhookUrls(ctx, settingsKey);
 
   if (allUrls.length === 0) {
     console.log('[webhooks] No webhook URLs configured for ' + eventName);
     return;
   }
 
-  console.log('[webhooks] Sending webhooks to ' + allUrls.length + ' URL(s) (including "All Events" webhooks)');
+  console.log('[webhooks] Sending webhooks to ' + allUrls.length + ' URL(s)');
   allUrls.forEach(function(url) {
-    if (url && url.trim()) {
-      sendWebhook(url, payload, eventName, signature);
-    }
+    sendWebhook(url, payload, eventName, signature);
   });
 }
 
 exports.parseWebhookUrls = parseWebhookUrls;
+exports.getWebhookUrls = getWebhookUrls;
 exports.sendWebhook = sendWebhook;
 exports.sendWebhooks = sendWebhooks;
 

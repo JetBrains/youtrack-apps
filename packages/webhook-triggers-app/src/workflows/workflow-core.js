@@ -14,6 +14,7 @@ const utilsModule = require('./workflow-utils');
 
 // Re-export HTTP functions
 exports.parseWebhookUrls = httpModule.parseWebhookUrls;
+exports.getWebhookUrls = httpModule.getWebhookUrls;
 exports.sendWebhook = httpModule.sendWebhook;
 exports.sendWebhooks = httpModule.sendWebhooks;
 
