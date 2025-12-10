@@ -8,7 +8,7 @@
  * @returns {*} Serialized value (string, array, object, or null)
  */
 function serializeFieldValue(value) {
-  if (!value) {
+  if (value === null || value === undefined) {
     return null;
   }
 
@@ -17,16 +17,76 @@ function serializeFieldValue(value) {
     return value;
   }
 
-  // Objects - extract presentation or name
-  if (value.presentation !== undefined || value.name !== undefined) {
-    return {
-      name: value.name || null,
-      presentation: value.presentation || null
-    };
+  // Strings - return as is
+  if (typeof value === 'string') {
+    return value;
   }
 
-  // Fallback to string
-  return String(value);
+  // Handle YouTrack entity objects (User, State, Priority, EnumBundleElement, etc.)
+  if (typeof value === 'object') {
+    // User objects - check for login OR $$type === 'User'
+    if (value.login !== undefined || value.$$type === 'User') {
+      return {
+        login: value.login || null,
+        fullName: value.fullName || null,
+        email: value.email || null
+      };
+    }
+
+    // Enum/State/Priority objects have name and/or presentation
+    if (value.name !== undefined || value.presentation !== undefined) {
+      return {
+        name: value.name || null,
+        presentation: value.presentation || value.name || null
+      };
+    }
+
+    // Period/Duration objects
+    if (value.minutes !== undefined) {
+      return {
+        minutes: value.minutes,
+        presentation: value.presentation || null
+      };
+    }
+
+    // Date fields (check for getTime method)
+    if (typeof value.getTime === 'function') {
+      return value.getTime();
+    }
+
+    // Arrays (multi-value fields like tags, versions)
+    if (Array.isArray(value) || typeof value.forEach === 'function') {
+      const result = [];
+      value.forEach(function(item) {
+        result.push(serializeFieldValue(item));
+      });
+      return result;
+    }
+
+    // For any other object, try to extract id and name safely
+    try {
+      const serialized = {};
+      if (value.id !== undefined) {serialized.id = value.id;}
+      if (value.name !== undefined) {serialized.name = value.name;}
+      if (value.presentation !== undefined) {serialized.presentation = value.presentation;}
+      if (Object.keys(serialized).length > 0) {
+        return serialized;
+      }
+    } catch {
+      // Ignore errors from accessing properties
+    }
+  }
+
+  // Final fallback: try presentation, name, or return null
+  try {
+    if (value.presentation) {return value.presentation;}
+    if (value.name) {return value.name;}
+    if (value.visibleName) {return value.visibleName;}
+  } catch {
+    // Ignore
+  }
+
+  return null;
 }
 
 /**
@@ -41,7 +101,7 @@ function checkBuiltInPropertyChange(issue, propName) {
     if (issue.isChanged && issue.isChanged(propName)) {
       const oldValue = issue.oldValue(propName);
       const newValue = issue[propName];
-      
+
       return {
         name: propName,
         oldValue: String(oldValue || ''),
@@ -81,31 +141,41 @@ function collectChangedFields(issue) {
   const allKeys = Object.keys(issue.fields);
   const fieldNames = allKeys.filter(function(key) {
     const value = issue.fields[key];
-    return typeof value !== 'function' && value !== null && value !== undefined;
+    return typeof value !== 'function';
   });
 
   // Check each field for changes using YouTrack API
   for (let i = 0; i < fieldNames.length; i++) {
     const fieldName = fieldNames[i];
-    const field = issue.fields[fieldName];
+    const currentValue = issue.fields[fieldName];
 
     try {
-      // Use YouTrack API: issue.fields.oldValue(fieldName) - pass field name as string
+      // Use YouTrack API: issue.fields.isChanged(fieldName) where fieldName is a STRING
+      // This is the correct API - NOT currentValue.isChanged
+      let fieldWasChanged = false;
+
+      if (typeof issue.fields.isChanged === 'function') {
+        fieldWasChanged = issue.fields.isChanged(fieldName);
+      }
+
+      // Skip if field wasn't changed
+      if (!fieldWasChanged) {
+        continue;
+      }
+
+      // Get old value using YouTrack API (returns null if field was previously empty)
       const oldValue = issue.fields.oldValue(fieldName);
 
-      if (oldValue !== null && oldValue !== undefined) {
-        const oldValueStr = serializeFieldValue(oldValue);
-        const newValueStr = serializeFieldValue(field);
+      // Serialize values
+      const oldValueSerialized = serializeFieldValue(oldValue);
+      const currentValueSerialized = serializeFieldValue(currentValue);
 
-        // Only include if values actually differ
-        if (oldValueStr !== newValueStr) {
-          changedFields.push({
-            name: fieldName,
-            oldValue: oldValueStr,
-            value: newValueStr
-          });
-        }
-      }
+      // Include the change
+      changedFields.push({
+        name: fieldName,
+        oldValue: oldValueSerialized,
+        value: currentValueSerialized
+      });
     } catch {
       // Silently skip fields that don't support change tracking
     }
