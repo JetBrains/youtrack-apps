@@ -64,7 +64,7 @@ function serializeFieldValue(value) {
     if (value.minutes !== undefined) {
       return {
         minutes: value.minutes,
-        presentation: value.presentation || null
+        presentation: null
       };
     }
 
