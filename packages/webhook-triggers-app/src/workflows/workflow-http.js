@@ -103,6 +103,7 @@ function sendWebhook(url, payload, eventName, token, headerName) {
     connection.addHeader('Content-Type', 'application/json');
     security.addSecurityHeaders(connection, token, headerName);
 
+    // Note: postSync blocks until complete (YouTrack workflows are synchronous)
     const postResult = connection.postSync('', '', JSON.stringify(payload));
 
     logWebhookResponse(postResult, url);
