@@ -65,7 +65,6 @@ function logWebhookResponse(postResult, url) {
   console.log('[webhooks] Webhook sent successfully to ' + url);
   if (postResult) {
     console.log('[webhooks] Response code: ' + (postResult.code || 'unknown'));
-    console.log('[webhooks] Response available fields: ' + Object.keys(postResult).join(', '));
     if (postResult.response) {
       console.log('[webhooks] Response body: ' + postResult.response);
     }
@@ -99,6 +98,7 @@ function sendWebhook(url, payload, eventName, signature) {
     connection.addHeader('Content-Type', 'application/json');
     security.addSecurityHeaders(connection, signature);
 
+    // Note: postSync blocks until complete (YouTrack workflows are synchronous)
     const postResult = connection.postSync('', '', JSON.stringify(payload));
 
     logWebhookResponse(postResult, url);

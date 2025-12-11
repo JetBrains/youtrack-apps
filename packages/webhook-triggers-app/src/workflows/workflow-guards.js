@@ -1,6 +1,6 @@
 /**
  * Guard functions and validation checks for YouTrack workflow rules.
- * These functions help determine if a workflow rule should execute based on constious conditions.
+ * These functions help determine if a workflow rule should be executed based on various conditions.
  */
 
 const httpModule = require('./workflow-http');

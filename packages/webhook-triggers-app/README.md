@@ -112,7 +112,6 @@ When a user is included in the payload:
 
 ```json
 {
-  "id": "user-id",
   "login": "username",
   "fullName": "User Name",
   "email": "user@example.com"
@@ -264,6 +263,22 @@ X-YouTrack-Signature: <your-secret-token>
 ```
 
 The `X-YouTrack-Signature` header contains your configured secret token for authentication.
+## Limitations
+
+### No Connection Timeout Control
+If a webhook endpoint is slow or unresponsive, the workflow will block until
+YouTrack's internal timeout (platform-controlled) is reached.
+
+**Recommendation:** Ensure your webhook endpoints respond within 2 seconds,
+or use a fast intermediary service that acknowledges immediately and processes
+asynchronously.
+
+### Synchronous Webhook Delivery
+
+YouTrack workflows execute synchronously, meaning each webhook is sent
+sequentially and blocks until the endpoint responds. 
+
+**Best practice:** limit the number of webhook URLs per event.
 
 ## Credits
 

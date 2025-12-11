@@ -11,7 +11,7 @@
     "pack": "rm -rf webhook-triggers-app.zip && cd dist/ && bestzip ../webhook-triggers-app.zip *",
     "upload": "youtrack-app upload dist",
 
-    "upload-local": "youtrack-app upload dist --host http://localhost:8088 --token perm-YWRtaW4=.NDMtNQ==.p8hfPQKN7QoKk3hxBdhFCnA5M29XcF",
+    "upload-local": "youtrack-app upload dist --host $YOUTRACK_HOST --token $YOUTRACK_TOKEN",
     "update": "npm run build && npm run upload-local",
     "watch:build": "nodemon --watch src --exec 'npm run build && npm run upload-local'"
 
