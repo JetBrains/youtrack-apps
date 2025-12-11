@@ -43,11 +43,17 @@ function serializeFieldValue(value) {
 
     // Period/Duration objects (Joda-Time Period)
     if (typeof value.getMinutes === 'function' && typeof value.getHours === 'function') {
+      const hourDuration = 60;
+      const dayDuration = 8;
+      const weekDuration = 5;
       const minutes = value.getMinutes() || 0;
       const hours = value.getHours() || 0;
       const days = typeof value.getDays === 'function' ? (value.getDays() || 0) : 0;
       const weeks = typeof value.getWeeks === 'function' ? (value.getWeeks() || 0) : 0;
-      const totalMinutes = minutes + (hours * 60) + (days * 8 * 60) + (weeks * 5 * 8 * 60);
+      const totalMinutes = minutes +
+          (hours * hourDuration) +
+          (days * dayDuration * hourDuration) +
+          (weeks * weekDuration * dayDuration * hourDuration);
       return {
         minutes: totalMinutes,
         presentation: value.toString ? value.toString() : (totalMinutes + 'm')
