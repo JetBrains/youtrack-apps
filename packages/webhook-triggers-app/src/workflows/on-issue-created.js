@@ -1,56 +1,55 @@
 const core = require('./workflow-core');
-const { EVENTS } = require('./constants');
+const {EVENTS} = require('./constants');
 
 /**
  * Workflow rule that triggers webhooks when a new issue is created.
  * Retrieves webhook URLs from project storage and sends issue data to each URL.
  */
 exports.rule = {
-  title: 'webhooks: On Issue Created',
-  description: 'Triggers webhooks when a new issue is created',
+    title: 'webhooks: On Issue Created',
+    description: 'Triggers webhooks when a new issue is created',
 
-  target: 'Issue',
-  ruleType: 'onChange',
-  onCreate: true,
+    target: 'Issue',
+    ruleType: 'onChange',
+    onCreate: true,
 
-  // Guard: use core.createGuard with custom check for issue creation
-  guard: core.createGuard(EVENTS.ISSUE_CREATED.key, function(ctx) {
-    var issue = ctx.issue;
 
-    console.log('[webhooks] On Issue Created - Guard check for issue id: ' + issue.id);
+    guard: core.createGuard(EVENTS.ISSUE_CREATED.key, function (ctx) {
+        var issue = ctx.issue;
 
-    // Skip draft issues
-    if (core.shouldSkipIssue(issue, 'On Issue Created')) {
-      return false;
-    }
+        console.log('[webhooks] On Issue Created - Guard check for issue id: ' + issue.id);
 
-    // Only trigger on actual creation (becomesReported = true)
-    if (!core.isIssueCreation(issue)) {
-      console.log('[webhooks] Skipping - not a creation event');
-      return false;
-    }
 
-    console.log('[webhooks] On Issue Created - Guard passed');
-    return true;
-  }),
+        if (core.shouldSkipIssue(issue, 'On Issue Created')) {
+            return false;
+        }
 
-  // Action: use core helpers to build payload and send webhooks
-  action: function(ctx) {
-    console.log('[webhooks] On Issue Created - Action triggered for issue: ' + ctx.issue.id);
+        // Only trigger on actual creation (becomesReported = true)
+        if (!core.isIssueCreation(issue)) {
+            console.log('[webhooks] Skipping - not a creation event');
+            return false;
+        }
 
-    const issue = ctx.issue;
-    const project = ctx.project;
+        console.log('[webhooks] On Issue Created - Guard passed');
+        return true;
+    }),
 
-    // Build payload using core helper + add issue-specific fields
-    const payload = core.createBasePayload(EVENTS.ISSUE_CREATED.type, issue, project);
-    payload.description = issue.description;
-    payload.created = issue.created;
-    payload.reporter = core.serializeUser(issue.reporter);
+    action: function (ctx) {
+        console.log('[webhooks] On Issue Created - Action triggered for issue: ' + ctx.issue.id);
 
-    // Send to all configured webhooks (handles comma AND newline separation)
-    core.sendWebhooks(ctx, EVENTS.ISSUE_CREATED.key, payload, EVENTS.ISSUE_CREATED.name);
-  },
+        const issue = ctx.issue;
+        const project = ctx.project;
 
-  requirements: {}
+
+        const payload = core.createBasePayload(EVENTS.ISSUE_CREATED.type, issue, project);
+        payload.description = issue.description;
+        payload.created = issue.created;
+        payload.reporter = core.serializeUser(issue.reporter);
+
+
+        core.sendWebhooks(ctx, EVENTS.ISSUE_CREATED.key, payload, EVENTS.ISSUE_CREATED.name);
+    },
+
+    requirements: {}
 };
 

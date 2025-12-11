@@ -9,11 +9,10 @@
  * @param {*} signature - The webhook signature for authentication (can be string or SecretAttributeValue)
  */
 function addSecurityHeaders(connection, signature) {
-  if (signature != null) {
-    // Pass the secret value directly to addHeader - YouTrack handles SecretAttributeValue properly
-    connection.addHeader('X-YouTrack-Signature', signature);
-    console.log('[webhooks] Added X-YouTrack-Signature header');
-  }
+    if (signature != null) {
+        connection.addHeader('X-YouTrack-Signature', signature);
+        console.log('[webhooks] Added X-YouTrack-Signature header');
+    }
 }
 
 exports.addSecurityHeaders = addSecurityHeaders;

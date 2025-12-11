@@ -11,18 +11,18 @@
  * @returns {Object} Base payload object
  */
 function createBasePayload(eventType, issue, project) {
-  return {
-    event: eventType,
-    timestamp: new Date().toISOString(),
-    id: issue.id,
-    numberInProject: issue.numberInProject,
-    summary: issue.summary,
-    project: {
-      id: project.id,
-      name: project.name,
-      shortName: project.shortName
-    }
-  };
+    return {
+        event: eventType,
+        timestamp: new Date().toISOString(),
+        id: issue.id,
+        numberInProject: issue.numberInProject,
+        summary: issue.summary,
+        project: {
+            id: project.id,
+            name: project.name,
+            shortName: project.shortName
+        }
+    };
 }
 
 /**
@@ -31,12 +31,14 @@ function createBasePayload(eventType, issue, project) {
  * @returns {Object|null} Serialized user or null
  */
 function serializeUser(user) {
-  if (!user) {return null;}
-  return {
-    login: user.login,
-    fullName: user.fullName,
-    email: user.email
-  };
+    if (!user) {
+        return null;
+    }
+    return {
+        login: user.login,
+        fullName: user.fullName,
+        email: user.email
+    };
 }
 
 exports.createBasePayload = createBasePayload;

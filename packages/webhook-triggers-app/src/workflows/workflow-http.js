@@ -6,17 +6,21 @@ const http = require('@jetbrains/youtrack-scripting-api/http');
 const security = require('./workflow-security');
 
 /**
- * Parses comma or newline separated webhook URLs from settings
+ * Parse comma or newline separated webhook URLs from settings
  * @param {string} webhooksStr - Comma or newline separated webhook URLs
  * @returns {Array<string>} Array of trimmed, non-empty URLs
  */
 function parseWebhookUrls(webhooksStr) {
-  if (!webhooksStr || typeof webhooksStr !== 'string') {
-    return [];
-  }
-  return webhooksStr.split(/[,\n]/)  // Split by comma OR newline
-    .map(function(s) { return s.trim(); })
-    .filter(function(s) { return s.length > 0; });
+    if (!webhooksStr || typeof webhooksStr !== 'string') {
+        return [];
+    }
+    return webhooksStr.split(/[,\n]/)  // Split by comma OR newline
+        .map(function (s) {
+            return s.trim();
+        })
+        .filter(function (s) {
+            return s.length > 0;
+        });
 }
 
 /**
@@ -27,33 +31,33 @@ function parseWebhookUrls(webhooksStr) {
  * @returns {Array<string>} Deduplicated array of webhook URLs
  */
 function getWebhookUrls(ctx, settingsKey) {
-  // Parse event-specific webhooks
-  const webhooksStr = ctx.settings[settingsKey] || '';
-  const eventUrls = parseWebhookUrls(webhooksStr);
+    // Parse event-specific webhooks
+    const webhooksStr = ctx.settings[settingsKey] || '';
+    const eventUrls = parseWebhookUrls(webhooksStr);
 
-  // Parse "All Events" webhooks
-  const allEventsWebhooksStr = ctx.settings.webhooksOnAllEvents || '';
-  const allEventsUrls = parseWebhookUrls(allEventsWebhooksStr);
+    // Parse "All Events" webhooks
+    const allEventsWebhooksStr = ctx.settings.webhooksOnAllEvents || '';
+    const allEventsUrls = parseWebhookUrls(allEventsWebhooksStr);
 
-  // Combine and deduplicate
-  const urlSet = {};
-  const allUrls = [];
+    // Combine and deduplicate
+    const urlSet = {};
+    const allUrls = [];
 
-  eventUrls.forEach(function(url) {
-    if (url && !urlSet[url]) {
-      allUrls.push(url);
-      urlSet[url] = true;
-    }
-  });
+    eventUrls.forEach(function (url) {
+        if (url && !urlSet[url]) {
+            allUrls.push(url);
+            urlSet[url] = true;
+        }
+    });
 
-  allEventsUrls.forEach(function(url) {
-    if (url && !urlSet[url]) {
-      allUrls.push(url);
-      urlSet[url] = true;
-    }
-  });
+    allEventsUrls.forEach(function (url) {
+        if (url && !urlSet[url]) {
+            allUrls.push(url);
+            urlSet[url] = true;
+        }
+    });
 
-  return allUrls;
+    return allUrls;
 }
 
 /**
@@ -62,13 +66,13 @@ function getWebhookUrls(ctx, settingsKey) {
  * @param {string} url - The webhook URL
  */
 function logWebhookResponse(postResult, url) {
-  console.log('[webhooks] Webhook sent successfully to ' + url);
-  if (postResult) {
-    console.log('[webhooks] Response code: ' + (postResult.code || 'unknown'));
-    if (postResult.response) {
-      console.log('[webhooks] Response body: ' + postResult.response);
+    console.log('[webhooks] Webhook sent successfully to ' + url);
+    if (postResult) {
+        console.log('[webhooks] Response code: ' + (postResult.code || 'unknown'));
+        if (postResult.response) {
+            console.log('[webhooks] Response body: ' + postResult.response);
+        }
     }
-  }
 }
 
 /**
@@ -77,11 +81,11 @@ function logWebhookResponse(postResult, url) {
  * @param {string} url - The webhook URL
  */
 function logWebhookError(error, url) {
-  console.error('[webhooks] Failed to send webhook to ' + url);
-  const errorMessage = error.message || error.toString() || 'Unknown error';
-  const errorStack = error.stack || 'No stack trace';
-  console.error('[webhooks] Error: ' + errorMessage);
-  console.error('[webhooks] Error stack: ' + errorStack);
+    console.error('[webhooks] Failed to send webhook to ' + url);
+    const errorMessage = error.message || error.toString() || 'Unknown error';
+    const errorStack = error.stack || 'No stack trace';
+    console.error('[webhooks] Error: ' + errorMessage);
+    console.error('[webhooks] Error stack: ' + errorStack);
 }
 
 /**
@@ -93,20 +97,20 @@ function logWebhookError(error, url) {
  * @returns {Object|null} The HTTP response or null on error
  */
 function sendWebhook(url, payload, eventName, signature) {
-  try {
-    const connection = new http.Connection(url.trim());
-    connection.addHeader('Content-Type', 'application/json');
-    security.addSecurityHeaders(connection, signature);
+    try {
+        const connection = new http.Connection(url.trim());
+        connection.addHeader('Content-Type', 'application/json');
+        security.addSecurityHeaders(connection, signature);
 
-    // Note: postSync blocks until complete (YouTrack workflows are synchronous)
-    const postResult = connection.postSync('', '', JSON.stringify(payload));
+        // Note: postSync blocks until complete (YouTrack workflows are synchronous)
+        const postResult = connection.postSync('', '', JSON.stringify(payload));
 
-    logWebhookResponse(postResult, url);
-    return postResult;
-  } catch (error) {
-    logWebhookError(error, url);
-    return null;
-  }
+        logWebhookResponse(postResult, url);
+        return postResult;
+    } catch (error) {
+        logWebhookError(error, url);
+        return null;
+    }
 }
 
 /**
@@ -117,25 +121,25 @@ function sendWebhook(url, payload, eventName, signature) {
  * @param {string} eventName - Name of the event for logging
  */
 function sendWebhooks(ctx, settingsKey, payload, eventName) {
-  // Validate webhook signature
-  const signature = ctx.settings.webhookSignature || null;
-  if (!signature) {
-    console.warn('[webhooks] No webhook signature configured - webhooks disabled for ' + eventName);
-    return;
-  }
+    // Validate webhook signature
+    const signature = ctx.settings.webhookSignature || null;
+    if (!signature) {
+        console.warn('[webhooks] No webhook signature configured - webhooks disabled for ' + eventName);
+        return;
+    }
 
-  // Get all URLs (event-specific + "All Events", deduplicated)
-  const allUrls = getWebhookUrls(ctx, settingsKey);
+    // Get all URLs (event-specific + "All Events", deduplicated)
+    const allUrls = getWebhookUrls(ctx, settingsKey);
 
-  if (allUrls.length === 0) {
-    console.log('[webhooks] No webhook URLs configured for ' + eventName);
-    return;
-  }
+    if (allUrls.length === 0) {
+        console.log('[webhooks] No webhook URLs configured for ' + eventName);
+        return;
+    }
 
-  console.log('[webhooks] Sending webhooks to ' + allUrls.length + ' URL(s)');
-  allUrls.forEach(function(url) {
-    sendWebhook(url, payload, eventName, signature);
-  });
+    console.log('[webhooks] Sending webhooks to ' + allUrls.length + ' URL(s)');
+    allUrls.forEach(function (url) {
+        sendWebhook(url, payload, eventName, signature);
+    });
 }
 
 exports.parseWebhookUrls = parseWebhookUrls;
