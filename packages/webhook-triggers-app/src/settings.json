@@ -2,95 +2,95 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "title": "Webhook Triggers Settings",
-  "description": "Trigger external webhooks from YouTrack events. Enter multiple URLs separated by commas or one per line. Leave empty to disable.",
+  "description": "Trigger external webhooks from YouTrack events such as issue creation, updates, deletion, comments (add/edit/delete), work items (add/edit/delete), and attachments (add/remove). Configure multiple webhook URLs per event in the project settings.",
   "required": ["webhookSignature"],
   "properties": {
     "webhookSignature": {
-      "title": "Webhook Signature",
+      "title": "Webhook signature",
       "description": "Secret signature for authentication (required for security). Must be at least 32 characters long.",
       "type": "string",
       "format": "secret",
       "x-scope": "PROJECT"
     },
     "webhooksOnIssueCreated": {
-      "title": "Issue Created",
+      "title": "Issue created",
       "description": "Triggered when a new issue is created",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnIssueUpdated": {
-      "title": "Issue Updated",
+      "title": "Issue updated",
       "description": "Triggered when an issue is modified",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnIssueDeleted": {
-      "title": "Issue Deleted",
-      "description": "Triggered when an issue is deleted",
+      "title": "Issue deleted",
+      "description": "Triggered when an issue is removed",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnCommentAdded": {
-      "title": "Comment Added",
+      "title": "Comment added",
       "description": "Triggered when a comment is added to an issue",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnCommentUpdated": {
-      "title": "Comment Updated",
-      "description": "Triggered when a comment is edited",
+      "title": "Comment updated",
+      "description": "Triggered when a comment is modified",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnCommentDeleted": {
-      "title": "Comment Deleted",
+      "title": "Comment deleted",
       "description": "Triggered when a comment is removed",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnAttachmentAdded": {
-      "title": "Attachment Added",
-      "description": "Triggered when a attachment is added to an issue",
+      "title": "Attachment added",
+      "description": "Triggered when an attachment is added to an issue",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnAttachmentDeleted": {
-      "title": "Attachment Deleted",
-      "description": "Triggered when a attachment is removed",
+      "title": "Attachment deleted",
+      "description": "Triggered when an attachment is removed",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnWorkItemAdded": {
-      "title": "Work Item Added",
+      "title": "Work item added",
       "description": "Triggered when time is logged on an issue",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnWorkItemUpdated": {
-      "title": "Work Item Updated",
+      "title": "Work item updated",
       "description": "Triggered when a work item is modified",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnWorkItemDeleted": {
-      "title": "Work Item Deleted",
+      "title": "Work item deleted",
       "description": "Triggered when a work item is removed",
       "type": "string",
       "format": "textarea",
       "x-scope": "PROJECT"
     },
     "webhooksOnAllEvents": {
-      "title": "All Events",
+      "title": "All events",
       "description": "Triggered on any event (issue created/updated/deleted, comments, attachments, work items)",
       "type": "string",
       "format": "textarea",
