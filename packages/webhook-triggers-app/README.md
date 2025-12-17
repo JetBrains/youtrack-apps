@@ -14,7 +14,7 @@ Trigger external webhooks from YouTrack events such as issue creation, updates, 
 
 ### Step 1: Generate a Secure Secret
 
-The webhook signature is required for security. Generate a strong random secret:
+The webhook token is required for security. Generate a strong random secret:
 
 ```bash
 # Generate a 64-character hex secret (recommended)
@@ -32,7 +32,7 @@ openssl rand -hex 32
 2. Go to **Settings** > **Apps** > **Webhook Triggers**
 3. Configure the following:
 
-#### 2.1. Webhook Signature (Required)
+#### 2.1. Webhook Token (Required)
 - Paste the secret generated in Step 1
 - This must match the secret configured in your webhook receiver
 - Minimum 32 characters
@@ -76,7 +76,7 @@ Your webhook receiver (e.g., n8n) must be configured to validate the signatures.
 2. Add "YouTrack Trigger" node to your workflow
 3. Configure **YouTrack Webhook Auth API** credential:
    - **Authentication Method**: `Header Auth`
-   - **Header Name**: `X-YouTrack-Signature`
+   - **Header Name**: e.g. `X-YouTrack-Token`
    - **Secret Key**: Paste the same secret from Step 1
 
 4. Select events to listen for
@@ -259,10 +259,11 @@ Each webhook includes the following headers:
 
 ```
 Content-Type: application/json
-X-YouTrack-Signature: <your-secret-token>
+<Header-Name>: <your-secret-token>
 ```
 
-The `X-YouTrack-Signature` header contains your configured secret token for authentication.
+The header name is configurable (defaults to `X-YouTrack-Token`) and contains your configured secret token for authentication.
+
 ## Limitations
 
 ### No Connection Timeout Control

@@ -3,13 +3,21 @@
   "type": "object",
   "title": "Webhook Triggers Settings",
   "description": "Trigger external webhooks from YouTrack events such as issue creation, updates, deletion, comments (add/edit/delete), work items (add/edit/delete), and attachments (add/remove). Configure multiple webhook URLs per event in the project settings.",
-  "required": ["webhookSignature"],
+  "required": ["webhookToken", "headerName"],
   "properties": {
-    "webhookSignature": {
-      "title": "Webhook signature",
-      "description": "Secret signature for authentication (required for security). Must be at least 32 characters long.",
+    "webhookToken": {
+      "title": "Webhook token",
+      "description": "Token for authentication (required for security). Must be at least 32 characters long.",
       "type": "string",
       "format": "secret",
+      "x-scope": "PROJECT"
+    },
+    "headerName": {
+      "title": "Header name",
+      "description": "The HTTP header name that carries the webhook token in outgoing requests",
+      "type": "string",
+      "format": "text",
+      "default": "X-YouTrack-Token",
       "x-scope": "PROJECT"
     },
     "webhooksOnIssueCreated": {

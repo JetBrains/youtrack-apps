@@ -6,13 +6,14 @@
 /**
  * Adds security headers to an HTTP connection
  * @param {Object} connection - The HTTP connection object
- * @param {*} signature - The webhook signature for authentication (can be string or SecretAttributeValue)
+ * @param {string|Object} token - Token value (supports YouTrack SecretAttributeValue)
+ * @param {string} headerName - Name of the HTTP header to include the webhook token in requests
  */
-function addSecurityHeaders(connection, signature) {
-    if (signature != null) {
-        connection.addHeader('X-YouTrack-Signature', signature);
-        console.log('[webhooks] Added X-YouTrack-Signature header');
-    }
+function addSecurityHeaders(connection, token, headerName) {
+  if (token != null && headerName) {
+    connection.addHeader(headerName, token);
+    console.log(`[webhooks] Added ${headerName} header`);
+  }
 }
 
 exports.addSecurityHeaders = addSecurityHeaders;
