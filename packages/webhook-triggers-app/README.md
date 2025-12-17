@@ -130,7 +130,7 @@ When a user is included in the payload:
   "project": { "id": "...", "name": "...", "shortName": "..." },
   "description": "Issue description text",
   "created": 1732708800000,
-  "reporter": { "id": "...", "login": "...", "fullName": "...", "email": "..." }
+  "reporter": { "login": "...", "fullName": "...", "email": "..." }
 }
 ```
 
@@ -235,21 +235,17 @@ Event types: `workItemAdded`, `workItemUpdated`, `workItemDeleted`
   "project": { "id": "...", "name": "...", "shortName": "..." },
   "attachments": [
     {
-      "id": "attachment-id",
       "name": "file.pdf",
       "mimeType": "application/pdf",
       "size": 12345,
       "created": 1732708800000,
-      "author": { "id": "...", "login": "...", "fullName": "...", "email": "..." },
-      "url": "https://youtrack.example.com/api/files/..."
+      "author": { "id": "...", "login": "...", "fullName": "...", "email": "..." }
     }
   ]
 }
 ```
 
 Event types: `issueAttachmentAdded`, `issueAttachmentDeleted`
-
-> **Note**: The `id` and `url` fields in attachments may not always be available depending on the YouTrack configuration.
 
 ## Security
 
