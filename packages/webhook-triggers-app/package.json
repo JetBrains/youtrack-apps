@@ -10,11 +10,12 @@
     "test": "echo 'no tests'",
     "pack": "rm -rf webhook-triggers-app.zip && cd dist/ && bestzip ../webhook-triggers-app.zip *",
     "upload": "youtrack-app upload dist",
-
     "upload-local": "youtrack-app upload dist --host $YOUTRACK_HOST --token $YOUTRACK_TOKEN",
     "update": "npm run build && npm run upload-local",
-    "watch:build": "nodemon --watch src --exec 'npm run build && npm run upload-local'"
-
+    "watch:build": "nodemon --watch src --exec 'npm run build && npm run upload-local'",
+    "release:bump-version": "commit-and-tag-version --release-as patch --bumpFiles manifest.json --packageFiles manifest.json",
+    "release:ci": "npm run release:bump-version && npm run build && npm run pack && npm run upload:marketplace && git push --follow-tags origin main",
+    "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer $pluginsRepositoryToken\" -F \"pluginId=$pluginRepositoryID\" -F \"file=@webhook-triggers-app.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin"
   },
   "dependencies": {
     "@jetbrains/ring-ui-built": "^7.0.8",
