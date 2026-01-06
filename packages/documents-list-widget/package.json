@@ -50,5 +50,10 @@
     "typescript-plugin-css-modules": "^5.2.0",
     "vite": "^6.0.1",
     "vite-plugin-static-copy": "^2.2.0"
+  },
+  "commit-and-tag-version": {
+    "skip": {
+      "tag": true
+    }
   }
 }
