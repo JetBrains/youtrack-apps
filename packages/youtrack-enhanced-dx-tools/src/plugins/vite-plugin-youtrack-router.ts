@@ -123,6 +123,8 @@ export default function youtrackRouter(): Plugin {
 
       // Extract handler functions from compiled chunks
       const handlerFunctions = new Map<string, string>();
+      const handlerImports = new Map<string, string[]>(); // Store imports per handler
+
       for (const fileName in bundle) {
         const chunk = bundle[fileName];
         if (chunk.type === 'chunk' && fileName.endsWith('.js')) {
@@ -147,6 +149,56 @@ export default function youtrackRouter(): Plugin {
               }
             }
             if (funcStart !== -1) {
+              // Extract code before the function
+              const codeBeforeFunction = lines.slice(0, funcStart);
+              let braceBalance = 0;
+              for (const line of codeBeforeFunction) {
+                for (const ch of line) {
+                  if (ch === '{') braceBalance++;
+                  else if (ch === '}') braceBalance--;
+                }
+              }
+
+              // If braces are not balanced, the classes are incomplete - this shouldn't happen
+              // but if it does, we'll log a warning
+              if (braceBalance !== 0 && codeBeforeFunction.some(line => /^\s*class\s+/.test(line.trim()))) {
+                console.warn(`[youtrack-router] Warning: Unbalanced braces (${braceBalance}) in code before function for ${fileName}. Classes may be incomplete.`);
+              }
+
+
+
+              // We don't extract inlined classes
+              // Use ES6 imports which Rollup transforms to require() statements.
+              // These require() statements will be extracted and placed at module level.
+
+              // Check if there are require() statements (code splitting case)
+              const importsAndTopLevel = codeBeforeFunction.filter(line => {
+                const trimmed = line.trim();
+                if (/^\s*(const|let|var)\s+.*=\s*require\s*\(/.test(trimmed)) {
+                  // Filter out Rollup internal code
+                  if (trimmed.includes('__defProp') || trimmed.includes('__defNormalProp') ||
+                    trimmed.includes('__esModule') || trimmed.startsWith('var __')) {
+                    return false;
+                  }
+                  return true;
+                }
+                return false;
+              });
+
+              // Store imports/code separately for this handler
+              const route = routes.find(r => {
+                const rel = path.relative(routerRoot, r.filePath);
+                const parsed = path.parse(rel);
+                const expected = `${path.join(parsed.dir, parsed.name).replace(/[\\/]/g, '-')}.js`;
+                return expected === fileName;
+              });
+
+              if (route) {
+                const fileNameKey = `${path.join(path.parse(path.relative(routerRoot, route.filePath)).dir, path.parse(route.filePath).name).replace(/[\\/]/g, '-')}.js`;
+                const importLines = importsAndTopLevel.map(line => line.trim()).filter(line => line !== '');
+                handlerImports.set(fileNameKey, importLines);
+              }
+
               // Find matching closing brace of function body
               let braceCount = 0;
               for (let i = funcStart; i < lines.length; i++) {
@@ -183,14 +235,39 @@ export default function youtrackRouter(): Plugin {
       for (const scope in routesByScope) {
         if (Object.prototype.hasOwnProperty.call(routesByScope, scope)) {
           const scopeRoutes = routesByScope[scope];
+
+          // Collect and deduplicate all imports from all handlers in this scope
+          const allImports = new Set<string>();
+          scopeRoutes.forEach(route => {
+            const relativePath = path.relative(routerRoot, route.filePath);
+            const parsedPath = path.parse(relativePath);
+            const fileName = `${path.join(parsedPath.dir, parsedPath.name).replace(/[\\/]/g, '-')}.js`;
+
+            // Get imports that were extracted earlier
+            const imports = handlerImports.get(fileName) || [];
+            imports.forEach(imp => allImports.add(imp));
+          });
+
           const endpoints = scopeRoutes.map(route => {
             const relativePath = path.relative(routerRoot, route.filePath);
             const parsedPath = path.parse(relativePath);
             const fileName = `${path.join(parsedPath.dir, parsedPath.name).replace(/[\\/]/g, '-')}.js`;
             const handlerCode = handlerFunctions.get(fileName) || 'function() {}';
 
+            // Split handler code into imports and function parts
+            const handlerLines = handlerCode.split('\n');
+            const functionStartIndex = handlerLines.findIndex(line =>
+              line.match(/^\s*function\s+\w*\s*\(/)
+            );
+
+            let functionCode = handlerCode;
+            if (functionStartIndex > 0) {
+              // Extract only the function code (imports will be at module level)
+              functionCode = handlerLines.slice(functionStartIndex).join('\n');
+            }
+
             // Clean up function name and indent properly
-            const cleanHandler = handlerCode.replace(/function\s+\w+\s*\(/, 'function(');
+            const cleanHandler = functionCode.replace(/function\s+\w+\s*\(/, 'function(');
             // Indent each line of the function by 12 spaces (3 levels of 4 spaces)
             const indentedHandler = cleanHandler.split('\n').map((line, idx) => {
               if (idx === 0) return line; // Don't indent the first line (function declaration)
@@ -208,11 +285,17 @@ export default function youtrackRouter(): Plugin {
       }`;
           }).join(',\n');
 
+          // Build module-level imports/code string
+          // When code is inlined (classes, etc.), preserve the structure exactly as extracted
+          const moduleImports = Array.from(allImports)
+            .join('\n');
+
+          const importsSection = moduleImports ? `${moduleImports}\n\n` : '';
+
           const fileContent = `"use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const requirements = require("./requirements.js");
-
-const httpHandler = {
+${importsSection}const httpHandler = {
     endpoints: [
 ${endpoints}
     ],

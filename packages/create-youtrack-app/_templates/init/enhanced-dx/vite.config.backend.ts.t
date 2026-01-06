@@ -56,18 +56,22 @@ export default defineConfig({
         'perf_hooks'
       ],
       output: {
-          entryFileNames: (chunkInfo) => {
-              const routerRoot = path.resolve(process.cwd(), 'src', 'backend', 'router');
-              if (chunkInfo.facadeModuleId && chunkInfo.facadeModuleId.startsWith(routerRoot)) {
-                  const relativePath = path.relative(routerRoot, chunkInfo.facadeModuleId);
-                  const parsedPath = path.parse(relativePath);
-                  const name = path.join(parsedPath.dir, parsedPath.name).replace(/[\\/]/g, '-');
-                  return `${name}.js`;
+          entryFileNames: '[name].js',
+          chunkFileNames: '[name].js',
+          # Create shared chunks for backend modules to force require() statements
+          manualChunks: (id) => {
+              # Handler files (entry points) - don't chunk
+              if (id.includes('/backend/router/')) {
+                  return null;
               }
-              return '[name].js';
+
+              # Any other backend code - create shared chunks by top-level directory
+              const backendMatch = id.match(/\/backend\/([^/]+)\//);
+              if (backendMatch) {
+                  return `backend-${backendMatch[1]}`; # e.g., backend-infrastructure, backend-utils, backend-services
+              }
+
+              return null;
           },
-          chunkFileNames: '[name].js'
-          }
-        },
       },
 });
