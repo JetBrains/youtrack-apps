@@ -435,6 +435,7 @@ const resolveErrors = (ruleUsage: PluggableObjectUsage) => {
 const normalizePriority = (value: number | null | undefined) =>
   typeof value === "number" && Number.isFinite(value) ? value : 0;
 
+// eslint-disable-next-line complexity
 const mapRow = (ruleUsage: PluggableObjectUsage): TableRowData => {
   const { ruleTitle, ruleSubtitle, appTitle, appName } = buildRuleMeta(ruleUsage);
   const activeStatus = calculateActiveStatus(ruleUsage);
