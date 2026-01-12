@@ -27,7 +27,8 @@ to: package.json
     "watch:frontend": "vite build --watch",
     "watch:build": "npm run prepare:watch && (AUTOUPLOAD=true npm run watch:backend & while [ ! -f src/api/api.d.ts ] || [ ! -f src/api/api.zod.ts ]; do sleep 0.5; done && AUTOUPLOAD=true npm run watch:frontend)",
 
-    "dev:remote": "npm run dev",
+    "dev:server": "vite",
+    "dev:remote": "echo 'Step 1: In a new terminal, run: npm run dev:server' && echo 'Step 2: Run: npm run dev:remote:upload' && echo 'Step 3: Edit frontend files for hot reload!'",
     "dev:remote:build": "npm run clean && npm run build:backend && DEV_MODE=true npm run build:frontend",
     "dev:remote:upload": "npm run dev:remote:build && npm run upload-local"
   },

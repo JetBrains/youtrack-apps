@@ -190,6 +190,80 @@ Time:     ~5-10 seconds
 - This is expected if you modified `Req` or `Res` type definitions
 - Implementation-only changes should trigger single build
 
+## 🚀 Hot Reload (Fastest Development)
+
+For instant frontend updates without any rebuilding or uploading:
+
+### Quick Start
+
+**One-time setup:**
+```bash
+# Build and upload dev-mode bundle
+npm run dev:remote:upload
+```
+
+**Development:**
+```bash
+# Start dev server (keep running)
+npm run dev:server
+```
+
+Now edit any frontend file and see changes instantly in YouTrack!
+
+### How It Works
+
+```
+Developer edits file
+    ↓
+Vite dev server detects change
+    ↓
+Hot Module Replacement (HMR)
+    ↓
+Browser updates WITHOUT page reload
+```
+
+The uploaded widget HTML loads scripts from `http://localhost:9099` instead of bundled files.
+
+### When to Use Each Workflow
+
+| Workflow | Use Case | Speed | Setup |
+|----------|----------|-------|-------|
+| **Hot Reload** | Frontend-only changes | Instant (<1s) | One-time upload |
+| **Watch Mode** | Backend + frontend changes | 2-10s | Auto-upload on save |
+| **Manual Build** | Production deployment | N/A | Full build + upload |
+
+### Backend Changes
+
+Hot reload only affects frontend. For backend changes:
+```bash
+# Re-upload with updated backend
+npm run dev:remote:upload
+```
+
+### Troubleshooting
+
+**Widget shows blank page:**
+- Check Vite dev server is running (`npm run dev:server`)
+- Check browser console for connection errors
+- Verify dev server on port 9099: `curl http://localhost:9099`
+
+**Scripts blocked by browser:**
+- Check browser console for CORS/CSP errors
+- If on HTTPS YouTrack, may need HTTPS dev server: `vite --https`
+
+**Changes not reflecting:**
+- Check Vite console for HMR update messages
+- Try hard refresh (Ctrl+Shift+R / Cmd+Shift+R)
+- Check file is actually saved
+
+### Switching Back to Production
+
+When done developing, upload a production build:
+```bash
+npm run build
+npm run upload-local
+```
+
 ## 🔍 Using the Logger
 
 In backend handlers, use `ctx.logger` instead of `console` for proper logging:

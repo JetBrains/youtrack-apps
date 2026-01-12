@@ -93,6 +93,33 @@ export default defineConfig({
 });
 ```
 
+### `youtrackDevHtml(options)`
+
+Vite plugin that transforms widget HTML to load scripts from localhost during development.
+
+**Options:**
+```typescript
+{
+  enabled?: boolean;        // Enable dev mode (default: false)
+  devServerUrl?: string;    // Dev server URL (default: 'http://localhost')
+  devServerPort?: number;   // Dev server port (default: 9099)
+}
+```
+
+**Usage:**
+```typescript
+import { youtrackDevHtml } from '@jetbrains/youtrack-enhanced-dx-tools';
+
+export default defineConfig({
+  plugins: [
+    youtrackDevHtml({ 
+      enabled: process.env.DEV_MODE === 'true',
+      devServerPort: 9099
+    })
+  ]
+});
+```
+
 ### `youtrackExtensionProperties()`
 
 Vite plugin that:
@@ -146,6 +173,42 @@ The `watch:build` script:
 - Runs initial backend build to generate types
 - Starts both frontend and backend watchers
 - Automatically uploads when `AUTOUPLOAD=true`
+
+### Hot Reload (Development Mode)
+
+For the fastest development experience, use hot reload to see frontend changes instantly without rebuilding or uploading:
+
+**Setup (one-time):**
+1. Ensure `.env` file exists with `YOUTRACK_HOST` and `YOUTRACK_TOKEN`
+2. Upload your app once with dev mode enabled
+
+**Workflow:**
+
+```bash
+# Terminal 1: Start Vite dev server
+npm run dev:server
+
+# Terminal 2: Build and upload dev-mode bundle (one time)
+npm run dev:remote:upload
+
+# Now edit any frontend file → hot reload in YouTrack!
+```
+
+**How It Works:**
+- The uploaded HTML contains `<script>` tags pointing to `http://localhost:9099`
+- Vite dev server serves your source code with HMR enabled
+- Changes to React components hot reload instantly
+- Backend changes still require re-uploading with `npm run dev:remote:upload`
+
+**Requirements:**
+- Vite dev server must be running on port 9099
+- YouTrack instance must be accessible from your development machine
+- Browser must allow scripts from localhost (typically allowed)
+
+**Limitations:**
+- Frontend-only hot reload (backend requires upload)
+- Requires keeping Vite dev server running
+- Only works during development (production builds use bundled scripts)
 
 ### Environment Variables
 
