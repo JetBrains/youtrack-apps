@@ -202,10 +202,10 @@ export default function handle(ctx: CtxGet<MyResponse>) {
   ctx.logger.info('Processing request for project:', ctx.project?.id);
   ctx.logger.warn('Rate limit approaching');
   ctx.logger.error('Failed to fetch data', error);
-  
+
   // ❌ Avoid - may not appear in YouTrack logs
   console.log('This might not be visible');
-  
+
   ctx.response.json({ success: true });
 }
 
@@ -313,13 +313,24 @@ Supported methods: `GET`, `POST`, `PUT`, `DELETE`
 
 ## 🚀 Deployment
 
-1. Build your app: `npm run build`
-2. Upload to YouTrack: `npm run upload -- --host https://your-youtrack.url --token your-token`
+### Development Deployment
+```bash
+# Using .env credentials
+npm run update
+```
 
-## 📖 Learn More
+### Production Deployment
+```bash
+# Build
+npm run build
 
-- [YouTrack App Development Guide](https://www.jetbrains.com/help/youtrack/server/youtrack-apps.html)
-- [YouTrack Scripting API](https://www.jetbrains.com/help/youtrack/server/youtrack-scripting-api.html)
+# Upload with explicit credentials
+npm run upload -- --host https://your-youtrack.url --token perm:your-token
+
+# Or create distributable ZIP
+npm run pack
+# Upload <%= appName %>.zip through YouTrack UI
+```
 
 ## 🐛 Common Issues & Solutions
 
@@ -383,3 +394,9 @@ npm run watch:build
 **Problem:** Multiple uploads for single change
 - This is prevented by lock files
 - If it happens, restart watch mode
+
+## Learn More
+
+- [YouTrack App Development Guide](https://www.jetbrains.com/help/youtrack/devportal/apps-quick-start-guide.html)
+- [YouTrack Scripting API](https://www.jetbrains.com/help/youtrack/devportal/YouTrack-Api-Documentation.html)
+- [Enhanced DX Tools Documentation](https://github.com/alex-petrunin/youtrack-apps/tree/experimental-ts-and-routing-support-npm/packages/youtrack-enhanced-dx-tools)
