@@ -52,7 +52,21 @@ export default tseslint.config(
           allowConstantExport: true,
         },
       ],
-      "react/jsx-no-literals": "off"
+      // Relaxed rules for better developer experience
+      "react/jsx-no-literals": "off",
+      "@typescript-eslint/no-explicit-any": "warn", // Downgrade from error to warning
+      "@typescript-eslint/no-unused-vars": ["warn", { 
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_" 
+      }], // Allow unused vars prefixed with _
+      "no-console": "off", // Allow console.log during development
+      "@typescript-eslint/ban-ts-comment": ["error", {
+        "ts-ignore": "allow-with-description",
+        "ts-expect-error": "allow-with-description"
+      }], // Allow @ts-ignore with description
+      "@typescript-eslint/no-non-null-assertion": "warn", // Downgrade from error
+      "import/no-unresolved": "off", // Vite handles this
+      "import/extensions": "off" // Not needed with Vite
     }
   },
   {
