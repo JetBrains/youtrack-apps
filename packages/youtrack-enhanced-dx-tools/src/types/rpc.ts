@@ -72,6 +72,8 @@ type AllCtxDelete =
 /**
  * Extracts RPC signature from a handler function.
  * Supports all scope types (issue, project, article, user, global) and HTTP methods (GET, POST, PUT, DELETE).
+ * 
+ * **Note:** All API methods return Promises, as they involve network requests to YouTrack.
  *
  * @template T - Handler function type
  *
@@ -79,22 +81,22 @@ type AllCtxDelete =
  * ```typescript
  * // For a GET handler with response and query
  * type Handler = (ctx: CtxGetProject<MyResponse, MyQuery>) => void;
- * type RPC = ExtractRPCFromHandler<Handler>; // (query?: Partial<MyQuery>) => MyResponse
+ * type RPC = ExtractRPCFromHandler<Handler>; // (query?: Partial<MyQuery>) => Promise<MyResponse>
  *
  * // For a POST handler with body, response, and query
  * type Handler = (ctx: CtxPostIssue<MyBody, MyResponse, MyQuery>) => void;
- * type RPC = ExtractRPCFromHandler<Handler>; // (body: MyBody, query?: Partial<MyQuery>) => MyResponse
+ * type RPC = ExtractRPCFromHandler<Handler>; // (body: MyBody, query?: Partial<MyQuery>) => Promise<MyResponse>
  * ```
  */
 export type ExtractRPCFromHandler<T> =
   T extends (ctx: infer Ctx) => void
     ? Ctx extends AllCtxPost | AllCtxPut
       ? Ctx extends CtxPost<infer Body, infer Res, infer Query, any> | CtxPut<infer Body, infer Res, infer Query, any>
-        ? (body: Body, query?: Partial<Query>) => Res
+        ? (body: Body, query?: Partial<Query>) => Promise<Res>
         : never
       : Ctx extends AllCtxGet | AllCtxDelete
         ? Ctx extends CtxGet<infer Res, infer Query, any> | CtxDelete<infer Res, infer Query, any>
-          ? (query?: Partial<Query>) => Res
+          ? (query?: Partial<Query>) => Promise<Res>
           : never
         : never
     : never;
