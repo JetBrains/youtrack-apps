@@ -6,7 +6,7 @@ import {fileURLToPath} from 'node:url';
 import { defineConfig } from "vite";
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import { youtrackAutoUpload } from '@jetbrains/youtrack-enhanced-dx-tools';
+import { youtrackAutoUpload, youtrackDevHtml } from '@jetbrains/youtrack-enhanced-dx-tools';
 
 /*
       See https://vitejs.dev/config/
@@ -34,6 +34,10 @@ export default defineConfig({
   plugins: [
     react(),
     dropCrossoriginAttributePlugin(),
+    youtrackDevHtml({ 
+      enabled: process.env.DEV_MODE === 'true',
+      devServerPort: 9099
+    }),
     youtrackAutoUpload({ enabled: process.env.AUTOUPLOAD === 'true', buildName: 'frontend' }),
     viteStaticCopy({
       targets: [
@@ -71,7 +75,11 @@ export default defineConfig({
       }
   },
   server: {
-    port: 9099
+    port: 9099,
+    cors: {
+      origin: '*',
+      credentials: true
+    }
   },
   root: "./src",
   base: "",

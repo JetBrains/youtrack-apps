@@ -25,7 +25,11 @@ to: package.json
     "prepare:watch": "npm run clean && vite -c vite.config.backend.ts build --mode development",
     "watch:backend": "vite -c vite.config.backend.ts build --watch --mode development",
     "watch:frontend": "vite build --watch",
-    "watch:build": "npm run prepare:watch && (AUTOUPLOAD=true npm run watch:backend & while [ ! -f src/api/api.d.ts ] || [ ! -f src/api/api.zod.ts ]; do sleep 0.5; done && AUTOUPLOAD=true npm run watch:frontend)"
+    "watch:build": "npm run prepare:watch && (AUTOUPLOAD=true npm run watch:backend & while [ ! -f src/api/api.d.ts ] || [ ! -f src/api/api.zod.ts ]; do sleep 0.5; done && AUTOUPLOAD=true npm run watch:frontend)",
+
+    "dev:remote": "npm run dev",
+    "dev:remote:build": "npm run clean && npm run build:backend && DEV_MODE=true npm run build:frontend",
+    "dev:remote:upload": "npm run dev:remote:build && npm run upload-local"
   },
   "dependencies": {
     "@jetbrains/ring-ui-built": "^7.0.8",
