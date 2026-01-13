@@ -27,51 +27,53 @@ export default defineConfig({
         emptyOutDir: true, // empty dist dir, as backend build runs first
         // Backend files should NOT be minified for easier debugging in workflow editor
         minify: false,
-    lib: {
-        entry: [],
-        name: 'router',
-        fileName: 'router',
-        formats: ['cjs']
-    },
-    rollupOptions: {
-      external: [
-        /^@jetbrains\/youtrack-scripting-api\//,
-        // Externalize Node.js built-ins and Vite plugin dependencies
-        'child_process',
-        'fs-extra',
-        'node:path',
-        'node:fs',
-        'node:fs/promises',
-        'node:os',
-        'fast-glob',
-        'ts-morph',
-        'path',
-        'fs',
-        'os',
-        'stream',
-        'util',
-        'assert',
-        'constants',
-        'events',
-        'perf_hooks'
-      ],
-      output: {
-          entryFileNames: '[name].js',
-          chunkFileNames: '[name].js',
-          # Create shared chunks for backend modules to force require() statements
-          manualChunks: (id) => {
-              # Handler files (entry points) - don't chunk
-              if (id.includes('/backend/router/')) {
-                  return null;
-              }
+        lib: {
+            entry: [],
+            name: 'router',
+            fileName: 'router',
+            formats: ['cjs']
+        },
+        rollupOptions: {
+            external: [
+                /^@jetbrains\/youtrack-scripting-api\//,
+                // Externalize Node.js built-ins and Vite plugin dependencies
+                'child_process',
+                'fs-extra',
+                'node:path',
+                'node:fs',
+                'node:fs/promises',
+                'node:os',
+                'fast-glob',
+                'ts-morph',
+                'path',
+                'fs',
+                'os',
+                'stream',
+                'util',
+                'assert',
+                'constants',
+                'events',
+                'perf_hooks'
+            ],
+            output: {
+                entryFileNames: '[name].js',
+                chunkFileNames: '[name].js',
+                // Create shared chunks for backend modules to force require() statements
+                manualChunks: (id) => {
+                    // Handler files (entry points) - don't chunk
+                    if (id.includes('/backend/router/')) {
+                        return null;
+                    }
 
-              # Any other backend code - create shared chunks by top-level directory
-              const backendMatch = id.match(/\/backend\/([^/]+)\//);
-              if (backendMatch) {
-                  return `backend-${backendMatch[1]}`; # e.g., backend-infrastructure, backend-utils, backend-services
-              }
+                    // Any other backend code - create shared chunks by top-level directory
+                    const backendMatch = id.match(/\/backend\/([^/]+)\//);
+                    if (backendMatch) {
+                        return `backend-${backendMatch[1]}`; // e.g., backend-infrastructure, backend-utils, backend-services
+                    }
 
-              return null;
-          },
-      },
+                    return null;
+                },
+            },
+        },
+    }
 });

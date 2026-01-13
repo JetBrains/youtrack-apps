@@ -8,6 +8,8 @@ import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import { youtrackAutoUpload, youtrackDevHtml } from '@jetbrains/youtrack-enhanced-dx-tools';
 
+const isServing = process.argv.includes('--mode') === false && !process.argv.includes('build');
+
 /*
       See https://vitejs.dev/config/
 */
@@ -32,11 +34,13 @@ export default defineConfig({
     external: ['@jetbrains/youtrack-enhanced-dx-tools']
   },
   plugins: [
-    react(),
+    // Only use React plugin during build, not during dev server
+    // (Fast Refresh doesn't work in iframe/YouTrack context)
+    ...(!isServing ? [react()] : []),
     dropCrossoriginAttributePlugin(),
-    youtrackDevHtml({ 
+    youtrackDevHtml({
       enabled: process.env.DEV_MODE === 'true',
-      devServerPort: 9099
+      devServerPort: 9000
     }),
     youtrackAutoUpload({ enabled: process.env.AUTOUPLOAD === 'true', buildName: 'frontend' }),
     viteStaticCopy({
@@ -75,10 +79,14 @@ export default defineConfig({
       }
   },
   server: {
-    port: 9099,
+    port: 9000,
     cors: {
       origin: '*',
       credentials: true
+    },
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+      'Cross-Origin-Resource-Policy': 'cross-origin'
     }
   },
   root: "./src",

@@ -10,7 +10,7 @@ export default function youtrackDevHtml(options: DevHtmlOptions = {}): Plugin {
   const {
     enabled = false,
     devServerUrl = 'http://localhost',
-    devServerPort = 9099
+    devServerPort = 9000
   } = options;
 
   const fullDevUrl = `${devServerUrl}:${devServerPort}`;
@@ -35,13 +35,9 @@ export default function youtrackDevHtml(options: DevHtmlOptions = {}): Plugin {
 
         console.log(`[youtrack-dev-html] Transforming ${ctx.filename} to use dev server`);
 
-        // Extract the widget entry point from the original script tag
-        const scriptMatch = html.match(/<script[^>]*type="module"[^>]*src="([^"]*)"[^>]*>/);
-        const originalEntry = scriptMatch?.[1] || 'index.tsx';
-        
-        if (!scriptMatch) {
-          console.warn('[youtrack-dev-html] No module script found in HTML, using default: index.tsx');
-        }
+        // Use the source entry point (typically index.tsx) instead of the built asset
+        // The built HTML has bundled assets like "../../widgets/assets/xxx.js", but we need the original source
+        const originalEntry = 'index.tsx';
 
         // Determine the widget path from the filename
         const widgetPath = ctx.filename
@@ -56,6 +52,12 @@ export default function youtrackDevHtml(options: DevHtmlOptions = {}): Plugin {
         // Replace all production script tags with dev server references
         let devHtml = html.replace(
           /<script[^>]*type="module"[^>]*src="[^"]*"[^>]*><\/script>/g,
+          ''
+        );
+
+        // Remove production CSS links (Vite dev server handles CSS via HMR)
+        devHtml = devHtml.replace(
+          /<link[^>]*rel="stylesheet"[^>]*>/g,
           ''
         );
 
