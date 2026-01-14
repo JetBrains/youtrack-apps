@@ -7,6 +7,7 @@ import '@jetbrains/ring-ui-built/components/style.css';
 import {ControlsHeightContext, ControlsHeight} from '@jetbrains/ring-ui-built/components/global/controls-height';
 
 import {App} from './app.tsx';
+import './app.css';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

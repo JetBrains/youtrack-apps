@@ -55,7 +55,7 @@ export default function youtrackDevHtml(options: DevHtmlOptions = {}): Plugin {
           ''
         );
 
-        // Remove production CSS links (Vite dev server handles CSS via HMR)
+        // Remove production CSS links (CSS is imported in source files for HMR)
         devHtml = devHtml.replace(
           /<link[^>]*rel="stylesheet"[^>]*>/g,
           ''
