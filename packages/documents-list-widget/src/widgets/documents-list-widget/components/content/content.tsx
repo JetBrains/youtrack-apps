@@ -10,7 +10,7 @@ import {useWidgetContext} from '../../widget-context';
 
 import styles from './content.module.css';
 
-export const COUNTER_DELAY_MS = 1000;
+export const COUNTER_DELAY_MS = 30000;
 
 interface Props {
   tabs: DocumentListTab[];
