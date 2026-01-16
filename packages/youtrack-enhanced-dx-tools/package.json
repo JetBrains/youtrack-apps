@@ -9,6 +9,9 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "youtrack-upload-coordinator": "./dist/cli/upload-coordinator.js"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -32,6 +35,7 @@
   "author": "JetBrains",
   "license": "Apache-2.0",
   "dependencies": {
+    "chokidar": "^4.0.3",
     "fast-glob": "^3.3.3",
     "fs-extra": "^11.3.0",
     "ts-morph": "^26.0.0",
