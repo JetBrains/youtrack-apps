@@ -1,7 +1,7 @@
 ---
 to: src/widgets/enhanced-dx/app.tsx
 ---
-import React, {memo, useCallback, useState} from 'react';
+import React, {memo, useCallback, useState, useEffect} from 'react';
 import Button from '@jetbrains/ring-ui-built/components/button/button';
 import {Input, Size} from '@jetbrains/ring-ui-built/components/input/input';
 import LoaderInline from '@jetbrains/ring-ui-built/components/loader-inline/loader-inline';
@@ -30,6 +30,10 @@ const AppComponent: React.FunctionComponent = () => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    callGlobalApi();
+  }, [callGlobalApi]);
 
 
   const callProjectApi = useCallback(async () => {
