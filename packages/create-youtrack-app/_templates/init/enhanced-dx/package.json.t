@@ -9,7 +9,7 @@ to: package.json
   "enhancedDX": "true",
   "scripts": {
     "build:frontend": "vite build",
-    "build:backend": "vite -c vite.config.backend.ts build && sed -i '' 's/export export/export/g' src/api/api.zod.ts",
+    "build:backend": "vite -c vite.config.backend.ts build",
     "build": "npm run clean && npm run build:backend && npm run lint && npm run build:frontend && youtrack-app validate dist",
     "build:nolint": "npm run clean && npm run build:backend && npm run build:frontend && youtrack-app validate dist",
     "clean": "rm -f src/api/api.d.ts src/api/api.zod.ts",

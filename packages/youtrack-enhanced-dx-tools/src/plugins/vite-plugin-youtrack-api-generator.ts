@@ -294,7 +294,20 @@ const generateZodSchemas = async (routeFiles: string[]) => {
 
         const schemaObjectString = `{\n${generateSchemaObject(nestedSchema)}\n}`;
 
-        const enhancedContent = generatedContent + '\n' +
+        // Prevent duplicate schema exports by removing any existing ones first
+        // This handles race conditions in watch mode where multiple builds may occur
+        let cleanedContent = generatedContent;
+        
+        // Remove all existing schema exports (handle multiple occurrences)
+        const schemaMarker = '// Nested schema object for validation system';
+        if (cleanedContent.includes(schemaMarker)) {
+          // Split on the marker and keep only the first part (before any schema exports)
+          const parts = cleanedContent.split(schemaMarker);
+          cleanedContent = parts[0].trimEnd();
+        }
+        
+        // Now append the schema once
+        const enhancedContent = cleanedContent + '\n\n' +
           `// Nested schema object for validation system\n` +
           `export const schema = ${schemaObjectString};\n`;
 
