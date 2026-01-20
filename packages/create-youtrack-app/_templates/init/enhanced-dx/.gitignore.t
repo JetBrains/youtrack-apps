@@ -31,3 +31,7 @@ coverage/
 # Misc caches
 .cache/
 .turbo/
+
+# Build coordination
+.backend-changed
+.build-state.json

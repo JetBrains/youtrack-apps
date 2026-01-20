@@ -24,8 +24,10 @@ to: package.json
     "prepare:watch": "npm run clean && rm -rf dist/widgets/assets && vite -c vite.config.backend.ts build --mode development",
     "watch:backend": "vite -c vite.config.backend.ts build --watch --mode development",
     "watch:frontend": "vite build --watch",
+    "watch:frontend:hmr": "DEV_MODE=true vite build --watch",
     "watch:coordinator": "youtrack-upload-coordinator --watch .build-state.json",
     "watch": "npm run prepare:watch && rm -f .backend-changed .build-state.json && (AUTOUPLOAD=true npm run watch:backend & while [ ! -f src/api/api.d.ts ] || [ ! -f src/api/api.zod.ts ]; do sleep 0.5; done && AUTOUPLOAD=true npm run watch:frontend & npm run watch:coordinator)",
+    "watch:hmr": "npm run prepare:watch && npm run dev:upload && rm -f .backend-changed .build-state.json && (npm run dev & AUTOUPLOAD=true npm run watch:backend & while [ ! -f src/api/api.d.ts ] || [ ! -f src/api/api.zod.ts ]; do sleep 0.5; done && AUTOUPLOAD=true npm run watch:frontend:hmr & npm run watch:coordinator)",
 
     "dev": "vite",
     "dev:build": "npm run clean && npm run build:backend && DEV_MODE=true npm run build:frontend",

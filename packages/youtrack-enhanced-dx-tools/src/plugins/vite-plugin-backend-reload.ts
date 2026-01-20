@@ -21,6 +21,26 @@ export default function backendReloadPlugin(options: BackendReloadOptions = {}):
     // Only active in serve mode (dev server)
     apply: 'serve',
 
+    handleHotUpdate({ file, server, modules }) {
+      // Suppress Vite's automatic reload for API files
+      // We'll trigger reload manually via .backend-changed marker when both builds are ready
+      if (file.includes('/api/api.zod.ts') || file.includes('/api/api.d.ts')) {
+        console.log('[backend-reload] API file changed, invalidating modules but suppressing auto-reload');
+        
+        // Invalidate all affected modules so they're fresh when we manually reload
+        modules.forEach(mod => {
+          server.moduleGraph.invalidateModule(mod);
+        });
+        
+        // Return empty array to prevent Vite from sending reload/update messages
+        // Modules are invalidated but browser won't reload yet
+        return [];
+      }
+      
+      // Let other files trigger normal HMR
+      return modules;
+    },
+
     configureServer(server) {
       const markerPath = path.resolve(process.cwd(), markerFile);
 
@@ -36,21 +56,27 @@ export default function backendReloadPlugin(options: BackendReloadOptions = {}):
         }
       });
 
-      watcher.on('add', () => {
-        console.log('[backend-reload] Backend changed, triggering full reload...');
+      const triggerReload = () => {
+        console.log('[backend-reload] Backend changed, clearing caches and triggering full reload...');
+        
+        // Invalidate all modules that depend on API files
+        const apiModules = Array.from(server.moduleGraph.urlToModuleMap.entries())
+          .filter(([url]) => url.includes('/api/api.zod') || url.includes('/api/api.d'))
+          .map(([, mod]) => mod);
+        
+        apiModules.forEach(mod => {
+          server.moduleGraph.invalidateModule(mod, new Set(), Date.now(), true);
+        });
+        
+        // Send full reload
         server.ws.send({
           type: 'full-reload',
           path: '*'
         });
-      });
+      };
 
-      watcher.on('change', () => {
-        console.log('[backend-reload] Backend changed, triggering full reload...');
-        server.ws.send({
-          type: 'full-reload',
-          path: '*'
-        });
-      });
+      watcher.on('add', triggerReload);
+      watcher.on('change', triggerReload);
 
       // Clean up watcher when server closes
       server.httpServer?.once('close', () => {

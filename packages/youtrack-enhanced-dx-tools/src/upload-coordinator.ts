@@ -125,13 +125,14 @@ export class UploadCoordinator {
 
       console.log('[upload-coordinator] Changes detected, uploading...');
       if (backendChanged) {
-        console.log('[upload-coordinator] Backend changed - will trigger full reload');
+        console.log('[upload-coordinator] Backend changed - will trigger full reload after upload');
       }
 
-      // Perform upload
+      // Perform upload first - must complete before browser reloads
       await this.upload();
 
-      // Mark backend change for full reload
+      // Mark backend change for full reload AFTER upload completes
+      // This ensures YouTrack has the new code before browser reloads
       if (backendChanged) {
         const markerPath = path.resolve(this.cwd, '.backend-changed');
         await fs.writeFile(markerPath, Date.now().toString());
