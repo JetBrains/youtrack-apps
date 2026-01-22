@@ -139,15 +139,15 @@ Vite plugin that:
 Vite plugin that generates type-safe app configuration:
 - Reads `src/settings.json` (JSON Schema format)
 - Reads `entity-extensions.json` for extension properties
-- Generates `src/api/app.d.ts` with module augmentation
-- Provides fully typed `ctx.settings` and `entity.extensionProperties`
+- Generates `src/api/app.d.ts` with **global type declarations**
+- Provides fully typed `ctx.settings` and extension properties
 
 **Features:**
 - ✅ Automatic type generation from JSON Schema
 - ✅ Support for YouTrack entity references (`x-entity`)
 - ✅ Typed enum values from schema
 - ✅ Type-safe extension properties for all entity types
-- ✅ Works with module augmentation pattern
+- ✅ Works with global `CtxGet`, `CtxPost`, etc. types
 
 **Example:**
 
@@ -189,21 +189,31 @@ And `entity-extensions.json`:
 }
 ```
 
-Your handlers automatically get typed settings and extensions:
+Your handlers automatically get typed settings (no imports needed!):
 ```typescript
-import { CtxGetIssue } from '@jetbrains/youtrack-enhanced-dx-tools';
-
-export default function handle(ctx: CtxGetIssue<Response>) {
+// No imports needed - uses global CtxGet type
+export default function handle(ctx: CtxGet<Response>) {
   // ✅ Fully typed - apiKey is string, maxRetries is number | undefined
   const apiKey = ctx.settings.apiKey;
   const retries = ctx.settings.maxRetries ?? 3;
   
-  // ✅ Fully typed - syncStatus is string | undefined
-  const status = ctx.issue.extensionProperties.syncStatus;
-  
-  ctx.response.json({ apiKey, retries, status });
+  ctx.response.json({ apiKey, retries });
 }
 ```
+
+The plugin generates global type declarations:
+```typescript
+// Generated in src/api/app.d.ts
+declare global {
+  type AppSettings = {
+    apiKey: string;
+    webhookUrl: string;
+    maxRetries?: number;
+  };
+}
+```
+
+This works with the global `CtxGet`, `CtxPost`, etc. types that are already defined in `src/backend/types/backend.global.d.ts`.
 
 ### YouTrack Workflow API Types
 
@@ -342,21 +352,21 @@ The `youtrackAppSettings` plugin enables type-safe access to your app's configur
 **Usage in Handlers:**
 
 ```typescript
-// No imports needed - types are automatic!
-export default function handle(ctx: CtxGetProject<MyResponse>) {
+// No imports needed - uses global types!
+export default function handle(ctx: CtxGet<MyResponse>) {
   // ctx.settings is fully typed based on settings.json
   const apiKey: string = ctx.settings.apiKey;  // ✅ Type-safe
   const optional: number | undefined = ctx.settings.optionalField;  // ✅ Handles optional
   
-  // Extension properties are typed based on entity-extensions.json
-  const enabled: boolean | undefined = ctx.project.extensionProperties.integrationEnabled;
-  
-  // Global storage extensions
-  const lastSync: number | undefined = ctx.globalStorage?.extensionProperties?.lastSync;
-  
   ctx.response.json({ success: true });
 }
 ```
+
+**How It Works:**
+
+1. Plugin reads `settings.json` and generates global `AppSettings` type
+2. The global `CtxGet` type (from `backend.global.d.ts`) uses `settings: AppSettings`
+3. Your handlers get automatic IntelliSense with no imports!
 
 **Supported JSON Schema Features:**
 
