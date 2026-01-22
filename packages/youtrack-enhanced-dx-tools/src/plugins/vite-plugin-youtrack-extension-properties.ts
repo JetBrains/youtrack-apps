@@ -200,9 +200,9 @@ const generateExtendedEntities = (extensions: EntityExtensions): string => {
     imports.add(entityType);
   });
 
-  // Generate imports
+  // Generate imports from the workflow API
   const importStatements = imports.size > 0
-    ? `import type { ${Array.from(imports).sort().join(', ')} } from '@jetbrains/youtrack-enhanced-dx-tools/youtrack-types';\n\n`
+    ? `import type { ${Array.from(imports).sort().join(', ')} } from '@jetbrains/youtrack-enhanced-dx-tools/youtrack-workflow-api';\n\n`
     : '';
 
   // Generate extended entity types (excluding AppGlobalStorage)

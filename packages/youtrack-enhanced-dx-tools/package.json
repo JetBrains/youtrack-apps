@@ -24,13 +24,22 @@
     "./youtrack-types": {
       "types": "./youtrack-types.d.ts",
       "default": "./youtrack-types.d.ts"
+    },
+    "./youtrack-workflow-api": {
+      "types": "./youtrack-workflow-api/index.d.ts",
+      "default": "./youtrack-workflow-api/index.d.ts"
+    },
+    "./youtrack-workflow-api/*": {
+      "types": "./youtrack-workflow-api/*.d.ts",
+      "default": "./youtrack-workflow-api/*.d.ts"
     }
   },
   "files": [
     "dist",
     "src",
     "templates",
-    "youtrack-types.d.ts"
+    "youtrack-types.d.ts",
+    "youtrack-workflow-api"
   ],
   "author": "JetBrains",
   "license": "Apache-2.0",

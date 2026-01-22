@@ -1,4 +1,5 @@
-import type { Issue, Project, Article, User } from './youtrack-types.js';
+// Import entity types and AppTypeRegistry from the workflow API
+import type { Issue, Project, Article, User, AppTypeRegistry } from '../../youtrack-workflow-api/index.js';
 
 /**
  * HTTP Request object properties and methods as per YouTrack HTTP Handler API
@@ -58,11 +59,11 @@ export type HttpResponse = {
 export type BaseCtx = {
   /** Current user making the request */
   currentUser: User;
-  /** App settings */
-  settings: Record<string, unknown>;
-  /** Global storage extension properties */
+  /** App settings - typed via AppTypeRegistry augmentation */
+  settings: AppTypeRegistry['settings'];
+  /** Global storage extension properties - typed via AppTypeRegistry augmentation */
   globalStorage?: {
-    extensionProperties?: Record<string, unknown>;
+    extensionProperties?: AppTypeRegistry['appGlobalStorageExtensions'];
   };
 };
 

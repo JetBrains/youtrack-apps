@@ -8,6 +8,8 @@ Enhanced DX tools and plugins for YouTrack apps with TypeScript support.
 - **Vite Plugin for Router** - Handles file-based routing and builds backend endpoints
 - **Vite Plugin for Auto-Upload** - Coordinates frontend and backend builds with automatic upload to YouTrack
 - **Vite Plugin for Extension Properties** - Generates types for custom entity extension properties
+- **Vite Plugin for App Settings** - Generates type-safe app settings and extension properties from JSON files
+- **YouTrack Workflow API Types** - Official YouTrack workflow scripting API type definitions
 - **TypeScript Utilities** - Type-safe context types and RPC extraction utilities
 
 ## Installation
@@ -22,10 +24,15 @@ npm install @jetbrains/youtrack-enhanced-dx-tools
 
 ```typescript
 import { defineConfig } from 'vite';
-import { youtrackApiGenerator, youtrackRouter } from '@jetbrains/youtrack-enhanced-dx-tools';
+import { 
+  youtrackApiGenerator, 
+  youtrackRouter,
+  youtrackAppSettings 
+} from '@jetbrains/youtrack-enhanced-dx-tools';
 
 export default defineConfig({
   plugins: [
+    youtrackAppSettings(),  // Generates type-safe app settings and extensions
     youtrackApiGenerator(),
     youtrackRouter()
   ],
@@ -127,6 +134,103 @@ Vite plugin that:
 - Generates TypeScript types for custom entity properties
 - Augments context types with extension properties
 
+### `youtrackAppSettings()`
+
+Vite plugin that generates type-safe app configuration:
+- Reads `src/settings.json` (JSON Schema format)
+- Reads `entity-extensions.json` for extension properties
+- Generates `src/api/app.d.ts` with module augmentation
+- Provides fully typed `ctx.settings` and `entity.extensionProperties`
+
+**Features:**
+- ✅ Automatic type generation from JSON Schema
+- ✅ Support for YouTrack entity references (`x-entity`)
+- ✅ Typed enum values from schema
+- ✅ Type-safe extension properties for all entity types
+- ✅ Works with module augmentation pattern
+
+**Example:**
+
+Given `src/settings.json`:
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "apiKey": {
+      "type": "string",
+      "title": "API Key"
+    },
+    "webhookUrl": {
+      "type": "string",
+      "title": "Webhook URL"
+    },
+    "maxRetries": {
+      "type": "integer",
+      "title": "Max Retries"
+    }
+  },
+  "required": ["apiKey"]
+}
+```
+
+And `entity-extensions.json`:
+```json
+{
+  "entityTypeExtensions": [
+    {
+      "entityType": "Issue",
+      "properties": {
+        "syncStatus": { "type": "string" },
+        "lastSyncTime": { "type": "integer" }
+      }
+    }
+  ]
+}
+```
+
+Your handlers automatically get typed settings and extensions:
+```typescript
+import { CtxGetIssue } from '@jetbrains/youtrack-enhanced-dx-tools';
+
+export default function handle(ctx: CtxGetIssue<Response>) {
+  // ✅ Fully typed - apiKey is string, maxRetries is number | undefined
+  const apiKey = ctx.settings.apiKey;
+  const retries = ctx.settings.maxRetries ?? 3;
+  
+  // ✅ Fully typed - syncStatus is string | undefined
+  const status = ctx.issue.extensionProperties.syncStatus;
+  
+  ctx.response.json({ apiKey, retries, status });
+}
+```
+
+### YouTrack Workflow API Types
+
+The package includes official YouTrack workflow scripting API type definitions from YouTrack Server.
+
+**Import entire API:**
+```typescript
+import type * as YouTrack from '@jetbrains/youtrack-enhanced-dx-tools/youtrack-workflow-api';
+```
+
+**Import specific modules:**
+```typescript
+import type { Issue, Project, User } from '@jetbrains/youtrack-enhanced-dx-tools/youtrack-workflow-api';
+import type { AppTypeRegistry } from '@jetbrains/youtrack-enhanced-dx-tools/youtrack-workflow-api';
+```
+
+**Available modules:**
+- `apps` - App type registry, HTTP handlers
+- `workflow` - Workflow entities and utilities
+- `http` - HTTP utilities
+- `date-time` - Date and time utilities
+- `search` - Search utilities
+- `packages` - Package management
+- `utility-types` - Common utility types
+- `license` - License utilities
+- `ai-tools` - AI integration utilities
+
 ### Type Utilities
 
 - `ExtractRPCFromHandler<T>` - Extracts RPC signature from handler types
@@ -215,6 +319,62 @@ npm run dev:remote:upload
 - `YOUTRACK_HOST` - Your YouTrack instance URL
 - `YOUTRACK_TOKEN` - Permanent token for authentication ([how to create](https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html))
 - `AUTOUPLOAD` - Set to `'true'` to enable automatic uploads during watch mode
+
+### Type-Safe App Settings and Extensions
+
+The `youtrackAppSettings` plugin enables type-safe access to your app's configuration and entity extension properties.
+
+**How It Works:**
+
+1. Plugin reads `src/settings.json` (JSON Schema) and `entity-extensions.json`
+2. Generates `src/api/app.d.ts` with module augmentation
+3. Augments `AppTypeRegistry` interface with your app's types
+4. Context types automatically pick up the augmented types
+
+**Benefits:**
+
+- ✅ **Zero imports needed** - types are ambient and automatic
+- ✅ **Type safety** - catch configuration errors at compile time
+- ✅ **Auto-completion** - IDE suggests available settings and properties
+- ✅ **Refactoring support** - rename properties safely across codebase
+- ✅ **Documentation** - JSDoc comments from JSON Schema descriptions
+
+**Usage in Handlers:**
+
+```typescript
+// No imports needed - types are automatic!
+export default function handle(ctx: CtxGetProject<MyResponse>) {
+  // ctx.settings is fully typed based on settings.json
+  const apiKey: string = ctx.settings.apiKey;  // ✅ Type-safe
+  const optional: number | undefined = ctx.settings.optionalField;  // ✅ Handles optional
+  
+  // Extension properties are typed based on entity-extensions.json
+  const enabled: boolean | undefined = ctx.project.extensionProperties.integrationEnabled;
+  
+  // Global storage extensions
+  const lastSync: number | undefined = ctx.globalStorage?.extensionProperties?.lastSync;
+  
+  ctx.response.json({ success: true });
+}
+```
+
+**Supported JSON Schema Features:**
+
+- ✅ Primitive types: `string`, `number`, `integer`, `boolean`
+- ✅ Objects with typed properties
+- ✅ Arrays with typed items
+- ✅ Enums (converted to union types)
+- ✅ Required vs optional properties
+- ✅ YouTrack entity references (`x-entity`)
+- ✅ Nested objects
+
+**Extension Property Types:**
+
+- `string` → `string`
+- `integer`, `float` → `number`
+- `boolean` → `boolean`
+- `multi: true` → `Set<T>`
+- YouTrack entities → proper type from workflow API
 
 ### Logger Usage
 
