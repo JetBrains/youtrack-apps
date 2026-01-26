@@ -444,7 +444,7 @@ const mapRow = (ruleUsage: PluggableObjectUsage): TableRowData => {
   const errors = resolveErrors(ruleUsage);
 
   return {
-    id: ruleUsage.pluggableObject?.id ?? ruleUsage.id,
+    id: ruleUsage.id,
     rule: ruleTitle,
     ruleSubtitle,
     app: appName,
