@@ -1,7 +1,7 @@
 {
   "name": "webhook-triggers",
   "title": "Webhook Triggers",
-  "description": "Trigger external webhooks from YouTrack events such as issue creation, updates, deletion, comments (add/edit/delete), work items (add/edit/delete), and attachments (add/remove). Configure multiple webhook URLs per event in project settings.",
+  "description": "The Webhook Triggers app lets you send webhooks to external systems when events occur in YouTrack, for example, when issues, comments, work items, or attachments are created, updated, or deleted. You can configure multiple webhook URLs for each event in the project settings.",
   "version": "1.0.1",
   "minYouTrackVersion": "2024.3.0",
   "$schema": "https://json.schemastore.org/youtrack-app.json",
