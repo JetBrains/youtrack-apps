@@ -10,40 +10,5 @@
     "url": "https://www.jetbrains.com"
   },
   "icon": "icon.svg",
-  "workflows": [
-    {
-      "path": "on-issue-created.js"
-    },
-    {
-      "path": "on-issue-updated.js"
-    },
-    {
-      "path": "on-issue-deleted.js"
-    },
-    {
-      "path": "on-comment-added.js"
-    },
-    {
-      "path": "on-comment-updated.js"
-    },
-    {
-      "path": "on-comment-deleted.js"
-    },
-    {
-      "path": "on-work-item-added.js"
-    },
-    {
-      "path": "on-work-item-updated.js"
-    },
-    {
-      "path": "on-work-item-deleted.js"
-    },
-    {
-      "path": "on-attachment-added.js"
-    },
-    {
-      "path": "on-attachment-deleted.js"
-    }
-  ],
   "settings": "settings.json"
 }
