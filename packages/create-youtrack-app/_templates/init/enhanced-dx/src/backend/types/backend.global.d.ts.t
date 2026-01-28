@@ -41,6 +41,48 @@ type HttpResponse<R = unknown> = {
   status?: number;
 };
 
+type HttpRequest<TBody = unknown, Q = Record<string, unknown>> = {
+  body: string;
+  bodyAsStream: unknown;
+  headers: Array<{ name: string; value: string }>;
+  path: string;
+  fullPath: string;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  parameterNames: Array<string>;
+  json: () => TBody;
+  getParameter: (name: string) => string | undefined;
+  getParameters: (name: string) => Array<string>;
+  query: Q;
+};
+
+type BaseCtx = {
+  currentUser: User;
+  settings: AppSettings;
+  globalStorage?: {
+    extensionProperties?: AppGlobalStorageExtensionProperties;
+  };
+};
+
+type IssueCtx = BaseCtx & {
+  issue: ExtendedIssue;
+};
+
+type ProjectCtx = BaseCtx & {
+  project: ExtendedProject;
+};
+
+type ArticleCtx = BaseCtx & {
+  article: ExtendedArticle;
+};
+
+type UserCtx = BaseCtx & {
+  user: ExtendedUser;
+};
+
+type GlobalCtx = BaseCtx;
+
+type ScopeCtx = IssueCtx | ProjectCtx | ArticleCtx | UserCtx | GlobalCtx;
+
 declare global {
   type AppSettings = Record<string, unknown> & {
     // Add your app-specific settings here
@@ -55,41 +97,15 @@ declare global {
    * @template TBody - Request body type
    * @template R - Response type
    * @template Q - Query parameters type (optional, defaults to Record<string, unknown>)
+   * @template TScope - Scope context type (defaults to GlobalCtx)
    */
   type CtxPost<
     TBody = Record<string, unknown>,
     R = Record<string, unknown>,
-    Q = Record<string, unknown>
-  > = {
-    /** Available when scope is 'issue' - automatically uses ExtendedIssue if extension properties are defined */
-    issue?: ExtendedIssue;
-    /** Available when scope is 'project' - automatically uses ExtendedProject if extension properties are defined */
-    project?: ExtendedProject;
-    /** Available when scope is 'article' - automatically uses ExtendedArticle if extension properties are defined */
-    article?: ExtendedArticle;
-    /** Available when scope is 'user' - automatically uses ExtendedUser if extension properties are defined */
-    user?: ExtendedUser;
-    /** Current user making the request */
-    currentUser: User;
-    /** App settings */
-    settings: AppSettings;
-    /** Global storage extension properties - automatically uses AppGlobalStorageExtensionProperties if defined */
-    globalStorage?: {
-      extensionProperties?: AppGlobalStorageExtensionProperties;
-    };
-    request: {
-      body: string;
-      bodyAsStream: unknown;
-      headers: Array<{ name: string; value: string }>;
-      path: string;
-      fullPath: string;
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-      parameterNames: Array<string>;
-      json: () => TBody;
-      getParameter: (name: string) => string | undefined;
-      getParameters: (name: string) => Array<string>;
-      query: Q;
-    };
+    Q = Record<string, unknown>,
+    TScope extends ScopeCtx = GlobalCtx
+  > = TScope & {
+    request: HttpRequest<TBody, Q>;
     response: HttpResponse<R>;
   };
 
@@ -98,41 +114,15 @@ declare global {
    * @template TBody - Request body type
    * @template R - Response type
    * @template Q - Query parameters type (optional, defaults to Record<string, unknown>)
+   * @template TScope - Scope context type (defaults to GlobalCtx)
    */
   type CtxPut<
     TBody = Record<string, unknown>,
     R = Record<string, unknown>,
-    Q = Record<string, unknown>
-  > = {
-    /** Available when scope is 'issue' - automatically uses ExtendedIssue if extension properties are defined */
-    issue?: ExtendedIssue;
-    /** Available when scope is 'project' - automatically uses ExtendedProject if extension properties are defined */
-    project?: ExtendedProject;
-    /** Available when scope is 'article' - automatically uses ExtendedArticle if extension properties are defined */
-    article?: ExtendedArticle;
-    /** Available when scope is 'user' - automatically uses ExtendedUser if extension properties are defined */
-    user?: ExtendedUser;
-    /** Current user making the request */
-    currentUser: User;
-    /** App settings */
-    settings: AppSettings;
-    /** Global storage extension properties - automatically uses AppGlobalStorageExtensionProperties if defined */
-    globalStorage?: {
-      extensionProperties?: AppGlobalStorageExtensionProperties;
-    };
-    request: {
-      body: string;
-      bodyAsStream: unknown;
-      headers: Array<{ name: string; value: string }>;
-      path: string;
-      fullPath: string;
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-      parameterNames: Array<string>;
-      json: () => TBody;
-      getParameter: (name: string) => string | undefined;
-      getParameters: (name: string) => Array<string>;
-      query: Q;
-    };
+    Q = Record<string, unknown>,
+    TScope extends ScopeCtx = GlobalCtx
+  > = TScope & {
+    request: HttpRequest<TBody, Q>;
     response: HttpResponse<R>;
   };
 
@@ -140,40 +130,14 @@ declare global {
    * Context type for GET requests
    * @template R - Response type
    * @template Q - Query parameters type (optional, defaults to Record<string, unknown>)
+   * @template TScope - Scope context type (defaults to GlobalCtx)
    */
   type CtxGet<
     R = Record<string, unknown>,
-    Q = Record<string, unknown>
-  > = {
-    /** Available when scope is 'issue' - automatically uses ExtendedIssue if extension properties are defined */
-    issue?: ExtendedIssue;
-    /** Available when scope is 'project' - automatically uses ExtendedProject if extension properties are defined */
-    project?: ExtendedProject;
-    /** Available when scope is 'article' - automatically uses ExtendedArticle if extension properties are defined */
-    article?: ExtendedArticle;
-    /** Available when scope is 'user' - automatically uses ExtendedUser if extension properties are defined */
-    user?: ExtendedUser;
-    /** Current user making the request */
-    currentUser: User;
-    /** App settings */
-    settings: AppSettings;
-    /** Global storage extension properties - automatically uses AppGlobalStorageExtensionProperties if defined */
-    globalStorage?: {
-      extensionProperties?: AppGlobalStorageExtensionProperties;
-    };
-    request: {
-      body: string;
-      bodyAsStream: unknown;
-      headers: Array<{ name: string; value: string }>;
-      path: string;
-      fullPath: string;
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-      parameterNames: Array<string>;
-      json: () => never;
-      getParameter: (name: string) => string | undefined;
-      getParameters: (name: string) => Array<string>;
-      query: Q;
-    };
+    Q = Record<string, unknown>,
+    TScope extends ScopeCtx = GlobalCtx
+  > = TScope & {
+    request: HttpRequest<never, Q>;
     response: HttpResponse<R>;
   };
 
@@ -181,42 +145,37 @@ declare global {
    * Context type for DELETE requests
    * @template R - Response type
    * @template Q - Query parameters type (optional, defaults to Record<string, unknown>)
+   * @template TScope - Scope context type (defaults to GlobalCtx)
    */
   type CtxDelete<
     R = Record<string, unknown>,
-    Q = Record<string, unknown>
-  > = {
-    /** Available when scope is 'issue' - automatically uses ExtendedIssue if extension properties are defined */
-    issue?: ExtendedIssue;
-    /** Available when scope is 'project' - automatically uses ExtendedProject if extension properties are defined */
-    project?: ExtendedProject;
-    /** Available when scope is 'article' - automatically uses ExtendedArticle if extension properties are defined */
-    article?: ExtendedArticle;
-    /** Available when scope is 'user' - automatically uses ExtendedUser if extension properties are defined */
-    user?: ExtendedUser;
-    /** Current user making the request */
-    currentUser: User;
-    /** App settings */
-    settings: AppSettings;
-    /** Global storage extension properties - automatically uses AppGlobalStorageExtensionProperties if defined */
-    globalStorage?: {
-      extensionProperties?: AppGlobalStorageExtensionProperties;
-    };
-    request: {
-      body: string;
-      bodyAsStream: unknown;
-      headers: Array<{ name: string; value: string }>;
-      path: string;
-      fullPath: string;
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-      parameterNames: Array<string>;
-      json: () => never;
-      getParameter: (name: string) => string | undefined;
-      getParameters: (name: string) => Array<string>;
-      query: Q;
-    };
+    Q = Record<string, unknown>,
+    TScope extends ScopeCtx = GlobalCtx
+  > = TScope & {
+    request: HttpRequest<never, Q>;
     response: HttpResponse<R>;
   };
+
+  // Convenience type aliases for specific scopes
+  type CtxGetIssue<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxGet<R, Q, IssueCtx>;
+  type CtxPostIssue<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPost<TBody, R, Q, IssueCtx>;
+  type CtxPutIssue<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPut<TBody, R, Q, IssueCtx>;
+  type CtxDeleteIssue<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxDelete<R, Q, IssueCtx>;
+
+  type CtxGetProject<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxGet<R, Q, ProjectCtx>;
+  type CtxPostProject<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPost<TBody, R, Q, ProjectCtx>;
+  type CtxPutProject<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPut<TBody, R, Q, ProjectCtx>;
+  type CtxDeleteProject<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxDelete<R, Q, ProjectCtx>;
+
+  type CtxGetArticle<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxGet<R, Q, ArticleCtx>;
+  type CtxPostArticle<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPost<TBody, R, Q, ArticleCtx>;
+  type CtxPutArticle<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPut<TBody, R, Q, ArticleCtx>;
+  type CtxDeleteArticle<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxDelete<R, Q, ArticleCtx>;
+
+  type CtxGetUser<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxGet<R, Q, UserCtx>;
+  type CtxPostUser<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPost<TBody, R, Q, UserCtx>;
+  type CtxPutUser<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPut<TBody, R, Q, UserCtx>;
+  type CtxDeleteUser<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxDelete<R, Q, UserCtx>;
 }
 
 //This is needed to make the file a module
