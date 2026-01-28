@@ -61,7 +61,7 @@ const processRouteFile = async (
   allTypes: Map<string, { namespaceImports: Set<string>; namedImports: Set<string> }>
 ) => {
   const relativePath = path.relative(routerRoot, sourceFile.getFilePath());
-  const parts = relativePath.split(path.sep);
+  const parts = relativePath.replace(/\\/g, '/').split('/');
   const scope = parts[0];
   const method = path.basename(sourceFile.getFilePath(), '.ts') as 'GET' | 'POST';
   const routePath = parts.slice(1, -1);
@@ -202,7 +202,7 @@ const generateZodSchemas = async (routeFiles: string[]) => {
 
           // Extract path information for schema mapping
           const relativePath = path.relative(path.resolve(process.cwd(), 'src/backend/router'), file);
-          const parts = relativePath.split(path.sep);
+          const parts = relativePath.replace(/\\/g, '/').split('/');
           const method = path.basename(file, '.ts') as 'GET' | 'POST' | 'PUT' | 'DELETE';
           const routePath = parts.slice(0, -1); // Remove the method file
 

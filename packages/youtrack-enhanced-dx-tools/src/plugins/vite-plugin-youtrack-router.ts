@@ -28,7 +28,7 @@ export default function youtrackRouter(): Plugin {
     // Collect route metadata
     routes.push(...routeFiles.map((filePath) => {
       const relativePath = path.relative(routerRoot, filePath);
-      const parts = relativePath.split(path.sep);
+      const parts = relativePath.replace(/\\/g, '/').split('/');
       const scope = parts[0];
       const method = path.basename(filePath, '.ts') as Route['method'];
       const routePath = parts.slice(1, -1).join('/');
