@@ -86,7 +86,7 @@ type YTAppInterface = {
     id: string;
     type: "user" | "article" | "ticket" | "project" | "app";
   };
-  register: (appApi?: AppAPI) => HostAPI | CustomWidgetAPILayer;
+  register: (appApi?: AppAPI) => Promise<HostAPI | CustomWidgetAPILayer>;
 };
 
 declare global {
