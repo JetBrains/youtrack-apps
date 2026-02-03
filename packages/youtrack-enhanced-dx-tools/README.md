@@ -523,10 +523,10 @@ The library provides type-safe context types for HTTP handlers based on HTTP met
 **Base Context Types:**
 
 ```typescript
-type CtxGet<R, Q?, TScope?>     // GET requests
-type CtxPost<Body, R, Q?, TScope?>   // POST requests
-type CtxPut<Body, R, Q?, TScope?>    // PUT requests
-type CtxDelete<R, Q?, TScope?>  // DELETE requests
+type CtxGet<R, Q?, S?>     // GET requests
+type CtxPost<Body, R, Q?, S?>   // POST requests
+type CtxPut<Body, R, Q?, S?>    // PUT requests
+type CtxDelete<R, Q?, S?>  // DELETE requests
 ```
 
 **Type Parameters:**
@@ -534,74 +534,80 @@ type CtxDelete<R, Q?, TScope?>  // DELETE requests
 - `Body` - Request body type (POST/PUT only)
 - `R` - Response type
 - `Q` - Query parameters type (optional)
-- `TScope` - Scope context type (optional, defaults to `GlobalCtx`)
+- `S` - Handler scope literal: `"issue" | "project" | "article" | "user" | "global"` (optional, defaults to all scopes)
 
 **Context Properties:**
 
+All handlers receive a base context with common properties plus scope-specific properties via discriminated unions:
+
 ```typescript
-type BaseCtx = {
+type Ctx = {
   currentUser: User;
   settings: AppSettings;
-  globalStorage?: {
-    extensionProperties?: AppGlobalStorageExtensionProperties;
-  };
   request: HttpRequest<Body, Query>;
   response: HttpResponse;
-};
+} & (
+  | { scope: "issue"; issue: Issue }
+  | { scope: "project"; project: Project }
+  | { scope: "article"; article: Article }
+  | { scope: "user"; user: User }
+  | { scope: "global"; globalStorage: { extensionProperties: GlobalExtensionProperties } }
+);
 ```
 
 ### Scope-Aware Types
 
-Context types vary based on endpoint scope, determining which entity properties are available.
+Context types use TypeScript's discriminated unions for automatic type narrowing based on scope.
 
-**Scope Context Types:**
+**Scope Specification:**
 
 ```typescript
-type GlobalCtx = BaseCtx;
-type IssueCtx = BaseCtx & { issue: Issue };
-type ProjectCtx = BaseCtx & { project: Project };
-type ArticleCtx = BaseCtx & { article: Article };
-type UserCtx = BaseCtx & { user: User };
+// Specify scope as the last generic parameter
+CtxGet<ResponseType, QueryType, "issue">      // Issue scope
+CtxPost<BodyType, ResponseType, QueryType, "project">  // Project scope
+CtxPut<BodyType, ResponseType, QueryType, "global">    // Global scope
 ```
 
-**Scope-Specific Type Aliases:**
+**Type Narrowing:**
+
+TypeScript automatically provides scope-specific properties based on the scope parameter:
 
 ```typescript
-// Issue scope
-type CtxGetIssue<R, Q?> = CtxGet<R, Q, IssueCtx>;
-type CtxPostIssue<Body, R, Q?> = CtxPost<Body, R, Q, IssueCtx>;
-
-// Project scope
-type CtxGetProject<R, Q?> = CtxGet<R, Q, ProjectCtx>;
-type CtxPostProject<Body, R, Q?> = CtxPost<Body, R, Q, ProjectCtx>;
-
-// Article scope
-type CtxGetArticle<R, Q?> = CtxGet<R, Q, ArticleCtx>;
-type CtxPostArticle<Body, R, Q?> = CtxPost<Body, R, Q, ArticleCtx>;
-
-// User scope
-type CtxGetUser<R, Q?> = CtxGet<R, Q, UserCtx>;
-type CtxPostUser<Body, R, Q?> = CtxPost<Body, R, Q, UserCtx>;
-```
-
-**Usage Example:**
-
-```typescript
-// Global scope - no entity context
-export default function handle(ctx: CtxGet<HealthResponse>) {
-  ctx.response.json({ status: 'ok' });
+// Issue scope handler - ctx.issue is available
+export default function handle(ctx: CtxGet<Response, Query, "issue">) {
+  const issueId = ctx.issue.id;  // ✓ Type-safe, issue property available
+  ctx.response.json({ issueId });
 }
 
-// Project scope - project entity available
-export default function handle(ctx: CtxGetProject<ProjectResponse>) {
-  const projectName = ctx.project.name;  // Type-safe
+// Project scope handler - ctx.project is available
+export default function handle(ctx: CtxPost<Body, Response, Query, "project">) {
+  const projectName = ctx.project.name;  // ✓ Type-safe, project property available
   ctx.response.json({ projectName });
 }
 
-// Issue scope - issue entity available
-export default function handle(ctx: CtxPostIssue<UpdateBody, UpdateResponse>) {
-  const issueId = ctx.issue.id;  // Type-safe
-  ctx.response.json({ issueId });
+// Global scope handler - no entity context
+export default function handle(ctx: CtxGet<Response>) {
+  // No ctx.issue or ctx.project - those are not in global scope
+  ctx.response.json({ status: 'ok' });
+}
+```
+
+**Runtime Scope Checking:**
+
+Use runtime checks for additional type narrowing:
+
+```typescript
+export default function handle(ctx: CtxGet<Response>) {
+  // Check scope at runtime for dynamic narrowing
+  if (ctx.scope === "issue") {
+    ctx.issue;  // ✓ TypeScript knows issue exists here
+  }
+  
+  if (ctx.scope === "project") {
+    ctx.project;  // ✓ TypeScript knows project exists here
+  }
+  
+  ctx.response.json({ status: 'ok' });
 }
 ```
 
@@ -612,25 +618,21 @@ The `ExtractRPCFromHandler` utility type extracts API client method signatures f
 **Type Definition:**
 
 ```typescript
-type ExtractRPCFromHandler<T> =
-  T extends (ctx: infer Ctx) => void
-    ? Ctx extends AllCtxPost | AllCtxPut
-      ? Ctx extends CtxPost<infer Body, infer Res, infer Query, any> | CtxPut<infer Body, infer Res, infer Query, any>
-        ? (body: Body, query?: Partial<Query>) => Promise<Res>
-        : never
-      : Ctx extends AllCtxGet | AllCtxDelete
-        ? Ctx extends CtxGet<infer Res, infer Query, any> | CtxDelete<infer Res, infer Query, any>
-          ? (query?: Partial<Query>) => Promise<Res>
-          : never
-        : never
+type ExtractRPCFromHandler<T> = T extends (
+  ctx: CtxPost<infer Body, infer Res, infer Query, any> | CtxPut<infer Body, infer Res, infer Query, any>
+) => void
+  ? (body: Body, query?: Partial<Query>) => Promise<Res>
+  : T extends (ctx: CtxGet<infer Res, infer Query, any> | CtxDelete<infer Res, infer Query, any>) => void
+    ? (query?: Partial<Query>) => Promise<Res>
     : never;
 ```
 
 **Behavior:**
 
-- Extracts request body, response, and query parameter types
+- Extracts request body, response, and query parameter types from context types
 - Converts handler signatures to async API client methods
 - Supports all HTTP methods and scope types
+- Works seamlessly with discriminated union context types
 
 **Generated API Client:**
 

@@ -55,33 +55,8 @@ type HttpRequest<TBody = unknown, Q = Record<string, unknown>> = {
   query: Q;
 };
 
-type BaseCtx = {
-  currentUser: User;
-  settings: AppSettings;
-  globalStorage?: {
-    extensionProperties?: AppGlobalStorageExtensionProperties;
-  };
-};
-
-type IssueCtx = BaseCtx & {
-  issue: ExtendedIssue;
-};
-
-type ProjectCtx = BaseCtx & {
-  project: ExtendedProject;
-};
-
-type ArticleCtx = BaseCtx & {
-  article: ExtendedArticle;
-};
-
-type UserCtx = BaseCtx & {
-  user: ExtendedUser;
-};
-
-type GlobalCtx = BaseCtx;
-
-type ScopeCtx = IssueCtx | ProjectCtx | ArticleCtx | UserCtx | GlobalCtx;
+/** Supported handler scope values */
+type HttpHandlerScope = "issue" | "project" | "article" | "user" | "global";
 
 declare global {
   type AppSettings = Record<string, unknown> & {
@@ -93,18 +68,68 @@ declare global {
   };
 
   /**
+   * Base context available in all HTTP handlers.
+   * Uses discriminated unions for scope-specific properties.
+   * TypeScript automatically narrows the type when you check ctx.scope.
+   * 
+   * @example
+   * function handle(ctx: CtxGet<Response, Query, "issue">) {
+   *   // ctx.issue is available and typed
+   *   const issueId = ctx.issue.id;
+   *   
+   *   // Or use type narrowing
+   *   if (ctx.scope === "issue") {
+   *     ctx.issue; // TypeScript knows this exists
+   *   }
+   * }
+   */
+  type Ctx = {
+    currentUser: User;
+    settings: AppSettings;
+  } & (
+    | {
+        scope: "issue";
+        issue: ExtendedIssue;
+      }
+    | {
+        scope: "project";
+        project: ExtendedProject;
+      }
+    | {
+        scope: "article";
+        article: ExtendedArticle;
+      }
+    | {
+        scope: "user";
+        user: ExtendedUser;
+      }
+    | {
+        scope: "global";
+        globalStorage: {
+          extensionProperties: AppGlobalStorageExtensionProperties;
+        };
+      }
+  );
+
+  /**
    * Context type for POST requests
    * @template TBody - Request body type
    * @template R - Response type
-   * @template Q - Query parameters type (optional, defaults to Record<string, unknown>)
-   * @template TScope - Scope context type (defaults to GlobalCtx)
+   * @template Q - Query parameters type
+   * @template S - Handler scope ("issue" | "project" | "article" | "user" | "global")
+   * 
+   * @example
+   * export default function handle(ctx: CtxPost<UpdateBody, Response, never, "issue">) {
+   *   const body = ctx.request.json();
+   *   ctx.response.json({ updated: true });
+   * }
    */
   type CtxPost<
     TBody = Record<string, unknown>,
     R = Record<string, unknown>,
     Q = Record<string, unknown>,
-    TScope extends ScopeCtx = GlobalCtx
-  > = TScope & {
+    S extends HttpHandlerScope = HttpHandlerScope
+  > = Extract<Ctx, { scope: S }> & {
     request: HttpRequest<TBody, Q>;
     response: HttpResponse<R>;
   };
@@ -113,15 +138,15 @@ declare global {
    * Context type for PUT requests
    * @template TBody - Request body type
    * @template R - Response type
-   * @template Q - Query parameters type (optional, defaults to Record<string, unknown>)
-   * @template TScope - Scope context type (defaults to GlobalCtx)
+   * @template Q - Query parameters type
+   * @template S - Handler scope
    */
   type CtxPut<
     TBody = Record<string, unknown>,
     R = Record<string, unknown>,
     Q = Record<string, unknown>,
-    TScope extends ScopeCtx = GlobalCtx
-  > = TScope & {
+    S extends HttpHandlerScope = HttpHandlerScope
+  > = Extract<Ctx, { scope: S }> & {
     request: HttpRequest<TBody, Q>;
     response: HttpResponse<R>;
   };
@@ -129,14 +154,14 @@ declare global {
   /**
    * Context type for GET requests
    * @template R - Response type
-   * @template Q - Query parameters type (optional, defaults to Record<string, unknown>)
-   * @template TScope - Scope context type (defaults to GlobalCtx)
+   * @template Q - Query parameters type
+   * @template S - Handler scope
    */
   type CtxGet<
     R = Record<string, unknown>,
     Q = Record<string, unknown>,
-    TScope extends ScopeCtx = GlobalCtx
-  > = TScope & {
+    S extends HttpHandlerScope = HttpHandlerScope
+  > = Extract<Ctx, { scope: S }> & {
     request: HttpRequest<never, Q>;
     response: HttpResponse<R>;
   };
@@ -144,40 +169,18 @@ declare global {
   /**
    * Context type for DELETE requests
    * @template R - Response type
-   * @template Q - Query parameters type (optional, defaults to Record<string, unknown>)
-   * @template TScope - Scope context type (defaults to GlobalCtx)
+   * @template Q - Query parameters type
+   * @template S - Handler scope
    */
   type CtxDelete<
     R = Record<string, unknown>,
     Q = Record<string, unknown>,
-    TScope extends ScopeCtx = GlobalCtx
-  > = TScope & {
+    S extends HttpHandlerScope = HttpHandlerScope
+  > = Extract<Ctx, { scope: S }> & {
     request: HttpRequest<never, Q>;
     response: HttpResponse<R>;
   };
-
-  // Convenience type aliases for specific scopes
-  type CtxGetIssue<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxGet<R, Q, IssueCtx>;
-  type CtxPostIssue<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPost<TBody, R, Q, IssueCtx>;
-  type CtxPutIssue<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPut<TBody, R, Q, IssueCtx>;
-  type CtxDeleteIssue<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxDelete<R, Q, IssueCtx>;
-
-  type CtxGetProject<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxGet<R, Q, ProjectCtx>;
-  type CtxPostProject<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPost<TBody, R, Q, ProjectCtx>;
-  type CtxPutProject<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPut<TBody, R, Q, ProjectCtx>;
-  type CtxDeleteProject<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxDelete<R, Q, ProjectCtx>;
-
-  type CtxGetArticle<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxGet<R, Q, ArticleCtx>;
-  type CtxPostArticle<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPost<TBody, R, Q, ArticleCtx>;
-  type CtxPutArticle<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPut<TBody, R, Q, ArticleCtx>;
-  type CtxDeleteArticle<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxDelete<R, Q, ArticleCtx>;
-
-  type CtxGetUser<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxGet<R, Q, UserCtx>;
-  type CtxPostUser<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPost<TBody, R, Q, UserCtx>;
-  type CtxPutUser<TBody = Record<string, unknown>, R = Record<string, unknown>, Q = Record<string, unknown>> = CtxPut<TBody, R, Q, UserCtx>;
-  type CtxDeleteUser<R = Record<string, unknown>, Q = Record<string, unknown>> = CtxDelete<R, Q, UserCtx>;
 }
 
-//This is needed to make the file a module
 export {};
 
