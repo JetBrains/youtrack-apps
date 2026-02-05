@@ -31,7 +31,10 @@ to: package.json
 
     "hmr": "vite",
     "dev:build": "npm run clean && npm run build:backend && DEV_MODE=true npm run build:frontend",
-    "dev:upload": "npm run dev:build && npm run upload-local"
+    "dev:upload": "npm run dev:build && npm run upload-local",
+
+    "generate": "npx @jetbrains/create-youtrack-app",
+    "g": "npm run generate"
   },
   "dependencies": {
     "@jetbrains/ring-ui-built": "^7.0.8",

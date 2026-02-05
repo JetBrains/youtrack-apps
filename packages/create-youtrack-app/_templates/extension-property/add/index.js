@@ -3,12 +3,19 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 module.exports = {
-  prompt: injectJSCallback(injectEntity, ({ prompter, args }) =>
-    prompter.prompt([
+  prompt: injectJSCallback(injectEntity, ({ prompter, args }) => {
+    // If all required args are provided, skip prompts
+    if (args.name && args.type && args.target && args.isSet !== undefined) {
+      return Promise.resolve(args);
+    }
+    
+    return prompter.prompt([
       {
         type: "input",
         name: "name",
         message: "What is the name of the extension property",
+        skip: () => !!args.name,
+        initial: args.name,
       },
       {
         type: "select",
@@ -26,11 +33,15 @@ module.exports = {
             message: "Issue",
           },
         ],
+        skip: () => !!args.type,
+        initial: args.type || 'string',
       },
       {
         type: "confirm",
         name: "isSet",
         message: "Is it a set of values?",
+        skip: () => args.isSet !== undefined,
+        initial: args.isSet === 'true' || args.isSet === true,
       },
       {
         type: "select",
@@ -42,9 +53,11 @@ module.exports = {
           { name: "User", message: "User" },
           { name: "AppGlobalStorage", message: "Global Storage" },
         ],
+        skip: () => !!args.target,
+        initial: args.target,
       },
-    ]),
-  ),
+    ]);
+  }),
 };
 
 function injectEntity(payload) {

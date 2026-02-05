@@ -37,8 +37,135 @@ function runHygen(hygenArgs = argv) {
     require('./help');
     return;
   }
+
+  // Map short aliases to full commands for NestJS-style simplicity
+  const aliasMap = {
+    'handler': 'http-handler',
+    'h': 'http-handler',
+    'property': 'extension-property',
+    'prop': 'extension-property',
+    'p': 'extension-property'
+  };
+
+  // Replace aliases in argv (create new array to avoid mutation issues)
+  const normalizedArgv = argv.map(arg => aliasMap[arg] || arg);
+  
+  // Smart pattern detection for positional arguments
+  
+  // Pattern 1: HTTP Handler - scope/path syntax
+  // Usage: handler global/health [--method GET] [--permissions read-issue]
+  const handlerIndex = normalizedArgv.findIndex(a => a === 'http-handler');
+  if (handlerIndex !== -1 && normalizedArgv[handlerIndex + 1]) {
+    const pathArg = normalizedArgv[handlerIndex + 1];
+    
+    // Pattern: scope/path (e.g., "global/health" or "project/users/profile")
+    if (pathArg.includes('/') && !pathArg.startsWith('--')) {
+      const segments = pathArg.split('/');
+      const scope = segments[0]; // first segment is scope
+      const routePath = segments.slice(1).join('/'); // rest is path
+      
+      // Validate scope
+      const validScopes = ['global', 'project', 'issue'];
+      if (!validScopes.includes(scope)) {
+        console.error(chalk.red(`Invalid scope: ${scope}. Must be one of: ${validScopes.join(', ')}`));
+        process.exit(1);
+      }
+      
+      const method = args.method || 'GET'; // Default to GET
+      const permissions = args.permissions || '';
+      
+      // Check if enhanced-dx project
+      const pkgPath = path.join(cwd, 'package.json');
+      const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
+      const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+      
+      if (!isEnhancedDX) {
+        console.error(chalk.red('This command requires an enhanced-dx project.'));
+        process.exit(1);
+      }
+      
+      // Confirm target file
+      const targetRel = path.join('src', 'backend', 'router', scope, routePath || '', `${method}.ts`);
+      const targetAbs = path.join(cwd, targetRel);
+      
+      if (fs.existsSync(targetAbs)) {
+        const overwrite = await new Confirm({
+          initial: false,
+          message: `File already exists: ${chalk.bold(targetRel)}. Overwrite?`
+        }).run();
+        if (!overwrite) {
+          console.log(chalk.yellow('Aborted.'));
+          return;
+        }
+      }
+      
+      const hygenArgs = [
+        'http-handler',
+        'enhanced-dx',
+        '--ytScope', scope,
+        '--routePath', routePath,
+        '--method', method,
+        '--permissions', permissions
+      ];
+      
+      process.env.EDX = '1';
+      console.log(chalk.cyan(`\nGenerating ${method} handler at ${targetRel}...\n`));
+      await runHygen(hygenArgs);
+      console.log(chalk.green(`\n✓ HTTP handler created successfully!\n`));
+      return;
+    }
+  }
+  
+  // Pattern 2: Extension Property - Entity.propertyName syntax
+  // Usage: property Issue.customStatus [--type string] [--set]
+  const propIndex = normalizedArgv.findIndex(a => a === 'extension-property');
+  if (propIndex !== -1 && normalizedArgv[propIndex + 1]) {
+    const propArg = normalizedArgv[propIndex + 1];
+    
+    // Pattern: Entity.propertyName (e.g., "Issue.customStatus" or "Comment.rating")
+    if (propArg.includes('.') && !propArg.startsWith('--')) {
+      const [target, name] = propArg.split('.');
+      
+      // Validate target entity
+      const validTargets = ['Issue', 'Comment', 'User', 'AppGlobalStorage'];
+      if (!validTargets.includes(target)) {
+        console.error(chalk.red(`Invalid target: ${target}. Must be one of: ${validTargets.join(', ')}`));
+        process.exit(1);
+      }
+      
+      // Validate property name (basic check)
+      if (!name || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
+        console.error(chalk.red(`Invalid property name: ${name}. Must be a valid identifier.`));
+        process.exit(1);
+      }
+      
+      const type = args.type || 'string'; // Default to string
+      const validTypes = ['string', 'integer', 'boolean', 'Issue'];
+      if (!validTypes.includes(type)) {
+        console.error(chalk.red(`Invalid type: ${type}. Must be one of: ${validTypes.join(', ')}`));
+        process.exit(1);
+      }
+      
+      const isSet = args.set === true || args.set === 'true';
+      
+      const hygenArgs = [
+        'extension-property',
+        'add',
+        '--name', name,
+        '--type', type,
+        '--isSet', isSet.toString(),
+        '--target', target
+      ];
+      
+      console.log(chalk.cyan(`\nAdding extension property ${target}.${name}...\n`));
+      await runHygen(hygenArgs);
+      console.log(chalk.green(`\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
+      return;
+    }
+  }
+
   const hasHygenParams = ["init", "enhanced-dx", "extension-property", "widget", "settings", "http-handler", "endpoint"].some(
-    (key) => new Set(argv).has(key)
+    (key) => new Set(normalizedArgv).has(key)
   );
 
   // If some hygen-related params passed in, we call generator directly
@@ -258,6 +385,139 @@ function runHygen(hygenArgs = argv) {
       }
     }
     return runHygen();
+  }
+
+  // Check if we're in an existing enhanced-dx app
+  const pkgPath = path.join(cwd, 'package.json');
+  const hasPkg = fs.existsSync(pkgPath);
+  if (hasPkg) {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+    const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+    
+    if (isEnhancedDX) {
+      // Show interactive menu for what to generate
+      const action = await new Select({
+        name: 'action',
+        message: 'What would you like to generate?',
+        choices: [
+          { name: 'http-handler', message: 'HTTP Handler (API endpoint)' },
+          { name: 'extension-property', message: 'Extension Property (entity field)' },
+          { name: 'widget', message: 'Widget (UI component)' },
+        ]
+      }).run();
+      
+      if (action === 'http-handler') {
+        // Interactive flow for http-handler
+        const method = await new Select({
+          name: 'method',
+          message: 'Choose HTTP method:',
+          choices: ['GET', 'POST', 'PUT', 'DELETE']
+        }).run();
+
+        const scope = await new Select({
+          name: 'scope',
+          message: 'Choose scope (first path segment):',
+          choices: ['global', 'project', 'issue']
+        }).run();
+
+        const routePath = await new Input({
+          name: 'routePath',
+          message: `Route path under ${scope}/ (leave empty for root):`,
+          initial: ''
+        }).run();
+
+        const { PERMISSIONS } = require(path.join(defaultTemplates, 'consts.js'));
+        const permChoices = PERMISSIONS.map(p => ({ name: p.key, message: p.key }));
+        const permissions = await new MultiSelect({
+          name: 'permissions',
+          message: 'Select permissions (optional, space to toggle, enter to confirm):',
+          choices: permChoices,
+          hint: 'Space to select, enter to confirm',
+          validate: () => true
+        }).run();
+
+        const targetRel = path.join('src', 'backend', 'router', scope, routePath || '', `${method}.ts`);
+        const targetAbs = path.join(cwd, targetRel);
+        
+        if (fs.existsSync(targetAbs)) {
+          const overwrite = await new Confirm({
+            initial: false,
+            message: `File already exists: ${chalk.bold(targetRel)}. Overwrite?`
+          }).run();
+          if (!overwrite) {
+            console.log(chalk.yellow('Aborted.'));
+            return;
+          }
+        }
+
+        const hygenArgs = [
+          'http-handler',
+          'enhanced-dx',
+          '--ytScope', scope,
+          '--routePath', routePath,
+          '--method', method,
+          '--permissions', permissions.join(',')
+        ];
+
+        process.env.EDX = '1';
+        console.log(chalk.cyan(`\nGenerating ${method} handler at ${targetRel}...\n`));
+        await runHygen(hygenArgs);
+        console.log(chalk.green(`\n✓ HTTP handler created successfully!\n`));
+        return;
+      } else if (action === 'extension-property') {
+        // Interactive flow for extension-property
+        const target = await new Select({
+          name: 'target',
+          message: 'What is the target extending entity?',
+          choices: [
+            { name: 'Issue', message: 'Issue' },
+            { name: 'Comment', message: 'Comment' },
+            { name: 'User', message: 'User' },
+            { name: 'AppGlobalStorage', message: 'Global Storage' },
+          ]
+        }).run();
+
+        const name = await new Input({
+          name: 'name',
+          message: 'What is the name of the extension property?',
+          validate: (val) => val && /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(val) ? true : 'Must be a valid identifier'
+        }).run();
+
+        const type = await new Select({
+          name: 'type',
+          message: 'What is the type of the extension property?',
+          choices: [
+            { name: 'string', message: 'String' },
+            { name: 'integer', message: 'Integer' },
+            { name: 'boolean', message: 'Boolean' },
+            { name: 'Issue', message: 'Issue' },
+          ]
+        }).run();
+
+        const isSet = await new Confirm({
+          name: 'isSet',
+          message: 'Is it a set of values?',
+          initial: false
+        }).run();
+
+        const hygenArgs = [
+          'extension-property',
+          'add',
+          '--name', name,
+          '--type', type,
+          '--isSet', isSet.toString(),
+          '--target', target
+        ];
+
+        console.log(chalk.cyan(`\nAdding extension property ${target}.${name}...\n`));
+        await runHygen(hygenArgs);
+        console.log(chalk.green(`\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
+        return;
+      } else if (action === 'widget') {
+        // Run hygen for widget
+        return runHygen(['widget', 'add']);
+      }
+    }
   }
 
   if (
