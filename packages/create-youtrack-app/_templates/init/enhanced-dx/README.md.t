@@ -73,9 +73,9 @@ src/
 
 ### Development
 
-- `npm run dev` - Start Vite dev server for hot reload (frontend only, port 9000)
+- `npm run hmr` - Start Vite dev server for hot reload (frontend only, port 9000)
 - `npm run watch` - Watch mode with automatic rebuild and upload (recommended)
-- `npm run watch:hmr` - Watch mode with hot reload enabled (fastest for frontend development)
+- `npm run dev` - Watch mode with hot reload enabled (fastest for frontend development)
 
 ### Building
 
@@ -172,7 +172,7 @@ See [Watch Mode with Auto-Upload](https://github.com/JetBrains/youtrack-apps/tre
 For instant frontend updates via Vite dev server:
 
 ```bash
-npm run watch:hmr
+npm run dev
 ```
 
 **What it does:**
@@ -274,7 +274,7 @@ npm run build:backend
 
 ### Hot reload shows blank page
 
-- Check Vite dev server is running (should start automatically with `npm run watch:hmr`)
+- Check Vite dev server is running (should start automatically with `npm run dev`)
 - Verify dev server on port 9000: `curl http://localhost:9000`
 - Check browser console for errors
 
