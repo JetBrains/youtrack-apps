@@ -6,6 +6,11 @@ const http = require('@jetbrains/youtrack-scripting-api/http');
 const security = require('./workflow-security');
 
 /**
+ * Timeout for webhook HTTP connections in milliseconds
+ */
+const WEBHOOK_TIMEOUT_MS = 5000;
+
+/**
  * Parse comma or newline separated webhook URLs from settings
  * @param {string} webhooksStr - Comma or newline separated webhook URLs
  * @returns {Array<string>} Array of trimmed, non-empty URLs
@@ -66,6 +71,11 @@ function getWebhookUrls(ctx, settingsKey) {
  * @param {string} url - The webhook URL
  */
 function logWebhookResponse(postResult, url) {
+  if (postResult && !postResult.code) {
+    console.warn('[webhooks] Webhook request to ' + url + ' completed but returned no status code (likely timeout after ' + WEBHOOK_TIMEOUT_MS + 'ms)');
+    return;
+  }
+  
   console.log('[webhooks] Webhook sent successfully to ' + url);
   if (postResult) {
     console.log('[webhooks] Response code: ' + (postResult.code || 'unknown'));
@@ -99,7 +109,7 @@ function logWebhookError(error, url) {
  */
 function sendWebhook(url, payload, eventName, token, headerName) {
   try {
-    const connection = new http.Connection(url.trim());
+    const connection = new http.Connection(url.trim(), null, WEBHOOK_TIMEOUT_MS);
     connection.addHeader('Content-Type', 'application/json');
     security.addSecurityHeaders(connection, token, headerName);
 
