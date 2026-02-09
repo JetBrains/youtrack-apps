@@ -29,6 +29,22 @@ ${chalk.bold('Usage:')}
   - Choose "Enhanced DX" when prompted and follow the instructions as usual. Sample ${chalk.cyan('MAIN_MENU_ITEM')} widget with backend endpoints will be added automatically.
   - Run ${chalk.magenta('npm run watch:build')} to continuously update the app.
 
+${chalk.bold('Code Generation:')}
+Inside an enhanced-dx app, use ${chalk.magenta('npm run generate')} (or ${chalk.magenta('npm run g')}) to add features:
+
+${chalk.bold('HTTP Handlers:')}
+  ${chalk.magenta('npm run g -- handler global/health')}              ${chalk.dim('# GET handler (default)')}
+  ${chalk.magenta('npm run g -- handler project/users --method POST')} ${chalk.dim('# POST handler')}
+  ${chalk.magenta('npm run g -- h issue/comments --method POST --permissions read-issue,update-issue')}
+
+${chalk.bold('Extension Properties:')}
+  ${chalk.magenta('npm run g -- property Issue.customStatus')}         ${chalk.dim('# string type (default)')}
+  ${chalk.magenta('npm run g -- property Comment.rating --type integer')}
+  ${chalk.magenta('npm run g -- p Issue.tags --type string --set')}    ${chalk.dim('# multi-value property')}
+
+${chalk.bold('Interactive Menu:')}
+  ${chalk.magenta('npm run g')}                                        ${chalk.dim('# Shows menu to select what to generate')}
+
 ${chalk.bold('Features:')}
 • ${chalk.bold('File-based Routing:')} Create endpoints by adding files in ${chalk.cyan('src/backend/router/SCOPE/NAME/METHOD.ts')}
   - e.g. ${chalk.cyan('src/backend/router/project/demo/GET.ts')} for GET request

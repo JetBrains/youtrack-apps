@@ -28,6 +28,49 @@ After you have generated an app, you may want to add more features. Add new feat
 | Add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html) | `npx @jetbrains/create-youtrack-app http-handler add` |
 | View a list of available commands | `npx @jetbrains/create-youtrack-app --help` |
 
+### Enhanced DX: NestJS-Style Code Generation
+
+For apps created with **Enhanced DX (TypeScript)**, a simplified, NestJS-inspired code generation workflow is available:
+
+#### Quick Commands
+
+Generated enhanced-dx apps include `npm run generate` (or `npm run g` for short) that uses smart positional arguments:
+
+**HTTP Handlers:**
+```bash
+npm run g -- handler global/health                    # GET handler (default)
+npm run g -- handler project/users --method POST      # Override method
+npm run g -- h issue/comments --method POST --permissions read-issue,update-issue
+```
+
+**Extension Properties:**
+```bash
+npm run g -- property Issue.customStatus              # string type (default)
+npm run g -- property Comment.rating --type integer   # Override type
+npm run g -- p Issue.tags --type string --set         # Multi-value property
+```
+
+**Interactive Menu:**
+```bash
+npm run g                                             # Shows menu to select what to generate
+```
+
+#### Syntax Reference
+
+**HTTP Handler:** `npm run g -- handler <scope>/<path> [--method METHOD] [--permissions PERMS]`
+- `<scope>`: `global`, `project`, or `issue`
+- `<path>`: Route path (can be nested with `/`)
+- `--method`: `GET`, `POST`, `PUT`, `DELETE` (default: `GET`)
+- `--permissions`: Comma-separated permissions (optional)
+- **Aliases:** `handler`, `h`
+
+**Extension Property:** `npm run g -- property <Entity>.<name> [--type TYPE] [--set]`
+- `<Entity>`: `Issue`, `Comment`, `User`, or `AppGlobalStorage`
+- `<name>`: Property name (valid identifier)
+- `--type`: `string`, `integer`, `boolean`, `Issue` (default: `string`)
+- `--set`: Makes it multi-value (optional)
+- **Aliases:** `property`, `prop`, `p`
+
 
 ### Сontributing
 
