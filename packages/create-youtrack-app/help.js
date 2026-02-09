@@ -63,8 +63,4 @@ ${chalk.bold('Features:')}
 • ${chalk.bold('Vite-powered:')} Custom plugins handle routing and type generation
   - api plugin: ${chalk.bold('vite-plugin-youtrack-api-generator.ts')}
   - router plugin: ${chalk.bold('vite-plugin-youtrack-router.ts')}
-
-${chalk.bold('Limitations:')}
-• ${chalk.bold('YouTrack Types:')} ${chalk.cyan('src/api/youtrack-types.d.ts')} contains incomplete TypeScript definitions (partial jsStubs migration)
-• ${chalk.bold('Development builds:')} ${chalk.magenta('watch-update')} uses ${chalk.cyan('build:nolint')} for speed - run ${chalk.magenta('npm run build')} before production
 `);
