@@ -16,8 +16,6 @@ import Permissions from '@jetbrains/hub-widget-ui/dist/permissions';
 import {initTranslations} from './translations';
 import styles from './app.css';
 
-const HUB_SERVICE_ID = '0-0-0-0-0';
-
 class Widget extends Component {
   static propTypes = {
     dashboardApi: PropTypes.object,
@@ -35,7 +33,7 @@ class Widget extends Component {
       projects: [],
       users: [],
       owner: null,
-      hubUrl: null
+      homeUrl: null
     };
 
     registerWidgetApi({
@@ -61,15 +59,14 @@ class Widget extends Component {
   }
 
   updateTitle() {
-    const {teamName, isStandaloneHub, users, homeUrl, selectedProject} = this.state;
+    const {teamName, users, homeUrl, selectedProject} = this.state;
 
-    if (!teamName || !users || !selectedProject || typeof isStandaloneHub !== 'boolean') {
+    if (!teamName || !users || !selectedProject) {
       return this.setState({title: undefined});
     }
 
-    const projectsPathPrefix = isStandaloneHub ? 'projects-administration' : 'admin/editProject';
     const href = homeUrl
-      ? `${homeUrl}/${projectsPathPrefix}/${selectedProject.key}?tab=team`
+      ? `${homeUrl}/projects/${selectedProject.key}?tab=people`
       : undefined;
 
     const title = {text: teamName, href, counter: users.length};
@@ -79,18 +76,18 @@ class Widget extends Component {
   async loadProjectTeam(projectId) {
     const {dashboardApi} = this.props;
 
-    const team = await dashboardApi.fetchHub(
-      `api/rest/projects/${projectId}/team`, {
+    const project = await dashboardApi.fetchYouTrack(
+      `admin/projects/${projectId}`, {
         query: {
-          fields: 'name,users(id,login,name,profile(avatar,email/email)),project/owner'
+          fields: 'team(name,users(id,login,name,avatarUrl,email)),leader(id)'
         }
       }
     );
 
-    const teamMembers = (team.users || []);
+    const teamMembers = (project.team.users || []);
 
-    const owner = team.project.owner
-      ? teamMembers.filter(user => user.id === team.project.owner.id)[0]
+    const owner = project.leader
+      ? teamMembers.filter(user => user.id === project.leader.id)[0]
       : null;
 
     const users = teamMembers.
@@ -101,13 +98,13 @@ class Widget extends Component {
       users.unshift(owner);
     }
 
-    this.setState({users, owner, teamName: team.name}, () => this.updateTitle());
+    this.setState({users, owner, teamName: project.team.name}, () => this.updateTitle());
   }
 
   async initialize(dashboardApi) {
-    const [{projects}, {homeUrl: hubUrl, name: hubServiceName}, config] = await Promise.all([
-      dashboardApi.fetchHub(
-        'api/rest/projects', {
+    const [projects, {systemSettings: {baseUrl}}, {contextPath}, config] = await Promise.all([
+      dashboardApi.fetchYouTrack(
+        'admin/projects', {
           query: {
             fields: 'id,name',
             orderBy: 'name',
@@ -115,32 +112,15 @@ class Widget extends Component {
           }
         }
       ),
-      dashboardApi.fetchHub(
-        `api/rest/services/${HUB_SERVICE_ID}`, {
-          query: {
-            fields: 'homeUrl,name'
-          }
-        }
-      ),
+      dashboardApi.fetchYouTrack('admin/globalSettings?fields=systemSettings(baseUrl)'),
+      dashboardApi.fetchYouTrack('config?fields=contextPath'),
       dashboardApi.readConfig()
     ]);
 
-    const isStandaloneHub = hubServiceName !== 'YouTrack Administration';
-    this.setState({projects, isStandaloneHub});
+    const root = contextPath ? `${contextPath}/` : '';
+    const homeUrl = `${baseUrl}${root}`;
 
-    if (isStandaloneHub) {
-      this.setState({homeUrl: hubUrl}, () => this.updateTitle());
-    } else {
-      dashboardApi.fetchHub('api/rest/services', {query: {
-        fields: 'id,name,applicationName,homeUrl',
-        query: 'applicationName:YouTrack'
-      }}).
-        then(response => {
-          const youTrackService = (response.services || []).filter(service => service.homeUrl)[0];
-          return (youTrackService || {}).homeUrl || hubUrl.replace('/hub', '/youtrack');
-        }).
-        then(homeUrl => this.setState({homeUrl}), () => this.updateTitle());
-    }
+    this.setState({projects, homeUrl}, () => this.updateTitle());
 
     if (!config) {
       dashboardApi.enterConfigMode();
@@ -256,7 +236,7 @@ class Widget extends Component {
         <div className={styles.userAvatar}>
           <Avatar
             style={{verticalAlign: 'middle'}}
-            url={user.profile.avatar.url}
+            url={user.avatarUrl}
             size={Size.Size32}
           />
         </div>
@@ -267,7 +247,7 @@ class Widget extends Component {
           </div>
 
           <div className={styles.userEmail}>
-            {user.profile.email ? user.profile.email.email : null}
+            {user.email}
           </div>
         </div>
       </div>
