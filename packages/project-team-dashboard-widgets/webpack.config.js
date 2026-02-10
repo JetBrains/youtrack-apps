@@ -21,6 +21,8 @@ const PATHS = {
 
 const SOURCES = Object.values(PATHS).map(({sources}) => sources);
 
+const hubWidgetUiPath = resolve(__dirname, join('node_modules', '@jetbrains', 'hub-widget-ui'));
+
 const webpackConfig = () => ({
   mode: 'development',
   entry: {
@@ -58,7 +60,7 @@ const webpackConfig = () => ({
       ...ringUiWebpackConfig.config.module.rules,
       {
         test: /\.css$/,
-        exclude: [ringUiWebpackConfig.componentsPath],
+        exclude: [ringUiWebpackConfig.componentsPath, hubWidgetUiPath],
         use: ['style-loader', {
           loader: 'css-loader',
           options: {
@@ -68,6 +70,11 @@ const webpackConfig = () => ({
             }
           }
         }]
+      },
+      {
+        test: /\.css$/,
+        include: [hubWidgetUiPath],
+        use: ['style-loader', 'css-loader']
       },
       {
         test: /\.js$/,
