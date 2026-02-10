@@ -50,6 +50,14 @@ npm run g -- property Comment.rating --type integer   # Override type
 npm run g -- p Issue.tags --type string --set         # Multi-value property
 ```
 
+**App Settings:**
+```bash
+npm run g -- settings init --title "..." --description "..."  # Create settings schema
+npm run g -- settings init                                     # Interactive mode
+npm run g -- settings add                                      # Add property (interactive)
+npm run g -- s init --title "My Settings" --description "..."  # Short alias
+```
+
 **Interactive Menu:**
 ```bash
 npm run g                                             # Shows menu to select what to generate
@@ -70,6 +78,13 @@ npm run g                                             # Shows menu to select wha
 - `--type`: `string`, `integer`, `boolean`, `Issue` (default: `string`)
 - `--set`: Makes it multi-value (optional)
 - **Aliases:** `property`, `prop`, `p`
+
+**App Settings:** `npm run g -- settings init [--title TITLE] [--description DESC]`
+- `init`: Initialize settings schema
+  - With args: `--title` and `--description` create schema directly (testable)
+  - Without args: Interactive prompts for title and description
+- `add`: Add a new property to existing settings schema (interactive only)
+- **Aliases:** `settings`, `setting`, `s`
 
 
 ### Сontributing

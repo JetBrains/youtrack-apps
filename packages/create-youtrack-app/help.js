@@ -42,6 +42,12 @@ ${chalk.bold('Extension Properties:')}
   ${chalk.magenta('npm run g -- property Comment.rating --type integer')}
   ${chalk.magenta('npm run g -- p Issue.tags --type string --set')}    ${chalk.dim('# multi-value property')}
 
+${chalk.bold('App Settings:')}
+  ${chalk.magenta('npm run g -- settings init --title "..." --description "..."')} ${chalk.dim('# Create settings schema')}
+  ${chalk.magenta('npm run g -- settings init')}                       ${chalk.dim('# Interactive mode')}
+  ${chalk.magenta('npm run g -- settings add')}                        ${chalk.dim('# Add property (interactive)')}
+  ${chalk.magenta('npm run g -- s init --title "..." --description "..."')}        ${chalk.dim('# Short alias')}
+
 ${chalk.bold('Interactive Menu:')}
   ${chalk.magenta('npm run g')}                                        ${chalk.dim('# Shows menu to select what to generate')}
 

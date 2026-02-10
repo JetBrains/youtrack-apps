@@ -44,7 +44,9 @@ function runHygen(hygenArgs = argv) {
     'h': 'http-handler',
     'property': 'extension-property',
     'prop': 'extension-property',
-    'p': 'extension-property'
+    'p': 'extension-property',
+    'setting': 'settings',
+    's': 'settings'
   };
 
   // Replace aliases in argv (create new array to avoid mutation issues)
@@ -183,6 +185,41 @@ function runHygen(hygenArgs = argv) {
       console.log(chalk.green(`\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
       return;
     }
+  }
+
+  // Pattern 3: Settings init - settings init syntax with optional args
+  // Usage: settings init [--title "..."] [--description "..."]
+  const settingsIndex = normalizedArgv.findIndex(a => a === 'settings');
+  if (settingsIndex !== -1 && normalizedArgv[settingsIndex + 1] === 'init') {
+    const title = args.title;
+    const description = args.description;
+    
+    // If both args provided, create settings.json directly (bypasses interactive prompts)
+    if (title && description) {
+      const settingsPath = path.join(cwd, 'src', 'settings.json');
+      
+      // Check if settings.json already exists
+      if (fs.existsSync(settingsPath)) {
+        console.error(chalk.red('Error: settings.json already exists at src/settings.json'));
+        process.exit(1);
+      }
+      
+      // Create the settings schema
+      const schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "title": title,
+        "description": description,
+        "properties": {},
+        "required": []
+      };
+      
+      fs.writeFileSync(settingsPath, JSON.stringify(schema, null, 2));
+      console.log(chalk.green(`\n✓ Settings schema created at src/settings.json\n`));
+      return;
+    }
+    
+    // If args not provided, fall through to Hygen for interactive prompts
   }
 
   const hasHygenParams = ["init", "enhanced-dx", "extension-property", "widget", "settings", "http-handler", "endpoint"].some(
