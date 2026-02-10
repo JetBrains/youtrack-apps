@@ -34,7 +34,7 @@ to: package.json
     "dev:upload": "npm run dev:build && npm run upload-local",
 
     "generate": "npx @jetbrains/create-youtrack-app",
-    "g": "npm run generate"
+    "g": "npm run generate --"
   },
   "dependencies": {
     "@jetbrains/ring-ui-built": "^7.0.8",

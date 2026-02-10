@@ -1,9 +1,11 @@
 module.exports = {
   injectJSCallback(callback, factory) {
-    return (...args) =>
-      factory(...args).then((result) => {
+    return (...allArgs) =>
+      factory(...allArgs).then((result) => {
         if (callback) {
-          return callback(result);
+          // Pass the full context (including args with cwd) to the callback
+          const context = allArgs[0]; // { prompter, args, ...other hygen context }
+          return callback(result, context);
         }
         return result;
       });

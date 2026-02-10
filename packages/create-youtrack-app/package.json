@@ -25,6 +25,8 @@
     "lint": "biome lint .",
     "generate:test": "bash scripts/generate-test-app.sh",
     "test": "bash scripts/generate-and-test.sh",
+    "test:generator": "node --test test/generator-cli.test.js",
+    "test:generator:watch": "node --test --watch test/generator-cli.test.js",
     "build": "echo 'no build required'",
     "release:ci": "bash scripts/release-ci.sh"
   },

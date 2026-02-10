@@ -148,17 +148,38 @@ function runHygen(hygenArgs = argv) {
       
       const isSet = args.set === true || args.set === 'true';
       
-      const hygenArgs = [
-        'extension-property',
-        'add',
-        '--name', name,
-        '--type', type,
-        '--isSet', isSet.toString(),
-        '--target', target
-      ];
+      // Directly manipulate the entity-extensions.json file
+      const entityExtensionsPath = path.join(cwd, 'src', 'entity-extensions.json');
+      let entityExtensions;
       
-      console.log(chalk.cyan(`\nAdding extension property ${target}.${name}...\n`));
-      await runHygen(hygenArgs);
+      if (fs.existsSync(entityExtensionsPath)) {
+        entityExtensions = JSON.parse(fs.readFileSync(entityExtensionsPath, 'utf-8'));
+      } else {
+        entityExtensions = { entityTypeExtensions: [] };
+      }
+      
+      // Find or create the entity
+      let extendingEntity = entityExtensions.entityTypeExtensions.find(
+        (e) => e.entityType === target
+      );
+      
+      if (!extendingEntity) {
+        extendingEntity = {
+          entityType: target,
+          properties: {}
+        };
+        entityExtensions.entityTypeExtensions.push(extendingEntity);
+      }
+      
+      // Add the property
+      extendingEntity.properties[name] = {
+        type: type,
+        multi: isSet
+      };
+      
+      // Write back to file
+      fs.writeFileSync(entityExtensionsPath, JSON.stringify(entityExtensions, null, 2));
+      
       console.log(chalk.green(`\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
       return;
     }

@@ -60,9 +60,13 @@ module.exports = {
   }),
 };
 
-function injectEntity(payload) {
+function injectEntity(payload, context) {
   const fileName = "entity-extensions.json";
-  const filePath = path.join(process.cwd(), "src", fileName);
+  // Use the cwd from args if available, otherwise fallback to process.cwd()
+  const targetCwd = (context && context.args && context.args.cwd) 
+    ? path.resolve(process.cwd(), context.args.cwd)
+    : process.cwd();
+  const filePath = path.join(targetCwd, "src", fileName);
   const entityExtensions = fs.existsSync(filePath)
     ? JSON.parse(fs.readFileSync(filePath))
     : { entityTypeExtensions: [] };
