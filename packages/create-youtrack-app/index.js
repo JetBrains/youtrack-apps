@@ -460,6 +460,7 @@ function runHygen(hygenArgs = argv) {
         choices: [
           { name: 'http-handler', message: 'HTTP Handler (API endpoint)' },
           { name: 'extension-property', message: 'Extension Property (entity field)' },
+          { name: 'settings', message: 'App Settings (settings.json)' },
           { name: 'widget', message: 'Widget (UI component)' },
         ]
       }).run();
@@ -570,6 +571,45 @@ function runHygen(hygenArgs = argv) {
         console.log(styleText("cyan", `\nAdding extension property ${target}.${name}...\n`));
         await runHygen(hygenArgs);
         console.log(styleText("green", `\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
+        return;
+      } else if (action === 'settings') {
+        // Interactive flow for settings
+        const settingsAction = await new Select({
+          name: 'settingsAction',
+          message: 'What would you like to do with settings?',
+          choices: [
+            { name: 'init', message: 'Initialize settings.json (create new)' },
+            { name: 'add', message: 'Add property to existing settings.json' },
+          ]
+        }).run();
+
+        if (settingsAction === 'init') {
+          // Check if settings.json already exists
+          const settingsPath = path.join(cwd, 'src', 'settings.json');
+          if (fs.existsSync(settingsPath)) {
+            console.error(styleText("red", '\nError: settings.json already exists at src/settings.json'));
+            console.log(styleText("yellow", 'Use "add" option to add properties to existing settings.\n'));
+            return;
+          }
+
+          // Run hygen for settings init
+          const hygenArgs = ['settings', 'init'];
+          await runHygen(hygenArgs);
+          console.log(styleText("green", '\n✓ Settings schema created at src/settings.json\n'));
+        } else if (settingsAction === 'add') {
+          // Check if settings.json exists
+          const settingsPath = path.join(cwd, 'src', 'settings.json');
+          if (!fs.existsSync(settingsPath)) {
+            console.error(styleText("red", '\nError: settings.json does not exist'));
+            console.log(styleText("yellow", 'Use "init" option first to create settings.json.\n'));
+            return;
+          }
+
+          // Run hygen for settings add
+          const hygenArgs = ['settings', 'add'];
+          await runHygen(hygenArgs);
+          console.log(styleText("green", '\n✓ Setting property added to settings.json\n'));
+        }
         return;
       } else if (action === 'widget') {
         // Run hygen for widget
