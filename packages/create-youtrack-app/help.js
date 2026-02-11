@@ -1,72 +1,72 @@
-const chalk = require('chalk');
+const { styleText } = require("node:util");
 
-// Note: see how to use chalk for output formatting https://github.com/chalk/chalk?tab=readme-ov-file#usage
+// Note: Migrated from chalk to native Node.js util.styleText
 
 
-console.log(chalk`
+console.log(`
 To generate a new app, run the following command
 
 ===
-${chalk.magenta('npm init @jetbrains/youtrack-app')}
+${styleText("magenta", 'npm init @jetbrains/youtrack-app')}
 ===
 
-... and follow the prompts. ${chalk.bold('Enhanced DX (experimental) features are available and described below.')}
+... and follow the prompts. ${styleText("bold", 'Enhanced DX (experimental) features are available and described below.')}
 
 After you have generated an app, you may want to add more features. Add new features quickly with one of these commands:
 
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app --help')} to view a list of available commands
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app settings init')} to add a settings declaration (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html')})
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app settings add')} to add one or more properties to the setting scheme created using the command listed above
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app widget add')} to add another widget (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-extension-points.html')})
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app extension-property add')} to declare an extension property (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html')})
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app http-handler add')} to add an HTTP handler (${chalk.underline('https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html')})
-* ${chalk.magenta('npx @jetbrains/create-youtrack-app endpoint add')} to generate a router endpoint
+* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to view a list of available commands
+* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings init')} to add a settings declaration (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html')})
+* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings add')} to add one or more properties to the setting scheme created using the command listed above
+* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app widget add')} to add another widget (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-extension-points.html')})
+* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app extension-property add')} to declare an extension property (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html')})
+* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app http-handler add')} to add an HTTP handler (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html')})
+* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app endpoint add')} to generate a router endpoint
 
 
-${chalk.bold('Enhanced DX (experimental)')}
+${styleText("bold", 'Enhanced DX (experimental)')}
 
-${chalk.bold('Usage:')}
-  - Choose "Enhanced DX" when prompted and follow the instructions as usual. Sample ${chalk.cyan('MAIN_MENU_ITEM')} widget with backend endpoints will be added automatically.
-  - Run ${chalk.magenta('npm run watch:build')} to continuously update the app.
+${styleText("bold", 'Usage:')}
+  - Choose "Enhanced DX" when prompted and follow the instructions as usual. Sample ${styleText("cyan", 'MAIN_MENU_ITEM')} widget with backend endpoints will be added automatically.
+  - Run ${styleText("magenta", 'npm run watch:build')} to continuously update the app.
 
-${chalk.bold('Code Generation:')}
-Inside an enhanced-dx app, use ${chalk.magenta('npm run generate')} (or ${chalk.magenta('npm run g')}) to add features:
+${styleText("bold", 'Code Generation:')}
+Inside an enhanced-dx app, use ${styleText("magenta", 'npm run generate')} (or ${styleText("magenta", 'npm run g')}) to add features:
 
-${chalk.bold('HTTP Handlers:')}
-  ${chalk.magenta('npm run g -- handler global/health')}              ${chalk.dim('# GET handler (default)')}
-  ${chalk.magenta('npm run g -- handler project/users --method POST')} ${chalk.dim('# POST handler')}
-  ${chalk.magenta('npm run g -- h issue/comments --method POST --permissions read-issue,update-issue')}
+${styleText("bold", 'HTTP Handlers:')}
+  ${styleText("magenta", 'npm run g -- handler global/health')}              ${styleText("dim", '# GET handler (default)')}
+  ${styleText("magenta", 'npm run g -- handler project/users --method POST')} ${styleText("dim", '# POST handler')}
+  ${styleText("magenta", 'npm run g -- h issue/comments --method POST --permissions read-issue,update-issue')}
 
-${chalk.bold('Extension Properties:')}
-  ${chalk.magenta('npm run g -- property Issue.customStatus')}         ${chalk.dim('# string type (default)')}
-  ${chalk.magenta('npm run g -- property Comment.rating --type integer')}
-  ${chalk.magenta('npm run g -- p Issue.tags --type string --set')}    ${chalk.dim('# multi-value property')}
+${styleText("bold", 'Extension Properties:')}
+  ${styleText("magenta", 'npm run g -- property Issue.customStatus')}         ${styleText("dim", '# string type (default)')}
+  ${styleText("magenta", 'npm run g -- property Comment.rating --type integer')}
+  ${styleText("magenta", 'npm run g -- p Issue.tags --type string --set')}    ${styleText("dim", '# multi-value property')}
 
-${chalk.bold('App Settings:')}
-  ${chalk.magenta('npm run g -- settings init --title "..." --description "..."')} ${chalk.dim('# Create settings schema')}
-  ${chalk.magenta('npm run g -- settings init')}                       ${chalk.dim('# Interactive mode')}
-  ${chalk.magenta('npm run g -- settings add')}                        ${chalk.dim('# Add property (interactive)')}
-  ${chalk.magenta('npm run g -- s init --title "..." --description "..."')}        ${chalk.dim('# Short alias')}
+${styleText("bold", 'App Settings:')}
+  ${styleText("magenta", 'npm run g -- settings init --title "..." --description "..."')} ${styleText("dim", '# Create settings schema')}
+  ${styleText("magenta", 'npm run g -- settings init')}                       ${styleText("dim", '# Interactive mode')}
+  ${styleText("magenta", 'npm run g -- settings add')}                        ${styleText("dim", '# Add property (interactive)')}
+  ${styleText("magenta", 'npm run g -- s init --title "..." --description "..."')}        ${styleText("dim", '# Short alias')}
 
-${chalk.bold('Interactive Menu:')}
-  ${chalk.magenta('npm run g')}                                        ${chalk.dim('# Shows menu to select what to generate')}
+${styleText("bold", 'Interactive Menu:')}
+  ${styleText("magenta", 'npm run g')}                                        ${styleText("dim", '# Shows menu to select what to generate')}
 
-${chalk.bold('Features:')}
-• ${chalk.bold('File-based Routing:')} Create endpoints by adding files in ${chalk.cyan('src/backend/router/SCOPE/NAME/METHOD.ts')}
-  - e.g. ${chalk.cyan('src/backend/router/project/demo/GET.ts')} for GET request
+${styleText("bold", 'Features:')}
+• ${styleText("bold", 'File-based Routing:')} Create endpoints by adding files in ${styleText("cyan", 'src/backend/router/SCOPE/NAME/METHOD.ts')}
+  - e.g. ${styleText("cyan", 'src/backend/router/project/demo/GET.ts')} for GET request
 
-• ${chalk.bold('TypeScript Backend:')} TypeScript support with automatic type generation
-  - Use  ${chalk.magenta('@zod-to-schema')} annotation for the endpoint Request and Response types (check out sample endpoints)
-  - Annotated types are used to generate schemas (${chalk.cyan('api.zod.ts')}) and type definitions (${chalk.cyan('api.d.ts')}) in ${chalk.cyan('src/api/')} folder
+• ${styleText("bold", 'TypeScript Backend:')} TypeScript support with automatic type generation
+  - Use  ${styleText("magenta", '@zod-to-schema')} annotation for the endpoint Request and Response types (check out sample endpoints)
+  - Annotated types are used to generate schemas (${styleText("cyan", 'api.zod.ts')}) and type definitions (${styleText("cyan", 'api.d.ts')}) in ${styleText("cyan", 'src/api/')} folder
 
-• ${chalk.bold('Client:')} Custom TS endpoints are accessible via type-safe API client with autocompletion and type checking
-  - ${chalk.magenta('import { createApi } from "@/api";')}
-  - ${chalk.magenta('const host = await YTApp.register(); const api = createApi(host);')}
-  - ${chalk.magenta('const result = await api.project.demo.GET({ projectId: "ABC", message: "hello" });')}
+• ${styleText("bold", 'Client:')} Custom TS endpoints are accessible via type-safe API client with autocompletion and type checking
+  - ${styleText("magenta", 'import { createApi } from "@/api";')}
+  - ${styleText("magenta", 'const host = await YTApp.register(); const api = createApi(host);')}
+  - ${styleText("magenta", 'const result = await api.project.demo.GET({ projectId: "ABC", message: "hello" });')}
 
-• ${chalk.bold('Zod Validation:')} Runtime validation in development mode. Use ${chalk.magenta('npm run watch:build')}
+• ${styleText("bold", 'Zod Validation:')} Runtime validation in development mode. Use ${styleText("magenta", 'npm run watch:build')}
 
-• ${chalk.bold('Vite-powered:')} Custom plugins handle routing and type generation
-  - api plugin: ${chalk.bold('vite-plugin-youtrack-api-generator.ts')}
-  - router plugin: ${chalk.bold('vite-plugin-youtrack-router.ts')}
+• ${styleText("bold", 'Vite-powered:')} Custom plugins handle routing and type generation
+  - api plugin: ${styleText("bold", 'vite-plugin-youtrack-api-generator.ts')}
+  - router plugin: ${styleText("bold", 'vite-plugin-youtrack-router.ts')}
 `);

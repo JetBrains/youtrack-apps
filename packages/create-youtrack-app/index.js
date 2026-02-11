@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { runner } = require("hygen");
-const chalk = require('chalk');
+const { styleText } = require("node:util");
 const execa = require("execa");
 const { Confirm, Select, MultiSelect, Input } = require("enquirer");
 const Logger = require("hygen/dist/logger");
@@ -69,7 +69,7 @@ function runHygen(hygenArgs = argv) {
       // Validate scope
       const validScopes = ['global', 'project', 'issue'];
       if (!validScopes.includes(scope)) {
-        console.error(chalk.red(`Invalid scope: ${scope}. Must be one of: ${validScopes.join(', ')}`));
+        console.error(styleText("red", `Invalid scope: ${scope}. Must be one of: ${validScopes.join(', ')}`));
         process.exit(1);
       }
       
@@ -82,7 +82,7 @@ function runHygen(hygenArgs = argv) {
       const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
       
       if (!isEnhancedDX) {
-        console.error(chalk.red('This command requires an enhanced-dx project.'));
+        console.error(styleText("red", 'This command requires an enhanced-dx project.'));
         process.exit(1);
       }
       
@@ -93,10 +93,10 @@ function runHygen(hygenArgs = argv) {
       if (fs.existsSync(targetAbs)) {
         const overwrite = await new Confirm({
           initial: false,
-          message: `File already exists: ${chalk.bold(targetRel)}. Overwrite?`
+          message: `File already exists: ${styleText("bold", targetRel)}. Overwrite?`
         }).run();
         if (!overwrite) {
-          console.log(chalk.yellow('Aborted.'));
+          console.log(styleText("yellow", 'Aborted.'));
           return;
         }
       }
@@ -111,9 +111,9 @@ function runHygen(hygenArgs = argv) {
       ];
       
       process.env.EDX = '1';
-      console.log(chalk.cyan(`\nGenerating ${method} handler at ${targetRel}...\n`));
+      console.log(styleText("cyan", `\nGenerating ${method} handler at ${targetRel}...\n`));
       await runHygen(hygenArgs);
-      console.log(chalk.green(`\n✓ HTTP handler created successfully!\n`));
+      console.log(styleText("green", `\n✓ HTTP handler created successfully!\n`));
       return;
     }
   }
@@ -131,20 +131,20 @@ function runHygen(hygenArgs = argv) {
       // Validate target entity
       const validTargets = ['Issue', 'Comment', 'User', 'AppGlobalStorage'];
       if (!validTargets.includes(target)) {
-        console.error(chalk.red(`Invalid target: ${target}. Must be one of: ${validTargets.join(', ')}`));
+        console.error(styleText("red", `Invalid target: ${target}. Must be one of: ${validTargets.join(', ')}`));
         process.exit(1);
       }
       
       // Validate property name (basic check)
       if (!name || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
-        console.error(chalk.red(`Invalid property name: ${name}. Must be a valid identifier.`));
+        console.error(styleText("red", `Invalid property name: ${name}. Must be a valid identifier.`));
         process.exit(1);
       }
       
       const type = args.type || 'string'; // Default to string
       const validTypes = ['string', 'integer', 'boolean', 'Issue'];
       if (!validTypes.includes(type)) {
-        console.error(chalk.red(`Invalid type: ${type}. Must be one of: ${validTypes.join(', ')}`));
+        console.error(styleText("red", `Invalid type: ${type}. Must be one of: ${validTypes.join(', ')}`));
         process.exit(1);
       }
       
@@ -182,7 +182,7 @@ function runHygen(hygenArgs = argv) {
       // Write back to file
       fs.writeFileSync(entityExtensionsPath, JSON.stringify(entityExtensions, null, 2));
       
-      console.log(chalk.green(`\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
+      console.log(styleText("green", `\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
       return;
     }
   }
@@ -200,7 +200,7 @@ function runHygen(hygenArgs = argv) {
       
       // Check if settings.json already exists
       if (fs.existsSync(settingsPath)) {
-        console.error(chalk.red('Error: settings.json already exists at src/settings.json'));
+        console.error(styleText("red", 'Error: settings.json already exists at src/settings.json'));
         process.exit(1);
       }
       
@@ -215,7 +215,7 @@ function runHygen(hygenArgs = argv) {
       };
       
       fs.writeFileSync(settingsPath, JSON.stringify(schema, null, 2));
-      console.log(chalk.green(`\n✓ Settings schema created at src/settings.json\n`));
+      console.log(styleText("green", `\n✓ Settings schema created at src/settings.json\n`));
       return;
     }
     
@@ -312,12 +312,12 @@ function runHygen(hygenArgs = argv) {
         const updateFooter = (val) => {
           const suggestions = computeSuggestions(val || '');
           if (!suggestions.length) {
-            footerText = chalk.dim('No matches • new segments will be created');
+            footerText = styleText("dim", 'No matches • new segments will be created');
           } else {
             const maxShow = 10;
             const shown = suggestions.slice(0, maxShow).join('  ');
-            const more = suggestions.length > maxShow ? chalk.dim(`  +${suggestions.length - maxShow} more`) : '';
-            footerText = chalk.dim('Matches: ') + shown + more;
+            const more = suggestions.length > maxShow ? styleText("dim", `  +${suggestions.length - maxShow} more`) : '';
+            footerText = styleText("dim", 'Matches: ') + shown + more;
           }
         };
 
@@ -372,8 +372,8 @@ function runHygen(hygenArgs = argv) {
             if (isDoubleTab && suggestions.length > 1) {
               const maxShow = 30;
               const shown = suggestions.slice(0, maxShow).join('  ');
-              const more = suggestions.length > maxShow ? chalk.dim(`  +${suggestions.length - maxShow} more`) : '';
-              footerText = chalk.dim('Matches: ') + shown + more;
+              const more = suggestions.length > maxShow ? styleText("dim", `  +${suggestions.length - maxShow} more`) : '';
+              footerText = styleText("dim", 'Matches: ') + shown + more;
             }
 
             pathPrompt.input = next;
@@ -415,10 +415,10 @@ function runHygen(hygenArgs = argv) {
         if (fs.existsSync(targetAbs)) {
           const overwrite = await new Confirm({
             initial: false,
-            message: `File already exists: ${chalk.bold(targetRel)}. Overwrite?`
+            message: `File already exists: ${styleText("bold", targetRel)}. Overwrite?`
           }).run();
           if (!overwrite) {
-            console.log(chalk.yellow('Aborted. No files were changed.'));
+            console.log(styleText("yellow", 'Aborted. No files were changed.'));
             return;
           }
         }
@@ -437,7 +437,7 @@ function runHygen(hygenArgs = argv) {
         await runHygen(hygenArgs);
         return;
       } catch (e) {
-        console.error(chalk.red('Failed to generate http-handler:'), e);
+        console.error(styleText("red", 'Failed to generate http-handler:'), e);
         process.exitCode = 1;
         return;
       }
@@ -500,10 +500,10 @@ function runHygen(hygenArgs = argv) {
         if (fs.existsSync(targetAbs)) {
           const overwrite = await new Confirm({
             initial: false,
-            message: `File already exists: ${chalk.bold(targetRel)}. Overwrite?`
+            message: `File already exists: ${styleText("bold", targetRel)}. Overwrite?`
           }).run();
           if (!overwrite) {
-            console.log(chalk.yellow('Aborted.'));
+            console.log(styleText("yellow", 'Aborted.'));
             return;
           }
         }
@@ -518,9 +518,9 @@ function runHygen(hygenArgs = argv) {
         ];
 
         process.env.EDX = '1';
-        console.log(chalk.cyan(`\nGenerating ${method} handler at ${targetRel}...\n`));
+        console.log(styleText("cyan", `\nGenerating ${method} handler at ${targetRel}...\n`));
         await runHygen(hygenArgs);
-        console.log(chalk.green(`\n✓ HTTP handler created successfully!\n`));
+        console.log(styleText("green", `\n✓ HTTP handler created successfully!\n`));
         return;
       } else if (action === 'extension-property') {
         // Interactive flow for extension-property
@@ -567,9 +567,9 @@ function runHygen(hygenArgs = argv) {
           '--target', target
         ];
 
-        console.log(chalk.cyan(`\nAdding extension property ${target}.${name}...\n`));
+        console.log(styleText("cyan", `\nAdding extension property ${target}.${name}...\n`));
         await runHygen(hygenArgs);
-        console.log(chalk.green(`\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
+        console.log(styleText("green", `\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
         return;
       } else if (action === 'widget') {
         // Run hygen for widget
@@ -581,7 +581,7 @@ function runHygen(hygenArgs = argv) {
   if (
     !(await new Confirm({
       initial: true,
-      message: `This will generate the scaffolding for a new YouTrack app in the following directory: ${chalk.bold(cwd)}\n\nContinue?`,
+      message: `This will generate the scaffolding for a new YouTrack app in the following directory: ${styleText("bold", cwd)}\n\nContinue?`,
     }).run())
   ) {
     return;
@@ -627,16 +627,16 @@ function runHygen(hygenArgs = argv) {
 ====================================
 
 Your enhanced-dx app has been created with demo examples!
-To add more widgets later, run: ${chalk.magenta('npx @jetbrains/create-youtrack-app widget add')}
-To add app settings later, run: ${chalk.magenta('npx @jetbrains/create-youtrack-app settings init')}
+To add more widgets later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app widget add')}
+To add app settings later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings init')}
 
 ====================================
   `);
 
   console.log(`
-${chalk.bold('======= Your app has been created! =======')}
+${styleText("bold", '======= Your app has been created! =======')}
 
-Please wait for just a moment. Dependencies are being installed by npm ${chalk.magenta('npm install')}:
+Please wait for just a moment. Dependencies are being installed by npm ${styleText("magenta", 'npm install')}:
 `);
 
 
@@ -651,13 +651,13 @@ Please wait for just a moment. Dependencies are being installed by npm ${chalk.m
   const buildCommand = 'npm run build';
   const additionalInfo = appType === 'ts' ? `
 
-${chalk.bold('🚀 Enhanced DX Features:')}
+${styleText("bold", '🚀 Enhanced DX Features:')}
 - Type-safe API endpoints with automatic type generation
 - File-based routing in src/backend/router/
 - Zod schema validation in development
 - Example endpoints: /global/health, /project/settings, /issue/metadata
 
-${chalk.bold('Development workflow:')}
+${styleText("bold", 'Development workflow:')}
 1. Add endpoints: Create {GET|POST}.ts files in src/backend/router/
 2. Use @zod-to-schema comments for automatic validation
 3. Import and use the type-safe API client in your widgets
@@ -665,7 +665,7 @@ ${chalk.bold('Development workflow:')}
 ` : '';
 
   console.log(`
-${chalk.bold('Done. All dependencies are now installed!')}
+${styleText("bold", 'Done. All dependencies are now installed!')}
 ${additionalInfo}
 If you want to upload and test the app in your YouTrack site, you'll need to generate a permanent access token first.
 
@@ -673,9 +673,9 @@ For instructions, please visit https://www.jetbrains.com/help/youtrack/server/ma
 
 Once you have this token, open your development environment and use the following commands to compile and upload the app:
 
-1. ${chalk.magenta(buildCommand)}
-2. ${chalk.magenta('npm run upload -- --host http://your-youtrack.url --token perm:cm9...')}
+1. ${styleText("magenta", buildCommand)}
+2. ${styleText("magenta", 'npm run upload -- --host http://your-youtrack.url --token perm:cm9...')}
 
 To add more features to your app, run the generator script again.
-Run ${chalk.magenta('npx @jetbrains/create-youtrack-app --help')} to explore available options.`);
+Run ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to explore available options.`);
 })();
