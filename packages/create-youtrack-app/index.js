@@ -229,7 +229,7 @@ function runHygen(hygenArgs = argv) {
   // If some hygen-related params passed in, we call generator directly
   if (hasHygenParams) {
     // Intercept Enhanced DX http-handler flow for richer experience
-    const isHttpHandlerCmd = new Set(argv).has('http-handler') && (new Set(argv).has('add') || !argv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
+    const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler') && (new Set(normalizedArgv).has('add') || !normalizedArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
     if (isHttpHandlerCmd) {
       try {
         const pkgPath = path.join(cwd, 'package.json');

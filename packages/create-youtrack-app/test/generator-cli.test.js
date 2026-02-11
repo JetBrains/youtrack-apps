@@ -203,6 +203,18 @@ describe('NestJS-Style Code Generation', () => {
       assert.strictEqual(fileExists('src/backend/router/global/ping/GET.ts'), true);
     });
 
+    test('http-handler interception should use normalized aliases', () => {
+      const indexPath = path.join(PKG_DIR, 'index.js');
+      const indexContent = fs.readFileSync(indexPath, 'utf8');
+
+      // Regression guard: alias commands like `handler add` / `h add`
+      // must be detected via normalizedArgv, not raw argv.
+      assert.ok(
+        indexContent.includes("const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler')"),
+        'HTTP handler interception should use normalizedArgv for alias handling'
+      );
+    });
+
     test('should handle multiple permissions', () => {
       const result = runCLI('handler project/admin --method POST --permissions READ_PROJECT,UPDATE_PROJECT,DELETE_PROJECT', { silent: true });
       
