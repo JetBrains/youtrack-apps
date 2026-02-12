@@ -15,7 +15,7 @@ const columns = () => [{
   getValue: function getValue(team) {
     return (team.project &&
       <Link
-        href={`/projects-administration/${team.project.id}?tab=team`}
+        href={`/projects/${team.project.id}?tab=people`}
         target="_blank"
       >{team.project.name}</Link>
     );

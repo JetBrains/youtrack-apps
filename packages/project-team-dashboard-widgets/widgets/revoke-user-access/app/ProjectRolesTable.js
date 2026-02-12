@@ -15,7 +15,7 @@ const columns = () => [{
   getValue: function getValue(projectRole) {
     return (projectRole.role &&
       <Link
-        href={`/roles/${projectRole.role.id}`}
+        href={`/admin/roles?id=${projectRole.role.id}`}
         target="_blank"
       >{projectRole.role.name}</Link>
     );
@@ -26,7 +26,7 @@ const columns = () => [{
   getValue: function getValue(projectRole) {
     return (projectRole.project &&
       <Link
-        href={`/projects-administration/${projectRole.project.id}?tab=access`}
+        href={`/projects/${projectRole.project.id}?tab=people`}
         target="_blank"
       >{projectRole.project.name}</Link>
     );

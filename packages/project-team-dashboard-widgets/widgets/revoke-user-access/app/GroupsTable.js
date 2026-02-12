@@ -13,7 +13,7 @@ const columns = () => [{
   className: styles.tableFirstColumn,
   headerClassName: styles.tableFirstColumn,
   getValue: function renderGroupLink(group) {
-    return <Link href={`/groups/${group.id}`} target="_blank">{group.name}</Link>;
+    return <Link href={`/admin/groups/${group.id}`} target="_blank">{group.name}</Link>;
   }
 }];
 
