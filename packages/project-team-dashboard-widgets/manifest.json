@@ -4,7 +4,7 @@
   "description": "A set of dashboard widgets for managing project teams. The set includes widgets for viewing and managing project team members.",
   "version": "1.1.0",
   "icon": "youtrack.svg",
-  "minYouTrackVersion": "2024.3.0",
+  "minYouTrackVersion": "2026.1.0",
   "vendor": {
     "name": "JetBrains s.r.o.",
     "url": "https://jetbrains.com",
