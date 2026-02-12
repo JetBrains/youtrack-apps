@@ -243,7 +243,7 @@ class Widget extends Component {
 
         <div className={styles.userInfo}>
           <div>
-            <Link href={`${homeUrl}/users/${user.id}`} target="_top">{user.name}</Link>
+            <Link href={`${homeUrl}/users/${user.id}`} target="_blank">{user.name}</Link>
           </div>
 
           <div className={styles.userEmail}>
