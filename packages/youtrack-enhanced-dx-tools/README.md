@@ -159,7 +159,7 @@ Supports: primitive types, objects, arrays, enums, required/optional properties,
 
 Generates TypeScript type definitions for entity extension properties.
 
-Reads `entity-extensions.json` and generates `src/api/extended-entities.d.ts`:
+Reads `src/entity-extensions.json` and generates `src/api/extended-entities.d.ts`:
 
 ```json
 {

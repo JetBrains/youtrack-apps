@@ -414,25 +414,18 @@ export type { ${extendedEntityNames.join(', ')}${globalStorageImport} } from './
  * Main plugin function
  */
 export default function youtrackExtensionProperties(): Plugin {
-  const extensionsPath = path.resolve(process.cwd(), 'entity-extensions.json');
-  const srcExtensionsPath = path.resolve(process.cwd(), 'src', 'entity-extensions.json');
+  const extensionsPath = path.resolve(process.cwd(), 'src', 'entity-extensions.json');
   const extendedEntitiesPath = path.resolve(process.cwd(), 'src', 'api', 'extended-entities.d.ts');
   const contextUtilitiesPath = path.resolve(process.cwd(), 'src', 'api', 'extended-context.d.ts');
   const typeAugmentationPath = path.resolve(process.cwd(), 'src', 'api', 'extended-types-augmentation.d.ts');
 
   const generateTypes = async () => {
-    // Try to find entity-extensions.json in root or src/
-    let extensionsFile = extensionsPath;
-    if (!await fs.pathExists(extensionsFile)) {
-      extensionsFile = srcExtensionsPath;
-    }
-
-    if (!await fs.pathExists(extensionsFile)) {
+    if (!await fs.pathExists(extensionsPath)) {
       // No extensions file, create empty extended entities file
       await fs.ensureDir(path.dirname(extendedEntitiesPath));
       await fs.writeFile(
         extendedEntitiesPath,
-        '// No extension properties defined\n// Add entity-extensions.json to enable extension property types\n'
+        '// No extension properties defined\n// Add src/entity-extensions.json to enable extension property types\n'
       );
       console.log('✓ No entity-extensions.json found, created empty extended-entities.d.ts');
       return;
@@ -440,7 +433,7 @@ export default function youtrackExtensionProperties(): Plugin {
 
     try {
       // Read and parse entity-extensions.json
-      const extensionsContent = await fs.readFile(extensionsFile, 'utf8');
+      const extensionsContent = await fs.readFile(extensionsPath, 'utf8');
       const extensions: EntityExtensions = JSON.parse(extensionsContent);
 
       if (!extensions.entityTypeExtensions || extensions.entityTypeExtensions.length === 0) {

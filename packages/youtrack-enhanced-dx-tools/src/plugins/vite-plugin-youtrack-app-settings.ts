@@ -195,8 +195,7 @@ const entityTypeToRegistryKey: Record<string, string> = {
  */
 export default function youtrackAppSettings(): Plugin {
   const settingsPath = path.resolve(process.cwd(), 'src', 'settings.json');
-  const extensionsPath = path.resolve(process.cwd(), 'entity-extensions.json');
-  const srcExtensionsPath = path.resolve(process.cwd(), 'src', 'entity-extensions.json');
+  const extensionsPath = path.resolve(process.cwd(), 'src', 'entity-extensions.json');
   const outputPath = path.resolve(process.cwd(), 'src', 'api', 'app.d.ts');
   
   const generateTypes = async () => {
@@ -241,14 +240,9 @@ export default function youtrackAppSettings(): Plugin {
     }
     
     // Parse entity-extensions.json
-    let extensionsFile = extensionsPath;
-    if (!await fs.pathExists(extensionsFile)) {
-      extensionsFile = srcExtensionsPath;
-    }
-    
-    if (await fs.pathExists(extensionsFile)) {
+    if (await fs.pathExists(extensionsPath)) {
       try {
-        const extensions: EntityExtensions = await fs.readJson(extensionsFile);
+        const extensions: EntityExtensions = await fs.readJson(extensionsPath);
         
         extensions.entityTypeExtensions.forEach(ext => {
           const registryKey = entityTypeToRegistryKey[ext.entityType];
