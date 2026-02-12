@@ -29,15 +29,15 @@ const cleanAssetsPlugin = () => {
   return {
     name: "clean-assets-on-watch",
     apply: 'build' as const,
-    
+
     async buildStart() {
       // Only clean in watch mode to avoid duplicate artifacts
       if (this.meta.watchMode) {
         const fs = await import('node:fs');
         const path = await import('node:path');
-        
+
         const assetsDir = path.resolve(currentDir, 'dist/widgets/assets');
-        
+
         if (fs.existsSync(assetsDir)) {
           fs.rmSync(assetsDir, { recursive: true, force: true });
           console.log('[clean-assets] Cleaned old artifacts');
@@ -129,7 +129,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         // List every widget entry point here
-        enhancedDX: resolve(__dirname, 'src/widgets/enhanced-dx/index.html'),
+        enhancedDX: resolve(currentDir, 'src/widgets/enhanced-dx/index.html'),
       },
       external: [
         // Exclude Vite plugins and their Node.js dependencies from bundling
