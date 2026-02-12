@@ -24,11 +24,11 @@ const columns = () => [{
   id: 'project',
   title: i18n('Project'),
   getValue: function getValue(projectRole) {
-    return (projectRole.project &&
+    return (projectRole.scope.project &&
       <Link
-        href={`/projects/${projectRole.project.id}?tab=people`}
+        href={`/projects/${projectRole.scope.project.id}?tab=people`}
         target="_blank"
-      >{projectRole.project.name}</Link>
+      >{projectRole.scope.project.name}</Link>
     );
   }
 }];
@@ -36,7 +36,7 @@ const columns = () => [{
 const ProjectRolesTable = connect(
   state => ({
     columns: columns(),
-    data: state.selectedUser.projectRoles || [],
+    data: state.selectedUser.transitiveRoles || [],
     selection: state.roleSelection
   }),
   dispatch => ({

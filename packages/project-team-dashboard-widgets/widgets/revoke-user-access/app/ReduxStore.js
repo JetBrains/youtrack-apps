@@ -26,7 +26,7 @@ const select = (data, filter) => new Selection({
   selected: data && new Set(data.filter(filter))
 });
 
-const exceptRegisterUsers = group => group.name !== 'Registered Users';
+const exceptRegisterUsers = group => group.$type !== 'RegisteredUsersGroup' && group.$type !== 'AllUsersGroup';
 const all = () => true;
 const none = () => false;
 
@@ -47,9 +47,9 @@ const reducer = createReducer(
       selectedUser,
       loadingUserDetails: false,
 
-      groupSelection: select(selectedUser.groups, exceptRegisterUsers),
-      teamSelection: select(selectedUser.teams, all),
-      roleSelection: select(selectedUser.projectRoles, all),
+      groupSelection: select(selectedUser.ownGroups, exceptRegisterUsers),
+      teamSelection: select(selectedUser.ownTeams, all),
+      roleSelection: select(selectedUser.transitiveRoles, all),
       loginSelection: select(selectedUser.details, none)
     }),
     [requestUsers]: (state, userQuery) => ({

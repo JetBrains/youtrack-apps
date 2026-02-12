@@ -20,7 +20,7 @@ const columns = () => [{
 const GroupsTable = connect(
   state => ({
     columns: columns(),
-    data: state.selectedUser.groups || [],
+    data: state.selectedUser.ownGroups || [],
     loading: state.loadingUser,
     selection: state.groupSelection
   }),

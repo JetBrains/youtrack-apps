@@ -39,13 +39,13 @@ const SelectedUserForm = (
     />
     <div className={styles.userMultiTable}>
       <div>
-        <Optional data={selectedUser.groups}>
+        <Optional data={selectedUser.ownGroups}>
           <GroupsTable/>
         </Optional>
-        <Optional data={selectedUser.teams}>
+        <Optional data={selectedUser.ownTeams}>
           <TeamsTable/>
         </Optional>
-        <Optional data={selectedUser.projectRoles}>
+        <Optional data={selectedUser.transitiveRoles}>
           <ProjectRolesTable/>
         </Optional>
         <Optional data={selectedUser.details}>

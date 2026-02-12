@@ -25,7 +25,7 @@ const columns = () => [{
 const TeamsTable = connect(
   state => ({
     columns: columns(),
-    data: state.selectedUser.teams || [],
+    data: state.selectedUser.ownTeams || [],
     selection: state.teamSelection
   }),
   dispatch => ({

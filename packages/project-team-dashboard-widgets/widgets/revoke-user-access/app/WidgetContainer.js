@@ -14,9 +14,8 @@ import Widget from './Widget';
 const loadUserDetails = async (user, dispatch, hubService) => {
   dispatch(selectUser(user));
   const detailedUser = await hubService.requestUser(user.id);
-  (detailedUser.projectRoles || []).forEach(projectRole => {
-    projectRole.key = projectRole.id;
-  });
+  const projectRoles = detailedUser.transitiveRoles.filter(role => role.scope.$type === 'ProjectScope');
+  detailedUser.transitiveRoles = projectRoles;
   dispatch(setUserDetails(detailedUser));
 };
 
@@ -44,7 +43,7 @@ const onRevokeAccess = async (state, dispatch, hubService) => {
   );
   await asyncMap(
     roleSelection,
-    projectRole => hubService.revokeProjectRole(selectedUser, projectRole)
+    projectRole => hubService.revokeProjectRole(projectRole)
   );
   await asyncMap(
     loginSelection,

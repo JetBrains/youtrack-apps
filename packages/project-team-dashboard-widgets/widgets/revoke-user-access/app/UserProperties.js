@@ -11,15 +11,13 @@ import styles from './app.css';
 
 
 const UserProperties = ({user, onUserSelect, hubService}) => {
-  const email = ((user.profile || {}).email || {});
-
   return (
     <div className={styles.userInfo}>
       <Avatar
         className={styles.userInfoAvatar}
         onClick={openUserProfile}
         size={Size.Size56}
-        url={user.profile.avatar.url}
+        url={user.avatarUrl}
       />
       <div className={styles.userInfoContent}>
         <div className={styles.userNameLine}>
@@ -45,16 +43,16 @@ const UserProperties = ({user, onUserSelect, hubService}) => {
           </Link>
         </div>
         {
-          email.email &&
+          user.email &&
           <div>
-            <span>{email.email}</span>
+            <span>{user.email}</span>
             {
-              email.verified !== null &&
+              user.isEmailVerified !== null &&
               <Badge
-                valid={email.verified}
+                valid={user.isEmailVerified}
                 className={styles.userTag}
               >
-                {email.verified ? i18n('email verified') : i18n('email not verified')}
+                {user.isEmailVerified ? i18n('email verified') : i18n('email not verified')}
               </Badge>
             }
           </div>

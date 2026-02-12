@@ -17,7 +17,7 @@ DashboardAddons.registerWidget((dashboardApi, registerWidgetApi) => {
   registerWidgetApi({});
 
   const store = createStore();
-  const hubService = new HubService(dashboardApi.fetchHub);
+  const hubService = new HubService(dashboardApi.fetchHub, dashboardApi.fetchYouTrack);
 
   return render(
     <Provider store={store}>
