@@ -32,6 +32,10 @@ export class UploadCoordinator {
   private uploadTimer: NodeJS.Timeout | null = null;
   private lastUploadedState: BuildState = { backend: null, frontend: null };
   private watcher: FSWatcher | null = null;
+  private readonly handleExit = (): void => {
+    this.stop();
+    process.exit(0);
+  };
 
   constructor(options: CoordinatorOptions = {}) {
     this.stateFile = options.stateFile || '.build-state.json';
@@ -60,15 +64,19 @@ export class UploadCoordinator {
     this.watcher.on('add', () => this.onStateChange());
     this.watcher.on('change', () => this.onStateChange());
 
-    // Handle cleanup on exit
-    process.on('SIGINT', () => this.stop());
-    process.on('SIGTERM', () => this.stop());
+    // Handle cleanup on exit (remove first to avoid duplicates if start is called again)
+    process.off('SIGINT', this.handleExit);
+    process.off('SIGTERM', this.handleExit);
+    process.on('SIGINT', this.handleExit);
+    process.on('SIGTERM', this.handleExit);
   }
 
   /**
    * Stop watching
    */
   stop(): void {
+    process.off('SIGINT', this.handleExit);
+    process.off('SIGTERM', this.handleExit);
     if (this.watcher) {
       this.watcher.close();
       this.watcher = null;
