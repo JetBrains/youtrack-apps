@@ -35,7 +35,7 @@ export class UploadCoordinator {
 
   constructor(options: CoordinatorOptions = {}) {
     this.stateFile = options.stateFile || '.build-state.json';
-    this.debounceMs = options.debounceMs || 3000;
+    this.debounceMs = options.debounceMs ?? 1000;
     this.uploadCommand = options.uploadCommand || 'npm run upload-local';
     this.cwd = options.cwd || process.cwd();
   }
