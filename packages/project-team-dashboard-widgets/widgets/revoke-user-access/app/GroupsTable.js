@@ -7,19 +7,19 @@ import {i18n} from 'hub-dashboard-addons/dist/localization';
 import {selectGroups} from './ReduxStore';
 import styles from './app.css';
 
-const columns = hubURL => [{
+const columns = () => [{
   id: 'name',
   title: i18n('Groups'),
   className: styles.tableFirstColumn,
   headerClassName: styles.tableFirstColumn,
   getValue: function renderGroupLink(group) {
-    return <Link href={`${hubURL}/groups/${group.id}`} target="_blank">{group.name}</Link>;
+    return <Link href={`/groups/${group.id}`} target="_blank">{group.name}</Link>;
   }
 }];
 
 const GroupsTable = connect(
   state => ({
-    columns: columns(state.hubURL),
+    columns: columns(),
     data: state.selectedUser.groups || [],
     loading: state.loadingUser,
     selection: state.groupSelection

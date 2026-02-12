@@ -3,8 +3,6 @@ import {createAction, createReducer} from 'redux-act';
 
 import Selection from '@jetbrains/ring-ui/components/table/selection';
 
-export const setHubURL = createAction();
-
 export const selectUser = createAction();
 export const setUserDetails = createAction();
 
@@ -34,10 +32,6 @@ const none = () => false;
 
 const reducer = createReducer(
   {
-    [setHubURL]: (state, hubURL) => ({
-      ...state,
-      hubURL
-    }),
     [selectUser]: (state, selectedUser) => ({
       ...state,
       selectedUser,
@@ -111,8 +105,6 @@ const reducer = createReducer(
     })
   },
   {
-    hubURL: '',
-
     selectedUser: null,
     loadingUserDetails: false,
     loadingUsers: false,

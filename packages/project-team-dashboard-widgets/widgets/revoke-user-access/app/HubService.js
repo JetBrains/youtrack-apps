@@ -6,20 +6,6 @@ class HubService {
     this.fetchHub = fetchHub;
   }
 
-  async requestHubURL() {
-    const hubService = await this.fetchHub(
-      'api/rest/services/0-0-0-0-0', {
-        query: {
-          fields: 'homeUrl'
-        }
-      }
-    );
-
-    let hubURL = hubService.homeUrl;
-    hubURL = hubURL && hubURL.replace(/\/$/, '');
-    return hubURL;
-  }
-
   async requestUserPage(query, skip, top = HubService.DEFAULT_TOP) {
     return this.fetchHub(
       'api/rest/users', {

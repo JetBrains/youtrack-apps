@@ -10,7 +10,7 @@ import UserSelect from './UserSelect';
 import styles from './app.css';
 
 
-const UserProperties = ({user, hubURL, onUserSelect, hubService}) => {
+const UserProperties = ({user, onUserSelect, hubService}) => {
   const email = ((user.profile || {}).email || {});
 
   return (
@@ -64,14 +64,13 @@ const UserProperties = ({user, hubURL, onUserSelect, hubService}) => {
   );
 
   function openUserProfile() {
-    window.open(`${hubURL}/users/${user.id}`, '_blank');
+    window.open(`/users/${user.id}`, '_blank');
   }
 };
 
 
 UserProperties.propTypes = {
   user: PropTypes.object.isRequired,
-  hubURL: PropTypes.string,
   onUserSelect: PropTypes.func.isRequired,
   hubService: PropTypes.object.isRequired
 };

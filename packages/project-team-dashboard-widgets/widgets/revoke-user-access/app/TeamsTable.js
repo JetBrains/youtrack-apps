@@ -7,7 +7,7 @@ import {i18n} from 'hub-dashboard-addons/dist/localization';
 import {selectTeams} from './ReduxStore';
 import styles from './app.css';
 
-const columns = hubURL => [{
+const columns = () => [{
   id: 'project',
   title: i18n('Teams'),
   className: styles.tableFirstColumn,
@@ -15,7 +15,7 @@ const columns = hubURL => [{
   getValue: function getValue(team) {
     return (team.project &&
       <Link
-        href={`${hubURL}/projects-administration/${team.project.id}?tab=team`}
+        href={`/projects-administration/${team.project.id}?tab=team`}
         target="_blank"
       >{team.project.name}</Link>
     );
@@ -24,7 +24,7 @@ const columns = hubURL => [{
 
 const TeamsTable = connect(
   state => ({
-    columns: columns(state.hubURL),
+    columns: columns(),
     data: state.selectedUser.teams || [],
     selection: state.teamSelection
   }),

@@ -6,7 +6,6 @@ import UserProperties from './UserProperties';
 const UserPropertiesContainer = connect(
   (state, {hubService, onUserSelect}) => ({
     user: state.selectedUser,
-    hubURL: state.hubURL,
     hubService,
     onUserSelect
   })

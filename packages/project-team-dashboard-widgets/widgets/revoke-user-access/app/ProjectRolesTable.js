@@ -7,7 +7,7 @@ import {i18n} from 'hub-dashboard-addons/dist/localization';
 import {selectRoles} from './ReduxStore';
 import styles from './app.css';
 
-const columns = hubURL => [{
+const columns = () => [{
   id: 'role',
   title: i18n('Project Roles'),
   className: styles.tableFirstColumn,
@@ -15,7 +15,7 @@ const columns = hubURL => [{
   getValue: function getValue(projectRole) {
     return (projectRole.role &&
       <Link
-        href={`${hubURL}/roles/${projectRole.role.id}`}
+        href={`/roles/${projectRole.role.id}`}
         target="_blank"
       >{projectRole.role.name}</Link>
     );
@@ -26,7 +26,7 @@ const columns = hubURL => [{
   getValue: function getValue(projectRole) {
     return (projectRole.project &&
       <Link
-        href={`${hubURL}/projects-administration/${projectRole.project.id}?tab=access`}
+        href={`/projects-administration/${projectRole.project.id}?tab=access`}
         target="_blank"
       >{projectRole.project.name}</Link>
     );
@@ -35,7 +35,7 @@ const columns = hubURL => [{
 
 const ProjectRolesTable = connect(
   state => ({
-    columns: columns(state.hubURL),
+    columns: columns(),
     data: state.selectedUser.projectRoles || [],
     selection: state.roleSelection
   }),
