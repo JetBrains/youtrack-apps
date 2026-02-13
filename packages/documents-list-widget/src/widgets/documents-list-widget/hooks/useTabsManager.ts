@@ -8,15 +8,15 @@ export interface DocumentListTab {
   documentType: DocumentType;
 }
 
-const createNewTab = (): DocumentListTab => ({
+const createNewTab = (index: number): DocumentListTab => ({
   id: `tab-${crypto.randomUUID()}`,
-  title: '',
+  title: `Tab ${index + 1}`,
   documentType: 'Issue',
   searchQuery: '',
 });
 
 const initializeTabs = (tabs: DocumentListTab[]) =>
-  tabs.length === 0 ? [createNewTab()] : tabs.map(tab => ({...tab}));
+  tabs.length === 0 ? [createNewTab(0)] : tabs.map(tab => ({...tab}));
 
 export const useTabsManager = (initialTabs: DocumentListTab[], activeEditTab?: string) => {
   const [configTabs, setConfigTabs] = useState<DocumentListTab[]>(() => initializeTabs(initialTabs));
@@ -30,9 +30,11 @@ export const useTabsManager = (initialTabs: DocumentListTab[], activeEditTab?: s
 
   const addNewTab = useCallback(() => {
     setErrorMessage('');
-    const newTab = createNewTab();
-    setConfigTabs(prevTabs => [...prevTabs, newTab]);
-    setActiveTab(newTab.id);
+    setConfigTabs(prevTabs => {
+      const newTab = createNewTab(prevTabs.length);
+      setActiveTab(newTab.id);
+      return [...prevTabs, newTab]
+    });
   }, []);
 
   const deleteTab = useCallback((tabToDelete: string) => {

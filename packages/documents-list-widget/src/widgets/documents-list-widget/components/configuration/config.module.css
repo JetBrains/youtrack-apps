@@ -22,6 +22,14 @@
   gap: var(--ring-unit);
 }
 
+.emptyQueryAssist {
+  border-color: var(--ring-error-color);
+
+  &:hover {
+    border-color: var(--ring-error-color);
+  }
+}
+
 .btnContainer {
   display: flex;
   flex-direction: row;
