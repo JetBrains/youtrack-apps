@@ -55,13 +55,15 @@
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^24.0.14",
+    "tsx": "^4.8.1",
     "typescript": "^5.7.2"
   },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint src --ext .ts",
-    "test": "echo 'no tests'",
+    "test": "npm run build && node --test --import tsx test/*.test.ts",
+    "test:watch": "node --test --watch --import tsx test/*.test.ts",
     "prepare": "npm run build"
   },
   "engines": {
