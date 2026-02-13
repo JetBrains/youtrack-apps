@@ -11,11 +11,17 @@ let debounceMs = 1000;
 for (let i = 0; i < args.length; i++) {
   const arg = args[i];
   if (arg === '--watch' || arg === '-w') {
-    stateFile = args[i + 1] || stateFile;
-    i++;
+    const next = args[i + 1];
+    if (next && !next.startsWith('-')) {
+      stateFile = next;
+      i++;
+    }
   } else if (arg === '--debounce' || arg === '-d') {
-    debounceMs = parseInt(args[i + 1], 10) || debounceMs;
-    i++;
+    const next = args[i + 1];
+    if (next && !next.startsWith('-')) {
+      debounceMs = parseInt(next, 10) || debounceMs;
+      i++;
+    }
   } else if (arg === '--help' || arg === '-h') {
     console.log(`
 Usage: youtrack-upload-coordinator [options]
