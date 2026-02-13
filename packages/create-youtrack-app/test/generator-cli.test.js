@@ -432,6 +432,20 @@ describe('NestJS-Style Code Generation', () => {
       
       assert.ok(issueEntity.properties[longName]);
     });
+
+    test('should fail with clear error when entity-extensions.json has invalid JSON', () => {
+      const entityExtPath = path.join(TEST_APP_DIR, 'src', 'entity-extensions.json');
+      const backup = fs.readFileSync(entityExtPath, 'utf8');
+      try {
+        fs.writeFileSync(entityExtPath, '{ invalid json }', 'utf8');
+        const result = runCLI('property Issue.invalidJsonTest --type string', { silent: true });
+
+        assert.strictEqual(result.success, false);
+        assert.ok(result.output.includes('invalid JSON') || result.output.includes('entity-extensions'));
+      } finally {
+        fs.writeFileSync(entityExtPath, backup, 'utf8');
+      }
+    });
   });
 
   describe('All Scopes', () => {
