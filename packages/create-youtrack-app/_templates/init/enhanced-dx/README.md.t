@@ -278,7 +278,12 @@ npm run build:backend
 - Verify dev server on port 9000: `curl http://localhost:9000`
 - Check browser console for errors
 
-For more troubleshooting, see [Troubleshooting Guide](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#troubleshooting).
+### ESLint / ts-to-zod "skipped" or "failed"
+
+- ESLint: `npm install -D eslint`
+- ts-to-zod: `npm install -D ts-to-zod`
+
+For more (env vars, port conflicts, upload errors), see [Troubleshooting Guide](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#troubleshooting).
 
 ## Learn More
 

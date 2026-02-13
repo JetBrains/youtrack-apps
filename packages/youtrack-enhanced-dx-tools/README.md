@@ -344,6 +344,27 @@ backendReloadPlugin({
 
 ## Troubleshooting
 
+### Environment variables
+
+Create `.env` in the project root:
+```
+YOUTRACK_HOST=https://your-youtrack.url
+YOUTRACK_TOKEN=perm:your-permanent-token
+```
+
+Get a token: YouTrack → Profile → Account Security → New token.
+
+### Upload failures
+
+| Error | Cause | Fix |
+|-------|-------|-----|
+| 401 Unauthorized | Invalid or missing token | Check `YOUTRACK_TOKEN` in `.env` |
+| ECONNREFUSED / ENOTFOUND | YouTrack unreachable | Verify `YOUTRACK_HOST`, ensure YouTrack is running |
+| 404 Not found | Wrong URL or app path | Check `YOUTRACK_HOST` format (include `https://`) |
+| ENOENT .env | No `.env` file | Create `.env` with `YOUTRACK_HOST` and `YOUTRACK_TOKEN` |
+
+### Build and types
+
 **`Cannot find module './api/api'`**
 
 Run backend build to generate types:
@@ -359,9 +380,32 @@ npm run clean
 npm run build:backend
 ```
 
-**Upload fails with "401 Unauthorized"**
+### Missing dependencies
 
-Verify `.env` file exists with correct `YOUTRACK_HOST` and `YOUTRACK_TOKEN`.
+**ESLint auto-fix skipped**
+
+If you see "ESLint auto-fix skipped" during build:
+```bash
+npm install -D eslint
+```
+
+**ts-to-zod failed / Cannot find ts-to-zod**
+
+Zod schema generation requires ts-to-zod:
+```bash
+npm install -D ts-to-zod
+```
+
+### Port conflicts
+
+**Dev server port 9000 already in use**
+
+The Vite dev server uses port 9000 by default. Either stop the other process or change the port in `vite.config.ts`:
+```typescript
+server: { port: 9001 }  // or another free port
+```
+
+### Other
 
 **App validation failed**
 
