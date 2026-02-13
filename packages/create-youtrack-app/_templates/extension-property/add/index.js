@@ -67,9 +67,16 @@ function injectEntity(payload, context) {
     ? path.resolve(process.cwd(), context.args.cwd)
     : process.cwd();
   const filePath = path.join(targetCwd, "src", fileName);
-  const entityExtensions = fs.existsSync(filePath)
-    ? JSON.parse(fs.readFileSync(filePath))
-    : { entityTypeExtensions: [] };
+  let entityExtensions;
+  if (fs.existsSync(filePath)) {
+    try {
+      entityExtensions = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+    } catch (e) {
+      throw new Error(`entity-extensions.json is invalid JSON: ${e.message}`);
+    }
+  } else {
+    entityExtensions = { entityTypeExtensions: [] };
+  }
   const extendingEntity = entityExtensions.entityTypeExtensions.find(
     (e) => e.entityType === payload.target,
   );

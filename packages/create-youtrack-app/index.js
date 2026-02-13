@@ -153,9 +153,14 @@ function runHygen(hygenArgs = argv) {
       // Directly manipulate the entity-extensions.json file
       const entityExtensionsPath = path.join(cwd, 'src', 'entity-extensions.json');
       let entityExtensions;
-      
+
       if (fs.existsSync(entityExtensionsPath)) {
-        entityExtensions = JSON.parse(fs.readFileSync(entityExtensionsPath, 'utf-8'));
+        try {
+          entityExtensions = JSON.parse(fs.readFileSync(entityExtensionsPath, 'utf-8'));
+        } catch (err) {
+          console.error(styleText("red", `Error: entity-extensions.json is invalid JSON: ${(err && err.message) || String(err)}`));
+          process.exit(1);
+        }
       } else {
         entityExtensions = { entityTypeExtensions: [] };
       }
