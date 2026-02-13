@@ -31,8 +31,11 @@ const runEslintFix = (files: string | string[]) => {
 
     execSync(cmd, { stdio: 'ignore', cwd });
   } catch (e) {
-    // Do not fail the build if eslint is missing or errors occur
-    console.warn('[youtrack-api-generator] ESLint auto-fix skipped:', (e as Error).message);
+    const msg = (e as Error).message;
+    console.warn('[youtrack-api-generator] ESLint auto-fix skipped:', msg);
+    if (msg.includes('ENOENT') || msg.includes('not found') || msg.includes('spawn')) {
+      console.warn('[youtrack-api-generator] Install ESLint to enable: npm install -D eslint');
+    }
   }
 };
 
@@ -317,7 +320,11 @@ const generateZodSchemas = async (routeFiles: string[]) => {
 
         console.log('✓ Generated Zod schemas with ts-to-zod');
       } catch (execError) {
-        console.error('ts-to-zod failed:', (execError as Error).message);
+        const msg = (execError as Error).message;
+        console.error('[youtrack-api-generator] ts-to-zod failed:', msg);
+        if (msg.includes('ENOENT') || msg.includes('not found') || msg.includes('Cannot find')) {
+          console.error('[youtrack-api-generator] Install ts-to-zod: npm install -D ts-to-zod');
+        }
         throw execError;
       }
 

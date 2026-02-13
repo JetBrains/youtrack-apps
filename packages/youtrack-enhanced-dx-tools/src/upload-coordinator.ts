@@ -21,6 +21,23 @@ export interface CoordinatorOptions {
   cwd?: string;
 }
 
+function getUploadFailureHint(errorMsg: string): string | null {
+  const lower = errorMsg.toLowerCase();
+  if (lower.includes('401') || lower.includes('unauthorized')) {
+    return 'Check .env: YOUTRACK_HOST and YOUTRACK_TOKEN. Get a token from YouTrack → Profile → Account Security.';
+  }
+  if (lower.includes('econnrefused') || lower.includes('enotfound') || lower.includes('getaddrinfo')) {
+    return 'YouTrack may be unreachable. Verify YOUTRACK_HOST in .env and that YouTrack is running.';
+  }
+  if (lower.includes('404') || lower.includes('not found')) {
+    return 'Check YOUTRACK_HOST in .env. The URL may be incorrect or the app upload endpoint may have changed.';
+  }
+  if (lower.includes('enoent') && (lower.includes('youtrack') || lower.includes('.env'))) {
+    return 'Create .env with YOUTRACK_HOST and YOUTRACK_TOKEN. See README for setup.';
+  }
+  return null;
+}
+
 /**
  * Upload coordinator that watches build state and uploads once when all builds stabilize
  */
@@ -151,7 +168,12 @@ export class UploadCoordinator {
 
       console.log('[upload-coordinator] ✓ Upload successful\n');
     } catch (error) {
-      console.error('[upload-coordinator] ✗ Error:', (error as Error).message);
+      const msg = (error as Error).message;
+      console.error('[upload-coordinator] ✗ Upload failed:', msg);
+      const hint = getUploadFailureHint(msg);
+      if (hint) {
+        console.error('[upload-coordinator] Hint:', hint);
+      }
     }
   }
 

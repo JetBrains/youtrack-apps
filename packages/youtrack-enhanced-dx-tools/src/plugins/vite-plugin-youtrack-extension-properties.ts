@@ -103,7 +103,11 @@ const runEslintFix = (files: string | string[]) => {
 
     execSync(cmd, { stdio: 'ignore', cwd });
   } catch (e) {
-    console.warn('[youtrack-extension-properties] ESLint auto-fix skipped:', (e as Error).message);
+    const msg = (e as Error).message;
+    console.warn('[youtrack-extension-properties] ESLint auto-fix skipped:', msg);
+    if (msg.includes('ENOENT') || msg.includes('not found') || msg.includes('spawn')) {
+      console.warn('[youtrack-extension-properties] Install ESLint to enable: npm install -D eslint');
+    }
   }
 };
 
