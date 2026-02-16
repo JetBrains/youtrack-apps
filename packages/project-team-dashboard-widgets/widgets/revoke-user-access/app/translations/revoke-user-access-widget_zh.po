@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /widgets/revoke-user-access-widget/default.pot\n"
+"X-Crowdin-File-ID: 28504\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2023-07-25 14:26\n"
+
+#: src/app/LoginsTable.js:22
+msgid "Auth Module"
+msgstr "身份验证模块"
+
+#: src/app/SelectedUserForm.js:65
+msgid "Finish"
+msgstr "完成"
+
+#: src/app/GroupsTable.js:12
+msgid "Groups"
+msgstr "群组"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "1 月|2 月|3 月|4 月|5 月|6 月|7 月|8 月|9 月|10 月|11 月|12 月"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "1 月|2 月|3 月|4 月|5 月|6 月|7 月|8 月|9 月|10 月|11 月|12 月"
+
+#: src/app/UserSearch.js:68
+msgid "Load more"
+msgstr "加载更多"
+
+#: src/app/LoginsTable.js:11
+msgid "Logins"
+msgstr "登录"
+
+#: src/app/ProjectRolesTable.js:25
+msgid "Project"
+msgstr "项目"
+
+#: src/app/ProjectRolesTable.js:12
+msgid "Project Roles"
+msgstr "项目角色"
+
+#: src/app/SelectedUserForm.js:62
+msgid "Revoke selected items"
+msgstr "撤消所选条目"
+
+#: src/app/UserSearch.js:46
+msgid "Search user"
+msgstr "搜索用户"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "星期日|星期一|星期二|星期三|星期四|星期五|星期六"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "周日|周一|周二|周三|周四|周五|周六"
+
+#: src/app/TeamsTable.js:12
+msgid "Teams"
+msgstr "团队"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "上午|下午"
+
+#: src/app/UserProperties.js:37
+msgid "banned"
+msgstr "已禁止"
+
+#: src/app/UserProperties.js:57
+msgid "email not verified"
+msgstr "电子邮件未验证"
+
+#: src/app/UserProperties.js:57
+msgid "email verified"
+msgstr "电子邮件已验证"
+

@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: eo\n"
+"X-Crowdin-File: /widgets/revoke-user-access-widget/default.pot\n"
+"X-Crowdin-File-ID: 28504\n"
+"Language-Team: Esperanto\n"
+"Language: eo_UY\n"
+"PO-Revision-Date: 2023-07-25 14:28\n"
+
+#: src/app/LoginsTable.js:22
+msgid "Auth Module"
+msgstr "crwdns738268:0crwdne738268:0"
+
+#: src/app/SelectedUserForm.js:65
+msgid "Finish"
+msgstr "crwdns738269:0crwdne738269:0"
+
+#: src/app/GroupsTable.js:12
+msgid "Groups"
+msgstr "crwdns738270:0crwdne738270:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "crwdns738271:0crwdne738271:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "crwdns738272:0crwdne738272:0"
+
+#: src/app/UserSearch.js:68
+msgid "Load more"
+msgstr "crwdns738273:0crwdne738273:0"
+
+#: src/app/LoginsTable.js:11
+msgid "Logins"
+msgstr "crwdns738274:0crwdne738274:0"
+
+#: src/app/ProjectRolesTable.js:25
+msgid "Project"
+msgstr "crwdns738275:0crwdne738275:0"
+
+#: src/app/ProjectRolesTable.js:12
+msgid "Project Roles"
+msgstr "crwdns738276:0crwdne738276:0"
+
+#: src/app/SelectedUserForm.js:62
+msgid "Revoke selected items"
+msgstr "crwdns738277:0crwdne738277:0"
+
+#: src/app/UserSearch.js:46
+msgid "Search user"
+msgstr "crwdns738278:0crwdne738278:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "crwdns738279:0crwdne738279:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "crwdns738280:0crwdne738280:0"
+
+#: src/app/TeamsTable.js:12
+msgid "Teams"
+msgstr "crwdns738281:0crwdne738281:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "crwdns738282:0crwdne738282:0"
+
+#: src/app/UserProperties.js:37
+msgid "banned"
+msgstr "crwdns738283:0crwdne738283:0"
+
+#: src/app/UserProperties.js:57
+msgid "email not verified"
+msgstr "crwdns738284:0crwdne738284:0"
+
+#: src/app/UserProperties.js:57
+msgid "email verified"
+msgstr "crwdns738285:0crwdne738285:0"
+

@@ -1,0 +1,63 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: eo\n"
+"X-Crowdin-File: /widgets/hub-project-team-widget/default.pot\n"
+"X-Crowdin-File-ID: 28502\n"
+"Language-Team: Esperanto\n"
+"Language: eo_UY\n"
+"PO-Revision-Date: 2023-07-28 12:25\n"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "crwdns738242:0crwdne738242:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "crwdns738243:0crwdne738243:0"
+
+#: src/app/app.js:202
+msgid "Select a project"
+msgstr "crwdns738245:0crwdne738245:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "crwdns738246:0crwdne738246:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "crwdns738247:0crwdne738247:0"
+
+#: src/app/app.js:213
+msgid "The {{projectName}} project team doesn't have any members"
+msgstr "crwdns2719452:0{{projectName}}crwdne2719452:0"
+
+#: src/app/app.js:217
+msgid "This project team doesn't have any members"
+msgstr "crwdns2719454:0crwdne2719454:0"
+
+#: src/app/app.js:230
+msgid "You don't have permission to view basic profile data for other users"
+msgstr "crwdns2719456:0crwdne2719456:0"
+
+#: src/app/app.js:229
+msgid "You don't have permission to view basic project data"
+msgstr "crwdns2719458:0crwdne2719458:0"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "crwdns738248:0crwdne738248:0"
+
+#: src/app/app.js:285
+msgid "project owner"
+msgstr "crwdns738249:0crwdne738249:0"
+
+#: src/app/app.js:296
+msgid "team"
+msgstr "crwdns2723270:0crwdne2723270:0"
+

@@ -1,0 +1,87 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrack-custom-localization\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 3;\n"
+"X-Crowdin-Project: youtrack-custom-localization\n"
+"X-Crowdin-Project-ID: 309400\n"
+"X-Crowdin-Language: cs\n"
+"X-Crowdin-File: /widgets/revoke-user-access-widget/default.pot\n"
+"X-Crowdin-File-ID: 419918\n"
+"Language-Team: Czech\n"
+"Language: cs_CZ\n"
+"PO-Revision-Date: 2023-08-10 07:18\n"
+
+#: src/app/LoginsTable.js:22
+msgid "Auth Module"
+msgstr "Autentizační modul"
+
+#: src/app/SelectedUserForm.js:65
+msgid "Finish"
+msgstr "Dokončit"
+
+#: src/app/GroupsTable.js:12
+msgid "Groups"
+msgstr "Skupiny"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:90
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Leden|Únor|Březen|Duben|Květen|Červen|Červenec|Srpen|Září|Říjen|Listopad|Prosinec"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:89
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Led|Úno|Bře|Dub|Kvě|Čer|Čvc|Srp|Zář|Říj|Lis|Pro"
+
+#: src/app/UserSearch.js:68
+msgid "Load more"
+msgstr "Nahrát víc"
+
+#: src/app/LoginsTable.js:11
+msgid "Logins"
+msgstr "Přihlašovací údaje"
+
+#: src/app/ProjectRolesTable.js:25
+msgid "Project"
+msgstr "Projekt"
+
+#: src/app/ProjectRolesTable.js:12
+msgid "Project Roles"
+msgstr "Role v projektu"
+
+#: src/app/SelectedUserForm.js:62
+msgid "Revoke selected items"
+msgstr ""
+
+#: src/app/UserSearch.js:46
+msgid "Search user"
+msgstr "Hledat uživatele"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:88
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Neděle|Pondělí|Úterý|Středa|Čtvrtek|Pátek|Sobota"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:87
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "Ne|Po|Út|St|Čt|Pá|So"
+
+#: src/app/TeamsTable.js:12
+msgid "Teams"
+msgstr "Týmy"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:91
+msgid "am|pm"
+msgstr "dopol|odpol"
+
+#: src/app/UserProperties.js:37
+msgid "banned"
+msgstr "zakázán"
+
+#: src/app/UserProperties.js:57
+msgid "email not verified"
+msgstr "email není ověřen"
+
+#: src/app/UserProperties.js:57
+msgid "email verified"
+msgstr ""
+
