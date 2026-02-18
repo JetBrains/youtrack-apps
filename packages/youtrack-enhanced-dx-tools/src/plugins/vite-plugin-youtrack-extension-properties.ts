@@ -500,7 +500,8 @@ export default function youtrackExtensionProperties(): Plugin {
     },
 
     async buildStart() {
-      // Just regenerate on every build - simple and bulletproof
+      const extensionsPath = path.resolve(process.cwd(), 'src', 'entity-extensions.json');
+      this.addWatchFile(extensionsPath);
       await generateTypes();
     }
   };

@@ -350,6 +350,10 @@ export {};
     },
     
     async buildStart() {
+      const settingsPath = path.resolve(process.cwd(), 'src', 'settings.json');
+      const extensionsPath = path.resolve(process.cwd(), 'src', 'entity-extensions.json');
+      this.addWatchFile(settingsPath);
+      this.addWatchFile(extensionsPath);
       await generateTypes();
     }
   };

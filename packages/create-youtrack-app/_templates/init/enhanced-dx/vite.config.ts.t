@@ -2,6 +2,7 @@
 to: vite.config.ts
 ---
 import { resolve, dirname } from "node:path";
+import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import { defineConfig } from "vite";
 import react from '@vitejs/plugin-react';
@@ -24,6 +25,17 @@ const dropCrossoriginAttributePlugin = () => {
     },
   };
 };
+
+const watchStaticJsonPlugin = () => ({
+  name: 'watch-static-json',
+  buildStart() {
+    // Ensure frontend rebuilds (and re-copies via viteStaticCopy) when these files change
+    const jsonFiles = ['settings.json'].map(f => resolve(currentDir, 'src', f));
+    for (const f of jsonFiles) {
+      if (fs.existsSync(f)) this.addWatchFile(f);
+    }
+  }
+});
 
 const cleanAssetsPlugin = () => {
   return {
@@ -58,6 +70,7 @@ export default defineConfig({
   plugins: [
     // Clean old frontend assets before each rebuild in watch mode
     cleanAssetsPlugin(),
+    watchStaticJsonPlugin(),
     // Only use React plugin during build, not during dev server
     // (Fast Refresh doesn't work in iframe/YouTrack context)
     ...(!isServing ? [react()] : []),
