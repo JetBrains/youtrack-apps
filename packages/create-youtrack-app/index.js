@@ -361,7 +361,7 @@ function runHygen(hygenArgs = argv) {
             const names = suggestions.map(s => s.slice(base.length).replace(/\/$/, ''));
             const prefix = lcp(names);
 
-            let next = current;
+            let next;
             const now = Date.now();
             const isDoubleTab = now - lastTabTs < 500;
             lastTabTs = now;
@@ -402,8 +402,9 @@ function runHygen(hygenArgs = argv) {
 
             pathPrompt.input = next;
             // Ensure cursor moves to the end after completion/cycling
-            if (typeof next === 'string') {
-              try { pathPrompt.cursor = next.length; } catch {}
+            try {
+              pathPrompt.cursor = next.length;
+            } catch {
             }
             updateFooter(next);
             if (typeof pathPrompt.render === 'function') pathPrompt.render();
