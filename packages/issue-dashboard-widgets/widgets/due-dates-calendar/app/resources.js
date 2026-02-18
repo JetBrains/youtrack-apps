@@ -29,7 +29,7 @@ export async function loadIssues(fetchYouTrack, query, context) {
     }
 
     if (loadedIssues && loadedIssues.length > 0) {
-      allIssues = allIssues.concat(loadedIssues);
+      allIssues.push(...loadedIssues);
       currentSkip += packSize;
     } else {
       break;
