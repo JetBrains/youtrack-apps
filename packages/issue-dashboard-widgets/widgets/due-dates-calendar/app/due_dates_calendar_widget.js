@@ -40,9 +40,6 @@ const ASSIGNEE_FIELD_NAME = 'Assignee';
 const MIDDAY = 12;
 
 class DueDatesCalendarWidget extends React.Component {
-  static DEFAULT_REFRESH_PERIOD = 240; // eslint-disable-line no-magic-numbers
-
-
   static digitToUnicodeSuperScriptDigit = digitSymbol => {
     const unicodeSuperscriptDigits = [
       0x2070, 0x00B9, 0x00B2, 0x00B3, 0x2074, // eslint-disable-line no-magic-numbers
@@ -155,6 +152,8 @@ class DueDatesCalendarWidget extends React.Component {
   componentDidMount() {
     this.initialize(this.props.dashboardApi);
   }
+
+  static DEFAULT_REFRESH_PERIOD = 240; // eslint-disable-line no-magic-numbers
 
   initialize = async dashboardApi => {
     this.setState({isLoading: true});

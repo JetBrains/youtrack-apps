@@ -13,7 +13,7 @@ export async function loadIssues(fetchYouTrack, query, context) {
   const encodedQuery = encodeURIComponent(query);
 
 
-  let allIssues = [];
+  const allIssues = [];
   let currentSkip = 0;
   let loadedIssues = [];
 

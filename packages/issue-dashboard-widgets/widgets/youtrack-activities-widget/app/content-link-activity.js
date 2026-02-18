@@ -29,8 +29,8 @@ class ContentLinkActivity extends ContentDefaultActivity {
                       issue={issue}
                       removed={false}
                       key={`${activity.id}${issue.id}`}
-                    />)
-                  )}
+                    />
+                  ))}
                 </div>
               </React.Fragment>
             )
@@ -50,8 +50,8 @@ class ContentLinkActivity extends ContentDefaultActivity {
                     <IssueCard
                       issue={issue}
                       key={`${activity.id}${issue.id}`}
-                    />)
-                  )}
+                    />
+                  ))}
                 </div>
               </React.Fragment>
             )
