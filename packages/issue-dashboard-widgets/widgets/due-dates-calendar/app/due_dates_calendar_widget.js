@@ -305,11 +305,13 @@ class DueDatesCalendarWidget extends React.Component {
       scheduleField, eventEndField, colorField, isDateAndTime
     } = formParameters;
 
+
+    const effectiveEventEndField = eventEndField || scheduleField;
     this.setYouTrack(
       selectedYouTrack, async () => {
         this.setState(
           {search: search || '',
-            context, title, scheduleField, eventEndField,
+            context, title, scheduleField, eventEndField: effectiveEventEndField,
             refreshPeriod, colorField, isDateAndTime},
           async () => {
             await this.loadIssues();
@@ -319,7 +321,7 @@ class DueDatesCalendarWidget extends React.Component {
               title,
               refreshPeriod,
               scheduleField,
-              eventEndField,
+              eventEndField: effectiveEventEndField,
               colorField,
               isDateAndTime,
               youTrack: {

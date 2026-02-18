@@ -17,9 +17,9 @@ import '@jetbrains/ring-ui/components/form/form.scss';
 import ServiceResource from './components/service-resource';
 import {
   underlineAndSuggest,
-  loadIssues,
   loadPinnedIssueFolders,
-  loadFieldsWithType
+  loadFieldsWithType,
+  loadQueryHasIssues
 } from './resources';
 import './style/widget.scss';
 
@@ -188,8 +188,8 @@ class EditForm extends React.Component {
     } = this.state;
     this.setFormLoaderEnabled(true);
     try {
-      await loadIssues(
-        async (url, params) => this.fetchYouTrack(url, params), search, context
+      await loadQueryHasIssues(
+        async (url, params) => this.fetchYouTrack(url, params), search
       );
     } catch (err) {
       this.setState({
