@@ -242,15 +242,15 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should create integer property', () => {
-      const result = runCLI('property Comment.rating --type integer', { silent: true });
+      const result = runCLI('property Project.rating --type integer', { silent: true });
       
       assert.strictEqual(result.success, true);
       
       const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
-      const commentEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Comment');
+      const projectEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Project');
       
-      assert.ok(commentEntity, 'Comment entity should exist');
-      assert.strictEqual(commentEntity.properties.rating.type, 'integer');
+      assert.ok(projectEntity, 'Project entity should exist');
+      assert.strictEqual(projectEntity.properties.rating.type, 'integer');
     });
 
     test('should create boolean property', () => {
@@ -287,6 +287,29 @@ describe('NestJS-Style Code Generation', () => {
       assert.strictEqual(issueEntity.properties.tags.multi, true);
     });
 
+    test('should create multi-value property with --multi true flag', () => {
+      const result = runCLI('property Issue.labels --type string --multi true', { silent: true });
+
+      assert.strictEqual(result.success, true);
+
+      const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
+      const issueEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Issue');
+
+      assert.strictEqual(issueEntity.properties.labels.type, 'string');
+      assert.strictEqual(issueEntity.properties.labels.multi, true, '--multi true should set multi to boolean true');
+    });
+
+    test('should store multi as boolean not string', () => {
+      const result = runCLI('property Issue.score --type integer --set', { silent: true });
+
+      assert.strictEqual(result.success, true);
+
+      const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
+      const issueEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Issue');
+
+      assert.strictEqual(typeof issueEntity.properties.score.multi, 'boolean', 'multi must be a boolean, not a string');
+    });
+
     test('should create property on User entity', () => {
       const result = runCLI('property User.department --type string', { silent: true });
       
@@ -299,16 +322,16 @@ describe('NestJS-Style Code Generation', () => {
       assert.ok(userEntity.properties.department);
     });
 
-    test('should create property on AppGlobalStorage', () => {
-      const result = runCLI('property AppGlobalStorage.config --type string', { silent: true });
+    test('should create property on Article', () => {
+      const result = runCLI('property Article.config --type string', { silent: true });
       
       assert.strictEqual(result.success, true);
       
       const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
-      const storageEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'AppGlobalStorage');
+      const articleEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Article');
       
-      assert.ok(storageEntity, 'AppGlobalStorage entity should exist');
-      assert.ok(storageEntity.properties.config);
+      assert.ok(articleEntity, 'Article entity should exist');
+      assert.ok(articleEntity.properties.config);
     });
 
     test('should work with short alias "p"', () => {
@@ -323,14 +346,14 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should work with short alias "prop"', () => {
-      const result = runCLI('prop Comment.version --type integer', { silent: true });
+      const result = runCLI('prop Article.version --type integer', { silent: true });
       
       assert.strictEqual(result.success, true);
       
       const entityExtensions = JSON.parse(readFile('src/entity-extensions.json'));
-      const commentEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Comment');
+      const articleEntity = entityExtensions.entityTypeExtensions.find(e => e.entityType === 'Article');
       
-      assert.ok(commentEntity.properties.version);
+      assert.ok(articleEntity.properties.version);
     });
 
     test('should handle property names with underscores', () => {
@@ -496,7 +519,7 @@ describe('NestJS-Style Code Generation', () => {
   });
 
   describe('All Entity Types', () => {
-    ['Issue', 'Comment', 'User', 'AppGlobalStorage'].forEach((entity) => {
+    ['Issue', 'User', 'Project', 'Article'].forEach((entity) => {
       test(`should create property on ${entity} entity`, () => {
         const result = runCLI(`property ${entity}.entity_test --type string`, { silent: true });
         assert.strictEqual(result.success, true);

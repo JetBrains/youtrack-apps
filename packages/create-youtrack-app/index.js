@@ -138,7 +138,7 @@ function runHygen(hygenArgs = argv) {
   }
 
   // Pattern 2: Extension Property - Entity.propertyName syntax
-  // Usage: property Issue.customStatus [--type string] [--set]
+  // Usage: property Issue.customStatus [--type string] [--set | --multi true]
   const propIndex = normalizedArgv.findIndex(a => a === 'extension-property');
   if (propIndex !== -1 && normalizedArgv[propIndex + 1]) {
     const propArg = normalizedArgv[propIndex + 1];
@@ -148,7 +148,7 @@ function runHygen(hygenArgs = argv) {
       const [target, name] = propArg.split('.');
 
       // Validate target entity
-      const validTargets = ['Issue', 'Comment', 'User', 'AppGlobalStorage'];
+      const validTargets = ['Issue', 'User', 'Project', 'Article'];
       if (!validTargets.includes(target)) {
         console.error(styleText("red", `Invalid target: ${target}. Must be one of: ${validTargets.join(', ')}`));
         process.exit(1);
@@ -167,7 +167,7 @@ function runHygen(hygenArgs = argv) {
         process.exit(1);
       }
 
-      const isSet = args.set === true || args.set === 'true';
+      const isSet = args.set === true || args.set === 'true' || args.multi === true || args.multi === 'true';
 
       // Directly manipulate the entity-extensions.json file
       const entityExtensionsPath = path.join(cwd, 'src', 'entity-extensions.json');
@@ -559,9 +559,9 @@ function runHygen(hygenArgs = argv) {
           message: 'What is the target extending entity?',
           choices: [
             { name: 'Issue', message: 'Issue' },
-            { name: 'Comment', message: 'Comment' },
             { name: 'User', message: 'User' },
-            { name: 'AppGlobalStorage', message: 'Global Storage' },
+            { name: 'Project', message: 'Project' },
+            { name: 'Article', message: 'Article' },
           ]
         }).run();
 
@@ -588,17 +588,28 @@ function runHygen(hygenArgs = argv) {
           initial: false
         }).run();
 
-        const hygenArgs = [
-          'extension-property',
-          'add',
-          '--name', name,
-          '--type', type,
-          '--isSet', isSet.toString(),
-          '--target', target
-        ];
+        const entityExtensionsPath = path.join(cwd, 'src', 'entity-extensions.json');
+        let entityExtensions;
+        if (fs.existsSync(entityExtensionsPath)) {
+          try {
+            entityExtensions = JSON.parse(fs.readFileSync(entityExtensionsPath, 'utf-8'));
+          } catch (err) {
+            console.error(styleText("red", `Error: entity-extensions.json is invalid JSON: ${(err && err.message) || String(err)}`));
+            process.exitCode = 1;
+            return;
+          }
+        } else {
+          entityExtensions = { entityTypeExtensions: [] };
+        }
 
-        console.log(styleText("cyan", `\nAdding extension property ${target}.${name}...\n`));
-        await runHygen(hygenArgs);
+        let extendingEntity = entityExtensions.entityTypeExtensions.find((e) => e.entityType === target);
+        if (!extendingEntity) {
+          extendingEntity = { entityType: target, properties: {} };
+          entityExtensions.entityTypeExtensions.push(extendingEntity);
+        }
+        extendingEntity.properties[name] = { type, multi: isSet };
+
+        fs.writeFileSync(entityExtensionsPath, JSON.stringify(entityExtensions, null, 2));
         console.log(styleText("green", `\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
         return;
       } else if (action === 'settings') {

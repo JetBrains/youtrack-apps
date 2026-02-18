@@ -49,9 +49,9 @@ module.exports = {
         message: "What is the target extending entity?",
         choices: [
           { name: "Issue", message: "Issue" },
-          { name: "Comment", message: "Comment" },
           { name: "User", message: "User" },
-          { name: "AppGlobalStorage", message: "Global Storage" },
+          { name: "Project", message: "Project" },
+          { name: "Article", message: "Article" },
         ],
         skip: () => !!args.target,
         initial: args.target,
@@ -86,14 +86,14 @@ function injectEntity(payload, context) {
       properties: {
         [payload.name]: {
           type: payload.type,
-          multi: payload.isSet,
+          multi: payload.isSet === true || payload.isSet === 'true',
         },
       },
     });
   } else {
     extendingEntity.properties[payload.name] = {
       type: payload.type,
-      multi: payload.isSet,
+      multi: payload.isSet === true || payload.isSet === 'true',
     };
   }
   fs.writeFileSync(filePath, JSON.stringify(entityExtensions, null, 2));
