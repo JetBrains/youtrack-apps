@@ -7,8 +7,8 @@ const QUERY_ASSIST_FIELDS = 'query,caret,styleRanges(start,length,style),suggest
 const WATCH_FOLDERS_FIELDS = 'id,$type,name,query,shortName';
 const PACK_SIZE_ALL = -1;
 
-export async function loadIssues(fetchYouTrack, query, context, skip) {
-  const packSize = PACK_SIZE_ALL;
+export async function loadIssues(fetchYouTrack, query, context, skip, issuesCount) {
+  const packSize = issuesCount || PACK_SIZE_ALL;
   const encodedQuery = encodeURIComponent(query);
   if (context && context.id) {
     return await fetchYouTrack(
@@ -92,4 +92,3 @@ export async function updateIssueScheduleField(fetchYouTrack, dbIssueId, schedul
     }
   });
 }
-
