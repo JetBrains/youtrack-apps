@@ -2,7 +2,7 @@
   "name": "issue-dashboard-widgets",
   "title": "Issue Dashboard Widgets",
   "description": "A set of dashboard widgets that provide various issue views. The set includes widgets for viewing an issue list, an issue distribution report, an issue activity feed, or a due date calendar for issues.",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "icon": "youtrack.svg",
   "minYouTrackVersion": "2024.3.0",
   "vendor": {
