@@ -38,7 +38,6 @@ const DATE_AND_TIME_FIELD_TYPE = 'date and time';
 const STATE_FIELD_NAME = 'State';
 const ASSIGNEE_FIELD_NAME = 'Assignee';
 const MIDDAY = 12;
-const MAX_ISSUES_REQUEST_COUNT = 3500;
 
 class DueDatesCalendarWidget extends React.Component {
   static DEFAULT_REFRESH_PERIOD = 240; // eslint-disable-line no-magic-numbers
@@ -114,10 +113,6 @@ class DueDatesCalendarWidget extends React.Component {
           const superScriptIssuesCount =
                 `${issuesCount}`.split('').map(DueDatesCalendarWidget.digitToUnicodeSuperScriptDigit).join('');
           displayedTitle += ` ${superScriptIssuesCount}`;
-
-          if (issuesCount > MAX_ISSUES_REQUEST_COUNT) {
-            displayedTitle += ` WARNING: Issue count more than ${MAX_ISSUES_REQUEST_COUNT}, not all issues may be reflected`;
-          }
         }
         return {
           text: displayedTitle,
@@ -466,10 +461,9 @@ class DueDatesCalendarWidget extends React.Component {
       : `${searchPrefix} ((${scheduleField}: ${startDate} .. ${endDate} or ${eventEndField}: ${startDate} .. ${endDate}) or (${scheduleField}: * .. ${startDate} and ${eventEndField}: ${endDate} .. *))`;
 
     const isDateAndTime = this.state.isDateAndTime;
-    const { issuesCount } = this.state;
 
     const issues = await loadIssues(
-      this.fetchYouTrack, issuesQuery, context, 0, issuesCount
+      this.fetchYouTrack, issuesQuery, context
     );
 
     const permCache = new PermissionCache(
