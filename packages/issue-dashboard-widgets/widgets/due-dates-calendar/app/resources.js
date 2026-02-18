@@ -5,19 +5,38 @@ const ISSUE_FIELDS = `id,idReadable,summary,resolved,project(ringId),fields(${IS
 
 const QUERY_ASSIST_FIELDS = 'query,caret,styleRanges(start,length,style),suggestions(options,prefix,option,suffix,description,matchingStart,matchingEnd,caret,completionStart,completionEnd,group,icon)';
 const WATCH_FOLDERS_FIELDS = 'id,$type,name,query,shortName';
-const PACK_SIZE_ALL = -1;
+const PACK_SIZE = 100;
 
-export async function loadIssues(fetchYouTrack, query, context, skip) {
-  const packSize = PACK_SIZE_ALL;
+// eslint-disable-next-line complexity
+export async function loadIssues(fetchYouTrack, query, context) {
+  const packSize = PACK_SIZE;
   const encodedQuery = encodeURIComponent(query);
-  if (context && context.id) {
-    return await fetchYouTrack(
-      `api/issueFolders/${context.id}/sortOrder/issues?fields=${ISSUE_FIELDS}&query=${encodedQuery}&$top=${packSize}&$skip=${skip || 0}`
-    );
-  }
-  return await fetchYouTrack(
-    `api/issues?fields=${ISSUE_FIELDS}&query=${encodedQuery}&$top=${packSize}&$skip=${skip || 0}`
-  );
+
+
+  let allIssues = [];
+  let currentSkip = 0;
+  let loadedIssues = [];
+
+  do {
+    if (context && context.id) {
+      loadedIssues = await fetchYouTrack(
+        `api/issueFolders/${context.id}/sortOrder/issues?fields=${ISSUE_FIELDS}&query=${encodedQuery}&$top=${packSize}&$skip=${currentSkip}`
+      );
+    } else {
+      loadedIssues = await fetchYouTrack(
+        `api/issues?fields=${ISSUE_FIELDS}&query=${encodedQuery}&$top=${packSize}&$skip=${currentSkip}`
+      );
+    }
+
+    if (loadedIssues && loadedIssues.length > 0) {
+      allIssues.push(...loadedIssues);
+      currentSkip += packSize;
+    } else {
+      break;
+    }
+  } while (loadedIssues.length === packSize); // Continue until we get fewer issues than the pack size
+
+  return allIssues;
 }
 
 export async function loadTotalIssuesCount(
@@ -92,4 +111,3 @@ export async function updateIssueScheduleField(fetchYouTrack, dbIssueId, schedul
     }
   });
 }
-
