@@ -26,19 +26,6 @@ import './style/widget.scss';
 const MIN_YOUTRACK_VERSION = '2017.4.38723';
 
 class EditForm extends React.Component {
-  static FILTERS_TYPES = {
-    PROJECTS: 0,
-    TAGS: 1,
-    SEARCHES: 2
-  };
-
-  static EVERYTHING_CONTEXT_OPTION = {
-    id: '-1',
-    label: i18n('Everything')
-  };
-
-  static REFRESH_PERIOD_MINUTE = 60; // eslint-disable-line no-magic-numbers
-
   static propTypes = {
     search: PropTypes.string,
     context: PropTypes.object,
@@ -79,6 +66,19 @@ class EditForm extends React.Component {
     this.loadYouTrackList();
     this.onAfterYouTrackChanged();
   }
+
+  static FILTERS_TYPES = {
+    PROJECTS: 0,
+    TAGS: 1,
+    SEARCHES: 2
+  };
+
+  static EVERYTHING_CONTEXT_OPTION = {
+    id: '-1',
+    label: i18n('Everything')
+  };
+
+  static REFRESH_PERIOD_MINUTE = 60; // eslint-disable-line no-magic-numbers
 
   setFormLoaderEnabled(isLoading) {
     this.setState({isLoading});

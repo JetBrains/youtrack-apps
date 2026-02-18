@@ -41,7 +41,8 @@ class EventComponent extends React.Component {
             src={assignee.avatarUrl}
             title={assignee.name}
           />
-        </a>);
+        </a>
+      );
     } else {
       return ('');
     }
