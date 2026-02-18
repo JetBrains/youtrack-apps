@@ -505,7 +505,7 @@ describe('NestJS-Style Code Generation', () => {
   });
 
   describe('All Property Types', () => {
-    ['string', 'integer', 'boolean', 'Issue'].forEach((type) => {
+    ['string', 'integer', 'float', 'boolean', 'Issue', 'User', 'Project', 'Article'].forEach((type) => {
       test(`should create property with ${type} type`, () => {
         const result = runCLI(`property Issue.type_test_${type} --type ${type}`, { silent: true });
         assert.strictEqual(result.success, true);

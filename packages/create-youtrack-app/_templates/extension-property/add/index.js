@@ -22,16 +22,14 @@ module.exports = {
         name: "type",
         message: "What is the type of the extension property",
         choices: [
-          {
-            name: "string",
-            message: "String",
-          },
+          { name: "string", message: "String" },
           { name: "integer", message: "Integer" },
+          { name: "float", message: "Float" },
           { name: "boolean", message: "Boolean" },
-          {
-            name: "Issue",
-            message: "Issue",
-          },
+          { name: "Issue", message: "Issue (reference)" },
+          { name: "User", message: "User (reference)" },
+          { name: "Project", message: "Project (reference)" },
+          { name: "Article", message: "Article (reference)" },
         ],
         skip: () => !!args.type,
         initial: args.type || 'string',

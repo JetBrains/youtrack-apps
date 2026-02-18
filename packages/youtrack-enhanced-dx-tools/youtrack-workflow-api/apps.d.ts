@@ -107,7 +107,7 @@ export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD';
 /**
  * Scope of an HTTP endpoint determining available context.
  */
-export type HttpScope = 'global' | 'project' | 'issue';
+export type HttpScope = 'global' | 'project' | 'issue' | 'article' | 'user';
 
 /**
  * HTTP request object available in endpoint handlers.

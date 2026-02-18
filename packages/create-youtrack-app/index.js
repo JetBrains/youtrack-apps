@@ -86,7 +86,7 @@ function runHygen(hygenArgs = argv) {
       const routePath = segments.slice(1).join('/'); // rest is path
 
       // Validate scope
-      const validScopes = ['global', 'project', 'issue'];
+      const validScopes = ['global', 'project', 'issue', 'article', 'user'];
       if (!validScopes.includes(scope)) {
         console.error(styleText("red", `Invalid scope: ${scope}. Must be one of: ${validScopes.join(', ')}`));
         process.exit(1);
@@ -161,7 +161,7 @@ function runHygen(hygenArgs = argv) {
       }
 
       const type = args.type || 'string'; // Default to string
-      const validTypes = ['string', 'integer', 'boolean', 'Issue'];
+      const validTypes = ['string', 'integer', 'float', 'boolean', 'Issue', 'User', 'Project', 'Article'];
       if (!validTypes.includes(type)) {
         console.error(styleText("red", `Invalid type: ${type}. Must be one of: ${validTypes.join(', ')}`));
         process.exit(1);
@@ -276,7 +276,7 @@ function runHygen(hygenArgs = argv) {
         const scope = await new Select({
           name: 'scope',
           message: 'Choose scope (first path segment):',
-          choices: ['global', 'project', 'issue']
+          choices: ['global', 'project', 'issue', 'article', 'user']
         }).run();
 
         // Unix-like, segment-aware tab completion for route path under src/backend/router/<scope>
@@ -505,7 +505,7 @@ function runHygen(hygenArgs = argv) {
         const scope = await new Select({
           name: 'scope',
           message: 'Choose scope (first path segment):',
-          choices: ['global', 'project', 'issue']
+          choices: ['global', 'project', 'issue', 'article', 'user']
         }).run();
 
         const routePath = await new Input({
@@ -577,8 +577,12 @@ function runHygen(hygenArgs = argv) {
           choices: [
             { name: 'string', message: 'String' },
             { name: 'integer', message: 'Integer' },
+            { name: 'float', message: 'Float' },
             { name: 'boolean', message: 'Boolean' },
-            { name: 'Issue', message: 'Issue' },
+            { name: 'Issue', message: 'Issue (reference)' },
+            { name: 'User', message: 'User (reference)' },
+            { name: 'Project', message: 'Project (reference)' },
+            { name: 'Article', message: 'Article (reference)' },
           ]
         }).run();
 

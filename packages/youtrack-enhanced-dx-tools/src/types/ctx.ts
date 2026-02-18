@@ -1,5 +1,5 @@
 // Import entity types and AppTypeRegistry from the workflow API
-import type { Issue, Project, Article, User, AppTypeRegistry } from '../../youtrack-workflow-api/index.js';
+import type { Issue, Project, Article, User, AppTypeRegistry } from '../../youtrack-workflow-api';
 
 /**
  * HTTP Request object properties and methods as per YouTrack HTTP Handler API
@@ -110,7 +110,8 @@ export type UserCtx = BaseCtx & {
 export type GlobalCtx = BaseCtx;
 
 /**
- * Union type of all possible scope contexts
+ * Union type of all possible scope contexts.
+ * YouTrack HTTP handlers support five scopes: global, project, issue, article, and user.
  */
 export type ScopeCtx = IssueCtx | ProjectCtx | ArticleCtx | UserCtx | GlobalCtx;
 

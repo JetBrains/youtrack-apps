@@ -71,12 +71,12 @@ declare global {
    * Base context available in all HTTP handlers.
    * Uses discriminated unions for scope-specific properties.
    * TypeScript automatically narrows the type when you check ctx.scope.
-   * 
+   *
    * @example
    * function handle(ctx: CtxGet<Response, Query, "issue">) {
    *   // ctx.issue is available and typed
    *   const issueId = ctx.issue.id;
-   *   
+   *
    *   // Or use type narrowing
    *   if (ctx.scope === "issue") {
    *     ctx.issue; // TypeScript knows this exists
@@ -90,6 +90,7 @@ declare global {
     | {
         scope: "issue";
         issue: ExtendedIssue;
+        project: ExtendedProject;
       }
     | {
         scope: "project";
@@ -117,7 +118,7 @@ declare global {
    * @template R - Response type
    * @template Q - Query parameters type
    * @template S - Handler scope ("issue" | "project" | "article" | "user" | "global")
-   * 
+   *
    * @example
    * export default function handle(ctx: CtxPost<UpdateBody, Response, never, "issue">) {
    *   const body = ctx.request.json();
