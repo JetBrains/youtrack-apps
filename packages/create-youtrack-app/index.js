@@ -13,6 +13,25 @@ const args = require("minimist")(argv);
 const cwd = path.resolve(process.cwd(), args.cwd || ".");
 const { trimPathSegments } = require('./utils/sanitize');
 
+function isCancelled(e) {
+  return e === '' || (e && e.code === 'ERR_USE_AFTER_CLOSE');
+}
+
+process.on('uncaughtException', (e) => {
+  if (isCancelled(e)) {
+    console.log(styleText("yellow", '\nCancelled.'));
+    process.exit(0);
+  }
+  throw e;
+});
+
+process.on('unhandledRejection', (reason) => {
+  if (isCancelled(reason)) {
+    console.log(styleText("yellow", '\nCancelled.'));
+    process.exit(0);
+  }
+});
+
 function runHygen(hygenArgs = argv) {
   return runner(hygenArgs, {
     templates: defaultTemplates,
@@ -51,45 +70,45 @@ function runHygen(hygenArgs = argv) {
 
   // Replace aliases in argv (create new array to avoid mutation issues)
   const normalizedArgv = argv.map(arg => aliasMap[arg] || arg);
-  
+
   // Smart pattern detection for positional arguments
-  
+
   // Pattern 1: HTTP Handler - scope/path syntax
   // Usage: handler global/health [--method GET] [--permissions read-issue]
   const handlerIndex = normalizedArgv.findIndex(a => a === 'http-handler');
   if (handlerIndex !== -1 && normalizedArgv[handlerIndex + 1]) {
     const pathArg = normalizedArgv[handlerIndex + 1];
-    
+
     // Pattern: scope/path (e.g., "global/health" or "project/users/profile")
     if (pathArg.includes('/') && !pathArg.startsWith('--')) {
       const segments = pathArg.split('/');
       const scope = segments[0]; // first segment is scope
       const routePath = segments.slice(1).join('/'); // rest is path
-      
+
       // Validate scope
       const validScopes = ['global', 'project', 'issue'];
       if (!validScopes.includes(scope)) {
         console.error(styleText("red", `Invalid scope: ${scope}. Must be one of: ${validScopes.join(', ')}`));
         process.exit(1);
       }
-      
+
       const method = args.method || 'GET'; // Default to GET
       const permissions = args.permissions || '';
-      
+
       // Check if enhanced-dx project
       const pkgPath = path.join(cwd, 'package.json');
       const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
       const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
-      
+
       if (!isEnhancedDX) {
         console.error(styleText("red", 'This command requires an enhanced-dx project.'));
         process.exit(1);
       }
-      
+
       // Confirm target file
       const targetRel = path.join('src', 'backend', 'router', scope, routePath || '', `${method}.ts`);
       const targetAbs = path.join(cwd, targetRel);
-      
+
       if (fs.existsSync(targetAbs)) {
         const overwrite = await new Confirm({
           initial: false,
@@ -100,7 +119,7 @@ function runHygen(hygenArgs = argv) {
           return;
         }
       }
-      
+
       const hygenArgs = [
         'http-handler',
         'enhanced-dx',
@@ -109,7 +128,7 @@ function runHygen(hygenArgs = argv) {
         '--method', method,
         '--permissions', permissions
       ];
-      
+
       process.env.EDX = '1';
       console.log(styleText("cyan", `\nGenerating ${method} handler at ${targetRel}...\n`));
       await runHygen(hygenArgs);
@@ -117,39 +136,39 @@ function runHygen(hygenArgs = argv) {
       return;
     }
   }
-  
+
   // Pattern 2: Extension Property - Entity.propertyName syntax
   // Usage: property Issue.customStatus [--type string] [--set]
   const propIndex = normalizedArgv.findIndex(a => a === 'extension-property');
   if (propIndex !== -1 && normalizedArgv[propIndex + 1]) {
     const propArg = normalizedArgv[propIndex + 1];
-    
+
     // Pattern: Entity.propertyName (e.g., "Issue.customStatus" or "Comment.rating")
     if (propArg.includes('.') && !propArg.startsWith('--')) {
       const [target, name] = propArg.split('.');
-      
+
       // Validate target entity
       const validTargets = ['Issue', 'Comment', 'User', 'AppGlobalStorage'];
       if (!validTargets.includes(target)) {
         console.error(styleText("red", `Invalid target: ${target}. Must be one of: ${validTargets.join(', ')}`));
         process.exit(1);
       }
-      
+
       // Validate property name (basic check)
       if (!name || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
         console.error(styleText("red", `Invalid property name: ${name}. Must be a valid identifier.`));
         process.exit(1);
       }
-      
+
       const type = args.type || 'string'; // Default to string
       const validTypes = ['string', 'integer', 'boolean', 'Issue'];
       if (!validTypes.includes(type)) {
         console.error(styleText("red", `Invalid type: ${type}. Must be one of: ${validTypes.join(', ')}`));
         process.exit(1);
       }
-      
+
       const isSet = args.set === true || args.set === 'true';
-      
+
       // Directly manipulate the entity-extensions.json file
       const entityExtensionsPath = path.join(cwd, 'src', 'entity-extensions.json');
       let entityExtensions;
@@ -164,12 +183,12 @@ function runHygen(hygenArgs = argv) {
       } else {
         entityExtensions = { entityTypeExtensions: [] };
       }
-      
+
       // Find or create the entity
       let extendingEntity = entityExtensions.entityTypeExtensions.find(
         (e) => e.entityType === target
       );
-      
+
       if (!extendingEntity) {
         extendingEntity = {
           entityType: target,
@@ -177,16 +196,16 @@ function runHygen(hygenArgs = argv) {
         };
         entityExtensions.entityTypeExtensions.push(extendingEntity);
       }
-      
+
       // Add the property
       extendingEntity.properties[name] = {
         type: type,
         multi: isSet
       };
-      
+
       // Write back to file
       fs.writeFileSync(entityExtensionsPath, JSON.stringify(entityExtensions, null, 2));
-      
+
       console.log(styleText("green", `\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
       return;
     }
@@ -198,17 +217,17 @@ function runHygen(hygenArgs = argv) {
   if (settingsIndex !== -1 && normalizedArgv[settingsIndex + 1] === 'init') {
     const title = args.title;
     const description = args.description;
-    
+
     // If both args provided, create settings.json directly (bypasses interactive prompts)
     if (title && description) {
       const settingsPath = path.join(cwd, 'src', 'settings.json');
-      
+
       // Check if settings.json already exists
       if (fs.existsSync(settingsPath)) {
         console.error(styleText("red", 'Error: settings.json already exists at src/settings.json'));
         process.exit(1);
       }
-      
+
       // Create the settings schema
       const schema = {
         "$schema": "http://json-schema.org/draft-07/schema#",
@@ -218,12 +237,12 @@ function runHygen(hygenArgs = argv) {
         "properties": {},
         "required": []
       };
-      
+
       fs.writeFileSync(settingsPath, JSON.stringify(schema, null, 2));
       console.log(styleText("green", `\n✓ Settings schema created at src/settings.json\n`));
       return;
     }
-    
+
     // If args not provided, fall through to Hygen for interactive prompts
   }
 
@@ -442,6 +461,10 @@ function runHygen(hygenArgs = argv) {
         await runHygen(hygenArgs);
         return;
       } catch (e) {
+        if (isCancelled(e)) {
+          console.log(styleText("yellow", '\nCancelled.'));
+          return;
+        }
         console.error(styleText("red", 'Failed to generate http-handler:'), e);
         process.exitCode = 1;
         return;
@@ -456,7 +479,7 @@ function runHygen(hygenArgs = argv) {
   if (hasPkg) {
     const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
     const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
-    
+
     if (isEnhancedDX) {
       // Show interactive menu for what to generate
       const action = await new Select({
@@ -469,7 +492,7 @@ function runHygen(hygenArgs = argv) {
           { name: 'widget', message: 'Widget (UI component)' },
         ]
       }).run();
-      
+
       if (action === 'http-handler') {
         // Interactive flow for http-handler
         const method = await new Select({
@@ -502,7 +525,7 @@ function runHygen(hygenArgs = argv) {
 
         const targetRel = path.join('src', 'backend', 'router', scope, routePath || '', `${method}.ts`);
         const targetAbs = path.join(cwd, targetRel);
-        
+
         if (fs.existsSync(targetAbs)) {
           const overwrite = await new Confirm({
             initial: false,
@@ -723,4 +746,10 @@ Once you have this token, open your development environment and use the followin
 
 To add more features to your app, run the generator script again.
 Run ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to explore available options.`);
-})();
+})().catch((e) => {
+  if (isCancelled(e)) {
+    console.log(styleText("yellow", '\nCancelled.'));
+    process.exit(0);
+  }
+  throw e;
+});
