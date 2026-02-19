@@ -87,60 +87,88 @@ module.exports = {
       })),
     });
 
-    const { description } = args.description ? args : await prompter.prompt({
+    // Use args.description !== undefined so an explicitly empty string is accepted
+    const { description } = args.description !== undefined ? args : await prompter.prompt({
       type: "input",
       name: "description",
       message: "What is the description you want to give this widget?",
     });
 
-    const { limitPermissions } = args.limitPermissions ?? await prompter.prompt({
-      type: "confirm",
-      name: "limitPermissions",
-      message: "Would you like to use permissions to restrict the visibility of this widget?",
-    });
+    // limitPermissions: skip the confirm prompt when the arg is pre-supplied
+    let limitPermissions;
+    if (args.limitPermissions !== undefined) {
+      limitPermissions = args.limitPermissions === true || args.limitPermissions === 'true';
+    } else {
+      const res = await prompter.prompt({
+        type: "confirm",
+        name: "limitPermissions",
+        message: "Would you like to use permissions to restrict the visibility of this widget?",
+      });
+      limitPermissions = res.limitPermissions;
+    }
 
     let permissions = false;
     if (limitPermissions) {
-      const res = await prompter.prompt({
-        type: "multiselect",
-        name: "permissions",
-        message: "Which permissions determine who can view this widget? If you leave this field empty, it is visible to everyone",
-        choices: PERMISSIONS.map(({ key, description }) => ({
-          message: `"${key}": ${description}`,
-          name: key,
-        })),
-      });
-      permissions = res.permissions;
+      if (args.permissions !== undefined) {
+        const raw = String(args.permissions);
+        permissions = raw ? raw.split(',').map(p => p.trim()).filter(Boolean) : [];
+      } else {
+        const res = await prompter.prompt({
+          type: "multiselect",
+          name: "permissions",
+          message: "Which permissions determine who can view this widget? If you leave this field empty, it is visible to everyone",
+          choices: PERMISSIONS.map(({ key, description }) => ({
+            message: `"${key}": ${description}`,
+            name: key,
+          })),
+        });
+        permissions = res.permissions;
+      }
     }
 
-    const { addDimensions } = args.addDimensions ?? await prompter.prompt({
-      type: "confirm",
-      name: "addDimensions",
-      message: "Do you want to set the dimensions for your widget?",
-    });
+    // addDimensions: skip the confirm prompt when the arg is pre-supplied
+    let addDimensions;
+    if (args.addDimensions !== undefined) {
+      addDimensions = args.addDimensions === true || args.addDimensions === 'true';
+    } else {
+      const res = await prompter.prompt({
+        type: "confirm",
+        name: "addDimensions",
+        message: "Do you want to set the dimensions for your widget?",
+      });
+      addDimensions = res.addDimensions;
+    }
 
     let width;
     let height;
     if (addDimensions) {
-      await prompter
-        .prompt({
-          type: "number",
-          name: "width",
-          message: "What is the width of your widget (in pixels)?",
-        })
-        .then((res) => {
-          width = res.width;
-        });
+      if (args.width !== undefined) {
+        width = Number(args.width);
+      } else {
+        await prompter
+          .prompt({
+            type: "number",
+            name: "width",
+            message: "What is the width of your widget (in pixels)?",
+          })
+          .then((res) => {
+            width = res.width;
+          });
+      }
 
-      await prompter
-        .prompt({
-          type: "number",
-          name: "height",
-          message: "What is the height of your widget (in pixels)?",
-        })
-        .then((res) => {
-          height = res.height;
-        });
+      if (args.height !== undefined) {
+        height = Number(args.height);
+      } else {
+        await prompter
+          .prompt({
+            type: "number",
+            name: "height",
+            message: "What is the height of your widget (in pixels)?",
+          })
+          .then((res) => {
+            height = res.height;
+          });
+      }
     }
 
     const result = {

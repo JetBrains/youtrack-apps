@@ -6,7 +6,8 @@ console.log('inject manifest')
 
 function injectWidget(newWidget, cwd) {
   const fileName = "manifest.json";
-  const filePath = path.join(process.cwd(), cwd, fileName);
+  // path.resolve handles both absolute cwd (tests/CI) and relative cwd (npm scripts)
+  const filePath = path.resolve(process.cwd(), cwd || '', fileName);
 
   const manifest = JSON.parse(fs.readFileSync(filePath));
 

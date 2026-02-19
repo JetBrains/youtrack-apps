@@ -29,6 +29,8 @@
     "test:generator:watch": "node --test --watch test/generator-cli.test.js",
     "test:settings": "node --test test/settings.test.js",
     "test:settings:watch": "node --test --watch test/settings.test.js",
+    "test:widget": "node --test test/widget.test.js",
+    "test:widget:watch": "node --test --watch test/widget.test.js",
     "build": "echo 'no build required'",
     "release:ci": "bash scripts/release-ci.sh"
   },

@@ -381,6 +381,67 @@ function runHygen(hygenArgs = argv) {
     return;
   }
 
+  // Pattern 5: Widget - --key flag syntax (non-interactive when --key is provided)
+  // Usage: widget --key <key> --extension-point <ep> [--name <name>] [--description <desc>]
+  //                            [--permissions PERM1,PERM2] [--width <w>] [--height <h>]
+  const widgetIndex = normalizedArgv.findIndex(a => a === 'widget');
+  if (widgetIndex !== -1 && args.key !== undefined) {
+    const key = String(args.key);
+
+    const VALID_WIDGET_EXTENSION_POINTS = [
+      'ADMINISTRATION_MENU_ITEM', 'ARTICLE_ABOVE_ACTIVITY_STREAM', 'ARTICLE_OPTIONS_MENU_ITEM',
+      'DASHBOARD_WIDGET', 'HELPDESK_CHANNEL', 'ISSUE_ABOVE_ACTIVITY_STREAM', 'ISSUE_BELOW_SUMMARY',
+      'ISSUE_FIELD_PANEL_FIRST', 'ISSUE_FIELD_PANEL_LAST', 'ISSUE_OPTIONS_MENU_ITEM',
+      'MAIN_MENU_ITEM', 'MARKDOWN', 'PROJECT_SETTINGS', 'USER_CARD', 'USER_PROFILE_SETTINGS',
+    ];
+
+    if (!/^[a-z][a-z0-9-]*$/.test(key)) {
+      console.error(styleText("red", `Invalid widget key: "${key}". Must start with a lowercase letter and contain only lowercase letters, numbers, and hyphens.`));
+      process.exit(1);
+    }
+
+    const extensionPoint = args['extension-point'] || args.extensionPoint;
+    if (!extensionPoint) {
+      console.error(styleText("red", 'Error: --extension-point is required'));
+      process.exit(1);
+    }
+    if (!VALID_WIDGET_EXTENSION_POINTS.includes(extensionPoint)) {
+      console.error(styleText("red", `Invalid extension point: "${extensionPoint}". Must be one of: ${VALID_WIDGET_EXTENSION_POINTS.join(', ')}`));
+      process.exit(1);
+    }
+
+    const name = args.name || key.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const description = args.description || '';
+    const rawPerms = args.permissions
+      ? String(args.permissions).split(',').map(p => p.trim()).filter(Boolean)
+      : [];
+    const width = args.width != null ? Number(args.width) : undefined;
+    const height = args.height != null ? Number(args.height) : undefined;
+    const hasPerms = rawPerms.length > 0;
+    const hasDims = width != null || height != null;
+
+    const hygenArgs = [
+      'widget', 'add',
+      '--key', key,
+      '--name', name,
+      '--extensionPoint', extensionPoint,
+      '--description', description,
+      '--limitPermissions', String(hasPerms),
+      '--addDimensions', String(hasDims),
+    ];
+
+    // inject-manifest.js uses args.cwd to locate manifest.json; pass the resolved path
+    hygenArgs.push('--cwd', cwd);
+    if (hasPerms) hygenArgs.push('--permissions', rawPerms.join(','));
+    if (width != null) hygenArgs.push('--width', String(width));
+    if (height != null) hygenArgs.push('--height', String(height));
+
+    console.log(styleText("cyan", `\nGenerating widget "${name}" (${key})...\n`));
+    await runHygen(hygenArgs);
+    console.log(styleText("green", `\n✓ Widget created successfully!\n`));
+    return;
+  }
+
   const hasHygenParams = ["init", "enhanced-dx", "extension-property", "widget", "settings", "http-handler", "endpoint"].some(
     (key) => new Set(normalizedArgv).has(key)
   );
