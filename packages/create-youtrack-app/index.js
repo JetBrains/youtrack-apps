@@ -246,6 +246,141 @@ function runHygen(hygenArgs = argv) {
     // If args not provided, fall through to Hygen for interactive prompts
   }
 
+  // Pattern 4: Settings add — always non-interactive, never falls through to Hygen
+  // Usage: settings add --name <name> --type <type> [options...]
+  if (settingsIndex !== -1 && normalizedArgv[settingsIndex + 1] === 'add') {
+    const VALID_TYPES    = ['string', 'integer', 'number', 'boolean', 'object', 'array'];
+    const VALID_SCOPES   = ['global', 'project', 'none'];
+    const VALID_ENTITIES = ['Issue', 'User', 'Project', 'UserGroup', 'Article'];
+
+    // -- Validate --name (String() guards against minimist numeric-parsing edge cases)
+    const name = args.name != null ? String(args.name) : undefined;
+    if (!name) {
+      console.error(styleText("red", 'Error: --name is required'));
+      process.exit(1);
+    }
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
+      console.error(styleText("red", `Error: Invalid property name "${name}". Must start with a letter or underscore and contain only letters, digits, and underscores.`));
+      process.exit(1);
+    }
+
+    // -- Validate --type
+    const type = args.type;
+    if (!type) {
+      console.error(styleText("red", 'Error: --type is required'));
+      process.exit(1);
+    }
+    if (!VALID_TYPES.includes(type)) {
+      console.error(styleText("red", `Invalid type: "${type}". Must be one of: ${VALID_TYPES.join(', ')}`));
+      process.exit(1);
+    }
+
+    // -- Validate --scope (optional)
+    const scope = args.scope;
+    if (scope !== undefined && !VALID_SCOPES.includes(scope)) {
+      console.error(styleText("red", `Invalid scope: "${scope}". Must be one of: ${VALID_SCOPES.join(', ')}`));
+      process.exit(1);
+    }
+
+    // -- Validate --entity (optional, only valid with object/array)
+    const entity = args.entity != null ? String(args.entity) : undefined;
+    if (entity !== undefined) {
+      if (!['object', 'array'].includes(type)) {
+        console.error(styleText("red", `Error: --entity can only be used with --type object or --type array`));
+        process.exit(1);
+      }
+      if (!VALID_ENTITIES.includes(entity)) {
+        console.error(styleText("red", `Invalid entity: "${entity}". Must be one of: ${VALID_ENTITIES.join(', ')}`));
+        process.exit(1);
+      }
+    }
+
+    // -- Require settings.json to exist
+    const settingsPath = path.join(cwd, 'src', 'settings.json');
+    if (!fs.existsSync(settingsPath)) {
+      console.error(styleText("red", 'Error: settings.json does not exist at src/settings.json. Run "settings init" first.'));
+      process.exit(1);
+    }
+
+    // -- Parse settings.json
+    let schema;
+    try {
+      schema = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+    } catch (e) {
+      console.error(styleText("red", `Error: Could not parse settings.json: ${e.message}`));
+      process.exit(1);
+    }
+
+    // -- Guard duplicate property name
+    if (schema.properties && schema.properties[name] !== undefined) {
+      console.error(styleText("red", `Error: Property "${name}" already exists in settings.json`));
+      process.exit(1);
+    }
+
+    // -- Build the property schema object
+    const prop = { type };
+
+    if (args.title)       prop.title       = args.title;
+    if (args.description) prop.description = args.description;
+
+    // String constraints
+    if (type === 'string') {
+      // Use !== undefined (not truthiness) so value 0 is never dropped
+      if (args['min-length'] !== undefined) prop.minLength = Number(args['min-length']);
+      if (args['max-length'] !== undefined) prop.maxLength = Number(args['max-length']);
+      if (args.format)                      prop.format    = args.format;
+      if (args.enum) {
+        prop.enum = String(args.enum).split(',').map(v => v.trim());
+      }
+    }
+
+    // Numeric constraints — exclusive variants take precedence over inclusive
+    if (type === 'integer' || type === 'number') {
+      if (args['exclusive-min'] !== undefined) {
+        prop.exclusiveMinimum = Number(args['exclusive-min']);
+      } else if (args.min !== undefined) {
+        prop.minimum = Number(args.min);
+      }
+      if (args['exclusive-max'] !== undefined) {
+        prop.exclusiveMaximum = Number(args['exclusive-max']);
+      } else if (args.max !== undefined) {
+        prop.maximum = Number(args.max);
+      }
+      if (args['multiple-of'] !== undefined) prop.multipleOf = Number(args['multiple-of']);
+    }
+
+    // Entity reference: stored directly on object, under items for array
+    if (type === 'object' && entity) prop['x-entity'] = entity;
+    if (type === 'array'  && entity) prop.items = { type: 'object', 'x-entity': entity };
+
+    // Read-only + optional constant value
+    if (args.readonly) {
+      prop.readOnly = true;
+      if (args.const !== undefined) {
+        prop.const = (type === 'integer' || type === 'number')
+          ? Number(args.const)
+          : args.const;
+      }
+    }
+
+    // Write-only
+    if (args['write-only']) prop.writeOnly = true;
+
+    // Scope (omit the key entirely when scope is "none" or not provided)
+    if (scope && scope !== 'none') prop['x-scope'] = scope;
+
+    // -- Mutate schema and write back
+    if (!schema.properties) schema.properties = {};
+    if (!Array.isArray(schema.required)) schema.required = [];
+
+    schema.properties[name] = prop;
+    if (args.required) schema.required.push(name);
+
+    fs.writeFileSync(settingsPath, JSON.stringify(schema, null, 2));
+    console.log(styleText("green", `\n✓ Added property "${name}" to src/settings.json\n`));
+    return;
+  }
+
   const hasHygenParams = ["init", "enhanced-dx", "extension-property", "widget", "settings", "http-handler", "endpoint"].some(
     (key) => new Set(normalizedArgv).has(key)
   );

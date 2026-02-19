@@ -202,6 +202,15 @@ describe('App Settings', () => {
       assert.strictEqual(prop.items['x-entity'], 'User');
     });
 
+    test('should add an object property without --entity (x-entity omitted)', () => {
+      const result = runCLI('settings add --name rawConfig --type object', { silent: true });
+      assert.strictEqual(result.success, true, result.output);
+
+      const prop = readSettings().properties.rawConfig;
+      assert.strictEqual(prop.type, 'object');
+      assert.strictEqual(prop['x-entity'], undefined, 'x-entity should not be set when --entity is omitted');
+    });
+
     // ── Metadata ───────────────────────────────────────────────────────────
 
     test('should set title on the property', () => {
@@ -342,6 +351,15 @@ describe('App Settings', () => {
       assert.strictEqual(prop.maximum, undefined, 'maximum should not be set when exclusive');
     });
 
+    test('should set exclusiveMaximum when the value is 0 (falsy)', () => {
+      const result = runCLI('settings add --name belowZero --type integer --exclusive-max 0', { silent: true });
+      assert.strictEqual(result.success, true, result.output);
+
+      const prop = readSettings().properties.belowZero;
+      assert.strictEqual(prop.exclusiveMaximum, 0, 'exclusiveMaximum 0 must not be dropped as falsy');
+      assert.strictEqual(prop.maximum, undefined);
+    });
+
     test('should set multipleOf on number property', () => {
       const result = runCLI('settings add --name step --type number --multiple-of 0.5', { silent: true });
       assert.strictEqual(result.success, true, result.output);
@@ -440,6 +458,17 @@ describe('App Settings', () => {
       });
     }
 
+    // ── All valid entity values ────────────────────────────────────────────
+
+    for (const entity of ['Issue', 'User', 'Project', 'UserGroup', 'Article']) {
+      test(`should accept --entity ${entity} on object type`, () => {
+        const result = runCLI(`settings add --name entityTest_${entity} --type object --entity ${entity}`, { silent: true });
+        assert.strictEqual(result.success, true, result.output);
+
+        assert.strictEqual(readSettings().properties[`entityTest_${entity}`]['x-entity'], entity);
+      });
+    }
+
     // ── All valid scopes ───────────────────────────────────────────────────
 
     for (const scope of ['global', 'project', 'none']) {
@@ -493,6 +522,20 @@ describe('App Settings', () => {
         result.output.includes('Invalid type') || result.output.includes('--type'),
         'Error should describe the problem'
       );
+    });
+
+    test('should fail with an invalid --entity value', () => {
+      const result = runCLI('settings add --name badEntity --type object --entity FakeEntity', { silent: true });
+      assert.strictEqual(result.success, false, 'Command should fail with unrecognised entity');
+      assert.ok(
+        result.output.includes('Invalid entity') || result.output.includes('--entity'),
+        'Error should describe the problem'
+      );
+    });
+
+    test('should fail when --entity is used with a non-object/array type', () => {
+      const result = runCLI('settings add --name stringWithEntity --type string --entity Issue', { silent: true });
+      assert.strictEqual(result.success, false, '--entity on a non-object/array type should be rejected');
     });
 
     test('should fail with an invalid --scope value', () => {
