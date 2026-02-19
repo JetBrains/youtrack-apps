@@ -144,12 +144,60 @@ Access in handlers: `ctx.issue.extensionProperties.myField` (type-safe after reb
 Admin-configured values are declared in `src/settings.json`. After editing, rebuild to regenerate types:
 
 ```bash
-npm run g -- settings init    # first time
-npm run g -- settings add     # add a property
 npm run build:backend
 ```
 
 Access in handlers: `ctx.settings.myKey`.
+
+### Initialise settings (first time only)
+
+```bash
+npm run g -- settings init --title "My App Settings" --description "Admin configuration"
+```
+
+### Add a property (non-interactive, all options available as flags)
+
+```bash
+# Minimal — name and type are the only required flags
+npm run g -- settings add --name apiKey --type string
+
+# With metadata and scope
+npm run g -- settings add --name baseUrl --type string \
+  --title "Base URL" --description "API base URL" \
+  --scope global --required
+
+# String constraints
+npm run g -- settings add --name slug --type string \
+  --min-length 3 --max-length 50 --format slug
+
+# Enum
+npm run g -- settings add --name status --type string \
+  --enum "active,inactive,pending"
+
+# Integer / number constraints
+npm run g -- settings add --name port --type integer \
+  --min 1 --max 65535 --scope global
+
+# Exclusive bounds and step
+npm run g -- settings add --name ratio --type number \
+  --exclusive-min 0 --exclusive-max 1 --multiple-of 0.01
+
+# Object / array entity references
+npm run g -- settings add --name linkedIssue --type object --entity Issue
+npm run g -- settings add --name reviewers   --type array  --entity User
+
+# Read-only with a fixed constant
+npm run g -- settings add --name env --type string --readonly --const production
+
+# Write-only (e.g. secrets)
+npm run g -- settings add --name secretKey --type string --write-only
+```
+
+**All `--type` values:** `string` `integer` `number` `boolean` `object` `array`
+
+**All `--scope` values:** `global` `project` *(omit or use `none` for no scope)*
+
+**All `--entity` values (object/array only):** `Issue` `User` `Project` `UserGroup` `Article`
 
 ---
 
