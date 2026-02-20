@@ -59,14 +59,6 @@ type HttpRequest<TBody = unknown, Q = Record<string, unknown>> = {
 type HttpHandlerScope = "issue" | "project" | "article" | "user" | "global";
 
 declare global {
-  type AppSettings = Record<string, unknown> & {
-    // Add your app-specific settings here
-    // Example:
-    // someProject?: string | unknown;
-    // someFieldName?: string;
-    // customLinkType?: string;
-  };
-
   /**
    * Base context available in all HTTP handlers.
    * Uses discriminated unions for scope-specific properties.
