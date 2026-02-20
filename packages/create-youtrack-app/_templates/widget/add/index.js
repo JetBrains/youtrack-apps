@@ -1,3 +1,5 @@
+const fs = require("node:fs");
+const path = require("node:path");
 const { validateNotEmpty } = require("../../utils");
 const { PERMISSIONS } = require("../../consts");
 const { injectWidget } = require("./inject-manifest");
@@ -61,14 +63,31 @@ const extensionPoints = [
 
 module.exports = {
   prompt: async ({ prompter, args, h }) => {
+    const manifestPath = path.resolve(process.cwd(), args.cwd || '', 'manifest.json');
+    let existingKeys = new Set();
+    try {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+      existingKeys = new Set((manifest.widgets || []).map(w => w.key));
+    } catch { /* manifest may not exist yet during init */ }
+
     const { key } = args.key ? args : await prompter.prompt({
       type: "input",
       name: "key",
-      validate: validateNotEmpty,
+      validate: input => {
+        const k = h.changeCase.lower(h.inflection.dasherize(input));
+        if (!validateNotEmpty(k)) return validateNotEmpty(k);
+        if (existingKeys.has(k)) return `Widget with key "${k}" already exists`;
+        return true;
+      },
       format: input => h.changeCase.lower(h.inflection.dasherize(input)),
       result: input => h.changeCase.lower(h.inflection.dasherize(input)),
       message: "What key (ID) would you like to assign this widget?",
     });
+
+    if (existingKeys.has(key)) {
+      console.error(`\nError: Widget with key "${key}" already exists in manifest.json\n`);
+      process.exit(1);
+    }
     const { name } = args.name ? args : await prompter.prompt({
       type: "input",
       name: "name",

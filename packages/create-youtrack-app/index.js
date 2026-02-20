@@ -400,6 +400,20 @@ function runHygen(hygenArgs = argv) {
       process.exit(1);
     }
 
+    const manifestPath = path.join(cwd, 'manifest.json');
+    if (fs.existsSync(manifestPath)) {
+      try {
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+        if (manifest.widgets && manifest.widgets.some(w => w.key === key)) {
+          console.error(styleText("red", `Error: Widget with key "${key}" already exists in manifest.json`));
+          process.exit(1);
+        }
+      } catch (e) {
+        console.error(styleText("red", `Error: Could not parse manifest.json: ${e.message}`));
+        process.exit(1);
+      }
+    }
+
     const extensionPoint = args['extension-point'] || args.extensionPoint;
     if (!extensionPoint) {
       console.error(styleText("red", 'Error: --extension-point is required'));

@@ -37,13 +37,10 @@ export default defineConfig({
         rollupOptions: {
             external: [
                 /^@jetbrains\/youtrack-scripting-api\//,
+                /^node:/,
                 // Externalize Node.js built-ins and Vite plugin dependencies
                 'child_process',
                 'fs-extra',
-                'node:path',
-                'node:fs',
-                'node:fs/promises',
-                'node:os',
                 'fast-glob',
                 'ts-morph',
                 'path',

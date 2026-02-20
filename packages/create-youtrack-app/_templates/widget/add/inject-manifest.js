@@ -11,6 +11,10 @@ function injectWidget(newWidget, cwd) {
 
   const manifest = JSON.parse(fs.readFileSync(filePath));
 
+  if (manifest.widgets && manifest.widgets.some(w => w.key === newWidget.key)) {
+    throw new Error(`Widget with key "${newWidget.key}" already exists in manifest.json`);
+  }
+
   manifest.widgets.push(newWidget);
 
   fs.writeFileSync(filePath, JSON.stringify(manifest, null, 2));
