@@ -1,12 +1,12 @@
 ---
 to: "src/backend/types/backend.global.d.ts"
 ---
-import {Project, Issue, User} from "@/api/youtrack-types";
+import {Project, Issue, User, Article} from "@/api/youtrack-types";
 import {ExtendedProperties} from "@/api/extended-entities";
 
 type ExtendedIssue = ExtendedProperties['Issue'] extends never ? Issue : ExtendedProperties['Issue'];
 type ExtendedProject = ExtendedProperties['Project'] extends never ? Project : ExtendedProperties['Project'];
-type ExtendedArticle = ExtendedProperties['Article'] extends never ? any : ExtendedProperties['Article'];
+type ExtendedArticle = ExtendedProperties['Article'] extends never ? Article : ExtendedProperties['Article'];
 type ExtendedUser = ExtendedProperties['User'] extends never ? User : ExtendedProperties['User'];
 type AppGlobalStorageExtensionProperties = ExtendedProperties['AppGlobalStorage'] extends never ? Record<string, unknown> : ExtendedProperties['AppGlobalStorage'];
 
