@@ -91,6 +91,12 @@ src/
 - `npm run update` - Quick build + upload
 - `npm run dev:upload` - Build and upload dev-mode bundle (for hot reload setup)
 
+### Scaffolding
+
+- `npm run g -- handler <scope>/<path>` - Generate a new HTTP handler (e.g. `npm run g -- handler project/settings`)
+- `npm run g -- property <Entity.field>` - Generate a new entity extension property (e.g. `npm run g -- property Issue.myField`)
+- `npm run g -- settings add --name <key> --type <type>` - Add an app settings field
+
 ### Maintenance
 
 - `npm run lint` - Run ESLint
@@ -118,7 +124,7 @@ export type ProjectSettingsRes = {
     projectName: string;
 };
 
-export default function handle(ctx: CtxGet<ProjectSettingsRes, ProjectSettingsReq>): void {
+export default function handle(ctx: CtxGet<ProjectSettingsRes, ProjectSettingsReq, "project">): void {
     const { projectId } = ctx.request.query;
 
     ctx.response.json({

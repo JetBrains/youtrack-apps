@@ -27,7 +27,7 @@ ${styleText("bold", 'Enhanced DX (experimental)')}
 
 ${styleText("bold", 'Usage:')}
   - Choose "Enhanced DX" when prompted and follow the instructions as usual. Sample ${styleText("cyan", 'MAIN_MENU_ITEM')} widget with backend endpoints will be added automatically.
-  - Run ${styleText("magenta", 'npm run watch:build')} to continuously update the app.
+  - Run ${styleText("magenta", 'npm run watch')} to continuously update the app.
 
 ${styleText("bold", 'Code Generation:')}
 Inside an enhanced-dx app, use ${styleText("magenta", 'npm run generate')} (or ${styleText("magenta", 'npm run g')}) to add features:
@@ -64,7 +64,7 @@ ${styleText("bold", 'Features:')}
   - ${styleText("magenta", 'const host = await YTApp.register(); const api = createApi(host);')}
   - ${styleText("magenta", 'const result = await api.project.demo.GET({ projectId: "ABC", message: "hello" });')}
 
-• ${styleText("bold", 'Zod Validation:')} Runtime validation in development mode. Use ${styleText("magenta", 'npm run watch:build')}
+• ${styleText("bold", 'Zod Validation:')} Runtime validation in development mode. Use ${styleText("magenta", 'npm run watch')}
 
 • ${styleText("bold", 'Vite-powered:')} Custom plugins handle routing and type generation
   - api plugin: ${styleText("bold", 'vite-plugin-youtrack-api-generator.ts')}

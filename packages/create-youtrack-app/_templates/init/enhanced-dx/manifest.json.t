@@ -18,7 +18,7 @@ to: manifest.json
       "indexPath": "enhanced-dx/index.html",
       "extensionPoint": "MAIN_MENU_ITEM",
       "iconPath": "enhanced-dx/widget-icon.svg",
-      "description": "description"
+      "description": "<%= description %>"
     }
   ]
 }
