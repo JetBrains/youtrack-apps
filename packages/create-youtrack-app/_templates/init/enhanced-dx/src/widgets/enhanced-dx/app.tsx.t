@@ -1,7 +1,7 @@
 ---
 to: src/widgets/enhanced-dx/app.tsx
 ---
-import React, {memo, useCallback, useState} from 'react';
+import React, {memo, useCallback, useState, useEffect} from 'react';
 import Button from '@jetbrains/ring-ui-built/components/button/button';
 import {Input, Size} from '@jetbrains/ring-ui-built/components/input/input';
 import LoaderInline from '@jetbrains/ring-ui-built/components/loader-inline/loader-inline';
@@ -15,7 +15,7 @@ const logger = createComponentLogger("app");
 const AppComponent: React.FunctionComponent = () => {
   const [response, setResponse] = useState<string>('Click a button to test the API...');
   const [loading, setLoading] = useState<boolean>(false);
-  const [projectId, setProjectId] = useState<string>('DEM');
+  const [projectId, setProjectId] = useState<string>('DEMO');
 
   const callGlobalApi = useCallback(async () => {
     setLoading(true);
@@ -31,6 +31,27 @@ const AppComponent: React.FunctionComponent = () => {
     }
   }, []);
 
+  useEffect(() => {
+    callGlobalApi();
+  }, [callGlobalApi]);
+
+
+  const callEchoApi = useCallback(async () => {
+    setLoading(true);
+    try {
+      const echoResult = await api.global.echo.POST({
+        message: "Hello from Enhanced DX!",
+        metadata: { timestamp: Date.now(), widget: 'enhanced-dx' }
+      });
+      logger.debug('Echo:', {action: 'testing POST handler'}, echoResult);
+      setResponse(JSON.stringify(echoResult, null, 2));
+    } catch (error) {
+      logger.error('Echo API call failed:', {}, error);
+      setResponse(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   const callProjectApi = useCallback(async () => {
     setLoading(true);
@@ -54,12 +75,13 @@ const AppComponent: React.FunctionComponent = () => {
     setLoading(true);
     try {
       // Test with completely invalid data to trigger Zod validation
+      // Using echo endpoint to demonstrate POST validation
       const invalidData = {
-        projectId: 123,                           //  Number instead of string
-        message: ["invalid", "array"],            //  Array instead of string
+        message: 123,                             // Number instead of string
+        metadata: "invalid string",               // String instead of object
       } as any;
 
-      const invalidResponse = await api.project.demo.GET(invalidData);
+      const invalidResponse = await api.global.echo.POST(invalidData);
       logger.debug('Validation test result:', {action: 'validation-test'}, invalidResponse);
       setResponse(JSON.stringify(invalidResponse, null, 2));
     } catch (error) {
@@ -70,11 +92,10 @@ const AppComponent: React.FunctionComponent = () => {
         validationError: true,
         message: errorMessage,
         timestamp: new Date().toISOString(),
+        note: 'Zod validation caught invalid types at runtime',
         testData: {
-          projectId: 123,
-          message: ["invalid", "array"],
-          nonExistentField: true,
-          anotherBadField: { nested: "object" }
+          message: 123,
+          metadata: "invalid string"
         }
       };
 
@@ -92,14 +113,26 @@ const AppComponent: React.FunctionComponent = () => {
 
         <div className="demo-controls">
           <div className="demo-section">
-            <h3>Global API</h3>
-            <p>Health check endpoint</p>
+            <h3>Global API (GET)</h3>
+            <p>Health check endpoint - demonstrates global scope handlers</p>
             <Button
                 primary
                 onClick={callGlobalApi}
                 disabled={loading}
             >
-              Test Global API
+              Test Health Check
+            </Button>
+          </div>
+
+          <div className="demo-section">
+            <h3>Global API (POST)</h3>
+            <p>Echo endpoint - demonstrates POST handler with body</p>
+            <Button
+                primary
+                onClick={callEchoApi}
+                disabled={loading}
+            >
+              Test Echo API
             </Button>
           </div>
 
@@ -127,12 +160,12 @@ const AppComponent: React.FunctionComponent = () => {
           <div className="demo-section validation-test">
             <h3>Validation Test</h3>
             <p>Send invalid data to test runtime Zod validation</p>
-            <p>Check out console log for schema validation.</p>
+            <p>Check browser console for detailed validation errors.</p>
             <div className="validation-details">
               <small>
                 <strong>Will send:</strong><br/>
-                • projectId: 123 (number instead of string)<br/>
-                • message: ["array"] (array instead of string)<br/>
+                • message: 123 (number instead of string)<br/>
+                • metadata: "string" (string instead of object)<br/>
               </small>
             </div>
             <Button

@@ -4,7 +4,7 @@ import Panel from '@jetbrains/ring-ui/components/panel/panel';
 import Button from '@jetbrains/ring-ui/components/button/button';
 import warningIcon from '@jetbrains/icons/warning';
 import Icon from '@jetbrains/ring-ui/components/icon';
-import {i18n} from 'hub-dashboard-addons/dist/localization';
+import {i18n} from '@lib/i18n/i18n';
 
 import styles from './configuration-form.module.css';
 

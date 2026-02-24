@@ -210,7 +210,7 @@ module.exports = {
         })
         .then((res) => {
           if (type === "string") {
-            constValue = `"res.constValue"`;
+            constValue = `"${res.constValue}"`;
           } else {
             constValue = res.constValue;
           }

@@ -28,10 +28,73 @@ After you have generated an app, you may want to add more features. Add new feat
 | Add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html) | `npx @jetbrains/create-youtrack-app http-handler add` |
 | View a list of available commands | `npx @jetbrains/create-youtrack-app --help` |
 
+### Enhanced DX: NestJS-Style Code Generation
+
+For apps created with **Enhanced DX (TypeScript)**, a simplified, NestJS-inspired code generation workflow is available:
+
+#### Quick Commands
+
+Generated enhanced-dx apps include `npm run generate` (or `npm run g` for short) that uses smart positional arguments:
+
+**HTTP Handlers:**
+```bash
+npm run g -- handler global/health                    # GET handler (default)
+npm run g -- handler project/users --method POST      # Override method
+npm run g -- h issue/comments --method POST --permissions read-issue,update-issue
+```
+
+**Extension Properties:**
+```bash
+npm run g -- property Issue.customStatus              # string type (default)
+npm run g -- property Comment.rating --type integer   # Override type
+npm run g -- p Issue.tags --type string --set         # Multi-value property
+```
+
+**App Settings:**
+```bash
+npm run g -- settings init --title "..." --description "..."  # Create settings schema
+npm run g -- settings init                                     # Interactive mode
+npm run g -- settings add                                      # Add property (interactive)
+npm run g -- s init --title "My Settings" --description "..."  # Short alias
+```
+
+**Interactive Menu:**
+```bash
+npm run g                                             # Shows menu to select what to generate
+```
+
+#### Syntax Reference
+
+**HTTP Handler:** `npm run g -- handler <scope>/<path> [--method METHOD] [--permissions PERMS]`
+- `<scope>`: `global`, `project`, or `issue`
+- `<path>`: Route path (can be nested with `/`)
+- `--method`: `GET`, `POST`, `PUT`, `DELETE` (default: `GET`)
+- `--permissions`: Comma-separated permissions (optional)
+- **Aliases:** `handler`, `h`
+
+**Extension Property:** `npm run g -- property <Entity>.<name> [--type TYPE] [--set]`
+- `<Entity>`: `Issue`, `Comment`, `User`, or `AppGlobalStorage`
+- `<name>`: Property name (valid identifier)
+- `--type`: `string`, `integer`, `boolean`, `Issue` (default: `string`)
+- `--set`: Makes it multi-value (optional)
+- **Aliases:** `property`, `prop`, `p`
+
+**App Settings:** `npm run g -- settings init [--title TITLE] [--description DESC]`
+- `init`: Initialize settings schema
+  - With args: `--title` and `--description` create schema directly (testable)
+  - Without args: Interactive prompts for title and description
+- `add`: Add a new property to existing settings schema (interactive only)
+- **Aliases:** `settings`, `setting`, `s`
+
 
 ### Сontributing
 
 To test locally, run one of the package.json scripts like `npm run widget`. This generator uses [Hygen](https://www.hygen.io/docs/generators) under the hood.
+
+Local development tip: if you want to run your local generator instead of the published package, link it and use the binary directly:
+
+- `cd packages/create-youtrack-app && npm install && npm link`
+- Run `create-youtrack-app` (or `npm exec @jetbrains/create-youtrack-app` inside a project where you first ran `npm link @jetbrains/create-youtrack-app`).
 
 Run `npm test` to check basic generation workflow.
 

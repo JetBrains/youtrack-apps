@@ -24,17 +24,6 @@ import './style/issues-list-widget.css';
 const MIN_YOUTRACK_VERSION = '2017.4.38723';
 
 class IssuesListEditForm extends React.Component {
-  static FILTERS_TYPES = {
-    PROJECTS: 0,
-    TAGS: 1,
-    SEARCHES: 2
-  };
-
-  static EVERYTHING_CONTEXT_OPTION = {
-    id: '-1',
-    label: i18n('Everything')
-  };
-
   static propTypes = {
     search: PropTypes.string,
     context: PropTypes.object,
@@ -68,6 +57,17 @@ class IssuesListEditForm extends React.Component {
     this.loadYouTrackList();
     this.onAfterYouTrackChanged();
   }
+
+  static FILTERS_TYPES = {
+    PROJECTS: 0,
+    TAGS: 1,
+    SEARCHES: 2
+  };
+
+  static EVERYTHING_CONTEXT_OPTION = {
+    id: '-1',
+    label: i18n('Everything')
+  };
 
   setFormLoaderEnabled(isLoading) {
     this.setState({isLoading});

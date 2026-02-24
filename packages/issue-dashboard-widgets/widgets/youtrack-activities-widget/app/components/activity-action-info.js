@@ -9,13 +9,12 @@ import '../style/activities-widget.css';
 
 
 class ActivityActionInfo extends React.Component {
-
-  static FORMAT = 'YYYY-MM-DD HH:mm';
-
   static propTypes = {
     activity: PropTypes.object,
     actionTitle: PropTypes.string
   };
+
+  static FORMAT = 'YYYY-MM-DD HH:mm';
 
   render() {
     const {activity, actionTitle} = this.props;

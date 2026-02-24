@@ -1,0 +1,63 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: youtrackjetbrains\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: youtrackjetbrains\n"
+"X-Crowdin-Project-ID: 295498\n"
+"X-Crowdin-Language: de\n"
+"X-Crowdin-File: /widgets/hub-project-team-widget/default.pot\n"
+"X-Crowdin-File-ID: 28502\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"PO-Revision-Date: 2023-07-28 12:24\n"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:116
+msgid "January|February|March|April|May|June|July|August|September|October|November|December"
+msgstr "Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:115
+msgid "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec"
+msgstr "Jan|Feb|Mär|Apr|Mai|Jun|Jul|Aug|Sep|Okt|Nov|Dez"
+
+#: src/app/app.js:202
+msgid "Select a project"
+msgstr "Projekt auswählen"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:114
+msgid "Sunday|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday"
+msgstr "Sonntag|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:113
+msgid "Sun|Mon|Tue|Wed|Thu|Fri|Sat"
+msgstr "So|Mo|Di|Mi|Do|Fr|Sa"
+
+#: src/app/app.js:213
+msgid "The {{projectName}} project team doesn't have any members"
+msgstr "Das {{projectName}}-Projektteam hat keine Mitglieder"
+
+#: src/app/app.js:217
+msgid "This project team doesn't have any members"
+msgstr "Dieses Projektteam hat keine Mitglieder"
+
+#: src/app/app.js:230
+msgid "You don't have permission to view basic profile data for other users"
+msgstr "Sie sind nicht berechtigt, die grundlegenden Profildaten anderer Benutzer einzusehen"
+
+#: src/app/app.js:229
+msgid "You don't have permission to view basic project data"
+msgstr "Sie sind nicht berechtigt, die grundlegenden Projektdaten einzusehen"
+
+#: node_modules/hub-dashboard-addons/components/localization/src/localization.js:117
+msgid "am|pm"
+msgstr "AM|PM"
+
+#: src/app/app.js:285
+msgid "project owner"
+msgstr "Projektbesitzer"
+
+#: src/app/app.js:296
+msgid "team"
+msgstr "Team"
+

@@ -1,6 +1,16 @@
 const {validateNotEmpty} = require('../../utils');
 const {PERMISSIONS} = require('../../consts');
 
+// If Enhanced DX flow is invoked, skip legacy prompts entirely.
+// We detect it by presence of a sub-command token 'enhanced-dx' or explicit flags passed from index.js (e.g., --ytScope/--edx).
+const argv = process.argv || [];
+const isEnhancedDX = !!process.env.EDX || argv.includes('enhanced-dx') || argv.includes('--ytScope') || argv.includes('--edx');
+
+if (isEnhancedDX) {
+  module.exports = [];
+  return;
+}
+
 module.exports = [
   {
     type: "input",

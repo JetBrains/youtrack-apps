@@ -1,0 +1,75 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: a7446adbb853c41eeb8eaf77c95f351b\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Crowdin-Project: a7446adbb853c41eeb8eaf77c95f351b\n"
+"X-Crowdin-Project-ID: 137\n"
+"X-Crowdin-Language: zh-CN\n"
+"X-Crowdin-File: /widgets/documents-list-widget/default.pot\n"
+"X-Crowdin-File-ID: 1172881\n"
+"Language-Team: Chinese Simplified\n"
+"Language: zh_CN\n"
+"PO-Revision-Date: 2025-10-22 11:16\n"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:131
+msgid "Add another tab"
+msgstr "添加其他标签页"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:62
+msgid "Article"
+msgstr "文章"
+
+#: src/widgets/documents-list-widget/components/documents-list-widget.tsx:56
+msgid "Document List"
+msgstr "文档列表"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:111
+msgid "Document type"
+msgstr "文档类型"
+
+#: src/widgets/documents-list-widget/components/documents-list/document-list.tsx:53
+msgid "Edit search query"
+msgstr "编辑搜索查询"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:103
+msgid "Enter a name for this tab"
+msgstr "为此标签页输入名称"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:122
+msgid "Enter search request"
+msgstr "输入搜索请求"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:61
+msgid "Issue"
+msgstr "问题"
+
+#: src/widgets/documents-list-widget/components/article-list/article-list.tsx:84
+msgid "No articles found"
+msgstr "未找到文章"
+
+#: src/widgets/documents-list-widget/components/issue-list/issue-list.tsx:109
+msgid "No issues found"
+msgstr "找不到问题"
+
+#: src/widgets/documents-list-widget/hub-widget-ui/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "哎呀，出了些问题…"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:138
+msgid "Remove this tab"
+msgstr "移除此标签页"
+
+#: src/widgets/documents-list-widget/components/configuration/config.tsx:100
+msgid "Set a custom title for this widget (optional)"
+msgstr "为此微件设置自定义标题(可选)"
+
+#: src/widgets/documents-list-widget/components/documents-list/document-list.tsx:71
+msgid "Show more"
+msgstr "显示更多"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:102
+msgid "Tab name"
+msgstr "标签页名称"
+

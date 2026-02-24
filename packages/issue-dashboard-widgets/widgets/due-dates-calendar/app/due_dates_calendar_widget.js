@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable complexity */
 /* eslint-disable react/no-access-state-in-setstate */
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -38,9 +40,6 @@ const ASSIGNEE_FIELD_NAME = 'Assignee';
 const MIDDAY = 12;
 
 class DueDatesCalendarWidget extends React.Component {
-  static DEFAULT_REFRESH_PERIOD = 240; // eslint-disable-line no-magic-numbers
-
-
   static digitToUnicodeSuperScriptDigit = digitSymbol => {
     const unicodeSuperscriptDigits = [
       0x2070, 0x00B9, 0x00B2, 0x00B3, 0x2074, // eslint-disable-line no-magic-numbers
@@ -154,6 +153,8 @@ class DueDatesCalendarWidget extends React.Component {
     this.initialize(this.props.dashboardApi);
   }
 
+  static DEFAULT_REFRESH_PERIOD = 240; // eslint-disable-line no-magic-numbers
+
   initialize = async dashboardApi => {
     this.setState({isLoading: true});
     await this.props.configWrapper.init();
@@ -205,7 +206,6 @@ class DueDatesCalendarWidget extends React.Component {
     const refreshPeriod =
           this.props.configWrapper.getFieldValue('refreshPeriod');
     const title = this.props.configWrapper.getFieldValue('title');
-    const date = this.props.configWrapper.getFieldValue('date');
     const view = this.props.configWrapper.getFieldValue('view');
 
 
@@ -304,11 +304,13 @@ class DueDatesCalendarWidget extends React.Component {
       scheduleField, eventEndField, colorField, isDateAndTime
     } = formParameters;
 
+
+    const effectiveEventEndField = eventEndField || scheduleField;
     this.setYouTrack(
       selectedYouTrack, async () => {
         this.setState(
           {search: search || '',
-            context, title, scheduleField, eventEndField,
+            context, title, scheduleField, eventEndField: effectiveEventEndField,
             refreshPeriod, colorField, isDateAndTime},
           async () => {
             await this.loadIssues();
@@ -318,7 +320,7 @@ class DueDatesCalendarWidget extends React.Component {
               title,
               refreshPeriod,
               scheduleField,
-              eventEndField,
+              eventEndField: effectiveEventEndField,
               colorField,
               isDateAndTime,
               youTrack: {
@@ -616,7 +618,7 @@ class DueDatesCalendarWidget extends React.Component {
     }
   };
 
-  moveEvent = async ({event, start, end}) => {
+  moveEvent = async ({event, start}) => {
     const {events} = this.state;
     const prevEvents = events;
     //calculate correct end to avoid issue with event prolongation on drag
@@ -633,7 +635,7 @@ class DueDatesCalendarWidget extends React.Component {
 
     try {
       // update start date
-      const newStartTime = this.state.isDateAndTime? start.getTime() : toUtcMidday(start);
+      const newStartTime = this.state.isDateAndTime ? start.getTime() : toUtcMidday(start);
       await updateIssueScheduleField(
         this.fetchYouTrack,
         event.dbIssueId,

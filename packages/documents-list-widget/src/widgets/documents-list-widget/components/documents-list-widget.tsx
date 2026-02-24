@@ -3,7 +3,7 @@ import Config from './configuration/config';
 import Content from './content/content';
 import ConfigurableWidget from '../hub-widget-ui/configurable-widget/configurable-widget';
 import useRefreshTimer from '../hub-widget-ui/timer/timer/useRefreshTimer';
-import {i18n} from '@jetbrains/youtrack-apps-tools/dist/lib/i18n/i18n';
+import {i18n} from '@lib/i18n/i18n';
 import WidgetContext from '../widget-context';
 import {DEFAULT_REFRESH_PERIOD_SEC, useWidget} from '../hooks/useWidget';
 
@@ -53,7 +53,7 @@ const DocumentsListWidget = () => {
     return null;
   }
 
-  const widgetTitle = isConfiguring ? i18n('Documents List') : config.title;
+  const widgetTitle = isConfiguring ? i18n('Document List') : config.title;
 
   return (
     <WidgetContext.Provider value={{api, appsApi}}>

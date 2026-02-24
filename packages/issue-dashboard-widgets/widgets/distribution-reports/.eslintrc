@@ -12,6 +12,8 @@
     "node": true
   },
   "rules": {
-    "react/jsx-no-bind": "off"
+    "react/jsx-no-bind": "off",
+    "react/no-deprecated": "off",
+    "react/sort-comp": "off"
   }
 }

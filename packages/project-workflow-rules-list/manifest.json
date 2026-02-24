@@ -1,0 +1,23 @@
+{
+  "name": "project-workflows",
+  "title": "Workflow Rule Manager",
+  "description": "This app helps you manage workflow rules in your projects, all in one place: \n<ul><li>Set the order for running on-change rules.</li><li>Review rule requirement errors.</li><li>Activate and deactivate rules directly in the list.</li><li>Open rules in the built-in JavaScript editor.</li></ul>",
+  "version": "0.0.6",
+  "minYouTrackVersion": "2025.3.0",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "vendor": {
+    "name": "JetBrains s.r.o",
+    "url": "https://www.jetbrains.com"
+  },
+  "icon": "icon.svg",
+  "widgets": [
+    {
+      "key": "all-workflow-rules",
+      "name": "Workflow Rules",
+      "indexPath": "workflow-rules-widget/index.html",
+      "extensionPoint": "PROJECT_SETTINGS",
+      "description": "Adds a dedicated tab to the project settings where you can view and manage workflow rules in a flat list. Set the order for running on-change rules based on their priority. Review rule requirement errors. Activate and deactivate rules directly in the list. Open rules in the built-in JavaScript editor.",
+      "iconPath": "workflow-rules-widget/widget-icon.svg"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+@value unit, font, font-size, font-size-smaller, borders-color, border-hover-color from "@jetbrains/ring-ui/components/global/global.css";
+
+:global(.widget-body) {
+  margin: 0;
+  padding: calc(unit * 2);
+
+  color: var(--ring-text-color);
+  background: var(--ring-content-background-color);
+
+  font-size: font-size;
+}
+
+.widget {
+  composes: font;
+
+  margin: 0;
+  padding: 0;
+}
+
+.widgetFooter.widgetFooter {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  background: var(--ring-content-background-color);
+}
+
+.userMultiTable {
+  padding-bottom: calc(unit * 6);
+}
+
+.property-table {
+  margin-top: calc(unit * 2);
+}
+
+.loadMoreButton {
+  text-align: center;
+
+  border: 1px dashed borders-color;
+  border-radius: 3px;
+
+  font-size: font-size-smaller;
+}
+
+.loadMoreButton:hover {
+  border-color: border-hover-color;
+}
+
+.searchUserPanel {
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  left: 0;
+
+  padding: 12px calc(2 * unit) unit calc(2 * unit);
+
+  background: var(--ring-content-background-color);
+
+  box-shadow: 0 6px 9px -9px borders-color;
+}
+
+.searchUserList {
+  margin-top: calc(3 * unit);
+}
+
+.userTag {
+  display: inline !important;
+  overflow: hidden;
+
+  margin-top: 1px;
+  margin-left: calc(unit);
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-weight: normal;
+}
+
+.userInfo {
+  display: flex;
+
+  overflow: hidden;
+
+  align-items: center;
+
+  padding: unit 4px;
+}
+
+.userInfoAvatar {
+  cursor: pointer;
+}
+
+.userInfoContent {
+  padding-top: calc(unit / 2);
+  padding-left: calc(2 * unit);
+}
+
+.userNameLine {
+  margin-top: -10px;
+
+  white-space: nowrap;
+}
+
+.tableFirstColumn {
+  padding-left: 8px !important;
+}

@@ -5,44 +5,108 @@ to: README.md
 
 <%= description %>
 
-This YouTrack app was created with **Enhanced DX** features, providing a modern TypeScript development experience with type-safe APIs and file-based routing.
+This app uses the Enhanced DX template with TypeScript support, type-safe APIs, and file-based routing.
 
-## 🚀 Enhanced DX Features
+For comprehensive documentation, see [@jetbrains/youtrack-enhanced-dx-tools](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools).
 
-- **Type-safe API endpoints** with automatic type generation
-- **File-based routing** in `src/backend/router/`
-- **Zod schema validation** in development mode
-- **Automatic API client generation** with full TypeScript support
+## Table of Contents
 
-## 📁 Project Structure
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [Available Scripts](#available-scripts)
+- [Development Workflows](#development-workflows)
+- [Deployment](#deployment)
+- [Learn More](#learn-more)
+
+## Quick Start
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create `.env` file in project root:
+
+```bash
+YOUTRACK_HOST=https://your-youtrack.url
+YOUTRACK_TOKEN=perm:your-permanent-token
+```
+
+Get a permanent token: YouTrack profile → Account Security → New token. See [token management](https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html).
+
+3. Start development with watch mode:
+
+```bash
+npm run watch
+```
+
+This watches for changes and automatically uploads to YouTrack. No auto-reload, requires manual refresh.
+## Project Structure
 
 ```
 src/
-├── api/                    # Generated API client and types
-│   ├── index.ts           # Type-safe API client
-│   ├── api.d.ts           # Generated TypeScript definitions (auto-generated)
-│   └── api.zod.ts         # Generated Zod schemas (auto-generated)
+├── api/                          # Generated API client and types
+│   ├── index.ts                  # Type-safe API client
+│   ├── youtrack-types.d.ts       # YouTrack entity type shortcuts
+│   ├── api.d.ts                  # Generated route types (auto-generated)
+│   ├── api.zod.ts                # Generated Zod schemas (auto-generated)
+│   ├── app.d.ts                  # Generated app settings types (auto-generated)
+│   └── extended-entities.d.ts    # Generated extension property types (auto-generated)
 ├── backend/
-│   ├── router/            # File-based API routes
-│   │   ├── global/        # Global endpoints (no project/issue context)
-│   │   ├── project/       # Project-scoped endpoints
-│   │   └── issue/         # Issue-scoped endpoints
-│   ├── types/             # Backend type definitions
-│   └── requirements.ts    # YouTrack version requirements
-├── widgets/               # Your widget components
-└── app-id.ts             # App identifier
+│   ├── router/                   # File-based API routes
+│   │   ├── global/               # Global endpoints (no project/issue context)
+│   │   ├── project/              # Project-scoped endpoints
+│   │   └── issue/                # Issue-scoped endpoints
+│   ├── types/                    # Backend type definitions
+│   │   ├── backend.global.d.ts   # Global backend types and context types
+│   │   └── utility.d.ts          # Utility types for RPC extraction
+│   └── requirements.ts           # YouTrack fields and values that your app needs
+├── common/
+│   └── utils/
+│       └── logger.ts             # Logger utility for frontend components
+├── widgets/                      # Widget components
+└── app-id.ts                     # App identifier
 ```
 
-## 🛠 Development Workflow
+## Available Scripts
 
-### 1. Creating API Endpoints
+### Development
 
-Create endpoints by adding files in the `src/backend/router/` directory following this pattern:
-```
-src/backend/router/{scope}/{path}/{METHOD}.ts
-```
+- `npm run hmr` - Start Vite dev server for hot reload (frontend only, port 9000)
+- `npm run watch` - Watch mode with automatic rebuild and upload (recommended)
+- `npm run dev` - Watch mode with hot reload enabled (fastest for frontend development)
 
-Example: `src/backend/router/project/settings/GET.ts`
+### Building
+
+- `npm run build` - Full production build (backend → lint → frontend → validate)
+- `npm run build:nolint` - Build without linting (faster for testing)
+- `npm run build:backend` - Build backend only (generates API types)
+- `npm run build:frontend` - Build frontend only (requires backend types)
+- `npm run clean` - Remove generated API files
+
+### Deployment
+
+- `npm run upload-local` - Upload using `.env` credentials
+- `npm run update` - Quick build + upload
+- `npm run dev:upload` - Build and upload dev-mode bundle (for hot reload setup)
+
+### Scaffolding
+
+- `npm run g -- handler <scope>/<path>` - Generate a new HTTP handler (e.g. `npm run g -- handler project/settings`)
+- `npm run g -- property <Entity.field>` - Generate a new entity extension property (e.g. `npm run g -- property Issue.myField`)
+- `npm run g -- settings add --name <key> --type <type>` - Add an app settings field
+
+### Maintenance
+
+- `npm run lint` - Run ESLint
+- `npm run pack` - Create distributable ZIP file
+
+## Development Workflows
+
+### Creating API Endpoints
+
+Create files in `src/backend/router/{scope}/{path}/{METHOD}.ts`:
 
 ```typescript
 /**
@@ -58,97 +122,177 @@ export type ProjectSettingsReq = {
 export type ProjectSettingsRes = {
     projectId: string;
     projectName: string;
-    settings: AppSettings;
 };
 
-export default function handle(ctx: CtxGet<ProjectSettingsReq, ProjectSettingsRes>): void {
+export default function handle(ctx: CtxGet<ProjectSettingsRes, ProjectSettingsReq, "project">): void {
     const { projectId } = ctx.request.query;
-    
+
     ctx.response.json({
         projectId,
-        projectName: ctx.project.name || 'Unknown Project',
-        settings: ctx.settings
+        projectName: ctx.project.name
     });
 }
 
 export type Handle = typeof handle;
 ```
 
-### 2. Using the Type-Safe API Client
+See [HTTP Handler Development](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#http-handler-development) for complete documentation.
 
-In your widgets, import and use the generated API client:
+### Using the API Client
+
+In widgets:
 
 ```typescript
 import { createApi } from '../api';
 import type { ApiRouter } from '../api/api';
 
-// In your component
 const api = createApi<ApiRouter>(host);
-
-// Type-safe API calls with automatic validation in development
 const settings = await api.project.settings.GET({ projectId: 'ABC-123' });
-const health = await api.global.health.GET({});
 ```
 
-### 3. Automatic Type Generation
+See [API Client](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#api-client) documentation.
 
-Types and Zod schemas are automatically generated when you build:
+### Watch Mode
 
-- `src/api/api.d.ts` - TypeScript type definitions
-- `src/api/api.zod.ts` - Zod validation schemas
+Automatically rebuilds and uploads on file changes:
 
-Use the `@zod-to-schema` comment above your type definitions to include them in validation.
+```bash
+npm run watch
+```
 
-## 📜 Available Scripts
+**What it does:**
+- Watches both backend and frontend files
+- Rebuilds on changes (backend generates types first if needed)
+- Auto-uploads to YouTrack after each successful build
+- Frontend builds as static bundles
 
-- `npm run dev` - Start development server
-- `npm run build` - Build both backend and frontend
-- `npm run build:backend` - Build backend only (generates types)
-- `npm run build:frontend` - Build frontend only
-- `npm run clean` - Clean generated API files
-- `npm run lint` - Run ESLint
-- `npm run upload` - Upload to YouTrack
+**Scenarios:**
+- Frontend-only changes
+- Backend implementation
+- Backend type changes: rebuilds frontend too
 
-## 🔧 Configuration
+See [Watch Mode with Auto-Upload](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#watch-mode-with-auto-upload) for details.
 
-### Adding Dependencies
+### Hot Reload (HMR)
 
-The enhanced DX setup includes these key dependencies:
-- `zod` - Runtime validation
-- `ts-morph` - TypeScript AST manipulation
-- `ts-to-zod` - Automatic Zod schema generation
-- `fast-glob` - File system globbing
-- `vite-tsconfig-paths` - TypeScript path mapping
+For instant frontend updates via Vite dev server:
 
-### Vite Plugins
+```bash
+npm run dev
+```
 
-Two custom Vite plugins power the enhanced DX:
-- `vite-plugin-youtrack-api-generator` - Generates TypeScript definitions and Zod schemas
-- `vite-plugin-youtrack-router` - Handles file-based routing and builds endpoints
+**What it does:**
+- One-time upload of dev-mode bundle (HTML points to localhost:9000)
+- Starts Vite dev server on port 9000
+- Watches backend with auto-upload
+- Frontend changes hot reload instantly (<1s) without rebuilding or uploading
 
-## 📚 API Routing
+**Use when:** Iterating on frontend UI/components AND backend.
 
-### Scopes
+See [Hot Reload Setup](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#hot-reload-setup) for complete guide.
 
-- **global**: Endpoints that don't require project or issue context
-- **project**: Endpoints that operate on a specific project (require `projectId`)
-- **issue**: Endpoints that operate on a specific issue (require `issueId`)
+### Logger Usage
 
-### HTTP Methods
+**In frontend components:**
 
-Supported methods: `GET`, `POST`, `PUT`, `DELETE`
+```typescript
+import { createComponentLogger } from '../common/utils/logger';
 
-### Context Types
+const logger = createComponentLogger('MyComponent');
 
-- `CtxGet<Query, Response>` - For GET requests
-- `CtxPost<Body, Response>` - For POST requests
+function MyComponent() {
+  logger.info('Component mounted');
+  logger.debug('Rendering with props', {}, props);
+  logger.error('Failed to load data', {}, error);
+}
+```
 
-## 🚀 Deployment
+**In backend handlers:**
 
-1. Build your app: `npm run build`
-2. Upload to YouTrack: `npm run upload -- --host https://your-youtrack.url --token your-token`
+Backend handlers use standard `console` for logging:
 
-## 📖 Learn More
+```typescript
+export default function handle(ctx: CtxGet<Response>) {
+  console.log('Processing request');
+  console.warn('Warning message');
+  console.error('Error occurred', error);
+}
+```
 
-- [YouTrack App Development Guide](https://www.jetbrains.com/help/youtrack/server/youtrack-apps.html)
-- [YouTrack Scripting API](https://www.jetbrains.com/help/youtrack/server/youtrack-scripting-api.html)
+View backend logs in: YouTrack → Administration → Apps → [Your App] → Technical Details → Open in editor / Download logs
+
+### Type Naming Convention
+
+Only types ending with `Req` and `Res` are exported to the API client:
+
+```typescript
+// Exported
+export type CreateProjectReq = { name: string };
+export type CreateProjectRes = { id: string };
+
+// NOT exported (missing suffix)
+export type ProjectData = { id: string };
+```
+
+## Deployment
+
+### Development
+
+```bash
+npm run update
+```
+
+### Production
+
+```bash
+# Build and upload
+npm run build
+npm run upload-local
+
+# Or upload with explicit credentials
+npm run upload -- --host https://your-youtrack.url --token perm:your-token
+
+# Or create ZIP for manual upload
+npm run pack
+```
+
+## Common Issues
+
+### `Cannot find module './api/api'`
+
+Types not generated. Run:
+
+```bash
+npm run build:backend
+```
+
+### Upload fails with "401 Unauthorized"
+
+- Check `.env` file exists with correct `YOUTRACK_HOST` and `YOUTRACK_TOKEN`
+- Verify token has not expired
+- Ensure token has app upload permissions
+
+### Changes not detected in watch mode
+
+- Save the file (Ctrl+S / Cmd+S)
+- Check file is in `src/` directory
+- Restart watch mode if needed
+
+### Hot reload shows blank page
+
+- Check Vite dev server is running (should start automatically with `npm run dev`)
+- Verify dev server on port 9000: `curl http://localhost:9000`
+- Check browser console for errors
+
+### ESLint / ts-to-zod "skipped" or "failed"
+
+- ESLint: `npm install -D eslint`
+- ts-to-zod: `npm install -D ts-to-zod`
+
+For more (env vars, port conflicts, upload errors), see [Troubleshooting Guide](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#troubleshooting).
+
+## Learn More
+
+- [Enhanced DX Tools Documentation](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools) - Complete guide to the library
+- [YouTrack App Development Guide](https://www.jetbrains.com/help/youtrack/devportal/apps-quick-start-guide.html) - Official YouTrack documentation
+- [YouTrack Scripting API](https://www.jetbrains.com/help/youtrack/devportal/YouTrack-Api-Documentation.html) - API reference

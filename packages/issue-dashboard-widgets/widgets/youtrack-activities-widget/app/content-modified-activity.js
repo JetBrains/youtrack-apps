@@ -17,8 +17,8 @@ class ContentModifiedActivity extends ContentDefaultActivity {
 
   // eslint-disable-next-line react/display-name,no-unused-vars
   renderContent = activity => {
-    const issue = activity.container;
-    const description = issue.trimmedDescription;
+    const issue = activity.container || activity.target;
+    const description = issue.trimmedDescription || issue.idReadable;
     return (
       <div>
         {

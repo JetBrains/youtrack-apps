@@ -41,14 +41,14 @@ const ToolbarComponent: FC<Props> = props => {
                 className={'picker'}
                 onChange={handleSetMin}
                 date={new Date(min)}
-                displayFormat={date => formatDate(date, datePattern)}
+                displayFormat={(date: Date) => formatDate(date, datePattern)}
             />
             <span className={'dash'}>{'—'}</span>
             <DatePicker
                 size={Size.AUTO}
                 onChange={handleSetMax}
                 date={new Date(max)}
-                displayFormat={date => formatDate(date, datePattern)}
+                displayFormat={(date: Date) => formatDate(date, datePattern)}
             />
         </div>
     );

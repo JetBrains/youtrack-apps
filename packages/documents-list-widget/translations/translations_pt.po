@@ -1,0 +1,75 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: a7446adbb853c41eeb8eaf77c95f351b\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: a7446adbb853c41eeb8eaf77c95f351b\n"
+"X-Crowdin-Project-ID: 137\n"
+"X-Crowdin-Language: pt-BR\n"
+"X-Crowdin-File: /widgets/documents-list-widget/default.pot\n"
+"X-Crowdin-File-ID: 1172881\n"
+"Language-Team: Portuguese, Brazilian\n"
+"Language: pt_BR\n"
+"PO-Revision-Date: 2025-10-22 11:16\n"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:131
+msgid "Add another tab"
+msgstr "Adicionar outra aba"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:62
+msgid "Article"
+msgstr "Artigo"
+
+#: src/widgets/documents-list-widget/components/documents-list-widget.tsx:56
+msgid "Document List"
+msgstr "Lista de documentos"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:111
+msgid "Document type"
+msgstr "Tipo de documento"
+
+#: src/widgets/documents-list-widget/components/documents-list/document-list.tsx:53
+msgid "Edit search query"
+msgstr "Editar pesquisa"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:103
+msgid "Enter a name for this tab"
+msgstr "Insira um nome para esta aba"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:122
+msgid "Enter search request"
+msgstr "Digite a pesquisa"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:61
+msgid "Issue"
+msgstr "Issue"
+
+#: src/widgets/documents-list-widget/components/article-list/article-list.tsx:84
+msgid "No articles found"
+msgstr "Nenhum artigo encontrado"
+
+#: src/widgets/documents-list-widget/components/issue-list/issue-list.tsx:109
+msgid "No issues found"
+msgstr "Nenhuma issue encontrada"
+
+#: src/widgets/documents-list-widget/hub-widget-ui/http-error-handler/http-error-handler.js:4
+msgid "Oops! Something went wrong..."
+msgstr "Oops! Algo deu errado..."
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:138
+msgid "Remove this tab"
+msgstr "Remover esta aba"
+
+#: src/widgets/documents-list-widget/components/configuration/config.tsx:100
+msgid "Set a custom title for this widget (optional)"
+msgstr "Defina um título personalizado para este widget (opcional)"
+
+#: src/widgets/documents-list-widget/components/documents-list/document-list.tsx:71
+msgid "Show more"
+msgstr "Mostrar mais"
+
+#: src/widgets/documents-list-widget/components/configuration/config-tab.tsx:102
+msgid "Tab name"
+msgstr "Nome da aba"
+

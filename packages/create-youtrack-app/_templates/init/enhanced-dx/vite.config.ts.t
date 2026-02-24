@@ -2,10 +2,14 @@
 to: vite.config.ts
 ---
 import { resolve, dirname } from "node:path";
+import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import { defineConfig } from "vite";
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from "vite-plugin-static-copy";
+import { youtrackAutoUpload, youtrackDevHtml, backendReloadPlugin } from '@jetbrains/youtrack-enhanced-dx-tools';
+
+const isServing = process.argv.includes('--mode') === false && !process.argv.includes('build');
 
 /*
       See https://vitejs.dev/config/
@@ -22,10 +26,62 @@ const dropCrossoriginAttributePlugin = () => {
   };
 };
 
+const watchStaticJsonPlugin = () => ({
+  name: 'watch-static-json',
+  buildStart() {
+    // Ensure frontend rebuilds (and re-copies via viteStaticCopy) when these files change
+    const jsonFiles = ['settings.json'].map(f => resolve(currentDir, 'src', f));
+    for (const f of jsonFiles) {
+      if (fs.existsSync(f)) this.addWatchFile(f);
+    }
+  }
+});
+
+const cleanAssetsPlugin = () => {
+  return {
+    name: "clean-assets-on-watch",
+    apply: 'build' as const,
+
+    async buildStart() {
+      // Only clean in watch mode to avoid duplicate artifacts
+      if (this.meta.watchMode) {
+        const fs = await import('node:fs');
+        const path = await import('node:path');
+
+        const assetsDir = path.resolve(currentDir, 'dist/widgets/assets');
+
+        if (fs.existsSync(assetsDir)) {
+          fs.rmSync(assetsDir, { recursive: true, force: true });
+          console.log('[clean-assets] Cleaned old artifacts');
+        }
+      }
+    }
+  };
+};
+
 export default defineConfig({
+  optimizeDeps: {
+    exclude: ['@jetbrains/youtrack-enhanced-dx-tools']
+  },
+  ssr: {
+    noExternal: [],
+    external: ['@jetbrains/youtrack-enhanced-dx-tools']
+  },
   plugins: [
-    react(),
+    // Clean old frontend assets before each rebuild in watch mode
+    cleanAssetsPlugin(),
+    watchStaticJsonPlugin(),
+    // Only use React plugin during build, not during dev server
+    // (Fast Refresh doesn't work in iframe/YouTrack context)
+    ...(!isServing ? [react()] : []),
+    // Watch for backend changes and trigger full reload in dev server
+    ...(isServing ? [backendReloadPlugin()] : []),
     dropCrossoriginAttributePlugin(),
+    youtrackDevHtml({
+      enabled: process.env.DEV_MODE === 'true',
+      devServerPort: 9000
+    }),
+    youtrackAutoUpload({ enabled: process.env.AUTOUPLOAD === 'true', buildName: 'frontend' }),
     viteStaticCopy({
       targets: [
         {
@@ -40,10 +96,8 @@ export default defineConfig({
           src: "../public/*.*",
           dest: ".",
         },
-        {
-          src: "backend/*.*",
-          dest: ".",
-        },
+        // Note: Backend JS files are already in dist/ from backend build
+        // No need to copy them - frontend build has emptyOutDir: false
       ],
     }),
     viteStaticCopy({
@@ -64,22 +118,42 @@ export default defineConfig({
       }
   },
   server: {
-    port: 9099
+    port: 9000,
+    cors: {
+      origin: '*',
+      credentials: true
+    },
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+      'Cross-Origin-Resource-Policy': 'cross-origin'
+    }
   },
   root: "./src",
   base: "",
   publicDir: "public",
   build: {
     outDir: "../dist",
-    emptyOutDir: false,
+    emptyOutDir: false, // Keep backend files, but manually clean assets in watch mode
     copyPublicDir: false,
     target: ["es2022"],
     assetsDir: "widgets/assets",
+    // Frontend widget files are always minified (they're bundled code, not explorable)
+    minify: true,
     rollupOptions: {
       input: {
         // List every widget entry point here
-        enhancedDX: resolve(__dirname, 'src/widgets/enhanced-dx/index.html'),
+        enhancedDX: resolve(currentDir, 'src/widgets/enhanced-dx/index.html'),
       },
+      external: [
+        // Exclude Vite plugins and their Node.js dependencies from bundling
+        '@jetbrains/youtrack-enhanced-dx-tools',
+        'child_process',
+        'fs-extra',
+        'node:path',
+        'node:fs',
+        'fast-glob',
+        'ts-morph'
+      ]
     },
   },
 });

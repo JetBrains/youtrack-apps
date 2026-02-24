@@ -6,9 +6,14 @@ console.log('inject manifest')
 
 function injectWidget(newWidget, cwd) {
   const fileName = "manifest.json";
-  const filePath = path.join(process.cwd(), cwd, fileName);
+  // path.resolve handles both absolute cwd (tests/CI) and relative cwd (npm scripts)
+  const filePath = path.resolve(process.cwd(), cwd || '', fileName);
 
   const manifest = JSON.parse(fs.readFileSync(filePath));
+
+  if (manifest.widgets && manifest.widgets.some(w => w.key === newWidget.key)) {
+    throw new Error(`Widget with key "${newWidget.key}" already exists in manifest.json`);
+  }
 
   manifest.widgets.push(newWidget);
 

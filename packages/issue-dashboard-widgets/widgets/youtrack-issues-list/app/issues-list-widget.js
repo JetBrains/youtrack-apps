@@ -13,11 +13,6 @@ import './style/issues-list-widget.css';
 import Content from './content';
 
 class IssuesListWidget extends React.Component {
-
-  static COUNTER_POLLING_PERIOD_SEC = 240; // eslint-disable-line no-magic-numbers
-  static COUNTER_POLLING_PERIOD_MLS = 60000; // eslint-disable-line no-magic-numbers
-  static DEFAULT_REFRESH_PERIOD_SEC = 600; // eslint-disable-line no-magic-numbers
-
   static digitToUnicodeSuperScriptDigit = digitSymbol => {
     const unicodeSuperscriptDigits = [
       0x2070, 0x00B9, 0x00B2, 0x00B3, 0x2074, // eslint-disable-line no-magic-numbers
@@ -127,6 +122,10 @@ class IssuesListWidget extends React.Component {
   componentWillUnmount = () => {
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
   }
+
+  static COUNTER_POLLING_PERIOD_SEC = 240; // eslint-disable-line no-magic-numbers
+  static COUNTER_POLLING_PERIOD_MLS = 60000; // eslint-disable-line no-magic-numbers
+  static DEFAULT_REFRESH_PERIOD_SEC = 600; // eslint-disable-line no-magic-numbers
 
   initialize = async dashboardApi => {
     document.addEventListener('visibilitychange', this.onVisibilityChange);
