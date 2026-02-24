@@ -927,16 +927,26 @@ To add app settings later, run: ${styleText("magenta", 'npx @jetbrains/create-yo
 ====================================
   `);
 
+  const toolsPackageDir = path.join(__dirname, '..', 'youtrack-enhanced-dx-tools');
+  const isLocalWorkspace = fs.existsSync(toolsPackageDir);
+
   console.log(`
 ${styleText("bold", '======= Your app has been created! =======')}
 
-Please wait for just a moment. Dependencies are being installed by npm ${styleText("magenta", 'npm install')}:
+Please wait for just a moment. Dependencies are being installed:
 `);
 
-
-  const installProcess = execa("npm", ["link", "@jetbrains/youtrack-enhanced-dx-tools"], {cwd});
-  installProcess.stdout.pipe(process.stdout);
-  await installProcess;
+  if (isLocalWorkspace) {
+    // Running from a local monorepo clone — link the local build instead of pulling from npm
+    const installProcess = execa("npm", ["link", "@jetbrains/youtrack-enhanced-dx-tools"], {cwd});
+    installProcess.stdout.pipe(process.stdout);
+    await installProcess;
+  } else {
+    // Running from npm — install dependencies from the registry
+    const installProcess = execa("npm", ["install"], {cwd});
+    installProcess.stdout.pipe(process.stdout);
+    await installProcess;
+  }
 
   // No explicit build of @jetbrains/youtrack-enhanced-dx-tools here.
   // The tools are consumed as Vite plugins and will be resolved/compiled by the app toolchain during dev/build.
@@ -948,7 +958,7 @@ Please wait for just a moment. Dependencies are being installed by npm ${styleTe
 ${styleText("bold", '🚀 Enhanced DX Features:')}
 - Type-safe API endpoints with automatic type generation
 - File-based routing in src/backend/router/
-- Zod schema validation in development
+- Zod schema validation at runtime
 - Example endpoints: /global/health, /project/settings, /issue/metadata
 
 ${styleText("bold", 'Development workflow:')}

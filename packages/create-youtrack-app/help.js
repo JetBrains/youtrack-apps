@@ -32,6 +32,12 @@ ${styleText("bold", 'Usage:')}
 ${styleText("bold", 'Code Generation:')}
 Inside an enhanced-dx app, use ${styleText("magenta", 'npm run generate')} (or ${styleText("magenta", 'npm run g')}) to add features:
 
+${styleText("bold", 'Widgets:')}
+  ${styleText("magenta", 'npm run g -- widget --key my-panel --extension-point ISSUE_BELOW_SUMMARY')}
+  ${styleText("magenta", 'npm run g -- widget --key admin-page --extension-point MAIN_MENU_ITEM --name "Admin Page"')}
+  ${styleText("dim", '# Creates src/widgets/<key>/ and injects entry into manifest.json')}
+  ${styleText("dim", '# Extension points: MAIN_MENU_ITEM, DASHBOARD_WIDGET, ISSUE_BELOW_SUMMARY, PROJECT_SETTINGS, ...')}
+
 ${styleText("bold", 'HTTP Handlers:')}
   ${styleText("magenta", 'npm run g -- handler global/health')}              ${styleText("dim", '# GET handler (default)')}
   ${styleText("magenta", 'npm run g -- handler project/users --method POST')} ${styleText("dim", '# POST handler')}
