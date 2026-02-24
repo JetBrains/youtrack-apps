@@ -958,7 +958,7 @@ Please wait for just a moment. Dependencies are being installed:
 ${styleText("bold", '🚀 Enhanced DX Features:')}
 - Type-safe API endpoints with automatic type generation
 - File-based routing in src/backend/router/
-- Zod schema validation at runtime
+- Zod schema validation in dev builds (tree-shaken from production)
 - Example endpoints: /global/health, /project/settings, /issue/metadata
 
 ${styleText("bold", 'Development workflow:')}

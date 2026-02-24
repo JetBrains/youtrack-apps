@@ -11,6 +11,7 @@ export const createApi = <T extends ApiRouter>(host: HostAPI) => {
   return createApiBase<T>(host, {
     appId,
     loggerFactory: (scope) => createApiLogger(scope),
-    zodImport: () => import('./api.zod')
+    // Only validate in dev builds — tree-shakes api.zod.ts out of production bundles
+    zodImport: import.meta.env.DEV ? () => import('./api.zod') : undefined
   });
 };

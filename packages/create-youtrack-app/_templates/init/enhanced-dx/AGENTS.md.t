@@ -229,7 +229,7 @@ If a route is missing from `api`, rebuild the backend — the types are stale.
 npm run watch
 ```
 
-Watches both backend and frontend, auto-uploads to YouTrack on every successful rebuild. No hot reload — refresh the YouTrack page after upload.
+Watches both backend and frontend, auto-uploads to YouTrack on every successful rebuild. No hot reload — refresh the YouTrack page after upload. Frontend is built in development mode so Zod validation is active.
 
 ### Faster frontend iteration: dev mode with HMR
 
