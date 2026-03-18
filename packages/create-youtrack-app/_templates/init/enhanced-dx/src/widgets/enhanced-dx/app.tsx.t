@@ -73,14 +73,13 @@ const AppComponent: React.FunctionComponent = () => {
 
   const testValidation = useCallback(async () => {
     setLoading(true);
+    const invalidTestData = {
+      message: 123, // eslint-disable-line no-magic-numbers -- intentional wrong type for validation test
+      metadata: "invalid string",
+    };
     try {
-      const invalidData = {
-        message: 123,
-        metadata: "invalid string",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- intentionally invalid data to test Zod validation
-      } as any;
-
-      const invalidResponse = await api.global.echo.POST(invalidData);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- intentionally invalid data to test Zod validation
+      const invalidResponse = await api.global.echo.POST(invalidTestData as any);
       logger.debug('Validation test result:', {action: 'validation-test'}, invalidResponse);
       setResponse(formatJson(invalidResponse));
     } catch (error) {
@@ -92,10 +91,7 @@ const AppComponent: React.FunctionComponent = () => {
         message: errorMessage,
         timestamp: new Date().toISOString(),
         note: 'Zod validation caught invalid types at runtime',
-        testData: {
-          message: 123,
-          metadata: "invalid string"
-        }
+        testData: invalidTestData,
       };
 
       setResponse(formatJson(errorResponse));
