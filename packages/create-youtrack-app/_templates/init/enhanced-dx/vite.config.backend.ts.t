@@ -4,7 +4,6 @@ to: vite.config.backend.ts
 import {defineConfig} from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { youtrackApiGenerator, youtrackRouter, youtrackExtensionProperties, youtrackAppSettings, youtrackAutoUpload } from '@jetbrains/youtrack-enhanced-dx-tools';
-import path from 'node:path';
 
 
 export default defineConfig({

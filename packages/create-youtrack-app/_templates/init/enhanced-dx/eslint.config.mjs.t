@@ -21,7 +21,15 @@ const compat = new FlatCompat({
 export default tseslint.config(
   { files: ["**/*.{js,cjs,ts,tsx}"] },
   {
-    ignores: ["**/dist", "eslint.config.mjs"],
+    ignores: [
+      "**/dist",
+      "eslint.config.mjs",
+      // Generated files — rebuilt on every backend build, never hand-edited
+      "src/api/api.d.ts",
+      "src/api/api.zod.ts",
+      "src/api/app.d.ts",
+      "src/api/extended-*.d.ts",
+    ],
   },
   ...fixupConfigRules(
     compat.extends(
@@ -66,7 +74,15 @@ export default tseslint.config(
       }], // Allow @ts-ignore with description
       "@typescript-eslint/no-non-null-assertion": "warn", // Downgrade from error
       "import/no-unresolved": "off", // Vite handles this
-      "import/extensions": "off" // Not needed with Vite
+      "import/extensions": "off", // Not needed with Vite
+      "new-cap": "off", // API methods like .GET() .POST() are uppercase by convention
+      "no-magic-numbers": "off", // Too strict for app code
+    }
+  },
+  {
+    files: ["vite-plugin-*.ts", "vite.config*.ts"],
+    rules: {
+      "complexity": "off",
     }
   },
   {

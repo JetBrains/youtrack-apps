@@ -205,11 +205,11 @@ export default function youtrackAppSettings(): Plugin {
   const generateTypes = async () => {
     let settingsType = 'Record<string, unknown>';
     const extensionTypes: Record<string, string> = {
-      issueExtensions: '{}',
-      projectExtensions: '{}',
-      articleExtensions: '{}',
-      userExtensions: '{}',
-      appGlobalStorageExtensions: '{}'
+      issueExtensions: 'Record<string, never>',
+      projectExtensions: 'Record<string, never>',
+      articleExtensions: 'Record<string, never>',
+      userExtensions: 'Record<string, never>',
+      appGlobalStorageExtensions: 'Record<string, never>'
     };
     
     const imports = new Set<string>();
