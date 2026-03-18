@@ -32,7 +32,7 @@ export default function handle(ctx: CtxGet<ProjectDemoRes, ProjectDemoReq, "proj
             id: project.key,
             name: project.name,
             shortName: project.shortName,
-            description: project.description,
+            description: project.description ?? undefined,
         },
         message,
         timestamp: Date.now(),
