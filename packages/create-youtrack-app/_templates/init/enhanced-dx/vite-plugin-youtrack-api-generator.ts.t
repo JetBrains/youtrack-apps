@@ -55,9 +55,10 @@ const processRouteFile = async (
   if (!allTypes.has(importPath)) {
     allTypes.set(importPath, { namespaceImports: new Set(), namedImports: new Set() });
   }
-  const typeInfo = allTypes.get(importPath)!;
-  // Import the full module as a namespace to access Req/Res exports
-  typeInfo.namespaceImports.add(handlerName);
+  const typeInfo = allTypes.get(importPath);
+  if (typeInfo) {
+    typeInfo.namespaceImports.add(handlerName);
+  }
 };
 
 const formatApiStructure = (obj: ApiStructureNode): string => {

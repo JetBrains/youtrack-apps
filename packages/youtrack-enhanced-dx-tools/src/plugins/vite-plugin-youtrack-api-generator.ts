@@ -245,7 +245,14 @@ const generateZodSchemas = async (routeFiles: string[]) => {
           cwd: process.cwd()
         });
 
-        const generatedContent = await fs.readFile(apiZodPath, 'utf8');
+        let generatedContent = await fs.readFile(apiZodPath, 'utf8');
+
+        // ts-to-zod generates Zod v3-style z.record(valueSchema) calls, but
+        // Zod v4 removed the single-argument overload. Patch to z.record(z.string(), valueSchema).
+        generatedContent = generatedContent.replace(
+          /z\.record\((?!z\.string\(\))/g,
+          'z.record(z.string(), '
+        );
 
         const buildNestedSchema = (mapping: typeof schemaMapping) => {
           const result: Record<string, any> = {};

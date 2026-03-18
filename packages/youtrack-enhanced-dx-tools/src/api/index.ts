@@ -115,7 +115,7 @@ const routeApiCall = async (
   if (method === 'GET' || method === 'DELETE') {
     fetchOptions.query = data;
   } else if (method === 'POST' || method === 'PUT') {
-    fetchOptions.body = JSON.stringify(data);
+    fetchOptions.body = data;
   }
 
   if (needsScope) {

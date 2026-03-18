@@ -32,7 +32,9 @@ const watchStaticJsonPlugin = () => ({
     // Ensure frontend rebuilds (and re-copies via viteStaticCopy) when these files change
     const jsonFiles = ['settings.json'].map(f => resolve(currentDir, 'src', f));
     for (const f of jsonFiles) {
-      if (fs.existsSync(f)) this.addWatchFile(f);
+      if (fs.existsSync(f)) {
+        this.addWatchFile(f);
+      }
     }
   }
 });
@@ -45,13 +47,13 @@ const cleanAssetsPlugin = () => {
     async buildStart() {
       // Only clean in watch mode to avoid duplicate artifacts
       if (this.meta.watchMode) {
-        const fs = await import('node:fs');
-        const path = await import('node:path');
+        const nodeFs = await import('node:fs');
+        const nodePath = await import('node:path');
 
-        const assetsDir = path.resolve(currentDir, 'dist/widgets/assets');
+        const assetsDir = nodePath.resolve(currentDir, 'dist/widgets/assets');
 
-        if (fs.existsSync(assetsDir)) {
-          fs.rmSync(assetsDir, { recursive: true, force: true });
+        if (nodeFs.existsSync(assetsDir)) {
+          nodeFs.rmSync(assetsDir, { recursive: true, force: true });
           console.log('[clean-assets] Cleaned old artifacts');
         }
       }
