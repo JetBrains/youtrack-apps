@@ -145,6 +145,13 @@ export class UploadCoordinator {
         return;
       }
 
+      // Verify dist/ is coherent before uploading
+      const manifestPath = path.resolve(this.cwd, 'dist', 'manifest.json');
+      if (!(await fs.pathExists(manifestPath))) {
+        console.log('[upload-coordinator] Waiting for dist/manifest.json (frontend build may still be in progress)...');
+        return;
+      }
+
       // Determine if backend changed
       const backendChanged = currentState.backend?.hash !== this.lastUploadedState.backend?.hash;
 

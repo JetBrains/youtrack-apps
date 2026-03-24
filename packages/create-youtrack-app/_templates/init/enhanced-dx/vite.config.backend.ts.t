@@ -24,7 +24,7 @@ export default defineConfig({
     ],
     build: {
         outDir: './dist',
-        emptyOutDir: true, // empty dist dir, as backend build runs first
+        emptyOutDir: !process.argv.includes('--watch'), // clean dist/ on fresh builds, preserve it in watch mode
         // Backend files should NOT be minified for easier debugging in workflow editor
         minify: false,
         lib: {
