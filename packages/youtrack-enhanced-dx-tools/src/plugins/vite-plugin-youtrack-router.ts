@@ -10,6 +10,43 @@ type Route = {
   filePath: string;
 };
 
+/**
+ * Find the line index of the handler function inside a Rollup bundle chunk.
+ *
+ * Rollup may inline utility functions (e.g. withPermissions) before the actual
+ * handler. We prefer a function explicitly named `handle`, then fall back to the
+ * first top-level function that is not `withPermissions`.
+ *
+ * Returns -1 if no suitable function is found.
+ */
+export function findHandlerStart(lines: string[]): number {
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].match(/^function\s+handle\s*\(/)) return i;
+  }
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].match(/^function\s+\w+\s*\(/) &&
+        !lines[i].match(/^function\s+withPermissions\s*\(/)) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Extract permission keys from a handler source file.
+ * Matches: withPermissions(<any first arg>, ['PERM1', "PERM2"])
+ * Returns an empty array if no withPermissions call is found.
+ */
+export function extractPermissions(src: string): string[] {
+  const match = src.match(/withPermissions\s*\([\s\S]*?,\s*\[([\s\S]*?)\]\s*\)/m);
+  if (!match || !match[1]) return [];
+  return match[1]
+    .split(',')
+    .map(s => s.trim())
+    .map(s => s.replace(/^['"`]/, '').replace(/['"`]$/, ''))
+    .filter(s => s.length > 0);
+}
+
 export default function youtrackRouter(): Plugin {
   const routerRoot = path.resolve(process.cwd(), 'src/backend/router');
   const routes: Route[] = [];
@@ -44,18 +81,9 @@ export default function youtrackRouter(): Plugin {
     for (const filePath of routeFiles) {
       try {
         const src = fs.readFileSync(filePath, 'utf-8');
-        // Match withPermissions(<fn>, [ 'PERM1', "PERM2" ])
-        const match = src.match(/withPermissions\s*\(\s*(?:function|\([^)]*\)\s*=>)[\s\S]*?,\s*\[([\s\S]*?)\]\s*\)/m);
-        if (match && match[1]) {
-          const inside = match[1];
-          const keys = inside
-            .split(',')
-            .map(s => s.trim())
-            .map(s => s.replace(/^['"`]/, '').replace(/['"`]$/, ''))
-            .filter(s => s.length > 0);
-          if (keys.length > 0) {
-            permissionsByFile.set(filePath, keys);
-          }
+        const keys = extractPermissions(src);
+        if (keys.length > 0) {
+          permissionsByFile.set(filePath, keys);
         }
       } catch {
         // ignore read errors
@@ -142,12 +170,7 @@ export default function youtrackRouter(): Plugin {
             let funcStart = -1;
             let funcEnd = -1;
 
-            for (let i = 0; i < lines.length; i++) {
-              if (lines[i].match(/^function\s+\w+\s*\(/)) {
-                funcStart = i;
-                break;
-              }
-            }
+            funcStart = findHandlerStart(lines);
             if (funcStart !== -1) {
               // Extract code before the function
               const codeBeforeFunction = lines.slice(0, funcStart);
