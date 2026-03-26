@@ -114,6 +114,9 @@ function sendWebhook(url, payload, eventName, token, headerName) {
     return null;
   }
 
+  if (trimmedUrl.startsWith('http://')) {
+    console.warn('[webhooks] Warning: webhook URL uses HTTP (not HTTPS) — the webhook token will be transmitted in plaintext. HTTPS is strongly recommended: ' + trimmedUrl);
+  }
   try {
     const connection = new http.Connection(trimmedUrl, null, WEBHOOK_TIMEOUT_MS);
     connection.addHeader('Content-Type', 'application/json');
