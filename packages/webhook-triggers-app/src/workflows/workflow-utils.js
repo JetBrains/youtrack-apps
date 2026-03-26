@@ -15,10 +15,9 @@ function createBasePayload(eventType, issue, project) {
         event: eventType,
         timestamp: new Date().toISOString(),
         id: issue.id,
-        numberInProject: issue.numberInProject,
         summary: issue.summary,
         project: {
-            id: project.id,
+            key: project.key,
             name: project.name,
             shortName: project.shortName
         }
