@@ -64,11 +64,33 @@ export default tseslint.config(
     // TODO:- concern - do we keep these rules "on" ?
     rules: {
       "@typescript-eslint/no-require-imports": "off",
+      "@typescript-eslint/no-unused-vars": ["error", { "caughtErrors": "none" }],
       "no-undef": "off",
       "no-console": "off",
+      "no-magic-numbers": "off",
       "func-names": "off",
       "vars-on-top": "off",
       "complexity": "off"
+    }
+  },
+  {
+    // CommonJS test stubs — treat as scripts so `module`/`exports`/`require` are in scope
+    files: ["**/*.cjs"],
+    languageOptions: {
+      globals: { ...globals.node },
+      sourceType: "script",
+    },
+    rules: {
+      "strict": "off",
+      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    }
+  },
+  {
+    // Vitest test files — relax rules that are noisy in test code
+    files: ["src/workflows/__tests__/**/*.{js,ts}"],
+    rules: {
+      "no-magic-numbers": "off",
+      "no-script-url": "off",
     }
   },
 );

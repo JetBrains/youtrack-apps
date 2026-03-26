@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import {defineConfig} from 'vite';
 import {viteStaticCopy} from 'vite-plugin-static-copy';
 import react from '@vitejs/plugin-react';
@@ -40,6 +41,11 @@ export default defineConfig({
       ]
     })
   ],
+  test: {
+    environment: 'node',
+    include: ['**/*.test.{js,ts}'],
+    setupFiles: ['./workflows/__tests__/setup.js'],
+  },
   root: './src',
   base: '',
   publicDir: 'public',

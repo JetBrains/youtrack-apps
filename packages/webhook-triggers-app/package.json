@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -p tsconfig.app.json && vite build && youtrack-app validate dist",
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
-    "test": "echo 'no tests'",
+    "test": "vitest run",
     "pack": "rm -rf webhook-triggers-app.zip && cd dist/ && bestzip ../webhook-triggers-app.zip *",
     "upload": "youtrack-app upload dist",
     "upload-local": "youtrack-app upload dist --host $YOUTRACK_HOST --token $YOUTRACK_TOKEN",
@@ -43,7 +43,8 @@
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.0.1",
     "vite": "^6.0.1",
-    "vite-plugin-static-copy": "^2.2.0"
+    "vite-plugin-static-copy": "^2.2.0",
+    "vitest": "^3.2.4"
   },
   "commit-and-tag-version": {
     "skip": {
