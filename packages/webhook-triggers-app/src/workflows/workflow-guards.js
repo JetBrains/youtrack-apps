@@ -23,11 +23,9 @@ function createGuard(settingsKey, customCheck) {
         const allUrls = httpModule.getWebhookUrls(ctx, settingsKey);
 
         if (allUrls.length === 0) {
-            console.log('[webhooks] No webhooks configured for ' + settingsKey);
             return false;
         }
 
-        console.log('[webhooks] Found ' + allUrls.length + ' webhook URL(s) for ' + settingsKey);
         return true;
     };
 }
@@ -35,15 +33,10 @@ function createGuard(settingsKey, customCheck) {
 /**
  * Checks if an issue should be skipped (draft or invalid)
  * @param {Object} issue - The issue object
- * @param {string} eventName - Name of the event for logging
  * @returns {boolean} True if should skip, false otherwise
  */
-function shouldSkipIssue(issue, eventName) {
-    if (!issue.id || issue.id === 'Issue.Draft') {
-        console.log('[webhooks] ' + eventName + ' - Skipping draft issue');
-        return true;
-    }
-    return false;
+function shouldSkipIssue(issue) {
+    return !issue.id || issue.id === 'Issue.Draft';
 }
 
 /**

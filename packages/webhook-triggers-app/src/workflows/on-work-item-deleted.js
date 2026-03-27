@@ -17,13 +17,11 @@ exports.rule = {
         var issue = ctx.issue;
 
 
-        if (core.shouldSkipIssue(issue, 'On Work Item Deleted')) {
+        if (core.shouldSkipIssue(issue)) {
             return false;
         }
 
-
         if (!core.hasWorkItemsRemoved(issue)) {
-            console.log('[webhooks] On Work Item Deleted - No removed work items');
             return false;
         }
 

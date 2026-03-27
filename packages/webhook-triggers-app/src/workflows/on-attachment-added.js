@@ -17,13 +17,11 @@ exports.rule = {
         const issue = ctx.issue;
 
 
-        if (core.shouldSkipIssue(issue, 'On Attachment Added')) {
+        if (core.shouldSkipIssue(issue)) {
             return false;
         }
 
-
         if (!core.hasAttachmentsAdded(issue)) {
-            console.log('[webhooks] On Attachment Added - No new attachments');
             return false;
         }
 
@@ -41,8 +39,6 @@ exports.rule = {
 
         const addedAttachments = [];
         issue.attachments.added.forEach(function (attachment) {
-            console.log('[webhooks] Attachment fields available: ' + Object.keys(attachment).join(', '));
-
             const attachmentData = {
                 name: attachment.name,
                 mimeType: attachment.mimeType,

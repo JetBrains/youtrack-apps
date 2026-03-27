@@ -17,20 +17,15 @@ exports.rule = {
     guard: core.createGuard(EVENTS.ISSUE_CREATED.key, function (ctx) {
         var issue = ctx.issue;
 
-        console.log('[webhooks] On Issue Created - Guard check for issue id: ' + issue.id);
-
-
-        if (core.shouldSkipIssue(issue, 'On Issue Created')) {
+        if (core.shouldSkipIssue(issue)) {
             return false;
         }
 
-        // Only trigger on actual creation (becomesReported = true)
         if (!core.isIssueCreation(issue)) {
-            console.log('[webhooks] Skipping - not a creation event');
             return false;
         }
 
-        console.log('[webhooks] On Issue Created - Guard passed');
+        console.log('[webhooks] On Issue Created - Guard passed for issue: ' + issue.id);
         return true;
     }),
 

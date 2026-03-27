@@ -18,19 +18,14 @@ exports.rule = {
         removal: true
     },
 
-    // Guard: use core.createGuard with custom check to skip draft cleanup
     guard: core.createGuard(EVENTS.ISSUE_DELETED.key, function (ctx) {
         var issue = ctx.issue;
 
-        console.log('[webhooks] On Issue Deleted - Guard check for issue: ' + issue.id);
-
-        // IMPORTANT: Skip draft issues being cleaned up during creation
-        if (core.shouldSkipIssue(issue, 'On Issue Deleted')) {
-            console.log('[webhooks] On Issue Deleted - Skipping draft issue cleanup');
+        if (core.shouldSkipIssue(issue)) {
             return false;
         }
 
-        console.log('[webhooks] On Issue Deleted - Guard passed');
+        console.log('[webhooks] On Issue Deleted - Guard passed for issue: ' + issue.id);
         return true;
     }),
 
