@@ -27,25 +27,34 @@ function validateWebhookUrl(url) {
     return { valid: false, reason: 'URL must be a non-empty string' };
   }
 
-  let parsed;
-  try {
-    parsed = new URL(url);
-  } catch (e) {
+  var schemeMatch = url.match(/^([a-zA-Z][a-zA-Z0-9+\-.]*):(.*)$/);
+  if (!schemeMatch) {
     return { valid: false, reason: 'URL is not valid' };
   }
 
-  // Only allow http: and https: schemes
-  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+  var scheme = schemeMatch[1].toLowerCase();
+  if (scheme !== 'http' && scheme !== 'https') {
     return { valid: false, reason: 'Only http:// and https:// schemes are allowed' };
   }
 
-  const hostname = parsed.hostname.toLowerCase();
+  var rest = schemeMatch[2];
+  if (rest.substring(0, 2) !== '//') {
+    return { valid: false, reason: 'URL is not valid' };
+  }
+
+  // Extract hostname: strip "//" prefix, then take up to the first / : or ?
+  var afterScheme = rest.substring(2);
+  var hostname = afterScheme.split(/[/:?#]/)[0].toLowerCase();
+
+  if (!hostname) {
+    return { valid: false, reason: 'URL is not valid' };
+  }
 
   // Check IPv4 private / reserved ranges
-  const ipv4 = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  var ipv4 = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
   if (ipv4) {
-    const a = parseInt(ipv4[1], 10);
-    const b = parseInt(ipv4[2], 10);
+    var a = parseInt(ipv4[1], 10);
+    var b = parseInt(ipv4[2], 10);
 
     // 10.0.0.0/8 — RFC-1918
     if (a === 10) {
