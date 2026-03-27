@@ -15,12 +15,11 @@ exports.rule = {
     guard: core.createGuard(EVENTS.COMMENT_ADDED.key, function (ctx) {
         const issue = ctx.issue;
 
-        if (core.shouldSkipIssue(issue, 'On Comment Added')) {
+        if (core.shouldSkipIssue(issue)) {
             return false;
         }
 
         if (!core.hasCommentsAdded(issue)) {
-            console.log('[webhooks] On Comment Added - No new comments');
             return false;
         }
 

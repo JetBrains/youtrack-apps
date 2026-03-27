@@ -15,12 +15,11 @@ exports.rule = {
     guard: core.createGuard(EVENTS.COMMENT_DELETED.key, function (ctx) {
         var issue = ctx.issue;
 
-        if (core.shouldSkipIssue(issue, 'On Comment Deleted')) {
+        if (core.shouldSkipIssue(issue)) {
             return false;
         }
 
         if (!core.hasCommentsRemoved(issue)) {
-            console.log('[webhooks] On Comment Deleted - No removed comments');
             return false;
         }
 

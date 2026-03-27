@@ -16,22 +16,11 @@ exports.rule = {
     guard: core.createGuard(EVENTS.COMMENT_UPDATED.key, function (ctx) {
         var issue = ctx.issue;
 
-        console.log('[webhooks] On Comment Updated - Issue: ' + issue.id);
-        console.log('[webhooks] On Comment Updated - editedComments exists: ' + (!!issue.editedComments));
-        if (issue.editedComments) {
-            console.log('[webhooks] On Comment Updated - editedComments type: ' + typeof issue.editedComments);
-            console.log('[webhooks] On Comment Updated - editedComments isEmpty: ' + (typeof issue.editedComments.isEmpty === 'function' ? issue.editedComments.isEmpty() : 'N/A'));
-            console.log('[webhooks] On Comment Updated - editedComments length: ' + (issue.editedComments.length || 'N/A'));
-        }
-
-
-        if (core.shouldSkipIssue(issue, 'On Comment Updated')) {
+        if (core.shouldSkipIssue(issue)) {
             return false;
         }
 
-
         if (!core.hasCommentsUpdated(issue)) {
-            console.log('[webhooks] On Comment Updated - No updated comments');
             return false;
         }
 
