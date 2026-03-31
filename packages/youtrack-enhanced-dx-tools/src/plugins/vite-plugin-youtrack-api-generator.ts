@@ -10,6 +10,11 @@ import { execSync } from 'child_process';
 
 type ApiStructureNode = { [key: string]: string | ApiStructureNode };
 
+export const isValidIdentifier = (s: string) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(s);
+
+export const toPascalCase = (s: string) =>
+  s.split(/[-_]+/).filter(Boolean).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('');
+
 // Try to run local ESLint with project rules to auto-fix formatting of generated files.
 // This is best-effort: if ESLint is not installed, we just skip with a warning.
 const runEslintFix = (files: string | string[]) => {
@@ -39,7 +44,7 @@ const runEslintFix = (files: string | string[]) => {
   }
 };
 
-const populateApiStructure = (
+export const populateApiStructure = (
   parts: string[],
   method: 'GET' | 'POST',
   handler: string,
@@ -57,7 +62,7 @@ const populateApiStructure = (
   ] = `ExtractRPCFromHandler<${handler}.Handle>`;
 };
 
-const processRouteFile = async (
+export const processRouteFile = async (
   sourceFile: SourceFile,
   routerRoot: string,
   apiStructure: ApiStructureNode,
@@ -68,7 +73,7 @@ const processRouteFile = async (
   const scope = parts[0];
   const method = path.basename(sourceFile.getFilePath(), '.ts') as 'GET' | 'POST';
   const routePath = parts.slice(1, -1);
-  const handlerName = `${scope}${routePath.join('')}${method}Handler`;
+  const handlerName = `${scope}${routePath.map(toPascalCase).join('')}${method}Handler`;
 
   populateApiStructure(
     [scope, ...routePath],
@@ -86,13 +91,14 @@ const processRouteFile = async (
   typeInfo.namespaceImports.add(handlerName);
 };
 
-const formatApiStructure = (obj: ApiStructureNode): string => {
+export const formatApiStructure = (obj: ApiStructureNode): string => {
   const entries = Object.entries(obj).
     map(([key, value]) => {
+      const safeKey = isValidIdentifier(key) ? key : `'${key}'`;
       if (typeof value === 'string') {
-        return `${key}: ${value};`;
+        return `${safeKey}: ${value};`;
       }
-      return `${key}: ${formatApiStructure(value)};`;
+      return `${safeKey}: ${formatApiStructure(value)};`;
     }).
     join('\n');
   return `{\n${entries}\n}`;
@@ -290,14 +296,13 @@ const generateZodSchemas = async (routeFiles: string[]) => {
         const generateSchemaObject = (obj: Record<string, any>, indent = 0): string => {
           const spaces = '  '.repeat(indent);
           const entries = Object.entries(obj).map(([key, value]) => {
+            const safeKey = isValidIdentifier(key) ? key : `'${key}'`;
             if (typeof value === 'string') {
-              // This is a schema reference, don't quote it
-              return `${spaces}  ${key}: ${value}`;
+              return `${spaces}  ${safeKey}: ${value}`;
             } else if (typeof value === 'object' && value !== null) {
-              // This is a nested object
-              return `${spaces}  ${key}: {\n${generateSchemaObject(value, indent + 1)}\n${spaces}  }`;
+              return `${spaces}  ${safeKey}: {\n${generateSchemaObject(value, indent + 1)}\n${spaces}  }`;
             }
-            return `${spaces}  ${key}: ${value}`;
+            return `${spaces}  ${safeKey}: ${value}`;
           }).join(',\n');
           return entries;
         };
