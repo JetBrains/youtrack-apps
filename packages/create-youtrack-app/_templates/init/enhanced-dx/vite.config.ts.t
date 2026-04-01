@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 import { defineConfig } from "vite";
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import { youtrackAutoUpload, youtrackDevHtml, backendReloadPlugin } from '@jetbrains/youtrack-enhanced-dx-tools';
+import { youtrackAutoUpload, youtrackDevHtml, backendReloadPlugin, youtrackWidgetEntries } from '@jetbrains/youtrack-enhanced-dx-tools';
 
 const isServing = process.argv.includes('--mode') === false && !process.argv.includes('build');
 
@@ -70,6 +70,8 @@ export default defineConfig({
     external: ['@jetbrains/youtrack-enhanced-dx-tools']
   },
   plugins: [
+    // Automatically discover widget entry points from src/widgets/*/index.html
+    youtrackWidgetEntries(),
     // Clean old frontend assets before each rebuild in watch mode
     cleanAssetsPlugin(),
     watchStaticJsonPlugin(),
@@ -142,10 +144,7 @@ export default defineConfig({
     // Frontend widget files are always minified (they're bundled code, not explorable)
     minify: true,
     rollupOptions: {
-      input: {
-        // List every widget entry point here
-        enhancedDX: resolve(currentDir, 'src/widgets/enhanced-dx/index.html'),
-      },
+      // Widget entries are discovered automatically by youtrackWidgetEntries()
       external: [
         // Exclude Vite plugins and their Node.js dependencies from bundling
         '@jetbrains/youtrack-enhanced-dx-tools',

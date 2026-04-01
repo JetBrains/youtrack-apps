@@ -143,16 +143,11 @@ describe('Widget Generator', () => {
       assert.strictEqual(widget.iconPath, 'basic-widget/widget-icon.svg');
     });
 
-    test('should inject widget entry point into vite.config.ts', () => {
+    test('should not inject widget entry into vite.config.ts for enhanced-dx projects', () => {
       assert.strictEqual(
         fileContains('vite.config.ts', 'basicWidget:'),
-        true,
-        'vite.config.ts should contain camelCase widget entry key'
-      );
-      assert.strictEqual(
-        fileContains('vite.config.ts', 'src/widgets/basic-widget/index.html'),
-        true,
-        'vite.config.ts should contain the widget index path'
+        false,
+        'enhanced-dx vite.config.ts should NOT contain widget entry (auto-discovered)'
       );
     });
   });
