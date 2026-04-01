@@ -74,7 +74,7 @@ const AppComponent: React.FunctionComponent = () => {
   const testValidation = useCallback(async () => {
     setLoading(true);
     const invalidTestData = {
-      message: 123, // eslint-disable-line no-magic-numbers -- intentional wrong type for validation test
+      message: 123,
       metadata: "invalid string",
     };
     try {
