@@ -133,8 +133,11 @@ const createApiProxy = (host: HostAPI, appId: string, loggerFactory: LoggerFacto
         if (prop === 'GET' || prop === 'POST' || prop === 'PUT' || prop === 'DELETE') {
           const method = prop as 'GET' | 'POST' | 'PUT' | 'DELETE';
           return async (data: unknown) => {
-            await validate(routePath, method, data, 'Req', loggerFactory, zodImport);
-            const response = await routeApiCall(host, appId, routePath, method, data, loggerFactory);
+            // GET/DELETE have no body — callers may omit args entirely; normalise to {} so
+            // Zod schemas (z.object with all-optional fields) validate correctly.
+            const normalizedData = (method === 'GET' || method === 'DELETE') && data === undefined ? {} : data;
+            await validate(routePath, method, normalizedData, 'Req', loggerFactory, zodImport);
+            const response = await routeApiCall(host, appId, routePath, method, normalizedData, loggerFactory);
             await validate(routePath, method, response, 'Res', loggerFactory, zodImport);
             return response;
           };
