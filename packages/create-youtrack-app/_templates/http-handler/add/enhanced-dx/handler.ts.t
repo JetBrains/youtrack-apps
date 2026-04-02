@@ -43,7 +43,7 @@ export type <%= resType %> = {
   timestamp: number;
 };
 
-function handle(ctx: <%= ctxType %><<%= reqType %>, <%= resType %>>): void {
+function handle(ctx: <%- (method === 'GET' || method === 'HEAD' || method === 'DELETE') ? `${ctxType}<${resType}, ${reqType}>` : `${ctxType}<${reqType}, ${resType}>` %>): void {
 <% if (method === 'GET' || method === 'DELETE') { %>
   const msg = ctx.request.getParameter('message') || 'Hello from <%= ytScope %>/<%= (routePath || "") %> <%= method %>!';
 <% } else { %>
