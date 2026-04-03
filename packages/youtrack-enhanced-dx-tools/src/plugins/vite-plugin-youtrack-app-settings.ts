@@ -91,9 +91,17 @@ const runEslintFix = (files: string | string[]) => {
 };
 
 /**
+ * Returns a TypeScript-safe property key: bare identifier or single-quoted string.
+ */
+export const safeKey = (key: string): string =>
+  /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(key)
+    ? key
+    : `'${key.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+
+/**
  * Convert JSON Schema type to TypeScript type
  */
-const jsonSchemaToTS = (schema: JSONSchema): string => {
+export const jsonSchemaToTS = (schema: JSONSchema): string => {
   if (!schema.type) return 'unknown';
   
   switch (schema.type) {
@@ -138,7 +146,7 @@ const jsonSchemaToTS = (schema: JSONSchema): string => {
 /**
  * Generate TypeScript object type from JSON Schema properties
  */
-const generateObjectType = (
+export const generateObjectType = (
   properties: Record<string, JSONSchema>,
   required: string[] = []
 ): string => {
@@ -147,7 +155,7 @@ const generateObjectType = (
     const optional = isRequired ? '' : '?';
     const type = jsonSchemaToTS(schema);
     const description = schema.description ? `\n    /** ${schema.description} */` : '';
-    return `${description}\n    ${key}${optional}: ${type};`;
+    return `${description}\n    ${safeKey(key)}${optional}: ${type};`;
   });
   
   return `{\n  ${props.join('\n  ')}\n  }`;
@@ -170,13 +178,13 @@ const getExtensionPropertyType = (prop: ExtensionProperty): string => {
 /**
  * Generate extension properties type
  */
-const generateExtensionPropertiesType = (
+export const generateExtensionPropertiesType = (
   properties: Record<string, ExtensionProperty>
 ): string => {
   const entries = Object.entries(properties)
     .map(([name, prop]) => {
       const tsType = getExtensionPropertyType(prop);
-      return `      ${name}?: ${tsType};`;
+      return `      ${safeKey(name)}?: ${tsType};`;
     })
     .join('\n');
   
