@@ -23,15 +23,18 @@ export const DEFAULT_DATE_FORMATS: DateFormats = {
   pattern: 'd MMM yyyy HH:mm',
 };
 
-export const getDocumentLink = (documentType: string, id: string) => {
-    return `/${documentType}/${id}`;
+const normalizeHomeUrl = (homeUrl: string) => homeUrl.endsWith('/') ? homeUrl : `${homeUrl}/`;
+
+export const getDocumentLink = (documentType: string, id: string, homeUrl: string) => {
+    return `${normalizeHomeUrl(homeUrl)}${documentType}/${id}`;
 };
 
-export const getIssueLink = (id: string) => {
-    return getDocumentLink('issue', id);
+export const getIssueLink = (id: string, homeUrl: string) => {
+    return getDocumentLink('issue', id, homeUrl);
 };
-export const getArticleLink = (id: string) => {
-    return getDocumentLink('articles', id);
+
+export const getArticleLink = (id: string, homeUrl: string) => {
+    return getDocumentLink('articles', id, homeUrl);
 };
 
 export interface DocumentsCount {

@@ -3,6 +3,7 @@ import articleIcon from '@jetbrains/icons/article';
 import Icon from '@jetbrains/ring-ui-built/components/icon/icon';
 import Link from '@jetbrains/ring-ui-built/components/link/link';
 import {getArticleLink} from '../../../api';
+import {useWidgetContext} from '../../../widget-context';
 
 import styles from './article.module.css';
 
@@ -17,7 +18,8 @@ interface Props {
 }
 
 const ArticleLine = ({article}: Props) => {
-    const articleUrl = getArticleLink(article.idReadable);
+    const {homeUrl} = useWidgetContext();
+    const articleUrl = getArticleLink(article.idReadable, homeUrl);
 
     return (
       <div className={styles.articleLine}>

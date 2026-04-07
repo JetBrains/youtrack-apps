@@ -4,6 +4,7 @@ import type {EmbeddableWidgetAPI} from '../../../../@types/globals';
 import type {WidgetConfig} from '../components/configuration/config';
 import alertService from '@jetbrains/ring-ui-built/components/alert-service/alert-service';
 import type {DocumentListTab} from './useTabsManager';
+import ServiceResources from '../hub-widget-ui/service-resources/service-resources';
 
 export const DEFAULT_REFRESH_PERIOD_SEC = 600;
 
@@ -38,6 +39,7 @@ export const useWidget = () => {
     refreshPeriod: DEFAULT_REFRESH_PERIOD_SEC,
   });
   const [editTabId, setEditTabId] = useState<string | undefined>(undefined);
+  const [homeUrl, setHomeUrl] = useState('');
 
   const refresh = () => setRefreshKey(prev => prev + 1);
 
@@ -115,7 +117,12 @@ export const useWidget = () => {
 
       setIsLoading(true);
       try {
-        const storedConfig = await appsApiRef.current.readConfig<YTConfig>();
+        const [storedConfig, youTrackService] = await Promise.all([
+          appsApiRef.current.readConfig<YTConfig>(),
+          ServiceResources.getYouTrackService(appsApiRef.current),
+        ]);
+
+        setHomeUrl(youTrackService?.homeUrl || '');
 
         if (storedConfig?.tabsConfig) {
           const configuration = toWidgetConfig(storedConfig);
@@ -150,5 +157,6 @@ export const useWidget = () => {
     onConfigCancel,
     editTabId,
     onTabEdit,
+    homeUrl,
   };
 };
