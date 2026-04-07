@@ -8,7 +8,3 @@ export { mutable } from './utility/mutable.js';
 export type { Mutable } from './utility/mutable.js';
 export { set } from './utility/set.js';
 export type { KnownKeys, ExtensionValue } from './utility/set.js';
-export { writable } from './utility/writable.js';
-export type { FieldHandle, WritableEntity } from './utility/writable.js';
-export { settable } from './utility/settable.js';
-export type { SettableEntity } from './utility/settable.js';

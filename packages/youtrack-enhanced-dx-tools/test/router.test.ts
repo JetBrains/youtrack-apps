@@ -120,7 +120,7 @@ describe('findHandlerStart', () => {
     assert.strictEqual(findHandlerStart(lines), 4);
   });
 
-  it('skips all known utility functions (mutable, set, writable, settable)', () => {
+  it('skips all known utility functions (mutable, set)', () => {
     const lines = [
       'function mutable(entity) {',
       '  return entity;',
@@ -128,17 +128,11 @@ describe('findHandlerStart', () => {
       'function set(entity, key, value) {',
       '  entity[key] = value;',
       '}',
-      'function writable(entity) {',
-      '  return new Proxy(entity, {});',
-      '}',
-      'function settable(entity) {',
-      '  return entity;',
-      '}',
       'function myHandler(ctx) {',
       '  ctx.response.json({});',
       '}',
     ];
-    assert.strictEqual(findHandlerStart(lines), 12);
+    assert.strictEqual(findHandlerStart(lines), 6);
   });
 });
 
