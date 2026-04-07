@@ -119,6 +119,27 @@ describe('findHandlerStart', () => {
     // inner() is indented — must not be picked up; handle() at line 4 should win
     assert.strictEqual(findHandlerStart(lines), 4);
   });
+
+  it('skips all known utility functions (mutable, set, writable, settable)', () => {
+    const lines = [
+      'function mutable(entity) {',
+      '  return entity;',
+      '}',
+      'function set(entity, key, value) {',
+      '  entity[key] = value;',
+      '}',
+      'function writable(entity) {',
+      '  return new Proxy(entity, {});',
+      '}',
+      'function settable(entity) {',
+      '  return entity;',
+      '}',
+      'function myHandler(ctx) {',
+      '  ctx.response.json({});',
+      '}',
+    ];
+    assert.strictEqual(findHandlerStart(lines), 12);
+  });
 });
 
 describe('extractPreambleBlocks', () => {
