@@ -4,3 +4,5 @@
 
 export * from './types/index.js';
 export { withPermissions } from './utility/withPermissions.js';
+export { mutable } from './utility/mutable.js';
+export type { Mutable } from './utility/mutable.js';
