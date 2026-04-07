@@ -19,6 +19,70 @@ type Route = {
  *
  * Returns -1 if no suitable function is found.
  */
+/** Lines that Rollup always emits at the top of every CJS chunk — not handler code. */
+const ROLLUP_BOILERPLATE = (line: string): boolean => {
+  const t = line.trim();
+  return (
+    !t ||
+    t === '"use strict";' ||
+    t.startsWith('Object.defineProperty(exports, Symbol.toStringTag') ||
+    /^(var|const)\s+__/.test(t) ||
+    t.includes('__defProp') ||
+    t.includes('__defNormalProp') ||
+    t.includes('__esModule')
+  );
+};
+
+/**
+ * Extract atomic preamble blocks from lines that appear before the handler function.
+ *
+ * Returns each `require()` statement as a single string and each top-level function
+ * declaration (with its full body) as a multi-line string. Rollup boilerplate is stripped.
+ * Storing results in a `Set<string>` gives correct per-scope deduplication: two handlers
+ * that inline the same utility produce identical strings and only one copy ends up in the
+ * assembled scope file.
+ */
+export function extractPreambleBlocks(lines: string[]): string[] {
+  const blocks: string[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    if (ROLLUP_BOILERPLATE(lines[i])) { i++; continue; }
+
+    const t = lines[i].trim();
+
+    // Single-line require() assignment
+    if (/^\s*(const|let|var)\s+\S.*=\s*require\s*\(/.test(t)) {
+      blocks.push(lines[i]);
+      i++;
+      continue;
+    }
+
+    // Top-level function declaration — collect until braces are balanced
+    if (/^function\s+\w+\s*\(/.test(t)) {
+      const blockLines: string[] = [];
+      let braces = 0;
+      let opened = false;
+      while (i < lines.length) {
+        const line = lines[i];
+        blockLines.push(line);
+        for (const ch of line) {
+          if (ch === '{') { braces++; opened = true; }
+          else if (ch === '}') braces--;
+        }
+        i++;
+        if (opened && braces === 0) break;
+      }
+      blocks.push(blockLines.join('\n'));
+      continue;
+    }
+
+    i++;
+  }
+
+  return blocks;
+}
+
 export function findHandlerStart(lines: string[]): number {
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].match(/^function\s+handle\s*\(/)) return i;
@@ -194,19 +258,10 @@ export default function youtrackRouter(): Plugin {
               // Use ES6 imports which Rollup transforms to require() statements.
               // These require() statements will be extracted and placed at module level.
 
-              // Check if there are require() statements (code splitting case)
-              const importsAndTopLevel = codeBeforeFunction.filter(line => {
-                const trimmed = line.trim();
-                if (/^\s*(const|let|var)\s+.*=\s*require\s*\(/.test(trimmed)) {
-                  // Filter out Rollup internal code
-                  if (trimmed.includes('__defProp') || trimmed.includes('__defNormalProp') ||
-                    trimmed.includes('__esModule') || trimmed.startsWith('var __')) {
-                    return false;
-                  }
-                  return true;
-                }
-                return false;
-              });
+              // Extract require() statements and inlined utility functions that Rollup
+              // placed before the handler. Each element is an atomic block (single-line
+              // require or complete function declaration) for correct Set deduplication.
+              const importsAndTopLevel = extractPreambleBlocks(codeBeforeFunction);
 
               // Store imports/code separately for this handler
               const route = routes.find(r => {

@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { extractPermissions, findHandlerStart } from '../src/plugins/vite-plugin-youtrack-router.js';
+import { extractPermissions, findHandlerStart, extractPreambleBlocks } from '../src/plugins/vite-plugin-youtrack-router.js';
 
 describe('extractPermissions', () => {
   it('extracts permissions from a bare identifier call', () => {
@@ -106,7 +106,7 @@ describe('findHandlerStart', () => {
     assert.strictEqual(findHandlerStart([]), -1);
   });
 
-  it('ignores indented functions (non-top-level)', () => {
+  it('ignores indented functions (non-top-level) and finds top-level handle', () => {
     const lines = [
       'function withPermissions(fn, permissions) {',
       '  function inner() {}',
@@ -118,5 +118,97 @@ describe('findHandlerStart', () => {
     ];
     // inner() is indented — must not be picked up; handle() at line 4 should win
     assert.strictEqual(findHandlerStart(lines), 4);
+  });
+});
+
+describe('extractPreambleBlocks', () => {
+  it('returns empty array for empty input', () => {
+    assert.deepStrictEqual(extractPreambleBlocks([]), []);
+  });
+
+  it('strips Rollup boilerplate lines', () => {
+    const lines = [
+      '"use strict";',
+      'Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });',
+      'var __defProp = Object.defineProperty;',
+      'const __esModule = true;',
+    ];
+    assert.deepStrictEqual(extractPreambleBlocks(lines), []);
+  });
+
+  it('captures a require() statement as a single-line block', () => {
+    const lines = [
+      '"use strict";',
+      'const requirements = require("./requirements.js");',
+    ];
+    const blocks = extractPreambleBlocks(lines);
+    assert.strictEqual(blocks.length, 1);
+    assert.ok(blocks[0].includes('require("./requirements.js")'));
+  });
+
+  it('captures an inlined single-line function as one block', () => {
+    const lines = [
+      'function mutable(entity) { return entity; }',
+    ];
+    const blocks = extractPreambleBlocks(lines);
+    assert.strictEqual(blocks.length, 1);
+    assert.ok(blocks[0].startsWith('function mutable'));
+  });
+
+  it('captures a multi-line inlined function as one atomic block', () => {
+    const lines = [
+      'function mutable(entity) {',
+      '    return entity;',
+      '}',
+    ];
+    const blocks = extractPreambleBlocks(lines);
+    assert.strictEqual(blocks.length, 1);
+    assert.ok(blocks[0].includes('return entity'));
+    // Must be stored as one string, not three separate lines
+    assert.ok(blocks[0].includes('\n'));
+  });
+
+  it('captures both require() and inlined function, in order', () => {
+    const lines = [
+      '"use strict";',
+      'const x = require("./shared.js");',
+      'function mutable(entity) {',
+      '    return entity;',
+      '}',
+    ];
+    const blocks = extractPreambleBlocks(lines);
+    assert.strictEqual(blocks.length, 2);
+    assert.ok(blocks[0].includes('require'));
+    assert.ok(blocks[1].includes('function mutable'));
+  });
+
+  it('deduplicates identical inlined functions via Set', () => {
+    // Simulates two handler chunks both inlining the same mutable utility
+    const lines = [
+      'function mutable(entity) {',
+      '    return entity;',
+      '}',
+    ];
+    const blocksA = extractPreambleBlocks(lines);
+    const blocksB = extractPreambleBlocks(lines);
+    const combined = new Set([...blocksA, ...blocksB]);
+    assert.strictEqual(combined.size, 1);
+  });
+
+  it('handles a multi-line function with nested braces', () => {
+    const lines = [
+      'function withPermissions(fn, permissions) {',
+      '  try {',
+      '    Object.defineProperty(fn, "permissions", { value: permissions });',
+      '  } catch (e) {',
+      '    fn.permissions = permissions;',
+      '  }',
+      '  return fn;',
+      '}',
+    ];
+    const blocks = extractPreambleBlocks(lines);
+    assert.strictEqual(blocks.length, 1);
+    assert.ok(blocks[0].includes('withPermissions'));
+    assert.ok(blocks[0].includes('return fn'));
   });
 });
