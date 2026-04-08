@@ -91,17 +91,19 @@ export const processRouteFile = async (
   typeInfo.namespaceImports.add(handlerName);
 };
 
-export const formatApiStructure = (obj: ApiStructureNode): string => {
-  const entries = Object.entries(obj).
-    map(([key, value]) => {
+export const formatApiStructure = (obj: ApiStructureNode, depth = 0): string => {
+  const pad = '    '.repeat(depth + 1);
+  const closePad = '    '.repeat(depth);
+  const entries = Object.entries(obj)
+    .map(([key, value]) => {
       const safeKey = isValidIdentifier(key) ? key : `'${key}'`;
       if (typeof value === 'string') {
-        return `${safeKey}: ${value};`;
+        return `${pad}${safeKey}: ${value};`;
       }
-      return `${safeKey}: ${formatApiStructure(value)};`;
-    }).
-    join('\n');
-  return `{\n${entries}\n}`;
+      return `${pad}${safeKey}: ${formatApiStructure(value, depth + 1)};`;
+    })
+    .join('\n');
+  return `{\n${entries}\n${closePad}}`;
 };
 
 // Helper function to recursively discover all @zod-to-schema annotated types
@@ -385,46 +387,27 @@ export default function youtrackApiGenerator(): Plugin {
       )
     );
 
-    const apiDtsFile = project.createSourceFile(apiDtsPath, '', {
-      overwrite: true
-    });
-
-    apiDtsFile.addImportDeclaration({
-      moduleSpecifier: '../backend/types/utility',
-      namedImports: ['ExtractRPCFromHandler']
-    });
-
-    for (const [moduleSpecifier, typeInfo] of allTypes.entries()) {
-      // Prioritize namespace imports over named imports to avoid conflicts
-      // If we have namespace imports, use those exclusively for this module
-      if (typeInfo.namespaceImports.size > 0) {
-        for (const namespaceName of typeInfo.namespaceImports) {
-          apiDtsFile.addImportDeclaration({
-            moduleSpecifier,
-            namespaceImport: namespaceName
-          });
-        }
-      } else if (typeInfo.namedImports.size > 0) {
-        // Only use named imports if we don't have namespace imports for this module
-        apiDtsFile.addImportDeclaration({
-          moduleSpecifier,
-          namedImports: Array.from(typeInfo.namedImports)
-        });
-      }
-    }
-
-    apiDtsFile.addTypeAlias({
-      name: 'ApiRouter',
-      isExported: true,
-      type: formatApiStructure(apiStructure)
-    });
-
     // Generate Zod schemas BEFORE writing api.d.ts to avoid import resolution errors
     await generateZodSchemas(routeFiles);
 
-    // Now write the api.d.ts file
-    await fs.writeFile(apiDtsPath, apiDtsFile.getFullText());
-    // Format the generated declaration file
+    // Build api.d.ts as a plain string so formatApiStructure's indentation is
+    // preserved exactly — going through ts-morph's printer flattens all nesting.
+    const importLines = [`import { ExtractRPCFromHandler } from "../backend/types/utility";`];
+    for (const [moduleSpecifier, typeInfo] of allTypes.entries()) {
+      for (const namespaceName of typeInfo.namespaceImports) {
+        importLines.push(`import * as ${namespaceName} from "${moduleSpecifier}";`);
+      }
+      for (const namedImport of typeInfo.namedImports) {
+        importLines.push(`import { ${namedImport} } from "${moduleSpecifier}";`);
+      }
+    }
+
+    const fileContent =
+      importLines.join('\n') +
+      '\n\n' +
+      `export type ApiRouter = ${formatApiStructure(apiStructure)};\n`;
+
+    await fs.writeFile(apiDtsPath, fileContent);
     runEslintFix(apiDtsPath);
   };
 
