@@ -6,3 +6,5 @@ export * from './types/index.js';
 export { withPermissions } from './utility/withPermissions.js';
 export { mutable } from './utility/mutable.js';
 export type { Mutable } from './utility/mutable.js';
+export { set } from './utility/set.js';
+export type { KnownKeys, ExtensionValue } from './utility/set.js';

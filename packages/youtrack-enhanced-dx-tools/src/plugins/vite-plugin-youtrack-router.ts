@@ -83,13 +83,15 @@ export function extractPreambleBlocks(lines: string[]): string[] {
   return blocks;
 }
 
+const KNOWN_UTILITIES = /^function\s+(withPermissions|mutable|set)\s*\(/;
+
 export function findHandlerStart(lines: string[]): number {
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].match(/^function\s+handle\s*\(/)) return i;
   }
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].match(/^function\s+\w+\s*\(/) &&
-        !lines[i].match(/^function\s+withPermissions\s*\(/)) {
+        !KNOWN_UTILITIES.test(lines[i])) {
       return i;
     }
   }
