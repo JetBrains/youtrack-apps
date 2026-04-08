@@ -1,8 +1,8 @@
 /**
  * Type-safe field assignment for YouTrack entities.
  *
- * Unlike {@link mutable}, `set()` preserves the declared type of each field —
- * you cannot accidentally assign a `string` to a `number` field.
+ * Preserves the declared type of each field — you cannot accidentally assign
+ * a `string` to a `number` field.
  *
  * **POST / PUT handlers only.** Assigning in a GET or DELETE handler compiles
  * fine but throws `ReadonlyTransactionException` at runtime.

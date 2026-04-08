@@ -120,11 +120,8 @@ describe('findHandlerStart', () => {
     assert.strictEqual(findHandlerStart(lines), 4);
   });
 
-  it('skips all known utility functions (mutable, set)', () => {
+  it('skips all known utility functions (set)', () => {
     const lines = [
-      'function mutable(entity) {',
-      '  return entity;',
-      '}',
       'function set(entity, key, value) {',
       '  entity[key] = value;',
       '}',
@@ -132,7 +129,7 @@ describe('findHandlerStart', () => {
       '  ctx.response.json({});',
       '}',
     ];
-    assert.strictEqual(findHandlerStart(lines), 6);
+    assert.strictEqual(findHandlerStart(lines), 3);
   });
 });
 
