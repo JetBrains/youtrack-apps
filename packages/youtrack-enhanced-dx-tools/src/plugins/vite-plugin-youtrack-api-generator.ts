@@ -455,6 +455,8 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
             await generateApi();
           } catch (err) {
             console.error('[youtrack-api-generator] regeneration failed:', (err as Error).message);
+          } finally {
+            debounceTimer = null;
           }
         }, watchDebounceMs);
       };
