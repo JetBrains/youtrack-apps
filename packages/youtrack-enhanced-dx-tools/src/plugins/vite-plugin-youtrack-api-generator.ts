@@ -445,6 +445,11 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
       } catch (err) {
         console.error('[youtrack-api-generator] Failed to generate API types:', (err as Error).message);
       }
+      // Watch the router root so new/deleted handler files trigger a rebuild in
+      // vite build --watch mode. Without this, Rollup only watches files already
+      // in the module graph — adding a handler to a new subdirectory would never
+      // be detected. In non-watch builds this call is silently ignored.
+      this.addWatchFile(routerRoot);
     },
 
     configureServer(server) {
