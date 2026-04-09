@@ -190,6 +190,7 @@ const generateZodSchemas = async (routeFiles: string[]) => {
   const apiZodPath = 'src/api/api.zod.ts';
 
   try {
+    await fs.ensureDir(path.dirname(apiZodPath));
     const tempTypesFile = 'temp-types-for-zod.ts';
     let typesContent = '';
     let hasTypes = false;
@@ -415,6 +416,7 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
       '\n\n' +
       `export type ApiRouter = ${formatApiStructure(apiStructure)};\n`;
 
+    await fs.ensureDir(path.dirname(apiDtsPath));
     await fs.writeFile(apiDtsPath, fileContent);
     runEslintFix(apiDtsPath);
   };
@@ -436,8 +438,13 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
     },
 
     async buildStart() {
-      // Regenerate API types on every build to pick up route changes
-      await generateApi();
+      // Regenerate API types on every build to pick up route changes.
+      // Non-fatal: errors are logged so the backend build still produces handler files.
+      try {
+        await generateApi();
+      } catch (err) {
+        console.error('[youtrack-api-generator] Failed to generate API types:', (err as Error).message);
+      }
     },
 
     configureServer(server) {
