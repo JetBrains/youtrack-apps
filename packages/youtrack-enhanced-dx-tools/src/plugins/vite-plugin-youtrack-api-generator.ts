@@ -367,17 +367,38 @@ export interface YoutrackApiGeneratorOptions {
   watchDebounceMs?: number;
 }
 
+/** Stable key for the current set of route files: sorted paths + mtimes. */
+const routeKey = (routeFiles: string[]): string =>
+  [...routeFiles].sort().map(f => {
+    try { return `${f}:${fs.statSync(f).mtimeMs}`; } catch { return f; }
+  }).join('|');
+
 export default function youtrackApiGenerator(options: YoutrackApiGeneratorOptions = {}): Plugin {
   const { watchDebounceMs = 500 } = options;
   const routerRoot = path.resolve(process.cwd(), 'src/backend/router');
   const apiDtsPath = path.resolve(process.cwd(), 'src/api/api.d.ts');
   const apiZodPath = path.resolve(process.cwd(), 'src/api/api.zod.ts');
 
+  // Cache the last-seen route key so that buildStart is a no-op when nothing
+  // has changed. This prevents spurious re-writes to api.d.ts / api.zod.ts
+  // which would otherwise trigger a rebuild loop via the file watcher.
+  let lastRouteKey: string | null = null;
+
   const generateApi = async () => {
     const routeFiles = await glob('**/(GET|POST|PUT|DELETE).ts', {
       cwd: routerRoot,
       absolute: true
     });
+
+    // Skip generation if routes are unchanged and both output files already exist.
+    const key = routeKey(routeFiles);
+    const [apiDtsExists, apiZodExists] = await Promise.all([
+      fs.pathExists(apiDtsPath),
+      fs.pathExists(apiZodPath),
+    ]);
+    if (apiDtsExists && apiZodExists && key === lastRouteKey) {
+      return;
+    }
 
     const project = new Project();
     project.addSourceFilesAtPaths(routeFiles);
@@ -419,6 +440,10 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
     await fs.ensureDir(path.dirname(apiDtsPath));
     await fs.writeFile(apiDtsPath, fileContent);
     runEslintFix(apiDtsPath);
+
+    // Update the cache only after all writes succeed so a failed generation
+    // is retried on the next buildStart.
+    lastRouteKey = key;
   };
 
   return {
