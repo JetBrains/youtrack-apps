@@ -438,6 +438,30 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
     async buildStart() {
       // Regenerate API types on every build to pick up route changes
       await generateApi();
-    }
+    },
+
+    configureServer(server) {
+      const handlerGlob = path.join(routerRoot, '**', '{GET,POST,PUT,DELETE}.ts');
+      server.watcher.add(handlerGlob);
+
+      let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+      const handleChange = (filePath: string) => {
+        if (!isHandlerFile(filePath)) return;
+
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async () => {
+          try {
+            await generateApi();
+          } catch (err) {
+            console.error('[youtrack-api-generator] regeneration failed:', (err as Error).message);
+          }
+        }, watchDebounceMs);
+      };
+
+      server.watcher.on('add', handleChange);
+      server.watcher.on('change', handleChange);
+      server.watcher.on('unlink', handleChange);
+    },
   };
 }
