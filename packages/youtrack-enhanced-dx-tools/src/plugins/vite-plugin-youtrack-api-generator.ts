@@ -396,8 +396,20 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
       fs.pathExists(apiDtsPath),
       fs.pathExists(apiZodPath),
     ]);
-    if (apiDtsExists && apiZodExists && key === lastRouteKey) {
-      return;
+    if (apiDtsExists && apiZodExists) {
+      // Same-process cache hit (e.g. second buildStart in watch mode).
+      if (key === lastRouteKey) return;
+
+      // Cross-process freshness check: api files from a previous build process
+      // (e.g. dev:upload) are still current if every route file is older than
+      // api.d.ts. Syncing lastRouteKey here makes subsequent buildStarts free.
+      try {
+        const apiMtime = (await fs.stat(apiDtsPath)).mtimeMs;
+        if (routeFiles.every(f => { try { return fs.statSync(f).mtimeMs <= apiMtime; } catch { return false; } })) {
+          lastRouteKey = key;
+          return;
+        }
+      } catch { /* stat failed, fall through to generation */ }
     }
 
     const project = new Project();
