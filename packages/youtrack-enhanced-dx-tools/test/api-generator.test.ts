@@ -6,6 +6,7 @@ import os from 'node:os';
 import { Project } from 'ts-morph';
 import {
   isValidIdentifier,
+  isHandlerFile,
   toPascalCase,
   formatApiStructure,
   processRouteFile,
@@ -198,5 +199,29 @@ export type Handle = typeof handle;
         `Namespace import "${match[1]}" must be a valid identifier`
       );
     }
+  });
+});
+
+describe('isHandlerFile', () => {
+  it('matches GET handler', () => {
+    assert.strictEqual(isHandlerFile('/project/src/backend/router/global/demo/GET.ts'), true);
+  });
+  it('matches POST handler', () => {
+    assert.strictEqual(isHandlerFile('/project/src/backend/router/issue/note/POST.ts'), true);
+  });
+  it('matches PUT handler', () => {
+    assert.strictEqual(isHandlerFile('/project/src/backend/router/issue/note/PUT.ts'), true);
+  });
+  it('matches DELETE handler', () => {
+    assert.strictEqual(isHandlerFile('/project/src/backend/router/issue/note/DELETE.ts'), true);
+  });
+  it('rejects a non-handler .ts file', () => {
+    assert.strictEqual(isHandlerFile('/project/src/backend/router/global/demo/utils.ts'), false);
+  });
+  it('rejects a handler-named file not ending in .ts', () => {
+    assert.strictEqual(isHandlerFile('/project/src/backend/router/global/demo/GET.js'), false);
+  });
+  it('rejects an empty string', () => {
+    assert.strictEqual(isHandlerFile(''), false);
   });
 });

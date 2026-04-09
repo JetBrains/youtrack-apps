@@ -15,6 +15,9 @@ export const isValidIdentifier = (s: string) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.tes
 export const toPascalCase = (s: string) =>
   s.split(/[-_]+/).filter(Boolean).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('');
 
+export const isHandlerFile = (filePath: string): boolean =>
+  /\/(GET|POST|PUT|DELETE)\.ts$/.test(filePath);
+
 // Try to run local ESLint with project rules to auto-fix formatting of generated files.
 // This is best-effort: if ESLint is not installed, we just skip with a warning.
 const runEslintFix = (files: string | string[]) => {
@@ -359,7 +362,12 @@ const generateZodSchemas = async (routeFiles: string[]) => {
   }
 };
 
-export default function youtrackApiGenerator(): Plugin {
+export interface YoutrackApiGeneratorOptions {
+  watchDebounceMs?: number;
+}
+
+export default function youtrackApiGenerator(options: YoutrackApiGeneratorOptions = {}): Plugin {
+  const { watchDebounceMs = 500 } = options;
   const routerRoot = path.resolve(process.cwd(), 'src/backend/router');
   const apiDtsPath = path.resolve(process.cwd(), 'src/api/api.d.ts');
   const apiZodPath = path.resolve(process.cwd(), 'src/api/api.zod.ts');
