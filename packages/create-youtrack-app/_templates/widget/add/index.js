@@ -190,6 +190,13 @@ module.exports = {
       }
     }
 
+    let isEnhancedDX = false;
+    try {
+      const pkgPath = path.resolve(process.cwd(), args.cwd || '', 'package.json');
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+      isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+    } catch { /* not an enhanced-dx project */ }
+
     const result = {
       key,
       name,
@@ -201,6 +208,7 @@ module.exports = {
       addDimensions,
       width,
       height,
+      isEnhancedDX,
     };
 
     const newWidget = {

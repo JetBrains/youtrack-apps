@@ -114,7 +114,7 @@ const runEslintFix = (files: string | string[]) => {
 /**
  * Convert extension property type to TypeScript type
  */
-const getTypeScriptType = (prop: ExtensionProperty, entityTypes: Set<string>): string => {
+export const getTypeScriptType = (prop: ExtensionProperty, entityTypes: Set<string>): string => {
   const baseType = typeMapping[prop.type] || (youtrackEntityTypes.has(prop.type) ? prop.type : 'unknown');
 
   if (prop.multi) {
@@ -128,14 +128,14 @@ const getTypeScriptType = (prop: ExtensionProperty, entityTypes: Set<string>): s
 /**
  * Generate TypeScript type for extension properties
  */
-const generateExtensionPropertiesType = (
+export const generateExtensionPropertiesType = (
   properties: Record<string, ExtensionProperty>,
   entityTypes: Set<string>
 ): string => {
   const entries = Object.entries(properties)
     .map(([name, prop]) => {
       const tsType = getTypeScriptType(prop, entityTypes);
-      return `  readonly ${name}?: ${tsType};`;
+      return `  ${name}?: ${tsType};`;
     })
     .join('\n');
 
@@ -178,7 +178,7 @@ export interface Extended${entityType} extends ${entityType} {
 /**
  * Generate all extended entity types
  */
-const generateExtendedEntities = (extensions: EntityExtensions): string => {
+export const generateExtendedEntities = (extensions: EntityExtensions): string => {
   const entityTypes = new Set<string>();
   const imports = new Set<string>();
   const globalStorageExt = extensions.entityTypeExtensions.find(ext => ext.entityType === 'AppGlobalStorage');

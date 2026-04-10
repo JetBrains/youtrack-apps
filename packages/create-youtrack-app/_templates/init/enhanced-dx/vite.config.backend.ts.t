@@ -4,7 +4,6 @@ to: vite.config.backend.ts
 import {defineConfig} from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { youtrackApiGenerator, youtrackRouter, youtrackExtensionProperties, youtrackAppSettings, youtrackAutoUpload } from '@jetbrains/youtrack-enhanced-dx-tools';
-import path from 'node:path';
 
 
 export default defineConfig({
@@ -25,7 +24,7 @@ export default defineConfig({
     ],
     build: {
         outDir: './dist',
-        emptyOutDir: true, // empty dist dir, as backend build runs first
+        emptyOutDir: !process.argv.includes('--watch'), // clean dist/ on fresh builds, preserve it in watch mode
         // Backend files should NOT be minified for easier debugging in workflow editor
         minify: false,
         lib: {

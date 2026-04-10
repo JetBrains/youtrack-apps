@@ -1,5 +1,3 @@
 ---
-to: "<%= required? 'src/settings.json' :null %>"
-inject: true
-after: required
+to: <%= _skip ? null : 'src/settings.json' %>
 ---

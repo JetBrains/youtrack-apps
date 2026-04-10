@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 import { defineConfig } from "vite";
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import { youtrackAutoUpload, youtrackDevHtml, backendReloadPlugin } from '@jetbrains/youtrack-enhanced-dx-tools';
+import { youtrackAutoUpload, youtrackDevHtml, backendReloadPlugin, youtrackWidgetEntries } from '@jetbrains/youtrack-enhanced-dx-tools';
 
 const isServing = process.argv.includes('--mode') === false && !process.argv.includes('build');
 
@@ -32,7 +32,9 @@ const watchStaticJsonPlugin = () => ({
     // Ensure frontend rebuilds (and re-copies via viteStaticCopy) when these files change
     const jsonFiles = ['settings.json'].map(f => resolve(currentDir, 'src', f));
     for (const f of jsonFiles) {
-      if (fs.existsSync(f)) this.addWatchFile(f);
+      if (fs.existsSync(f)) {
+        this.addWatchFile(f);
+      }
     }
   }
 });
@@ -45,13 +47,13 @@ const cleanAssetsPlugin = () => {
     async buildStart() {
       // Only clean in watch mode to avoid duplicate artifacts
       if (this.meta.watchMode) {
-        const fs = await import('node:fs');
-        const path = await import('node:path');
+        const nodeFs = await import('node:fs');
+        const nodePath = await import('node:path');
 
-        const assetsDir = path.resolve(currentDir, 'dist/widgets/assets');
+        const assetsDir = nodePath.resolve(currentDir, 'dist/widgets/assets');
 
-        if (fs.existsSync(assetsDir)) {
-          fs.rmSync(assetsDir, { recursive: true, force: true });
+        if (nodeFs.existsSync(assetsDir)) {
+          nodeFs.rmSync(assetsDir, { recursive: true, force: true });
           console.log('[clean-assets] Cleaned old artifacts');
         }
       }
@@ -68,6 +70,8 @@ export default defineConfig({
     external: ['@jetbrains/youtrack-enhanced-dx-tools']
   },
   plugins: [
+    // Automatically discover widget entry points from src/widgets/*/index.html
+    youtrackWidgetEntries(),
     // Clean old frontend assets before each rebuild in watch mode
     cleanAssetsPlugin(),
     watchStaticJsonPlugin(),
@@ -140,10 +144,7 @@ export default defineConfig({
     // Frontend widget files are always minified (they're bundled code, not explorable)
     minify: true,
     rollupOptions: {
-      input: {
-        // List every widget entry point here
-        enhancedDX: resolve(currentDir, 'src/widgets/enhanced-dx/index.html'),
-      },
+      // Widget entries are discovered automatically by youtrackWidgetEntries()
       external: [
         // Exclude Vite plugins and their Node.js dependencies from bundling
         '@jetbrains/youtrack-enhanced-dx-tools',
