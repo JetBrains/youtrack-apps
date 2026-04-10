@@ -206,6 +206,24 @@ export default function youtrackRouter(): Plugin {
       // Recollect route metadata on every build
       collectRouteMetadata();
     },
+
+    resolveId(id, importer) {
+      // Entry modules have no importer. If a handler entry file has been deleted
+      // since the watcher started, Rollup would abort with "Could not resolve
+      // entry module". Returning the id explicitly lets us handle it in load().
+      if (!importer && /\/(GET|POST|PUT|DELETE)\.ts$/.test(id) && !fs.existsSync(id)) {
+        return id;
+      }
+    },
+
+    load(id) {
+      // Return an empty stub for deleted handler files so the build completes.
+      // generateBundle skips this handler because collectRouteMetadata() already
+      // excluded it from routes (it scans the filesystem on every buildStart).
+      if (/\/(GET|POST|PUT|DELETE)\.ts$/.test(id) && !fs.existsSync(id)) {
+        return '"use strict";\n';
+      }
+    },
     generateBundle(options, bundle) {
       const routesByScope = routes.reduce((acc, route) => {
         if (!acc[route.scope]) {
