@@ -498,18 +498,34 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
       server.watcher.add(handlerGlob);
 
       let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+      let inFlight: Promise<void> | null = null;
+      let pendingAfterFlight = false;
+
+      const runGeneration = () => {
+        inFlight = generateApi()
+          .catch(err => {
+            console.error('[youtrack-api-generator] regeneration failed:', (err as Error).message);
+          })
+          .finally(() => {
+            inFlight = null;
+            if (pendingAfterFlight) {
+              pendingAfterFlight = false;
+              runGeneration();
+            }
+          });
+      };
 
       const handleChange = (filePath: string) => {
         if (!isHandlerFile(filePath)) return;
 
         if (debounceTimer) clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(async () => {
-          try {
-            await generateApi();
-          } catch (err) {
-            console.error('[youtrack-api-generator] regeneration failed:', (err as Error).message);
-          } finally {
-            debounceTimer = null;
+        debounceTimer = setTimeout(() => {
+          debounceTimer = null;
+          if (inFlight) {
+            // Generation already running; coalesce into one trailing run.
+            pendingAfterFlight = true;
+          } else {
+            runGeneration();
           }
         }, watchDebounceMs);
       };
