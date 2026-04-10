@@ -400,16 +400,20 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
       // Same-process cache hit (e.g. second buildStart in watch mode).
       if (key === lastRouteKey) return;
 
-      // Cross-process freshness check: api files from a previous build process
-      // (e.g. dev:upload) are still current if every route file is older than
-      // api.d.ts. Syncing lastRouteKey here makes subsequent buildStarts free.
-      try {
-        const apiMtime = (await fs.stat(apiDtsPath)).mtimeMs;
-        if (routeFiles.every(f => { try { return fs.statSync(f).mtimeMs <= apiMtime; } catch { return false; } })) {
-          lastRouteKey = key;
-          return;
-        }
-      } catch { /* stat failed, fall through to generation */ }
+      // Cross-process freshness check: on the very first buildStart of this
+      // process, api files from a previous build (e.g. dev:upload) are still
+      // current if every route file is older than api.d.ts.
+      // Restricted to lastRouteKey === null so that deletions (which change the
+      // key but don't update surviving files' mtimes) are never silently skipped.
+      if (lastRouteKey === null) {
+        try {
+          const apiMtime = (await fs.stat(apiDtsPath)).mtimeMs;
+          if (routeFiles.every(f => { try { return fs.statSync(f).mtimeMs <= apiMtime; } catch { return false; } })) {
+            lastRouteKey = key;
+            return;
+          }
+        } catch { /* stat failed, fall through to generation */ }
+      }
     }
 
     const project = new Project();
