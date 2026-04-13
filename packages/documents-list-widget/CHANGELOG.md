@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 1.0.4 (2026-04-13)
+
 ## [1.0.3](https://github.com/JetBrains/youtrack-apps/compare/v1.0.2...v1.0.3) (2025-10-24)
 
 
