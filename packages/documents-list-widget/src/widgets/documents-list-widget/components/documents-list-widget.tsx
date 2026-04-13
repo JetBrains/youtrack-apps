@@ -21,6 +21,7 @@ const DocumentsListWidget = () => {
     onConfigCancel,
     editTabId,
     onTabEdit,
+    homeUrl,
   } = useWidget();
 
   useRefreshTimer({
@@ -56,7 +57,7 @@ const DocumentsListWidget = () => {
   const widgetTitle = isConfiguring ? i18n('Document List') : config.title;
 
   return (
-    <WidgetContext.Provider value={{api, appsApi}}>
+    <WidgetContext.Provider value={{api, appsApi, homeUrl}}>
       <ConfigurableWidget
         isConfiguring={isConfiguring}
         dashboardApi={appsApi}
