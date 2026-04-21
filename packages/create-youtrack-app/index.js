@@ -259,8 +259,8 @@ function runHygen(hygenArgs = argv) {
       console.error(styleText("red", 'Error: --name is required'));
       process.exit(1);
     }
-    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
-      console.error(styleText("red", `Error: Invalid property name "${name}". Must start with a letter or underscore and contain only letters, digits, and underscores.`));
+    if (/\s/.test(name)) {
+      console.error(styleText("red", `Error: Invalid property name "${name}". Must not contain whitespace.`));
       process.exit(1);
     }
 
@@ -357,9 +357,12 @@ function runHygen(hygenArgs = argv) {
     if (args.readonly) {
       prop.readOnly = true;
       if (args.const !== undefined) {
-        prop.const = (type === 'integer' || type === 'number')
-          ? Number(args.const)
-          : args.const;
+        if (type === 'integer' || type === 'number') {
+          prop.const = Number(args.const);
+        } else {
+          try { prop.const = JSON.parse(String(args.const)); }
+          catch { prop.const = String(args.const); }
+        }
       }
     }
 

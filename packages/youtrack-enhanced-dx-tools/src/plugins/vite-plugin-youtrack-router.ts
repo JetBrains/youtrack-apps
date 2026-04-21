@@ -10,6 +10,109 @@ type Route = {
   filePath: string;
 };
 
+/**
+ * Find the line index of the handler function inside a Rollup bundle chunk.
+ *
+ * Rollup may inline utility functions (e.g. withPermissions) before the actual
+ * handler. We prefer a function explicitly named `handle`, then fall back to the
+ * first top-level function that is not `withPermissions`.
+ *
+ * Returns -1 if no suitable function is found.
+ */
+/** Lines that Rollup always emits at the top of every CJS chunk — not handler code. */
+const ROLLUP_BOILERPLATE = (line: string): boolean => {
+  const t = line.trim();
+  return (
+    !t ||
+    t === '"use strict";' ||
+    t.startsWith('Object.defineProperty(exports, Symbol.toStringTag') ||
+    /^(var|const)\s+__/.test(t) ||
+    t.includes('__defProp') ||
+    t.includes('__defNormalProp') ||
+    t.includes('__esModule')
+  );
+};
+
+/**
+ * Extract atomic preamble blocks from lines that appear before the handler function.
+ *
+ * Returns each `require()` statement as a single string and each top-level function
+ * declaration (with its full body) as a multi-line string. Rollup boilerplate is stripped.
+ * Storing results in a `Set<string>` gives correct per-scope deduplication: two handlers
+ * that inline the same utility produce identical strings and only one copy ends up in the
+ * assembled scope file.
+ */
+export function extractPreambleBlocks(lines: string[]): string[] {
+  const blocks: string[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    if (ROLLUP_BOILERPLATE(lines[i])) { i++; continue; }
+
+    const t = lines[i].trim();
+
+    // Single-line require() assignment
+    if (/^\s*(const|let|var)\s+\S.*=\s*require\s*\(/.test(t)) {
+      blocks.push(lines[i]);
+      i++;
+      continue;
+    }
+
+    // Top-level function declaration — collect until braces are balanced
+    if (/^function\s+\w+\s*\(/.test(t)) {
+      const blockLines: string[] = [];
+      let braces = 0;
+      let opened = false;
+      while (i < lines.length) {
+        const line = lines[i];
+        blockLines.push(line);
+        for (const ch of line) {
+          if (ch === '{') { braces++; opened = true; }
+          else if (ch === '}') braces--;
+        }
+        i++;
+        if (opened && braces === 0) break;
+      }
+      blocks.push(blockLines.join('\n'));
+      continue;
+    }
+
+    i++;
+  }
+
+  return blocks;
+}
+
+const KNOWN_UTILITIES = /^function\s+(withPermissions|set)\s*\(/;
+
+export function findHandlerStart(lines: string[]): number {
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].match(/^function\s+handle\s*\(/)) return i;
+  }
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].match(/^function\s+\w+\s*\(/) &&
+        !KNOWN_UTILITIES.test(lines[i])) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Extract permission keys from a handler source file.
+ * Matches: withPermissions(<any first arg>, ['PERM1', "PERM2"])
+ * Returns an empty array if no withPermissions call is found.
+ */
+export function extractPermissions(src: string): string[] {
+  const match = src.match(/withPermissions\s*\([\s\S]*?,\s*\[([\s\S]*?)\]\s*\)/m);
+  if (!match || !match[1]) return [];
+  return match[1]
+    .split(',')
+    .map(s => s.trim())
+    .map(s => s.replace(/^['"`]/, '').replace(/['"`]$/, ''))
+    .filter(s => s.length > 0);
+}
+
 export default function youtrackRouter(): Plugin {
   const routerRoot = path.resolve(process.cwd(), 'src/backend/router');
   const routes: Route[] = [];
@@ -44,18 +147,9 @@ export default function youtrackRouter(): Plugin {
     for (const filePath of routeFiles) {
       try {
         const src = fs.readFileSync(filePath, 'utf-8');
-        // Match withPermissions(<fn>, [ 'PERM1', "PERM2" ])
-        const match = src.match(/withPermissions\s*\(\s*(?:function|\([^)]*\)\s*=>)[\s\S]*?,\s*\[([\s\S]*?)\]\s*\)/m);
-        if (match && match[1]) {
-          const inside = match[1];
-          const keys = inside
-            .split(',')
-            .map(s => s.trim())
-            .map(s => s.replace(/^['"`]/, '').replace(/['"`]$/, ''))
-            .filter(s => s.length > 0);
-          if (keys.length > 0) {
-            permissionsByFile.set(filePath, keys);
-          }
+        const keys = extractPermissions(src);
+        if (keys.length > 0) {
+          permissionsByFile.set(filePath, keys);
         }
       } catch {
         // ignore read errors
@@ -112,6 +206,24 @@ export default function youtrackRouter(): Plugin {
       // Recollect route metadata on every build
       collectRouteMetadata();
     },
+
+    resolveId(id, importer) {
+      // Entry modules have no importer. If a handler entry file has been deleted
+      // since the watcher started, Rollup would abort with "Could not resolve
+      // entry module". Returning the id explicitly lets us handle it in load().
+      if (!importer && /\/(GET|POST|PUT|DELETE)\.ts$/.test(id) && !fs.existsSync(id)) {
+        return id;
+      }
+    },
+
+    load(id) {
+      // Return an empty stub for deleted handler files so the build completes.
+      // generateBundle skips this handler because collectRouteMetadata() already
+      // excluded it from routes (it scans the filesystem on every buildStart).
+      if (/\/(GET|POST|PUT|DELETE)\.ts$/.test(id) && !fs.existsSync(id)) {
+        return '"use strict";\n';
+      }
+    },
     generateBundle(options, bundle) {
       const routesByScope = routes.reduce((acc, route) => {
         if (!acc[route.scope]) {
@@ -142,12 +254,7 @@ export default function youtrackRouter(): Plugin {
             let funcStart = -1;
             let funcEnd = -1;
 
-            for (let i = 0; i < lines.length; i++) {
-              if (lines[i].match(/^function\s+\w+\s*\(/)) {
-                funcStart = i;
-                break;
-              }
-            }
+            funcStart = findHandlerStart(lines);
             if (funcStart !== -1) {
               // Extract code before the function
               const codeBeforeFunction = lines.slice(0, funcStart);
@@ -171,19 +278,10 @@ export default function youtrackRouter(): Plugin {
               // Use ES6 imports which Rollup transforms to require() statements.
               // These require() statements will be extracted and placed at module level.
 
-              // Check if there are require() statements (code splitting case)
-              const importsAndTopLevel = codeBeforeFunction.filter(line => {
-                const trimmed = line.trim();
-                if (/^\s*(const|let|var)\s+.*=\s*require\s*\(/.test(trimmed)) {
-                  // Filter out Rollup internal code
-                  if (trimmed.includes('__defProp') || trimmed.includes('__defNormalProp') ||
-                    trimmed.includes('__esModule') || trimmed.startsWith('var __')) {
-                    return false;
-                  }
-                  return true;
-                }
-                return false;
-              });
+              // Extract require() statements and inlined utility functions that Rollup
+              // placed before the handler. Each element is an atomic block (single-line
+              // require or complete function declaration) for correct Set deduplication.
+              const importsAndTopLevel = extractPreambleBlocks(codeBeforeFunction);
 
               // Store imports/code separately for this handler
               const route = routes.find(r => {

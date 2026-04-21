@@ -575,9 +575,10 @@ describe('App Settings', () => {
       );
     });
 
-    test('should fail with invalid property name (starts with digit)', () => {
+    test('should accept property names starting with a digit (valid JSON key)', () => {
       const result = runCLI('settings add --name 1badName --type string', { silent: true });
-      assert.strictEqual(result.success, false, 'Names starting with digits should be rejected');
+      assert.strictEqual(result.success, true, 'Names starting with digits are valid JSON keys and should be accepted');
+      assert.ok(readSettings().properties['1badName']);
     });
 
     test('should fail with invalid property name (contains spaces)', () => {
@@ -585,9 +586,34 @@ describe('App Settings', () => {
       assert.strictEqual(result.success, false, 'Names with spaces should be rejected');
     });
 
-    test('should fail with invalid property name (contains hyphens)', () => {
-      const result = runCLI('settings add --name bad-name --type string', { silent: true });
-      assert.strictEqual(result.success, false, 'Names with hyphens should be rejected');
+    test('should accept kebab-case property names', () => {
+      const result = runCLI('settings add --name api-token --type string', { silent: true });
+      assert.strictEqual(result.success, true, 'Kebab-case names are valid JSON keys and should be accepted');
+      assert.ok(readSettings().properties['api-token']);
+    });
+
+    test('should accept dot-notation property names', () => {
+      const result = runCLI('settings add --name oauth.clientId --type string', { silent: true });
+      assert.strictEqual(result.success, true, 'Dot-notation names are valid JSON keys and should be accepted');
+      assert.ok(readSettings().properties['oauth.clientId']);
+    });
+
+    test('should set const value (boolean false) with --readonly --const false', () => {
+      const result = runCLI('settings add --name featureFlag --type boolean --readonly --const false', { silent: true });
+      assert.strictEqual(result.success, true, result.output);
+
+      const prop = readSettings().properties.featureFlag;
+      assert.strictEqual(prop.readOnly, true);
+      assert.strictEqual(prop.const, false, 'boolean false must not be stored as the string "false"');
+    });
+
+    test('should set const value (boolean true) with --readonly --const true', () => {
+      const result = runCLI('settings add --name featureEnabled --type boolean --readonly --const true', { silent: true });
+      assert.strictEqual(result.success, true, result.output);
+
+      const prop = readSettings().properties.featureEnabled;
+      assert.strictEqual(prop.readOnly, true);
+      assert.strictEqual(prop.const, true, 'boolean true must not be stored as the string "true"');
     });
   });
 });

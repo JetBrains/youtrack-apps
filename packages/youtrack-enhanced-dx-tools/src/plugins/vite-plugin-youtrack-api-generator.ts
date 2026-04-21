@@ -10,6 +10,14 @@ import { execSync } from 'child_process';
 
 type ApiStructureNode = { [key: string]: string | ApiStructureNode };
 
+export const isValidIdentifier = (s: string) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(s);
+
+export const toPascalCase = (s: string) =>
+  s.split(/[-_]+/).filter(Boolean).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('');
+
+export const isHandlerFile = (filePath: string): boolean =>
+  /\/(GET|POST|PUT|DELETE)\.ts$/.test(filePath);
+
 // Try to run local ESLint with project rules to auto-fix formatting of generated files.
 // This is best-effort: if ESLint is not installed, we just skip with a warning.
 const runEslintFix = (files: string | string[]) => {
@@ -39,7 +47,7 @@ const runEslintFix = (files: string | string[]) => {
   }
 };
 
-const populateApiStructure = (
+export const populateApiStructure = (
   parts: string[],
   method: 'GET' | 'POST',
   handler: string,
@@ -57,7 +65,7 @@ const populateApiStructure = (
   ] = `ExtractRPCFromHandler<${handler}.Handle>`;
 };
 
-const processRouteFile = async (
+export const processRouteFile = async (
   sourceFile: SourceFile,
   routerRoot: string,
   apiStructure: ApiStructureNode,
@@ -68,7 +76,7 @@ const processRouteFile = async (
   const scope = parts[0];
   const method = path.basename(sourceFile.getFilePath(), '.ts') as 'GET' | 'POST';
   const routePath = parts.slice(1, -1);
-  const handlerName = `${scope}${routePath.join('')}${method}Handler`;
+  const handlerName = `${scope}${routePath.map(toPascalCase).join('')}${method}Handler`;
 
   populateApiStructure(
     [scope, ...routePath],
@@ -86,16 +94,20 @@ const processRouteFile = async (
   typeInfo.namespaceImports.add(handlerName);
 };
 
-const formatApiStructure = (obj: ApiStructureNode): string => {
-  const entries = Object.entries(obj).
-    map(([key, value]) => {
+export const formatApiStructure = (obj: ApiStructureNode, depth = 0): string => {
+  const pad = '    '.repeat(depth + 1);
+  const closePad = '    '.repeat(depth);
+  const entries = Object.entries(obj)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, value]) => {
+      const safeKey = isValidIdentifier(key) ? key : `'${key}'`;
       if (typeof value === 'string') {
-        return `${key}: ${value};`;
+        return `${pad}${safeKey}: ${value};`;
       }
-      return `${key}: ${formatApiStructure(value)};`;
-    }).
-    join('\n');
-  return `{\n${entries}\n}`;
+      return `${pad}${safeKey}: ${formatApiStructure(value, depth + 1)};`;
+    })
+    .join('\n');
+  return `{\n${entries}\n${closePad}}`;
 };
 
 // Helper function to recursively discover all @zod-to-schema annotated types
@@ -179,6 +191,7 @@ const generateZodSchemas = async (routeFiles: string[]) => {
   const apiZodPath = 'src/api/api.zod.ts';
 
   try {
+    await fs.ensureDir(path.dirname(apiZodPath));
     const tempTypesFile = 'temp-types-for-zod.ts';
     let typesContent = '';
     let hasTypes = false;
@@ -230,7 +243,7 @@ const generateZodSchemas = async (routeFiles: string[]) => {
 
     // Convert discovered types to content string
     if (allDiscoveredTypes.size > 0) {
-      typesContent = Array.from(allDiscoveredTypes).join('\n\n') + '\n\n';
+      typesContent = Array.from(allDiscoveredTypes).sort().join('\n\n') + '\n\n';
       hasTypes = true;
     }
 
@@ -245,7 +258,14 @@ const generateZodSchemas = async (routeFiles: string[]) => {
           cwd: process.cwd()
         });
 
-        const generatedContent = await fs.readFile(apiZodPath, 'utf8');
+        let generatedContent = await fs.readFile(apiZodPath, 'utf8');
+
+        // ts-to-zod generates Zod v3-style z.record(valueSchema) calls, but
+        // Zod v4 removed the single-argument overload. Patch to z.record(z.string(), valueSchema).
+        generatedContent = generatedContent.replace(
+          /z\.record\((?!z\.string\(\))/g,
+          'z.record(z.string(), '
+        );
 
         const buildNestedSchema = (mapping: typeof schemaMapping) => {
           const result: Record<string, any> = {};
@@ -282,15 +302,14 @@ const generateZodSchemas = async (routeFiles: string[]) => {
         // Generate schema object string without JSON.stringify to preserve object references
         const generateSchemaObject = (obj: Record<string, any>, indent = 0): string => {
           const spaces = '  '.repeat(indent);
-          const entries = Object.entries(obj).map(([key, value]) => {
+          const entries = Object.entries(obj).sort(([a], [b]) => a.localeCompare(b)).map(([key, value]) => {
+            const safeKey = isValidIdentifier(key) ? key : `'${key}'`;
             if (typeof value === 'string') {
-              // This is a schema reference, don't quote it
-              return `${spaces}  ${key}: ${value}`;
+              return `${spaces}  ${safeKey}: ${value}`;
             } else if (typeof value === 'object' && value !== null) {
-              // This is a nested object
-              return `${spaces}  ${key}: {\n${generateSchemaObject(value, indent + 1)}\n${spaces}  }`;
+              return `${spaces}  ${safeKey}: {\n${generateSchemaObject(value, indent + 1)}\n${spaces}  }`;
             }
-            return `${spaces}  ${key}: ${value}`;
+            return `${spaces}  ${safeKey}: ${value}`;
           }).join(',\n');
           return entries;
         };
@@ -299,15 +318,10 @@ const generateZodSchemas = async (routeFiles: string[]) => {
 
         // Prevent duplicate schema exports by removing any existing ones first
         // This handles race conditions in watch mode where multiple builds may occur
-        let cleanedContent = generatedContent;
-        
-        // Remove all existing schema exports (handle multiple occurrences)
         const schemaMarker = '// Nested schema object for validation system';
-        if (cleanedContent.includes(schemaMarker)) {
-          // Split on the marker and keep only the first part (before any schema exports)
-          const parts = cleanedContent.split(schemaMarker);
-          cleanedContent = parts[0].trimEnd();
-        }
+        const cleanedContent = (generatedContent.includes(schemaMarker)
+          ? generatedContent.split(schemaMarker)[0]
+          : generatedContent).trimEnd();
         
         // Now append the schema once
         const enhancedContent = cleanedContent + '\n\n' +
@@ -345,16 +359,58 @@ const generateZodSchemas = async (routeFiles: string[]) => {
   }
 };
 
-export default function youtrackApiGenerator(): Plugin {
+export interface YoutrackApiGeneratorOptions {
+  watchDebounceMs?: number;
+}
+
+/** Stable key for the current set of route files: sorted paths + mtimes. */
+const routeKey = (routeFiles: string[]): string =>
+  [...routeFiles].sort().map(f => {
+    try { return `${f}:${fs.statSync(f).mtimeMs}`; } catch { return f; }
+  }).join('|');
+
+export default function youtrackApiGenerator(options: YoutrackApiGeneratorOptions = {}): Plugin {
+  const { watchDebounceMs = 500 } = options;
   const routerRoot = path.resolve(process.cwd(), 'src/backend/router');
   const apiDtsPath = path.resolve(process.cwd(), 'src/api/api.d.ts');
   const apiZodPath = path.resolve(process.cwd(), 'src/api/api.zod.ts');
+
+  // Cache the last-seen route key so that buildStart is a no-op when nothing
+  // has changed. This prevents spurious re-writes to api.d.ts / api.zod.ts
+  // which would otherwise trigger a rebuild loop via the file watcher.
+  let lastRouteKey: string | null = null;
 
   const generateApi = async () => {
     const routeFiles = await glob('**/(GET|POST|PUT|DELETE).ts', {
       cwd: routerRoot,
       absolute: true
     });
+
+    // Skip generation if routes are unchanged and both output files already exist.
+    const key = routeKey(routeFiles);
+    const [apiDtsExists, apiZodExists] = await Promise.all([
+      fs.pathExists(apiDtsPath),
+      fs.pathExists(apiZodPath),
+    ]);
+    if (apiDtsExists && apiZodExists) {
+      // Same-process cache hit (e.g. second buildStart in watch mode).
+      if (key === lastRouteKey) return;
+
+      // Cross-process freshness check: on the very first buildStart of this
+      // process, api files from a previous build (e.g. dev:upload) are still
+      // current if every route file is older than api.d.ts.
+      // Restricted to lastRouteKey === null so that deletions (which change the
+      // key but don't update surviving files' mtimes) are never silently skipped.
+      if (lastRouteKey === null) {
+        try {
+          const apiMtime = (await fs.stat(apiDtsPath)).mtimeMs;
+          if (routeFiles.every(f => { try { return fs.statSync(f).mtimeMs <= apiMtime; } catch { return false; } })) {
+            lastRouteKey = key;
+            return;
+          }
+        } catch { /* stat failed, fall through to generation */ }
+      }
+    }
 
     const project = new Project();
     project.addSourceFilesAtPaths(routeFiles);
@@ -373,47 +429,33 @@ export default function youtrackApiGenerator(): Plugin {
       )
     );
 
-    const apiDtsFile = project.createSourceFile(apiDtsPath, '', {
-      overwrite: true
-    });
-
-    apiDtsFile.addImportDeclaration({
-      moduleSpecifier: '../backend/types/utility',
-      namedImports: ['ExtractRPCFromHandler']
-    });
-
-    for (const [moduleSpecifier, typeInfo] of allTypes.entries()) {
-      // Prioritize namespace imports over named imports to avoid conflicts
-      // If we have namespace imports, use those exclusively for this module
-      if (typeInfo.namespaceImports.size > 0) {
-        for (const namespaceName of typeInfo.namespaceImports) {
-          apiDtsFile.addImportDeclaration({
-            moduleSpecifier,
-            namespaceImport: namespaceName
-          });
-        }
-      } else if (typeInfo.namedImports.size > 0) {
-        // Only use named imports if we don't have namespace imports for this module
-        apiDtsFile.addImportDeclaration({
-          moduleSpecifier,
-          namedImports: Array.from(typeInfo.namedImports)
-        });
-      }
-    }
-
-    apiDtsFile.addTypeAlias({
-      name: 'ApiRouter',
-      isExported: true,
-      type: formatApiStructure(apiStructure)
-    });
-
     // Generate Zod schemas BEFORE writing api.d.ts to avoid import resolution errors
     await generateZodSchemas(routeFiles);
 
-    // Now write the api.d.ts file
-    await fs.writeFile(apiDtsPath, apiDtsFile.getFullText());
-    // Format the generated declaration file
+    // Build api.d.ts as a plain string so formatApiStructure's indentation is
+    // preserved exactly — going through ts-morph's printer flattens all nesting.
+    const importLines = [`import { ExtractRPCFromHandler } from "../backend/types/utility";`];
+    for (const [moduleSpecifier, typeInfo] of Array.from(allTypes.entries()).sort(([a], [b]) => a.localeCompare(b))) {
+      for (const namespaceName of Array.from(typeInfo.namespaceImports).sort()) {
+        importLines.push(`import * as ${namespaceName} from "${moduleSpecifier}";`);
+      }
+      for (const namedImport of Array.from(typeInfo.namedImports).sort()) {
+        importLines.push(`import { ${namedImport} } from "${moduleSpecifier}";`);
+      }
+    }
+
+    const fileContent =
+      importLines.join('\n') +
+      '\n\n' +
+      `export type ApiRouter = ${formatApiStructure(apiStructure)};\n`;
+
+    await fs.ensureDir(path.dirname(apiDtsPath));
+    await fs.writeFile(apiDtsPath, fileContent);
     runEslintFix(apiDtsPath);
+
+    // Update the cache only after all writes succeed so a failed generation
+    // is retried on the next buildStart.
+    lastRouteKey = key;
   };
 
   return {
@@ -433,8 +475,60 @@ export default function youtrackApiGenerator(): Plugin {
     },
 
     async buildStart() {
-      // Regenerate API types on every build to pick up route changes
-      await generateApi();
-    }
+      // Regenerate API types on every build to pick up route changes.
+      // Non-fatal: errors are logged so the backend build still produces handler files.
+      try {
+        await generateApi();
+      } catch (err) {
+        console.error('[youtrack-api-generator] Failed to generate API types:', (err as Error).message);
+      }
+      // Watch the router root so new/deleted handler files trigger a rebuild in
+      // vite build --watch mode. Without this, Rollup only watches files already
+      // in the module graph — adding a handler to a new subdirectory would never
+      // be detected. In non-watch builds this call is silently ignored.
+      this.addWatchFile(routerRoot);
+    },
+
+    configureServer(server) {
+      const handlerGlob = path.join(routerRoot, '**', '{GET,POST,PUT,DELETE}.ts');
+      server.watcher.add(handlerGlob);
+
+      let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+      let inFlight: Promise<void> | null = null;
+      let pendingAfterFlight = false;
+
+      const runGeneration = () => {
+        inFlight = generateApi()
+          .catch(err => {
+            console.error('[youtrack-api-generator] regeneration failed:', (err as Error).message);
+          })
+          .finally(() => {
+            inFlight = null;
+            if (pendingAfterFlight) {
+              pendingAfterFlight = false;
+              runGeneration();
+            }
+          });
+      };
+
+      const handleChange = (filePath: string) => {
+        if (!isHandlerFile(filePath)) return;
+
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          debounceTimer = null;
+          if (inFlight) {
+            // Generation already running; coalesce into one trailing run.
+            pendingAfterFlight = true;
+          } else {
+            runGeneration();
+          }
+        }, watchDebounceMs);
+      };
+
+      server.watcher.on('add', handleChange);
+      server.watcher.on('change', handleChange);
+      server.watcher.on('unlink', handleChange);
+    },
   };
 }

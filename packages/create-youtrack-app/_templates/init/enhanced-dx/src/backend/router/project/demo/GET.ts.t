@@ -1,8 +1,6 @@
 ---
 to: "src/backend/router/project/demo/GET.ts"
 ---
-import {Project} from "@/api/youtrack-types";
-
 /**
  * @zod-to-schema
  */
@@ -29,18 +27,16 @@ export default function handle(ctx: CtxGet<ProjectDemoRes, ProjectDemoReq, "proj
     const message = ctx.request.getParameter('message') || 'Hello from project demo!';
     const project = ctx.project;
 
-    const response: ProjectDemoRes = {
+    ctx.response.json({
         projectInfo: {
-            id: project?.key || 'unknown',
-            name: project?.name || 'Unknown Project',
-            shortName: project?.shortName || 'UP',
-            description: project?.description || 'No description'
+            id: project.key,
+            name: project.name,
+            shortName: project.shortName,
+            description: project.description ?? undefined,
         },
-        message: message,
-        timestamp: Date.now()
-    };
-
-    ctx.response.json(response);
+        message,
+        timestamp: Date.now(),
+    });
 }
 
 export type Handle = typeof handle;

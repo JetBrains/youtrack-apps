@@ -1,5 +1,5 @@
 ---
-to: vite.config.ts
+to: "<%= isEnhancedDX ? null : 'vite.config.ts' %>"
 inject: true
 after: '// List every widget entry point here'
 ---

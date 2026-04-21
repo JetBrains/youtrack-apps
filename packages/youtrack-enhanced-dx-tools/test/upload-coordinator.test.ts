@@ -96,6 +96,9 @@ describe('UploadCoordinator', () => {
 
   it('runs upload when state file has both backend and frontend', async () => {
     const statePath = path.join(testCwd, '.build-state.json');
+    fs.ensureDirSync(path.join(testCwd, 'dist'));
+    fs.writeJsonSync(path.join(testCwd, 'dist', 'manifest.json'), { name: 'test' });
+
     const coord = new UploadCoordinator({
       cwd: testCwd,
       stateFile: '.build-state.json',
@@ -122,6 +125,78 @@ describe('UploadCoordinator', () => {
 
     coord.stop();
     // If we get here without throw, upload succeeded
+  });
+
+  it('skips upload when dist/manifest.json is missing', async () => {
+    const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'upload-coord-manifest-'));
+    const statePath = path.join(cwd, '.build-state.json');
+    // No dist/manifest.json created — simulates backend-only rebuild that wiped dist/
+
+    let uploadCalled = false;
+    const coord = new UploadCoordinator({
+      cwd,
+      stateFile: '.build-state.json',
+      debounceMs: 10,
+      // Upload command that would fail loudly if called
+      uploadCommand: 'node -e "process.exit(1)"'
+    });
+
+    await fs.writeJson(statePath, {
+      backend: { timestamp: Date.now(), hash: 'a1' },
+      frontend: { timestamp: Date.now(), hash: 'b1' }
+    });
+
+    coord.start();
+
+    // Trigger a change
+    await new Promise(r => setTimeout(r, 50));
+    await fs.writeJson(statePath, {
+      backend: { timestamp: Date.now(), hash: 'a2' },
+      frontend: { timestamp: Date.now(), hash: 'b1' }
+    });
+
+    // Wait for debounce
+    await new Promise(r => setTimeout(r, 100));
+
+    coord.stop();
+    fs.removeSync(cwd);
+    // If we get here without throw, upload was correctly skipped (exit(1) was never called)
+  });
+
+  it('uploads after manifest.json appears on subsequent state change', async () => {
+    const cwd = fs.mkdtempSync(path.join(os.tmpdir(), 'upload-coord-manifest2-'));
+    const statePath = path.join(cwd, '.build-state.json');
+
+    const coord = new UploadCoordinator({
+      cwd,
+      stateFile: '.build-state.json',
+      debounceMs: 10,
+      uploadCommand: 'node -e "process.exit(0)"'
+    });
+
+    // Start without manifest.json
+    await fs.writeJson(statePath, {
+      backend: { timestamp: Date.now(), hash: 'x1' },
+      frontend: { timestamp: Date.now(), hash: 'y1' }
+    });
+
+    coord.start();
+    await new Promise(r => setTimeout(r, 50));
+
+    // Simulate frontend build completing: create manifest.json + update state
+    fs.ensureDirSync(path.join(cwd, 'dist'));
+    fs.writeJsonSync(path.join(cwd, 'dist', 'manifest.json'), { name: 'test' });
+    await fs.writeJson(statePath, {
+      backend: { timestamp: Date.now(), hash: 'x1' },
+      frontend: { timestamp: Date.now(), hash: 'y2' }
+    });
+
+    // Wait for debounce + upload
+    await new Promise(r => setTimeout(r, 100));
+
+    coord.stop();
+    fs.removeSync(cwd);
+    // If we get here without throw, upload succeeded after manifest appeared
   });
 
   it('stop removes signal handlers and clears watcher', () => {
