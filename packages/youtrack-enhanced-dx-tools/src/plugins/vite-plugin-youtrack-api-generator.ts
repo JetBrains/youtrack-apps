@@ -98,6 +98,7 @@ export const formatApiStructure = (obj: ApiStructureNode, depth = 0): string => 
   const pad = '    '.repeat(depth + 1);
   const closePad = '    '.repeat(depth);
   const entries = Object.entries(obj)
+    .sort(([a], [b]) => a.localeCompare(b))
     .map(([key, value]) => {
       const safeKey = isValidIdentifier(key) ? key : `'${key}'`;
       if (typeof value === 'string') {
@@ -242,7 +243,7 @@ const generateZodSchemas = async (routeFiles: string[]) => {
 
     // Convert discovered types to content string
     if (allDiscoveredTypes.size > 0) {
-      typesContent = Array.from(allDiscoveredTypes).join('\n\n') + '\n\n';
+      typesContent = Array.from(allDiscoveredTypes).sort().join('\n\n') + '\n\n';
       hasTypes = true;
     }
 
@@ -301,7 +302,7 @@ const generateZodSchemas = async (routeFiles: string[]) => {
         // Generate schema object string without JSON.stringify to preserve object references
         const generateSchemaObject = (obj: Record<string, any>, indent = 0): string => {
           const spaces = '  '.repeat(indent);
-          const entries = Object.entries(obj).map(([key, value]) => {
+          const entries = Object.entries(obj).sort(([a], [b]) => a.localeCompare(b)).map(([key, value]) => {
             const safeKey = isValidIdentifier(key) ? key : `'${key}'`;
             if (typeof value === 'string') {
               return `${spaces}  ${safeKey}: ${value}`;
@@ -317,15 +318,10 @@ const generateZodSchemas = async (routeFiles: string[]) => {
 
         // Prevent duplicate schema exports by removing any existing ones first
         // This handles race conditions in watch mode where multiple builds may occur
-        let cleanedContent = generatedContent;
-        
-        // Remove all existing schema exports (handle multiple occurrences)
         const schemaMarker = '// Nested schema object for validation system';
-        if (cleanedContent.includes(schemaMarker)) {
-          // Split on the marker and keep only the first part (before any schema exports)
-          const parts = cleanedContent.split(schemaMarker);
-          cleanedContent = parts[0].trimEnd();
-        }
+        const cleanedContent = (generatedContent.includes(schemaMarker)
+          ? generatedContent.split(schemaMarker)[0]
+          : generatedContent).trimEnd();
         
         // Now append the schema once
         const enhancedContent = cleanedContent + '\n\n' +
@@ -439,11 +435,11 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
     // Build api.d.ts as a plain string so formatApiStructure's indentation is
     // preserved exactly — going through ts-morph's printer flattens all nesting.
     const importLines = [`import { ExtractRPCFromHandler } from "../backend/types/utility";`];
-    for (const [moduleSpecifier, typeInfo] of allTypes.entries()) {
-      for (const namespaceName of typeInfo.namespaceImports) {
+    for (const [moduleSpecifier, typeInfo] of Array.from(allTypes.entries()).sort(([a], [b]) => a.localeCompare(b))) {
+      for (const namespaceName of Array.from(typeInfo.namespaceImports).sort()) {
         importLines.push(`import * as ${namespaceName} from "${moduleSpecifier}";`);
       }
-      for (const namedImport of typeInfo.namedImports) {
+      for (const namedImport of Array.from(typeInfo.namedImports).sort()) {
         importLines.push(`import { ${namedImport} } from "${moduleSpecifier}";`);
       }
     }
