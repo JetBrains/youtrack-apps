@@ -19,14 +19,14 @@ To learn more about app development for the YouTrack platform, please refer to o
 
 After you have generated an app, you may want to add more features. Add new features quickly with one of these commands:
 
-| Action | Command |
-| --- | --- |
-| Add a [settings declaration](https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html) | `npx @jetbrains/create-youtrack-app settings init` |
-| Add one or more properties to the setting scheme created using the command listed above | `npx @jetbrains/create-youtrack-app settings add` |
-| Add another [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-extension-points.html) | `npx @jetbrains/create-youtrack-app widget add` |
+| Action                                                                                                                 | Command |
+|------------------------------------------------------------------------------------------------------------------------| --- |
+| Add a [settings declaration](https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html)                 | `npx @jetbrains/create-youtrack-app settings init` |
+| Add one or more properties to the setting schema created using the command listed above                                | `npx @jetbrains/create-youtrack-app settings add` |
+| Add another [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-widgets.html)                         | `npx @jetbrains/create-youtrack-app widget add` |
 | Declare an [extension property](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html) | `npx @jetbrains/create-youtrack-app extension-property add` |
-| Add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html) | `npx @jetbrains/create-youtrack-app http-handler add` |
-| View a list of available commands | `npx @jetbrains/create-youtrack-app --help` |
+| Add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html)        | `npx @jetbrains/create-youtrack-app http-handler add` |
+| View a list of available commands                                                                                      | `npx @jetbrains/create-youtrack-app --help` |
 
 ### Enhanced DX: NestJS-Style Code Generation
 
@@ -34,7 +34,7 @@ For apps created with **Enhanced DX (TypeScript)**, a simplified, NestJS-inspire
 
 #### Quick Commands
 
-Generated enhanced-dx apps include `npm run generate` (or `npm run g` for short) that uses smart positional arguments:
+Generated Enhanced DX apps include `npm run generate` (or `npm run g` for short), which supports smart positional arguments:
 
 **HTTP Handlers:**
 ```bash
@@ -60,7 +60,7 @@ npm run g -- s init --title "My Settings" --description "..."  # Short alias
 
 **Interactive Menu:**
 ```bash
-npm run g                                             # Shows menu to select what to generate
+npm run g                                             # Shows a menu for choosing what to generate
 ```
 
 #### Syntax Reference
@@ -81,13 +81,13 @@ npm run g                                             # Shows menu to select wha
 
 **App Settings:** `npm run g -- settings init [--title TITLE] [--description DESC]`
 - `init`: Initialize settings schema
-  - With args: `--title` and `--description` create schema directly (testable)
+  - With args: `--title` and `--description` create the schema directly (useful for tests)
   - Without args: Interactive prompts for title and description
-- `add`: Add a new property to existing settings schema (interactive only)
+- `add`: Add a new property to an existing settings schema (interactive only)
 - **Aliases:** `settings`, `setting`, `s`
 
 
-### Сontributing
+### Contributing
 
 To test locally, run one of the package.json scripts like `npm run widget`. This generator uses [Hygen](https://www.hygen.io/docs/generators) under the hood.
 

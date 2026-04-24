@@ -7,44 +7,44 @@ module.exports = {
         {
           type: 'select',
           name: 'pathPrefix',
-          message: 'Select endpoint path prefix:',
+          message: 'Which endpoint scope do you want to use?',
           choices: [
-            { name: 'global', message: 'global - Global endpoints' },
-            { name: 'issue', message: 'issue - Issue-specific endpoints' },
-            { name: 'project', message: 'project - Project-specific endpoints' },
-            { name: 'custom', message: 'custom - Enter custom path' }
+            { name: 'global', message: 'global - Global endpoint' },
+            { name: 'issue', message: 'issue - Issue-specific endpoint' },
+            { name: 'project', message: 'project - Project-specific endpoint' },
+            { name: 'custom', message: 'custom - Enter a custom path' }
           ]
         },
         {
           type: 'input',
           name: 'pathSuffix',
-          message: ({ pathPrefix }) => pathPrefix === 'custom' 
-            ? 'Endpoint path (relative to router/, e.g. integration/trigger):'
-            : `Endpoint path suffix (after ${pathPrefix}/, e.g. testSteps):`,
+          message: ({ pathPrefix }) => pathPrefix === 'custom'
+            ? 'What path should this endpoint use? (relative to router/, for example, integration/trigger)'
+            : `What path should this endpoint use after ${pathPrefix}/? (for example, testSteps)`,
           validate: validateNotEmpty
         },
         {
           type: 'select',
           name: 'method',
-          message: 'HTTP Method:',
+          message: 'Which HTTP method should this endpoint use?',
           choices: ['GET', 'POST', 'PUT', 'DELETE']
         },
         {
           type: 'input',
           name: 'reqType',
-          message: 'Request type (e.g. MyReqDto, never):',
+          message: 'What request type should this endpoint use? (for example, MyReqDto or never)',
           initial: 'never'
         },
         {
           type: 'input',
           name: 'resType',
-          message: 'Response type (e.g. MyResDto, never):',
+          message: 'What response type should this endpoint use? (for example, MyResDto or never)',
           initial: 'never'
         },
         {
           type: 'input',
           name: 'controller',
-          message: 'Controller function to call (leave empty for inline):'
+          message: 'Which controller function should this endpoint call? Leave empty to generate the handler directly in this file.'
         }
       ])
       .then(({ pathPrefix, pathSuffix, method, reqType, resType, controller }) => {

@@ -46,6 +46,6 @@ const coordinator = new UploadCoordinator({
 
 coordinator.start();
 
-console.log('[upload-coordinator] Started successfully');
+console.log('[upload-coordinator] Started');
 console.log(`[upload-coordinator] State file: ${stateFile}`);
 console.log(`[upload-coordinator] Debounce: ${debounceMs}ms`);

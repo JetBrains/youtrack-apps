@@ -29,11 +29,11 @@ export default function youtrackDevHtml(options: DevHtmlOptions = {}): Plugin {
         }
 
         if (!ctx.filename) {
-          console.warn('[youtrack-dev-html] Could not determine widget path from filename');
+          console.warn('[youtrack-dev-html] Could not determine the widget path from the filename');
           return html;
         }
 
-        console.log(`[youtrack-dev-html] Transforming ${ctx.filename} to use dev server`);
+        console.log(`[youtrack-dev-html] Transforming ${ctx.filename} to use the dev server`);
 
         // Use the source entry point (typically index.tsx) instead of the built asset
         // The built HTML has bundled assets like "../../widgets/assets/xxx.js", but we need the original source
@@ -68,7 +68,7 @@ export default function youtrackDevHtml(options: DevHtmlOptions = {}): Plugin {
 
         devHtml = devHtml.replace('</body>', `${devScripts}\n  </body>`);
 
-        console.log(`[youtrack-dev-html] Injected dev server scripts: ${fullDevUrl}/${widgetPath}/${originalEntry}`);
+        console.log(`[youtrack-dev-html] Injected dev-server scripts: ${fullDevUrl}/${widgetPath}/${originalEntry}`);
 
         return devHtml;
       }

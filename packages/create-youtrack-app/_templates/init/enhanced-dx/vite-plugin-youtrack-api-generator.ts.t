@@ -82,20 +82,20 @@ const discoverAnnotatedTypes = async (filePath: string, processedFiles: Set<stri
   processedFiles.add(filePath);
 
   const discoveredTypes: string[] = [];
-  
+
   try {
     const content = await fs.readFile(filePath, 'utf8');
-    
+
     if (content.includes('@zod-to-schema')) {
       // two-step approach to find annotated types
       // Step 1: Find all @zod-to-schema annotations
       const annotationPattern = /\/\*\*\s*\n\s*\*\s*@zod-to-schema\s*\n\s*\*\//g;
       const annotations = [...content.matchAll(annotationPattern)];
-      
+
       for (const annotation of annotations) {
         const startIndex = annotation.index + annotation[0].length;
         const remainingContent = content.substring(startIndex);
-        
+
         // Step 2: Look for the next export type after each annotation
         const typeMatch = remainingContent.match(/\s*export\s+type\s+\w+\s*=\s*(?:\{[\s\S]*?\}|(?:\s*\|?\s*"[^"]*"\s*)+);?/);
         if (typeMatch) {
@@ -105,7 +105,7 @@ const discoverAnnotatedTypes = async (filePath: string, processedFiles: Set<stri
         }
       }
     }
-    
+
     // Find import statements that might reference other annotated types
     const importMatches = content.match(/import\s+(?:type\s+)?{[^}]+}\s+from\s+['"][^'"]+['"];?/g);
     if (importMatches) {
@@ -114,7 +114,7 @@ const discoverAnnotatedTypes = async (filePath: string, processedFiles: Set<stri
         const pathMatch = importStatement.match(/from\s+['"]([^'"]+)['"]/);
         if (pathMatch) {
           let importPath = pathMatch[1];
-          
+
           // Resolve relative imports
           if (importPath.startsWith('.')) {
             const currentDir = path.dirname(filePath);
@@ -124,7 +124,7 @@ const discoverAnnotatedTypes = async (filePath: string, processedFiles: Set<stri
             const srcDir = path.resolve(process.cwd(), 'src');
             importPath = path.resolve(srcDir, importPath.substring(2));
           }
-          
+
           // Add .ts extension if not present
           if (!importPath.endsWith('.ts') && !importPath.endsWith('.tsx')) {
             if (await fs.pathExists(importPath + '.ts')) {
@@ -133,7 +133,7 @@ const discoverAnnotatedTypes = async (filePath: string, processedFiles: Set<stri
               importPath += '.tsx';
             }
           }
-          
+
           // Recursively check imported files
           if (await fs.pathExists(importPath)) {
             const nestedTypes = await discoverAnnotatedTypes(importPath, processedFiles);
@@ -144,51 +144,51 @@ const discoverAnnotatedTypes = async (filePath: string, processedFiles: Set<stri
     }
   } catch (error) {
     // Silently ignore files that can't be read
-    console.warn(`Warning: Could not read file ${filePath}: ${(error as Error).message}`);
+    console.warn(`[youtrack-api-generator] Could not read ${filePath}: ${(error as Error).message}`);
   }
-  
+
   return discoveredTypes;
 };
 
 const generateZodSchemas = async (routeFiles: string[]) => {
   const apiZodPath = 'src/api/api.zod.ts';
-  
+
   try {
     const tempTypesFile = 'temp-types-for-zod.ts';
     let typesContent = '';
     let hasTypes = false;
     const schemaMapping: { [key: string]: { path: string[], method: string, reqType: string, resType: string } } = {};
     const allDiscoveredTypes = new Set<string>();
-    
+
     for (const file of routeFiles) {
       const content = await fs.readFile(file, 'utf8');
-      
+
       if (content.includes('@zod-to-schema')) {
         // Discover all annotated types from this file and its dependencies
         const processedFiles = new Set<string>();
         const discoveredTypes = await discoverAnnotatedTypes(file, processedFiles);
-        
+
         // Add all discovered types to collection
         for (const typeDefinition of discoveredTypes) {
           allDiscoveredTypes.add(typeDefinition);
         }
-        
+
         // extract the route-specific types for schema mapping
         const routeTypeMatches = content.match(/export\s+type\s+\w+(?:Req|Res)\s*=\s*(?:{[\s\S]*?}|[^;]+);?/g);
         if (routeTypeMatches) {
           hasTypes = true;
-          
+
           // Extract path information for schema mapping
           const relativePath = path.relative(path.resolve(process.cwd(), 'src/backend/router'), file);
           const parts = relativePath.split(path.sep);
           const method = path.basename(file, '.ts') as 'GET' | 'POST' | 'PUT' | 'DELETE';
           const routePath = parts.slice(0, -1); // Remove the method file
-          
+
           // Extract type names - expecting descriptive names that are already unique
           // e.g., CreateTestRunReq, UpdateTestStepReq, GetProjectSettingsRes
           const reqMatch = content.match(/export\s+type\s+(\w+Req)\s*=/);
           const resMatch = content.match(/export\s+type\s+(\w+Res)\s*=/);
-          
+
           // Include in schema mapping if we have at least one type (for GET endpoints, only Res is needed)
           if (reqMatch || resMatch) {
             const pathKey = routePath.join('/') + '/' + method;
@@ -202,34 +202,34 @@ const generateZodSchemas = async (routeFiles: string[]) => {
         }
       }
     }
-    
+
     // Convert discovered types to content string
     if (allDiscoveredTypes.size > 0) {
       typesContent = Array.from(allDiscoveredTypes).join('\n\n') + '\n\n';
       hasTypes = true;
     }
-    
 
-    
+
+
     if (hasTypes) {
       // Write temp file to current working directory
       await fs.writeFile(tempTypesFile, typesContent);
-      
+
       // Run ts-to-zod with proper error handling
       try {
         execSync(`npx ts-to-zod ${tempTypesFile} ${apiZodPath} --skipValidation`, {
           stdio: 'inherit',
           cwd: process.cwd()
         });
-        
+
         const generatedContent = await fs.readFile(apiZodPath, 'utf8');
-        
+
         const buildNestedSchema = (mapping: typeof schemaMapping) => {
           const result: Record<string, unknown> = {};
-          
+
           for (const [, info] of Object.entries(mapping)) {
             let current = result;
-            
+
             // Navigate/create the nested structure
             for (const segment of info.path) {
               if (!current[segment]) {
@@ -237,7 +237,7 @@ const generateZodSchemas = async (routeFiles: string[]) => {
               }
               current = current[segment];
             }
-            
+
             // Add the method and schemas
             if (!current[info.method]) {
               current[info.method] = {};
@@ -250,12 +250,12 @@ const generateZodSchemas = async (routeFiles: string[]) => {
               current[info.method].Res = `${info.resType.charAt(0).toLowerCase() + info.resType.slice(1)}Schema`;
             }
           }
-          
+
           return result;
         };
-        
+
         const nestedSchema = buildNestedSchema(schemaMapping);
-        
+
         // Generate schema object string without JSON.stringify to preserve object references
         const generateSchemaObject = (obj: Record<string, unknown>, indent = 0): string => {
           const spaces = '  '.repeat(indent);
@@ -271,31 +271,31 @@ const generateZodSchemas = async (routeFiles: string[]) => {
           }).join(',\n');
           return entries;
         };
-        
+
         const schemaObjectString = `{\n${generateSchemaObject(nestedSchema)}\n}`;
-        
-        const enhancedContent = generatedContent + '\n' + 
+
+        const enhancedContent = generatedContent + '\n' +
           `// Nested schema object for validation system\n` +
           `export const schema = ${schemaObjectString};\n`;
-        
+
         await fs.writeFile(apiZodPath, enhancedContent);
-        
+
         console.log('✓ Generated Zod schemas with ts-to-zod');
       } catch (execError) {
-        console.error('ts-to-zod failed:', (execError as Error).message);
+        console.error('[youtrack-api-generator] ts-to-zod failed:', (execError as Error).message);
         throw execError;
       }
-      
+
       // Clean up temp file
       await fs.remove(tempTypesFile);
-      
+
     } else {
       // Create empty schema file if no @zod-to-schema annotations found
       await fs.writeFile(apiZodPath, `import {z} from 'zod';\n// No schemas generated - no @zod-to-schema annotations found\nexport const schema = {};\n`);
-      console.log('✓ Created empty Zod schema (no @zod-to-schema annotations found)');
+      console.log('✓ Created an empty Zod schema file (no @zod-to-schema annotations found)');
     }
   } catch (error) {
-    console.warn('Warning: Could not generate Zod schemas:', (error as Error).message);
+    console.warn('[youtrack-api-generator] Could not generate Zod schemas:', (error as Error).message);
     // Create empty schema file as fallback
     await fs.writeFile(apiZodPath, `import {z} from 'zod';\n// Fallback - schema generation failed\nexport const schema = {};\n`);
   }

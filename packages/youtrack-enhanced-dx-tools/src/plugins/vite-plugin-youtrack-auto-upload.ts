@@ -57,7 +57,7 @@ export default function youtrackAutoUpload(options: AutoUploadOptions = {}): Plu
         }
 
         if (Date.now() - startTime > timeoutMs) {
-          throw new Error(`Timed out acquiring build state lock: ${lockFilePath}`);
+          throw new Error(`Timed out while acquiring the build-state lock: ${lockFilePath}`);
         }
 
         await sleep(50);
@@ -112,7 +112,7 @@ export default function youtrackAutoUpload(options: AutoUploadOptions = {}): Plu
 
       console.log(`[youtrack-auto-upload] ${buildName} build state updated (hash: ${hash.substring(0, 8)}...)`);
     } catch (error) {
-      console.error('[youtrack-auto-upload] Error updating build state:', (error as Error).message);
+      console.error('[youtrack-auto-upload] Could not update the build state:', (error as Error).message);
     }
   };
 

@@ -101,7 +101,7 @@ function runHygen(hygenArgs = argv) {
       const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
 
       if (!isEnhancedDX) {
-        console.error(styleText("red", 'This command requires an enhanced-dx project.'));
+        console.error(styleText("red", 'This command requires an Enhanced DX project.'));
         process.exit(1);
       }
 
@@ -177,7 +177,7 @@ function runHygen(hygenArgs = argv) {
         try {
           entityExtensions = JSON.parse(fs.readFileSync(entityExtensionsPath, 'utf-8'));
         } catch (err) {
-          console.error(styleText("red", `Error: entity-extensions.json is invalid JSON: ${(err && err.message) || String(err)}`));
+          console.error(styleText("red", `Error: Could not parse entity-extensions.json: ${(err && err.message) || String(err)}`));
           process.exit(1);
         }
       } else {
@@ -679,7 +679,7 @@ function runHygen(hygenArgs = argv) {
           console.log(styleText("yellow", '\nCancelled.'));
           return;
         }
-        console.error(styleText("red", 'Failed to generate http-handler:'), e);
+        console.error(styleText("red", 'Failed to generate the HTTP handler:'), e);
         process.exitCode = 1;
         return;
       }
@@ -698,7 +698,7 @@ function runHygen(hygenArgs = argv) {
       // Show interactive menu for what to generate
       const action = await new Select({
         name: 'action',
-        message: 'What would you like to generate?',
+        message: 'What do you want to generate?',
         choices: [
           { name: 'http-handler', message: 'HTTP Handler (API endpoint)' },
           { name: 'extension-property', message: 'Extension Property (entity field)' },
@@ -711,13 +711,13 @@ function runHygen(hygenArgs = argv) {
         // Interactive flow for http-handler
         const method = await new Select({
           name: 'method',
-          message: 'Choose HTTP method:',
+          message: 'Which HTTP method should this handler respond to?',
           choices: ['GET', 'POST', 'PUT', 'DELETE']
         }).run();
 
         const scope = await new Select({
           name: 'scope',
-          message: 'Choose scope (first path segment):',
+          message: 'Which scope should this handler use?',
           choices: ['global', 'project', 'issue', 'article', 'user']
         }).run();
 
@@ -731,9 +731,9 @@ function runHygen(hygenArgs = argv) {
         const permChoices = PERMISSIONS.map(p => ({ name: p.key, message: p.key }));
         const permissions = await new MultiSelect({
           name: 'permissions',
-          message: 'Select permissions (optional, space to toggle, enter to confirm):',
+          message: 'Do you want to limit access to this handler based on permissions? Leave empty to make it available to everyone. Optional. Press Space to toggle between options, Enter to confirm the selection.:',
           choices: permChoices,
-          hint: 'Space to select, enter to confirm',
+          hint: 'Space to toggle, Enter to confirm',
           validate: () => true
         }).run();
 
@@ -743,7 +743,7 @@ function runHygen(hygenArgs = argv) {
         if (fs.existsSync(targetAbs)) {
           const overwrite = await new Confirm({
             initial: false,
-            message: `File already exists: ${styleText("bold", targetRel)}. Overwrite?`
+            message: `The file already exists: ${styleText("bold", targetRel)}. Overwrite?`
           }).run();
           if (!overwrite) {
             console.log(styleText("yellow", 'Aborted.'));
@@ -763,13 +763,13 @@ function runHygen(hygenArgs = argv) {
         process.env.EDX = '1';
         console.log(styleText("cyan", `\nGenerating ${method} handler at ${targetRel}...\n`));
         await runHygen(hygenArgs);
-        console.log(styleText("green", `\n✓ HTTP handler created successfully!\n`));
+        console.log(styleText("green", `\n✓ HTTP handler generated\n`));
         return;
       } else if (action === 'extension-property') {
         // Interactive flow for extension-property
         const target = await new Select({
           name: 'target',
-          message: 'What is the target extending entity?',
+          message: 'Which entity type does this extension property apply to?',
           choices: [
             { name: 'Issue', message: 'Issue' },
             { name: 'User', message: 'User' },
@@ -811,7 +811,7 @@ function runHygen(hygenArgs = argv) {
           try {
             entityExtensions = JSON.parse(fs.readFileSync(entityExtensionsPath, 'utf-8'));
           } catch (err) {
-            console.error(styleText("red", `Error: entity-extensions.json is invalid JSON: ${(err && err.message) || String(err)}`));
+            console.error(styleText("red", `Error: Could not parse entity-extensions.json: ${(err && err.message) || String(err)}`));
             process.exitCode = 1;
             return;
           }
@@ -833,7 +833,7 @@ function runHygen(hygenArgs = argv) {
         // Interactive flow for settings
         const settingsAction = await new Select({
           name: 'settingsAction',
-          message: 'What would you like to do with settings?',
+          message: 'What do you want to do with settings?',
           choices: [
             { name: 'init', message: 'Initialize settings.json (create new)' },
             { name: 'add', message: 'Add property to existing settings.json' },
@@ -845,7 +845,7 @@ function runHygen(hygenArgs = argv) {
           const settingsPath = path.join(cwd, 'src', 'settings.json');
           if (fs.existsSync(settingsPath)) {
             console.error(styleText("red", '\nError: settings.json already exists at src/settings.json'));
-            console.log(styleText("yellow", 'Use "add" option to add properties to existing settings.\n'));
+            console.log(styleText("yellow", 'Use "add" to add properties to the existing settings.json.\n'));
             return;
           }
 
@@ -865,7 +865,7 @@ function runHygen(hygenArgs = argv) {
           // Run hygen for settings add
           const hygenArgs = ['settings', 'add'];
           await runHygen(hygenArgs);
-          console.log(styleText("green", '\n✓ Setting property added to settings.json\n'));
+          console.log(styleText("green", '\n✓ Property added to settings.json\n'));
         }
         return;
       } else if (action === 'widget') {
@@ -923,7 +923,7 @@ function runHygen(hygenArgs = argv) {
   console.log(`
 ====================================
 
-Your enhanced-dx app has been created with demo examples!
+Your ${appType === 'ts' ? 'Enhanced DX' : 'JavaScript'} app with sample code has been created!
 To add more widgets later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app widget add')}
 To add app settings later, run: ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings init')}
 

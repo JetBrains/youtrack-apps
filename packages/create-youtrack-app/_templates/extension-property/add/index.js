@@ -13,14 +13,14 @@ module.exports = {
       {
         type: "input",
         name: "name",
-        message: "What is the name of the extension property",
+        message: "What is the name of the extension property?",
         skip: () => !!args.name,
         initial: args.name,
       },
       {
         type: "select",
         name: "type",
-        message: "What is the type of the extension property",
+        message: "What is the type of the extension property?",
         choices: [
           { name: "string", message: "String" },
           { name: "integer", message: "Integer" },
@@ -44,7 +44,7 @@ module.exports = {
       {
         type: "select",
         name: "target",
-        message: "What is the target extending entity?",
+        message: "Which entity type does this extension property apply to?",
         choices: [
           { name: "Issue", message: "Issue" },
           { name: "User", message: "User" },
@@ -70,7 +70,7 @@ function injectEntity(payload, context) {
     try {
       entityExtensions = JSON.parse(fs.readFileSync(filePath, "utf-8"));
     } catch (e) {
-      throw new Error(`entity-extensions.json is invalid JSON: ${e.message}`);
+      throw new Error(`Could not parse entity-extensions.json: ${e.message}`);
     }
   } else {
     entityExtensions = { entityTypeExtensions: [] };

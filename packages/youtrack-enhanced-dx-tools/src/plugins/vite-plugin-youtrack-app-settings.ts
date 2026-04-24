@@ -85,7 +85,7 @@ const runEslintFix = (files: string | string[]) => {
     const msg = (e as Error).message;
     console.warn('[youtrack-app-settings] ESLint auto-fix skipped:', msg);
     if (msg.includes('ENOENT') || msg.includes('not found') || msg.includes('spawn')) {
-      console.warn('[youtrack-app-settings] Install ESLint to enable: npm install -D eslint');
+      console.warn('[youtrack-app-settings] Install ESLint to enable auto-fix: npm install -D eslint');
     }
   }
 };
@@ -247,7 +247,7 @@ export default function youtrackAppSettings(): Plugin {
           Object.values(settingsSchema.properties).forEach(collectEntityTypes);
         }
       } catch (error) {
-        console.error('[youtrack-app-settings] Error parsing settings.json:', (error as Error).message);
+        console.error('[youtrack-app-settings] Could not parse settings.json:', (error as Error).message);
       }
     }
     
@@ -270,7 +270,7 @@ export default function youtrackAppSettings(): Plugin {
           }
         });
       } catch (error) {
-        console.error('[youtrack-app-settings] Error parsing entity-extensions.json:', (error as Error).message);
+        console.error('[youtrack-app-settings] Could not parse entity-extensions.json:', (error as Error).message);
       }
     }
     

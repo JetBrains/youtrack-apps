@@ -106,7 +106,7 @@ const runEslintFix = (files: string | string[]) => {
     const msg = (e as Error).message;
     console.warn('[youtrack-extension-properties] ESLint auto-fix skipped:', msg);
     if (msg.includes('ENOENT') || msg.includes('not found') || msg.includes('spawn')) {
-      console.warn('[youtrack-extension-properties] Install ESLint to enable: npm install -D eslint');
+      console.warn('[youtrack-extension-properties] Install ESLint to enable auto-fix: npm install -D eslint');
     }
   }
 };
@@ -471,7 +471,7 @@ export default function youtrackExtensionProperties(): Plugin {
 
       console.log('✓ Generated extended entity types, context utilities, and type augmentation from entity-extensions.json');
     } catch (error) {
-      console.error('[youtrack-extension-properties] Error:', (error as Error).message);
+      console.error('[youtrack-extension-properties] Could not generate extension property types:', (error as Error).message);
       // Create fallback file
       await fs.ensureDir(path.dirname(extendedEntitiesPath));
       await fs.writeFile(

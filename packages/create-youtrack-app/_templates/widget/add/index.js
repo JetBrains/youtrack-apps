@@ -81,7 +81,7 @@ module.exports = {
       },
       format: input => h.changeCase.lower(h.inflection.dasherize(input)),
       result: input => h.changeCase.lower(h.inflection.dasherize(input)),
-      message: "What key (ID) would you like to assign this widget?",
+      message: "What key (ID) do you want to assign to this widget?",
     });
 
     if (existingKeys.has(key)) {
@@ -92,7 +92,7 @@ module.exports = {
       type: "input",
       name: "name",
       validate: validateNotEmpty,
-      message: "What would you like to name this widget?",
+      message: "What do you want to name this widget?",
       initial: h.inflection.titleize(key),
     });
 
@@ -110,7 +110,7 @@ module.exports = {
     const { description } = args.description !== undefined ? args : await prompter.prompt({
       type: "input",
       name: "description",
-      message: "What is the description you want to give this widget?",
+      message: "What description do you want to give this widget?",
     });
 
     // limitPermissions: skip the confirm prompt when the arg is pre-supplied
@@ -121,7 +121,7 @@ module.exports = {
       const res = await prompter.prompt({
         type: "confirm",
         name: "limitPermissions",
-        message: "Would you like to use permissions to restrict the visibility of this widget?",
+        message: "Do you want to use permissions to restrict the visibility of this widget?",
       });
       limitPermissions = res.limitPermissions;
     }

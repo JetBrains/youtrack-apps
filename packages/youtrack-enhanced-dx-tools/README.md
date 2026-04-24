@@ -26,13 +26,13 @@ npm install --save-dev vite typescript
 
 ## Quick Start
 
-Generate a new project:
+Create a new project:
 
 ```bash
 npm create @jetbrains/youtrack-app
 ```
 
-Select "Enhanced DX" template. The scaffolder generates a project with Vite configuration, TypeScript setup, and example HTTP handlers.
+Select the "Enhanced DX" template. The scaffolder generates a project with Vite configuration, TypeScript setup, and sample HTTP handlers.
 
 Configure Vite plugins in `vite.config.ts`:
 
@@ -99,8 +99,8 @@ export type Handle = typeof handle;
 ```
 
 **Type Requirements:**
-- Types ending with `Req` or `Res` are exported to API client
-- `@zod-to-schema` comment generates validation schemas
+- Types ending with `Req` or `Res` are exported to the API client
+- The `@zod-to-schema` comment generates validation schemas
 
 ### youtrackRouter()
 
@@ -131,7 +131,7 @@ Coordinates build completion tracking for automatic upload.
 }
 ```
 
-Writes build state to JSON file. Upload coordinator monitors file and triggers upload when both builds complete.
+Writes the build state to a JSON file. The upload coordinator monitors that file and triggers an upload when both builds complete.
 
 ```bash
 youtrack-upload-coordinator --watch .build-state.json
@@ -182,7 +182,7 @@ ctx.issue.syncStatus  // Type-safe access
 
 ### youtrackDevHtml(options)
 
-Transforms widget HTML to load from local dev server for hot module replacement.
+Transforms widget HTML to load from a local dev server for hot module replacement.
 
 **Options:**
 ```typescript
@@ -211,7 +211,7 @@ Monitors backend changes and triggers reload in Vite dev server.
 }
 ```
 
-Watches for marker file created by upload coordinator. When detected, sends full-reload event to clients.
+Watches for the marker file created by the upload coordinator. When detected, it sends a full-reload event to clients.
 
 ## TypeScript Support
 

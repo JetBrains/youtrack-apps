@@ -269,7 +269,7 @@ export default function youtrackRouter(): Plugin {
               // If braces are not balanced, the classes are incomplete - this shouldn't happen
               // but if it does, we'll log a warning
               if (braceBalance !== 0 && codeBeforeFunction.some(line => /^\s*class\s+/.test(line.trim()))) {
-                console.warn(`[youtrack-router] Warning: Unbalanced braces (${braceBalance}) in code before function for ${fileName}. Classes may be incomplete.`);
+                console.warn(`[youtrack-router] Unbalanced braces (${braceBalance}) before the function in ${fileName}. Some classes may be incomplete.`);
               }
 
 

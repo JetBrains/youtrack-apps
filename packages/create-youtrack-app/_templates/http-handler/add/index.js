@@ -17,32 +17,32 @@ module.exports = [
     name: "handlerName",
     initial: 'http-handler',
     validate: validateNotEmpty,
-    message: "What is the name of your HTTP handler?",
+    message: "What do you want to name this HTTP handler?",
   },
   {
     type: "input",
     name: "path",
     initial: 'my-path',
     validate: validateNotEmpty,
-    message: "What path should your handler respond to?",
+    message: "What path should this handler respond to?",
   },
   {
     type: "select",
     name: "method",
     initial: 'GET',
-    message: "What HTTP method should your handler respond to?",
+    message: "Which HTTP method should this handler respond to?",
     choices: ['GET', 'POST', 'PUT', 'DELETE']
   },
   {
     type: "select",
     name: "handlerScope",
-    message: "Would you like to attach your HTTP handler to some entityt scope or should it be globally available",
+    message: "Do you want this HTTP handler to be globally available or scoped to an entity?",
     choices: ['global', 'user', 'issue', 'article', 'project']
   },
   {
     type: "multiselect",
     name: "permissions",
-    message: "Would you like to limit access to this handler? Leave empty to keep it awailable for everyone",
+    message: "Do you want to limit access to this handler based on permissions? Leave empty to make it available to everyone.",
     choices: PERMISSIONS.map(({ key, description }) => ({
       message: `"${key}": ${description}`,
       name: key,

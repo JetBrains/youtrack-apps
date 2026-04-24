@@ -42,7 +42,7 @@ const runEslintFix = (files: string | string[]) => {
     const msg = (e as Error).message;
     console.warn('[youtrack-api-generator] ESLint auto-fix skipped:', msg);
     if (msg.includes('ENOENT') || msg.includes('not found') || msg.includes('spawn')) {
-      console.warn('[youtrack-api-generator] Install ESLint to enable: npm install -D eslint');
+      console.warn('[youtrack-api-generator] Install ESLint to enable auto-fix: npm install -D eslint');
     }
   }
 };
@@ -181,7 +181,7 @@ const discoverAnnotatedTypes = async (filePath: string, processedFiles: Set<stri
     }
   } catch (error) {
     // Silently ignore files that can't be read
-    console.warn(`Warning: Could not read file ${filePath}: ${(error as Error).message}`);
+    console.warn(`[youtrack-api-generator] Could not read ${filePath}: ${(error as Error).message}`);
   }
 
   return discoveredTypes;
@@ -322,7 +322,7 @@ const generateZodSchemas = async (routeFiles: string[]) => {
         const cleanedContent = (generatedContent.includes(schemaMarker)
           ? generatedContent.split(schemaMarker)[0]
           : generatedContent).trimEnd();
-        
+
         // Now append the schema once
         const enhancedContent = cleanedContent + '\n\n' +
           `// Nested schema object for validation system\n` +
@@ -337,7 +337,7 @@ const generateZodSchemas = async (routeFiles: string[]) => {
         const msg = (execError as Error).message;
         console.error('[youtrack-api-generator] ts-to-zod failed:', msg);
         if (msg.includes('ENOENT') || msg.includes('not found') || msg.includes('Cannot find')) {
-          console.error('[youtrack-api-generator] Install ts-to-zod: npm install -D ts-to-zod');
+          console.error('[youtrack-api-generator] Install ts-to-zod with: npm install -D ts-to-zod');
         }
         throw execError;
       }
@@ -349,10 +349,10 @@ const generateZodSchemas = async (routeFiles: string[]) => {
       // Create empty schema file if no @zod-to-schema annotations found
       await fs.writeFile(apiZodPath, `import {z} from 'zod';\n// No schemas generated - no @zod-to-schema annotations found\nexport const schema = {};\n`);
       runEslintFix(apiZodPath);
-      console.log('✓ Created empty Zod schema (no @zod-to-schema annotations found)');
+      console.log('✓ Created an empty Zod schema file (no @zod-to-schema annotations found)');
     }
   } catch (error) {
-    console.warn('Warning: Could not generate Zod schemas:', (error as Error).message);
+    console.warn('[youtrack-api-generator] Could not generate Zod schemas:', (error as Error).message);
     // Create empty schema file as fallback
     await fs.writeFile(apiZodPath, `import {z} from 'zod';\n// Fallback - schema generation failed\nexport const schema = {};\n`);
     runEslintFix(apiZodPath);
@@ -500,7 +500,7 @@ export default function youtrackApiGenerator(options: YoutrackApiGeneratorOption
       const runGeneration = () => {
         inFlight = generateApi()
           .catch(err => {
-            console.error('[youtrack-api-generator] regeneration failed:', (err as Error).message);
+            console.error('[youtrack-api-generator] Regeneration failed:', (err as Error).message);
           })
           .finally(() => {
             inFlight = null;

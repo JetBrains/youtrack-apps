@@ -57,7 +57,7 @@ export default function backendReloadPlugin(options: BackendReloadOptions = {}):
       });
 
       const triggerReload = () => {
-        console.log('[backend-reload] Backend changed, clearing caches and triggering full reload...');
+        console.log('[backend-reload] Backend changed; clearing caches and triggering a full reload...');
         
         // Invalidate all modules that depend on API files
         const apiModules = Array.from(server.moduleGraph.urlToModuleMap.entries())

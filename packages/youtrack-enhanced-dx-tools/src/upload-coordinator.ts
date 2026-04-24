@@ -24,16 +24,16 @@ export interface CoordinatorOptions {
 function getUploadFailureHint(errorMsg: string): string | null {
   const lower = errorMsg.toLowerCase();
   if (lower.includes('401') || lower.includes('unauthorized')) {
-    return 'Check .env: YOUTRACK_HOST and YOUTRACK_TOKEN. Get a token from YouTrack → Profile → Account Security.';
+    return 'Check your .env file: YOUTRACK_HOST and YOUTRACK_TOKEN. Generate a token in YouTrack under Profile → Account Security.';
   }
   if (lower.includes('econnrefused') || lower.includes('enotfound') || lower.includes('getaddrinfo')) {
-    return 'YouTrack may be unreachable. Verify YOUTRACK_HOST in .env and that YouTrack is running.';
+    return 'YouTrack may be unreachable. Verify YOUTRACK_HOST in the .env file and that YouTrack is running.';
   }
   if (lower.includes('404') || lower.includes('not found')) {
-    return 'Check YOUTRACK_HOST in .env. The URL may be incorrect or the app upload endpoint may have changed.';
+    return 'Check YOUTRACK_HOST in the .env file. The URL may be incorrect or the app upload endpoint may have changed.';
   }
   if (lower.includes('enoent') && (lower.includes('youtrack') || lower.includes('.env'))) {
-    return 'Create .env with YOUTRACK_HOST and YOUTRACK_TOKEN. See README for setup.';
+    return 'Create a .env file with YOUTRACK_HOST and YOUTRACK_TOKEN. See the README for setup instructions.';
   }
   return null;
 }
@@ -157,7 +157,7 @@ export class UploadCoordinator {
 
       console.log('[upload-coordinator] Changes detected, uploading...');
       if (backendChanged) {
-        console.log('[upload-coordinator] Backend changed - will trigger full reload after upload');
+        console.log('[upload-coordinator] Backend changed; a full reload will be triggered after the upload.');
       }
 
       // Perform upload first - must complete before browser reloads
@@ -222,7 +222,7 @@ export function hashDirectory(dir: string, pattern: string = '**/*'): string {
   });
 
   const hash = crypto.createHash('md5');
-  
+
   for (const file of files.sort()) {
     const filePath = path.join(absoluteDir, file);
     try {
