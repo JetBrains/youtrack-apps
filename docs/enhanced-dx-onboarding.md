@@ -263,7 +263,7 @@ App settings let admins configure the app per-instance or per-project:
 
 ```bash
 npm run g -- settings init --title "My App Settings" --description "Admin config"
-npm run g -- settings add --name apiKey --type string --write-only
+npm run g -- settings add --name apiKey --type string --format secret
 npm run g -- settings add --name maxItems --type integer --min 1 --max 100
 ```
 

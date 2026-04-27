@@ -221,13 +221,6 @@ module.exports = {
       }
     }
 
-    const { writeOnly } = await prompter.prompt({
-      type: "confirm",
-      name: "writeOnly",
-      message: "Do you want to make this property write-only?",
-    });
-    if (writeOnly) prop.writeOnly = true;
-
     const { xScope } = await prompter.prompt({
       type: "select",
       name: "xScope",
