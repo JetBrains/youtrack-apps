@@ -396,9 +396,6 @@ function runGeneratedFilesLintFix(files) {
       }
     }
 
-    // Write-only
-    if (args['write-only']) prop.writeOnly = true;
-
     // Scope (omit the key entirely when scope is "none" or not provided)
     if (scope && scope !== 'none') prop['x-scope'] = scope;
 

@@ -154,7 +154,12 @@ export const generateObjectType = (
     const isRequired = required.includes(key);
     const optional = isRequired ? '' : '?';
     const type = jsonSchemaToTS(schema);
-    const description = schema.description ? `\n    /** ${schema.description} */` : '';
+    const isSecret = schema.format === 'secret';
+    const descText = [
+      isSecret ? '@secret Stored securely by YouTrack; masked in the admin UI.' : '',
+      schema.description ?? '',
+    ].filter(Boolean).join(' ');
+    const description = descText ? `\n    /** ${descText} */` : '';
     return `${description}\n    ${safeKey(key)}${optional}: ${type};`;
   });
   

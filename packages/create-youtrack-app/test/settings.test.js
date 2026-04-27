@@ -394,11 +394,11 @@ describe('App Settings', () => {
       assert.strictEqual(prop.const, 10);
     });
 
-    test('should set writeOnly: true with --write-only', () => {
-      const result = runCLI('settings add --name secretKey --type string --write-only', { silent: true });
+    test('should set format: secret with --format secret', () => {
+      const result = runCLI('settings add --name secretKey --type string --format secret', { silent: true });
       assert.strictEqual(result.success, true, result.output);
 
-      assert.strictEqual(readSettings().properties.secretKey.writeOnly, true);
+      assert.strictEqual(readSettings().properties.secretKey.format, 'secret');
     });
 
     // ── Compound scenarios ─────────────────────────────────────────────────
