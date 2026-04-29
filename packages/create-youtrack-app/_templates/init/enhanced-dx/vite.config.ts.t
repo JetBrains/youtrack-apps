@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 import { defineConfig } from "vite";
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import { youtrackAutoUpload, youtrackDevHtml, backendReloadPlugin, youtrackWidgetEntries } from '@jetbrains/youtrack-enhanced-dx-tools';
+import { youtrackAutoUpload, youtrackDevHtml, backendReloadPlugin, youtrackWidgetEntries } from '@jetbrains/youtrack-apps-tools';
 
 const isServing = process.argv.includes('--mode') === false && !process.argv.includes('build');
 
@@ -63,11 +63,11 @@ const cleanAssetsPlugin = () => {
 
 export default defineConfig({
   optimizeDeps: {
-    exclude: ['@jetbrains/youtrack-enhanced-dx-tools']
+    exclude: ['@jetbrains/youtrack-apps-tools']
   },
   ssr: {
     noExternal: [],
-    external: ['@jetbrains/youtrack-enhanced-dx-tools']
+    external: ['@jetbrains/youtrack-apps-tools']
   },
   plugins: [
     // Automatically discover widget entry points from src/widgets/*/index.html
@@ -147,7 +147,7 @@ export default defineConfig({
       // Widget entries are discovered automatically by youtrackWidgetEntries()
       external: [
         // Exclude Vite plugins and their Node.js dependencies from bundling
-        '@jetbrains/youtrack-enhanced-dx-tools',
+        '@jetbrains/youtrack-apps-tools',
         'child_process',
         'fs-extra',
         'node:path',

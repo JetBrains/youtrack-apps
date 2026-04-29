@@ -1,44 +1,129 @@
 {
   "name": "@jetbrains/youtrack-apps-tools",
-  "version": "0.0.2",
-  "description": "",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "CLI and Vite plugins for building, validating, and uploading YouTrack apps",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JetBrains/youtrack-apps.git"
+    "url": "git+https://github.com/JetBrains/youtrack-apps.git",
+    "directory": "packages/apps-tools"
   },
-  "main": "dist/index.js",
-  "bin": {
-    "youtrack-app": "bin/youtrack-app"
+  "homepage": "https://github.com/JetBrains/youtrack-apps/tree/main/packages/apps-tools",
+  "bugs": {
+    "url": "https://github.com/JetBrains/youtrack-apps/issues"
   },
-  "author": "Sergey Kochetkov",
-  "license": "Apache-2.0",
-  "files": [
-    "dist"
+  "keywords": [
+    "youtrack",
+    "workflow",
+    "vite-plugin",
+    "typescript",
+    "jetbrains",
+    "cli",
+    "scaffolding"
   ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "youtrack-app": "bin/youtrack-app",
+    "youtrack-upload-coordinator": "dist/src/dx/cli/upload-coordinator.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./lib": {
+      "types": "./dist/src/lib/index.d.ts",
+      "import": "./dist/src/lib/index.js"
+    },
+    "./dx": {
+      "types": "./dist/src/dx/index.d.ts",
+      "import": "./dist/src/dx/index.js"
+    },
+    "./dx/runtime": {
+      "types": "./dist/src/dx/runtime.d.ts",
+      "import": "./dist/src/dx/runtime.js"
+    },
+    "./dx/api": {
+      "types": "./dist/src/dx/api/index.d.ts",
+      "import": "./dist/src/dx/api/index.js"
+    },
+    "./dx/plugins/api-generator": {
+      "types": "./dist/src/dx/plugins/vite-plugin-youtrack-api-generator.d.ts",
+      "import": "./dist/src/dx/plugins/vite-plugin-youtrack-api-generator.js"
+    },
+    "./dx/plugins/router": {
+      "types": "./dist/src/dx/plugins/vite-plugin-youtrack-router.d.ts",
+      "import": "./dist/src/dx/plugins/vite-plugin-youtrack-router.js"
+    },
+    "./dx/plugins/app-settings": {
+      "types": "./dist/src/dx/plugins/vite-plugin-youtrack-app-settings.d.ts",
+      "import": "./dist/src/dx/plugins/vite-plugin-youtrack-app-settings.js"
+    },
+    "./dx/plugins/extension-properties": {
+      "types": "./dist/src/dx/plugins/vite-plugin-youtrack-extension-properties.d.ts",
+      "import": "./dist/src/dx/plugins/vite-plugin-youtrack-extension-properties.js"
+    },
+    "./dx/plugins/auto-upload": {
+      "types": "./dist/src/dx/plugins/vite-plugin-youtrack-auto-upload.d.ts",
+      "import": "./dist/src/dx/plugins/vite-plugin-youtrack-auto-upload.js"
+    },
+    "./dx/plugins/dev-html": {
+      "types": "./dist/src/dx/plugins/vite-plugin-youtrack-dev-html.d.ts",
+      "import": "./dist/src/dx/plugins/vite-plugin-youtrack-dev-html.js"
+    },
+    "./dx/plugins/widget-entries": {
+      "types": "./dist/src/dx/plugins/vite-plugin-youtrack-widget-entries.d.ts",
+      "import": "./dist/src/dx/plugins/vite-plugin-youtrack-widget-entries.js"
+    },
+    "./dx/plugins/backend-reload": {
+      "types": "./dist/src/dx/plugins/vite-plugin-backend-reload.d.ts",
+      "import": "./dist/src/dx/plugins/vite-plugin-backend-reload.js"
+    }
+  },
+  "files": [
+    "dist",
+    "bin",
+    "LICENSE"
+  ],
+  "author": "JetBrains",
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "@jetbrains/youtrack-workflow-types": ">=2026.1.0",
+    "vite": "^5.0.0 || ^6.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@jetbrains/youtrack-workflow-types": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    }
+  },
   "dependencies": {
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
+    "chokidar": "^4.0.3",
+    "fast-glob": "^3.3.3",
+    "fs-extra": "^11.3.0",
     "minimist": "1.2.8",
     "open": "^10.1.0",
+    "ts-morph": "^26.0.0",
+    "ts-to-zod": "^3.15.0",
     "tslib": "^2.7.0",
+    "vite-tsconfig-paths": "^5.1.4",
     "zip-lib": "^1.0.4"
-  },
-  "scripts": {
-    "dev": "npx ts-node index",
-    "build": "tsc",
-    "lint": "eslint",
-    "test": "jest",
-    "test:type": "tsc --noEmit",
-    "save-version": "echo '{ \"version\": \"'$npm_package_version'\" }' > dist/package.json",
-    "release:ci": "commit-and-tag-version && git push --follow-tags origin main && npm run save-version && npm publish"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.9.0",
+    "@jest/globals": "^29.7.0",
+    "@jetbrains/youtrack-workflow-types": "*",
     "@types/eslint__js": "^8.42.3",
+    "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.12",
     "@types/minimist": "1.2.5",
-    "@types/node": "^22.4.2",
+    "@types/node": "^24.0.14",
     "commit-and-tag-version": "^12.4.2",
     "eslint": "^9.9.0",
     "eslint-config-prettier": "^9.1.0",
@@ -47,9 +132,22 @@
     "nock": "13.5.5",
     "prettier": "3.3.3",
     "ts-jest": "^29.2.4",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.5.4",
-    "typescript-eslint": "^8.2.0"
+    "tsx": "^4.8.1",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.2.0",
+    "vite": "^6.0.1"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint",
+    "test": "npm run build && npm run test:dx && npm run test:cli",
+    "test:dx": "node --test --import tsx 'src/dx/test/*.test.ts'",
+    "test:cli": "jest",
+    "test:type": "tsc --noEmit",
+    "typecheck:types": "tsc --noEmit -p src/dx/test/types-strict-tsconfig.json",
+    "save-version": "echo '{ \"version\": \"'$npm_package_version'\" }' > dist/package.json",
+    "release:ci": "commit-and-tag-version && git push --follow-tags origin main && npm run save-version && npm publish"
   },
   "commit-and-tag-version": {
     "skip": {

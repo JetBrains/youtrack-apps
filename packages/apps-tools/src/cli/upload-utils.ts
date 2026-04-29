@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import {i18n} from '../../lib/i18n/i18n';
-import {exit} from '../../lib/cli/exit';
+import {i18n} from '../../lib/i18n/i18n.js';
+import {exit} from '../../lib/cli/exit.js';
 
 export function resolveAppName(appDir?: string): undefined | string {
   if (!appDir) {

@@ -1,5 +1,4 @@
 {
-  "extends": "ts-node/node16/tsconfig.json",
   "compilerOptions": {
     "lib": ["es2023"],
     "target": "es2022",
@@ -8,20 +7,15 @@
     "noImplicitAny": true,
     "removeComments": true,
     "declaration": true,
-    "module": "Node16",
-    "moduleResolution": "node16",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "importHelpers": true,
-    "noUncheckedIndexedAccess": true,
     "esModuleInterop": true,
-    "typeRoots": ["./node_modules/@types"],
-    "types": ["jest", "node"],
+    "allowSyntheticDefaultImports": true,
+    "types": ["node"],
     "outDir": "dist"
   },
   "include": ["src", "lib", "index.ts"],
-  "exclude": ["node_modules", "**/*.test.*"],
-  "ts-node": {
-    "transpileOnly": true,
-    "files": true
-  }
+  "exclude": ["node_modules", "dist", "**/*.test.*", "src/dx/test/**"]
 }

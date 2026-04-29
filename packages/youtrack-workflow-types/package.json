@@ -1,0 +1,38 @@
+{
+  "name": "@jetbrains/youtrack-workflow-types",
+  "version": "2026.1.0",
+  "description": "TypeScript type definitions for the YouTrack workflow scripting API",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JetBrains/youtrack-apps.git",
+    "directory": "packages/youtrack-workflow-types"
+  },
+  "homepage": "https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-workflow-types",
+  "bugs": {
+    "url": "https://github.com/JetBrains/youtrack-apps/issues"
+  },
+  "keywords": [
+    "youtrack",
+    "workflow",
+    "types",
+    "typescript",
+    "jetbrains",
+    "scripting-api"
+  ],
+  "exports": {
+    "./tsconfig": "./tsconfig.base.json",
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./*": {
+      "types": "./types/*.d.ts",
+      "default": "./types/*.d.ts"
+    }
+  },
+  "files": [
+    "types",
+    "tsconfig.base.json",
+    "LICENSE",
+    "README.md"
+  ],
+  "author": "JetBrains",
+  "license": "Apache-2.0"
+}

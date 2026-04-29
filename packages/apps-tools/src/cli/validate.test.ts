@@ -1,8 +1,9 @@
+import {jest, describe, it, expect, beforeEach, afterEach, beforeAll, afterAll} from '@jest/globals';
 import path from 'node:path';
 import fs from 'node:fs';
 import os from 'node:os';
-import {DEFAULT_SCHEMA_URL} from './validate';
-import {tmpDir} from '../../lib/fs/tmpdir';
+import {DEFAULT_SCHEMA_URL} from './validate.js';
+import {tmpDir} from '../../lib/fs/tmpdir.js';
 import {readFile} from 'node:fs/promises';
 
 const TEST_APP = 'testApp';
@@ -70,7 +71,7 @@ describe('validate', () => {
 
   it('should validate without host and token provided', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     process.env.YOUTRACK_HOST = '';
     process.env.YOUTRACK_API_TOKEN = '';
 
@@ -85,7 +86,7 @@ describe('validate', () => {
 
   it('should exit if no directory or manifest file provided', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
     require('./index').run(['', '', 'validate']);
 
@@ -95,7 +96,7 @@ describe('validate', () => {
 
   it('should exit if manifest file is not a JSON file', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
     require('./index').run(['', '', 'validate', testDir, '--manifest=foo.txt']);
 
@@ -109,7 +110,7 @@ describe('validate', () => {
     fs.mkdirSync(testDir);
     fs.writeFileSync(manifestPath, manifestContent);
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
     await require('./index').run(['', '', 'validate', testDir, '--schema=foo.txt']);
 
@@ -122,10 +123,10 @@ describe('validate', () => {
     fs.writeFileSync(manifestPath, manifestContent);
 
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     jest
       .spyOn(global, 'fetch')
-      .mockImplementation(jest.fn(() => Promise.resolve({json: () => Promise.resolve({})})) as jest.Mock);
+      .mockImplementation(jest.fn(() => Promise.resolve({json: () => Promise.resolve({})})) as unknown as typeof fetch);
 
     await require('./index').run(['', '', 'validate', testDir]);
 
@@ -138,10 +139,10 @@ describe('validate', () => {
     removeTmpSchema();
 
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     jest
       .spyOn(global, 'fetch')
-      .mockImplementation(jest.fn(() => Promise.resolve({json: () => Promise.resolve({}), ok: true})) as jest.Mock);
+      .mockImplementation(jest.fn(() => Promise.resolve({json: () => Promise.resolve({}), ok: true})) as unknown as typeof fetch);
 
     await require('./index').run(['', '', 'validate', testDir, '--schema=http://foo.json']);
 
@@ -159,11 +160,11 @@ describe('validate', () => {
     fs.writeFileSync(manifestPath, manifestContent);
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     jest
       .spyOn(global, 'fetch')
       .mockImplementation(
-        jest.fn(() => Promise.resolve({json: () => Promise.resolve(testSchema), ok: true})) as jest.Mock,
+        jest.fn(() => Promise.resolve({json: () => Promise.resolve(testSchema), ok: true})) as unknown as typeof fetch,
       );
 
     await require('./index').run(['', '', 'validate', testDir]);
@@ -181,11 +182,11 @@ describe('validate', () => {
     fs.writeFileSync(manifestPath, manifestContent);
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     jest
       .spyOn(global, 'fetch')
       .mockImplementation(
-        jest.fn(() => Promise.resolve({json: () => Promise.resolve(testSchema), ok: true})) as jest.Mock,
+        jest.fn(() => Promise.resolve({json: () => Promise.resolve(testSchema), ok: true})) as unknown as typeof fetch,
       );
 
     await require('./index').run(['', '', 'validate', testDir]);
@@ -202,11 +203,11 @@ describe('validate', () => {
     fs.writeFileSync(manifestPath, manifestContent);
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     jest
       .spyOn(global, 'fetch')
       .mockImplementation(
-        jest.fn(() => Promise.resolve({json: () => Promise.resolve(testSchema), ok: true})) as jest.Mock,
+        jest.fn(() => Promise.resolve({json: () => Promise.resolve(testSchema), ok: true})) as unknown as typeof fetch,
       );
 
     await require('./index').run(['', '', 'validate', testDir]);

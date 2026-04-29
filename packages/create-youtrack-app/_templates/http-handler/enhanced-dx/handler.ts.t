@@ -10,7 +10,7 @@ to: "<%= (() => { const clean = String(routePath || '').split('/').filter(Boolea
   const ctxType = method === 'GET' ? 'CtxGet' : (method === 'DELETE' ? 'CtxDelete' : (method === 'POST' ? 'CtxPost' : 'CtxPut'));
   const perms = (permissions || '').split(',').map(s => s.trim()).filter(Boolean);
 %>
-<% if (perms.length) { %>import { withPermissions } from '@jetbrains/youtrack-enhanced-dx-tools/runtime';
+<% if (perms.length) { %>import { withPermissions } from '@jetbrains/youtrack-apps-tools/dx/runtime';
 <% } %>
 
 /**

@@ -1,4 +1,5 @@
-import {parse} from './parseargv';
+import {jest} from '@jest/globals';
+import {parse} from './parseargv.js';
 
 describe('parseargv', function () {
   it('should parse passed arguments', function () {

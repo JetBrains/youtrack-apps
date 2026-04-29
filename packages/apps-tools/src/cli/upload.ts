@@ -1,13 +1,13 @@
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import * as zl from 'zip-lib';
-import {Config, ErrorWithStatusCodeAndData} from '../../@types/types';
-import {exit} from '../../lib/cli/exit';
-import {tmpDir} from '../../lib/fs/tmpdir';
-import {i18n} from '../../lib/i18n/i18n';
-import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request';
-import {resolve} from '../../lib/net/resolve';
-import {resolveAppName} from './upload-utils';
+import {Config, ErrorWithStatusCodeAndData} from '../../@types/types.js';
+import {exit} from '../../lib/cli/exit.js';
+import {tmpDir} from '../../lib/fs/tmpdir.js';
+import {i18n} from '../../lib/i18n/i18n.js';
+import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request.js';
+import {resolve} from '../../lib/net/resolve.js';
+import {resolveAppName} from './upload-utils.js';
 
 export async function upload(config: Config, appDir?: string) {
   const appName = resolveAppName(appDir);

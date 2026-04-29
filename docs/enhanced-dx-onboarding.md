@@ -52,7 +52,7 @@ cd youtrack-apps
 npm install
 
 # Build the tools package (required — the scaffolded app links against it)
-cd packages/youtrack-enhanced-dx-tools
+cd packages/apps-tools
 npm run build
 cd ../..
 ```
@@ -61,7 +61,7 @@ cd ../..
 
 ```bash
 # Register the tools package in your local npm registry
-cd packages/youtrack-enhanced-dx-tools
+cd packages/apps-tools
 npm link
 cd ../..
 
@@ -78,7 +78,7 @@ mkdir ~/my-app && cd ~/my-app
 create-youtrack-app
 ```
 
-> After scaffolding, the CLI automatically runs `npm link @jetbrains/youtrack-enhanced-dx-tools` in the generated project, wiring up the local build.
+> After scaffolding, the CLI automatically runs `npm link @jetbrains/youtrack-apps-tools` in the generated project, wiring up the local build.
 
 **Tip — skipping `npm link` altogether.** If you only want to run the CLI once without linking, use `node` directly:
 
@@ -367,6 +367,6 @@ Run `npm install -D ts-to-zod` in the project. The Zod schema step is optional �
 ## Source code
 
 - CLI scaffolding: [`packages/create-youtrack-app`](https://github.com/JetBrains/youtrack-apps/tree/main/packages/create-youtrack-app)
-- Vite plugins and runtime API client: [`packages/youtrack-enhanced-dx-tools`](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools)
+- Vite plugins and runtime API client: [`packages/apps-tools`](https://github.com/JetBrains/youtrack-apps/tree/main/packages/apps-tools)
 
 Both packages are in the same monorepo. The tools package is consumed as Vite plugins during the app build — it does not ship into the YouTrack bundle.

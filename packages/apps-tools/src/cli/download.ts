@@ -3,12 +3,12 @@ import {writeFile} from 'node:fs/promises';
 import {Readable} from 'node:stream';
 import path from 'path';
 import * as zl from 'zip-lib';
-import {Config} from '../../@types/types';
-import {exit} from '../../lib/cli/exit';
-import {tmpDir} from '../../lib/fs/tmpdir';
-import {i18n} from '../../lib/i18n/i18n';
-import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request';
-import {resolve} from '../../lib/net/resolve';
+import {Config} from '../../@types/types.js';
+import {exit} from '../../lib/cli/exit.js';
+import {tmpDir} from '../../lib/fs/tmpdir.js';
+import {i18n} from '../../lib/i18n/i18n.js';
+import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request.js';
+import {resolve} from '../../lib/net/resolve.js';
 
 export async function download(config: Config, appName?: string) {
   if (!appName) {

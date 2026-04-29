@@ -7,7 +7,7 @@ to: README.md
 
 This app uses the Enhanced DX template with TypeScript support, type-safe APIs, and file-based routing.
 
-For comprehensive documentation, see [@jetbrains/youtrack-enhanced-dx-tools](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools).
+For comprehensive documentation, see [@jetbrains/youtrack-apps-tools](https://github.com/JetBrains/youtrack-apps/tree/main/packages/apps-tools).
 
 ## Table of Contents
 
@@ -136,7 +136,7 @@ export default function handle(ctx: CtxGet<ProjectSettingsRes, ProjectSettingsRe
 export type Handle = typeof handle;
 ```
 
-See [HTTP Handler Development](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#http-handler-development) for complete documentation.
+See [HTTP Handler Development](https://github.com/JetBrains/youtrack-apps/tree/main/packages/apps-tools#http-handler-development) for complete documentation.
 
 ### Using the API Client
 
@@ -150,7 +150,7 @@ const api = createApi<ApiRouter>(host);
 const settings = await api.project.settings.GET({ projectId: 'ABC-123' });
 ```
 
-See [API Client](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#api-client) documentation.
+See [API Client](https://github.com/JetBrains/youtrack-apps/tree/main/packages/apps-tools#api-client) documentation.
 
 ### Watch Mode
 
@@ -171,7 +171,7 @@ npm run watch
 - Backend implementation
 - Backend type changes: rebuilds frontend too
 
-See [Watch Mode with Auto-Upload](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#watch-mode-with-auto-upload) for details.
+See [Watch Mode with Auto-Upload](https://github.com/JetBrains/youtrack-apps/tree/main/packages/apps-tools#watch-mode-with-auto-upload) for details.
 
 ### Hot Reload (HMR)
 
@@ -189,7 +189,7 @@ npm run dev
 
 **Use when:** Iterating on frontend UI/components AND backend.
 
-See [Hot Reload Setup](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#hot-reload-setup) for complete guide.
+See [Hot Reload Setup](https://github.com/JetBrains/youtrack-apps/tree/main/packages/apps-tools#hot-reload-setup) for complete guide.
 
 ### Logger Usage
 
@@ -289,10 +289,10 @@ npm run build:backend
 - ESLint: `npm install -D eslint`
 - ts-to-zod: `npm install -D ts-to-zod`
 
-For more (env vars, port conflicts, upload errors), see [Troubleshooting Guide](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools#troubleshooting).
+For more (env vars, port conflicts, upload errors), see [Troubleshooting Guide](https://github.com/JetBrains/youtrack-apps/tree/main/packages/apps-tools#troubleshooting).
 
 ## Learn More
 
-- [Enhanced DX Tools Documentation](https://github.com/JetBrains/youtrack-apps/tree/main/packages/youtrack-enhanced-dx-tools) - Complete guide to the library
+- [Enhanced DX Tools Documentation](https://github.com/JetBrains/youtrack-apps/tree/main/packages/apps-tools) - Complete guide to the library
 - [YouTrack App Development Guide](https://www.jetbrains.com/help/youtrack/devportal/apps-quick-start-guide.html) - Official YouTrack documentation
 - [YouTrack Scripting API](https://www.jetbrains.com/help/youtrack/devportal/YouTrack-Api-Documentation.html) - API reference

@@ -41,6 +41,29 @@ function readFile(relativePath) {
   return fs.readFileSync(path.join(TEST_APP_DIR, relativePath), 'utf8');
 }
 
+function createLintFixScript(argsPath) {
+  const scriptPath = path.join(TEST_APP_DIR, 'record-lint-fix.cjs');
+  const packageJsonPath = path.join(TEST_APP_DIR, 'package.json');
+  const originalPackageJson = fs.readFileSync(packageJsonPath, 'utf8');
+
+  fs.writeFileSync(
+    scriptPath,
+    `#!/usr/bin/env node\nrequire('node:fs').writeFileSync(${JSON.stringify(argsPath)}, JSON.stringify(process.argv.slice(2)));\n`
+  );
+  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  pkg.scripts = {
+    ...(pkg.scripts || {}),
+    'lint:fix': 'node record-lint-fix.cjs',
+  };
+  fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2));
+
+  return () => {
+    fs.writeFileSync(packageJsonPath, originalPackageJson);
+    fs.rmSync(scriptPath, { force: true });
+    fs.rmSync(argsPath, { force: true });
+  };
+}
+
 /**
  * Helper to check if file contains text
  */
@@ -180,6 +203,22 @@ describe('NestJS-Style Code Generation', () => {
       assert.strictEqual(content.includes('withPermissions'), true, 'Should use withPermissions');
       assert.strictEqual(content.includes('READ_ISSUE'), true, 'Should include READ_ISSUE permission');
       assert.strictEqual(content.includes('UPDATE_ISSUE'), true, 'Should include UPDATE_ISSUE permission');
+    });
+
+    test('should run npm lint:fix for generated handler when the app defines it', () => {
+      const argsPath = path.join(TEST_APP_DIR, 'lint-fix-args.json');
+      const cleanupLintFixScript = createLintFixScript(argsPath);
+
+      try {
+        const result = runCLI('handler global/lint-hook', { silent: true });
+
+        assert.strictEqual(result.success, true, 'Command should succeed');
+        assert.deepStrictEqual(JSON.parse(fs.readFileSync(argsPath, 'utf8')), [
+          'src/backend/router/global/lint-hook/GET.ts'
+        ]);
+      } finally {
+        cleanupLintFixScript();
+      }
     });
 
     test('should handle nested paths', () => {

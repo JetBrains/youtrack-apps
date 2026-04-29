@@ -32,6 +32,29 @@ function readFile(relativePath) {
   return fs.readFileSync(path.join(TEST_APP_DIR, relativePath), 'utf8');
 }
 
+function createLintFixScript(argsPath) {
+  const scriptPath = path.join(TEST_APP_DIR, 'record-lint-fix.cjs');
+  const packageJsonPath = path.join(TEST_APP_DIR, 'package.json');
+  const originalPackageJson = fs.readFileSync(packageJsonPath, 'utf8');
+
+  fs.writeFileSync(
+    scriptPath,
+    `#!/usr/bin/env node\nrequire('node:fs').writeFileSync(${JSON.stringify(argsPath)}, JSON.stringify(process.argv.slice(2)));\n`
+  );
+  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  pkg.scripts = {
+    ...(pkg.scripts || {}),
+    'lint:fix': 'node record-lint-fix.cjs',
+  };
+  fs.writeFileSync(packageJsonPath, JSON.stringify(pkg, null, 2));
+
+  return () => {
+    fs.writeFileSync(packageJsonPath, originalPackageJson);
+    fs.rmSync(scriptPath, { force: true });
+    fs.rmSync(argsPath, { force: true });
+  };
+}
+
 function fileContains(relativePath, text) {
   try {
     return readFile(relativePath).includes(text);
@@ -149,6 +172,23 @@ describe('Widget Generator', () => {
         false,
         'enhanced-dx vite.config.ts should NOT contain widget entry (auto-discovered)'
       );
+    });
+
+    test('should run npm lint:fix for generated widget code files when the app defines it', () => {
+      const argsPath = path.join(TEST_APP_DIR, 'lint-fix-args.json');
+      const cleanupLintFixScript = createLintFixScript(argsPath);
+
+      try {
+        const result = runCLI('widget --key lint-widget --extension-point DASHBOARD_WIDGET', { silent: true });
+
+        assert.strictEqual(result.success, true, result.output);
+        assert.deepStrictEqual(JSON.parse(fs.readFileSync(argsPath, 'utf8')), [
+          'src/widgets/lint-widget/app.tsx',
+          'src/widgets/lint-widget/index.tsx'
+        ]);
+      } finally {
+        cleanupLintFixScript();
+      }
     });
   });
 

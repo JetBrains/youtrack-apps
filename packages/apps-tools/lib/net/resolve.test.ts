@@ -1,4 +1,5 @@
-import {resolve} from './resolve';
+import {jest} from '@jest/globals';
+import {resolve} from './resolve.js';
 
 describe('resolve', function () {
   it('should add default protocol', function () {

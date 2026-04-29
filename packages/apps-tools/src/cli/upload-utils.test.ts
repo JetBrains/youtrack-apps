@@ -1,4 +1,5 @@
-import {resolveAppName} from './upload-utils';
+import {jest, describe, it, expect, beforeEach, afterEach, beforeAll, afterAll} from '@jest/globals';
+import {resolveAppName} from './upload-utils.js';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
@@ -10,8 +11,8 @@ describe('resolveAppName util', function () {
   let testDir = '';
   let outDir;
   beforeEach(() => {
-    jest.spyOn(console, 'error').mockImplementation();
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(console, 'error').mockImplementation(() => undefined as never);
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     outDir = fs.mkdtempSync(path.join(os.tmpdir(), 'upload-test'));
     testDir = path.resolve(outDir, testApp);
   });

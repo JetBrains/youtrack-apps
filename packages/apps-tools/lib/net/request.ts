@@ -1,4 +1,4 @@
-import {Config} from '../../@types/types';
+import {Config} from '../../@types/types.js';
 
 export function generateRequestParams(
   config: Config,

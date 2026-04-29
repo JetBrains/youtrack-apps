@@ -1,4 +1,5 @@
-import {queryfields} from './queryfields';
+import {jest} from '@jest/globals';
+import {queryfields} from './queryfields.js';
 
 describe('queryfields.test', function () {
   it('should create fields query string', function () {

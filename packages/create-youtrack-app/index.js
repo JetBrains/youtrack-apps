@@ -51,6 +51,35 @@ function runHygen(hygenArgs = argv) {
   });
 }
 
+function runGeneratedFilesLintFix(files) {
+  const existingFiles = files
+    .filter(Boolean)
+    .map(file => path.resolve(cwd, file))
+    .filter(file => fs.existsSync(file))
+    .map(file => path.relative(cwd, file));
+
+  if (!existingFiles.length) {
+    return;
+  }
+
+  const packageJsonPath = path.join(cwd, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return;
+  }
+
+  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  if (!pkg.scripts || !pkg.scripts['lint:fix']) {
+    return;
+  }
+
+  try {
+    execa.sync('npm', ['run', 'lint:fix', '--', ...existingFiles], { cwd, stdio: 'inherit' });
+  } catch (error) {
+    const message = error && error.message ? error.message : String(error);
+    console.warn(styleText("yellow", `[create-youtrack-app] Could not run lint:fix for generated files: ${message}`));
+  }
+}
+
 (async function run() {
   if ('help' in args || 'h' in args) {
     require('./help');
@@ -132,6 +161,7 @@ function runHygen(hygenArgs = argv) {
       process.env.EDX = '1';
       console.log(styleText("cyan", `\nGenerating ${method} handler at ${targetRel}...\n`));
       await runHygen(hygenArgs);
+      runGeneratedFilesLintFix([targetRel]);
       console.log(styleText("green", `\n✓ HTTP handler created successfully!\n`));
       return;
     }
@@ -455,6 +485,10 @@ function runHygen(hygenArgs = argv) {
 
     console.log(styleText("cyan", `\nGenerating widget "${name}" (${key})...\n`));
     await runHygen(hygenArgs);
+    runGeneratedFilesLintFix([
+      path.join('src', 'widgets', key, 'app.tsx'),
+      path.join('src', 'widgets', key, 'index.tsx'),
+    ]);
     console.log(styleText("green", `\n✓ Widget created successfully!\n`));
     return;
   }
@@ -673,6 +707,7 @@ function runHygen(hygenArgs = argv) {
         // Mark Enhanced DX mode for any underlying prompts and run the specific action
         process.env.EDX = '1';
         await runHygen(hygenArgs);
+        runGeneratedFilesLintFix([targetRel]);
         return;
       } catch (e) {
         if (isCancelled(e)) {
@@ -763,6 +798,7 @@ function runHygen(hygenArgs = argv) {
         process.env.EDX = '1';
         console.log(styleText("cyan", `\nGenerating ${method} handler at ${targetRel}...\n`));
         await runHygen(hygenArgs);
+        runGeneratedFilesLintFix([targetRel]);
         console.log(styleText("green", `\n✓ HTTP handler generated\n`));
         return;
       } else if (action === 'extension-property') {
@@ -930,7 +966,7 @@ To add app settings later, run: ${styleText("magenta", 'npx @jetbrains/create-yo
 ====================================
   `);
 
-  const toolsPackageDir = path.join(__dirname, '..', 'youtrack-enhanced-dx-tools');
+  const toolsPackageDir = path.join(__dirname, '..', 'apps-tools');
   const isLocalWorkspace = fs.existsSync(toolsPackageDir);
 
   console.log(`
@@ -940,8 +976,8 @@ Please wait for just a moment. Dependencies are being installed:
 `);
 
   if (isLocalWorkspace) {
-    // Running from a local monorepo clone — link the local build instead of pulling from npm
-    const installProcess = execa("npm", ["link", "@jetbrains/youtrack-enhanced-dx-tools"], {cwd});
+    // Running from a local monorepo clone — link the local builds instead of pulling from npm
+    const installProcess = execa("npm", ["link", "@jetbrains/youtrack-apps-tools", "@jetbrains/youtrack-workflow-types"], {cwd});
     installProcess.stdout.pipe(process.stdout);
     await installProcess;
   } else {
@@ -951,7 +987,7 @@ Please wait for just a moment. Dependencies are being installed:
     await installProcess;
   }
 
-  // No explicit build of @jetbrains/youtrack-enhanced-dx-tools here.
+  // No explicit build of @jetbrains/youtrack-apps-tools here.
   // The tools are consumed as Vite plugins and will be resolved/compiled by the app toolchain during dev/build.
 
 

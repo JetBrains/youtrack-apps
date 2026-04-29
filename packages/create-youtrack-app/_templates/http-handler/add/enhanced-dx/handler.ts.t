@@ -12,7 +12,7 @@ to: "<%= (() => { const clean = String(routePath || '').split('/').filter(Boolea
     : 'CtxPost';
   const perms = (permissions || '').split(',').map(s => s.trim()).filter(Boolean);
 %>
-<% if (perms.length) { %>import { withPermissions } from '@jetbrains/youtrack-enhanced-dx-tools/runtime';
+<% if (perms.length) { %>import { withPermissions } from '@jetbrains/youtrack-apps-tools/dx/runtime';
 <% } %>
 
 /**

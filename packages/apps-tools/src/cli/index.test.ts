@@ -1,5 +1,6 @@
+import {jest, describe, it, expect, beforeEach, afterEach, beforeAll, afterAll} from '@jest/globals';
 import nock from 'nock';
-import {list} from './list';
+import {list} from './list.js';
 
 nock.back.setMode('record');
 jest.mock('./list');
@@ -24,7 +25,7 @@ describe('index', function () {
 
   it('should show error message if required parameter doesn`t have value', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
     require('./index').run(['', '', 'list', '--host=']);
     expect(console.error).toHaveBeenCalledWith('Error: Option "--host" is required');
@@ -33,7 +34,7 @@ describe('index', function () {
 
   it('should show error message if token is not provided', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
     require('./index').run(['', '', 'list', '--host=foo']);
 
@@ -45,10 +46,10 @@ describe('index', function () {
 
   it('should not throw error if user passed all required parameters', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     jest
       .spyOn(global, 'fetch')
-      .mockImplementation(jest.fn(() => Promise.resolve({json: () => Promise.resolve({data: []})})) as jest.Mock);
+      .mockImplementation(jest.fn(() => Promise.resolve({json: () => Promise.resolve({data: []})})) as unknown as typeof fetch);
 
     nock('https://foo:443')
       .get(uri => uri.includes('/api/admin/apps'))
@@ -73,7 +74,7 @@ describe('index', function () {
       open: null,
     };
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
     require('./index').run(['', '', 'list', '--host=foo', '--token=bar']);
 
@@ -84,7 +85,7 @@ describe('index', function () {
 
   it('should execute validate without expecting required params', async () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(process, 'exit').mockImplementation();
+    jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
     await require('./index').run(['', '', 'validate', 'foo']);
     expect(console.error).not.toHaveBeenCalledWith('Error: Option "--host" is required');

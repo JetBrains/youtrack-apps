@@ -1,12 +1,12 @@
 import Ajv, {AnySchemaObject, ErrorObject} from 'ajv';
 import addFormats from 'ajv-formats';
-import {Config} from '../../@types/types';
+import {Config} from '../../@types/types.js';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import {existsSync} from 'node:fs';
-import {exit} from '../../lib/cli/exit';
-import {i18n} from '../../lib/i18n/i18n';
-import {tmpDir} from '../../lib/fs/tmpdir';
+import {exit} from '../../lib/cli/exit.js';
+import {i18n} from '../../lib/i18n/i18n.js';
+import {tmpDir} from '../../lib/fs/tmpdir.js';
 
 export const DEFAULT_SCHEMA_URL = 'https://json.schemastore.org/youtrack-app.json';
 const tmpSchemaPath = tmpDir('schema.json');
