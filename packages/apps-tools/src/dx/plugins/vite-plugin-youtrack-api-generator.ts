@@ -9,6 +9,9 @@ import {
 import { execSync } from 'child_process';
 
 type ApiStructureNode = { [key: string]: string | ApiStructureNode };
+interface SchemaObject {
+  [key: string]: string | SchemaObject;
+}
 
 export const isValidIdentifier = (s: string) => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(s);
 
@@ -267,30 +270,39 @@ const generateZodSchemas = async (routeFiles: string[]) => {
           'z.record(z.string(), '
         );
 
+        const isSchemaObject = (value: string | SchemaObject | undefined): value is SchemaObject =>
+          typeof value === 'object' && value !== null;
+
         const buildNestedSchema = (mapping: typeof schemaMapping) => {
-          const result: Record<string, any> = {};
+          const result: SchemaObject = {};
 
           for (const [, info] of Object.entries(mapping)) {
-            let current: any = result;
+            let current: SchemaObject = result;
 
             // Navigate/create the nested structure
             for (const segment of info.path) {
-              if (!current[segment]) {
-                current[segment] = {};
+              const next = current[segment];
+              if (!isSchemaObject(next)) {
+                const nested: SchemaObject = {};
+                current[segment] = nested;
+                current = nested;
+              } else {
+                current = next;
               }
-              current = current[segment];
             }
 
             // Add the method and schemas
-            if (!current[info.method]) {
+            const existingMethodSchema = current[info.method];
+            if (!isSchemaObject(existingMethodSchema)) {
               current[info.method] = {};
             }
+            const methodSchema = current[info.method] as SchemaObject;
             // Only add schemas if the type exists and is not empty
             if (info.reqType && info.reqType.trim()) {
-              current[info.method].Req = `${info.reqType.charAt(0).toLowerCase() + info.reqType.slice(1)}Schema`;
+              methodSchema.Req = `${info.reqType.charAt(0).toLowerCase() + info.reqType.slice(1)}Schema`;
             }
             if (info.resType && info.resType.trim()) {
-              current[info.method].Res = `${info.resType.charAt(0).toLowerCase() + info.resType.slice(1)}Schema`;
+              methodSchema.Res = `${info.resType.charAt(0).toLowerCase() + info.resType.slice(1)}Schema`;
             }
           }
 
@@ -300,7 +312,7 @@ const generateZodSchemas = async (routeFiles: string[]) => {
         const nestedSchema = buildNestedSchema(schemaMapping);
 
         // Generate schema object string without JSON.stringify to preserve object references
-        const generateSchemaObject = (obj: Record<string, any>, indent = 0): string => {
+        const generateSchemaObject = (obj: SchemaObject, indent = 0): string => {
           const spaces = '  '.repeat(indent);
           const entries = Object.entries(obj).sort(([a], [b]) => a.localeCompare(b)).map(([key, value]) => {
             const safeKey = isValidIdentifier(key) ? key : `'${key}'`;

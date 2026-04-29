@@ -34,7 +34,7 @@ export type HttpRequest<TBody = unknown, TQuery = Record<string, unknown>> = {
  * HTTP Response object properties and methods as per YouTrack HTTP Handler API
  * @see https://www.jetbrains.com/help/youtrack/devportal/apps-reference-http-handlers.html#response
  */
-export type HttpResponse = {
+export type HttpResponse<TResponse = unknown> = {
   /** The response body. If an exception occurs during processing, the response body is empty (null) */
   body: string | null;
   /** A byte stream representation of the response body. If an exception occurs during processing, the property is empty (null) */
@@ -42,7 +42,7 @@ export type HttpResponse = {
   /** The HTTP status code that is assigned to the response. If an exception occurs during processing, the property is empty. 200 by default */
   code: number;
   /** Adds the Content-Type: application/json HTTP header to the response that the handler returns to the client */
-  json: (object: unknown) => void;
+  json: (object: TResponse) => void;
   /** Adds the Content-Type: text/plain HTTP header to the response that the handler returns to the client */
   text: (string: string) => HttpResponse;
   /** Adds an HTTP header to the response. If you pass null as the value, the corresponding header will be removed from the response */
@@ -129,7 +129,7 @@ export type CtxPost<
   TScope extends ScopeCtx = GlobalCtx
 > = TScope & {
   request: HttpRequest<TBody, Q>;
-  response: HttpResponse;
+  response: HttpResponse<R>;
 };
 
 /**
@@ -146,7 +146,7 @@ export type CtxPut<
   TScope extends ScopeCtx = GlobalCtx
 > = TScope & {
   request: HttpRequest<TBody, Q>;
-  response: HttpResponse;
+  response: HttpResponse<R>;
 };
 
 /**
@@ -161,7 +161,7 @@ export type CtxGet<
   TScope extends ScopeCtx = GlobalCtx
 > = TScope & {
   request: HttpRequest<never, Q>;
-  response: HttpResponse;
+  response: HttpResponse<R>;
 };
 
 /**
@@ -176,7 +176,7 @@ export type CtxDelete<
   TScope extends ScopeCtx = GlobalCtx
 > = TScope & {
   request: HttpRequest<never, Q>;
-  response: HttpResponse;
+  response: HttpResponse<R>;
 };
 
 // Scope-specific type aliases for convenience

@@ -1,4 +1,4 @@
-import type { CtxGet, CtxPost, CtxPut, CtxDelete } from './ctx.js';
+import type { CtxGet, CtxPost, CtxPut, CtxDelete, ScopeCtx } from './ctx.js';
 
 /**
  * Extracts RPC signature from a handler function.
@@ -21,9 +21,9 @@ import type { CtxGet, CtxPost, CtxPut, CtxDelete } from './ctx.js';
  */
 export type ExtractRPCFromHandler<T> =
   T extends (ctx: infer Ctx) => void
-    ? Ctx extends CtxPost<infer Body, infer Res, infer Query, any> | CtxPut<infer Body, infer Res, infer Query, any>
+    ? Ctx extends CtxPost<infer Body, infer Res, infer Query, ScopeCtx> | CtxPut<infer Body, infer Res, infer Query, ScopeCtx>
       ? (body: Body, query?: Partial<Query>) => Promise<Res>
-      : Ctx extends CtxGet<infer Res, infer Query, any> | CtxDelete<infer Res, infer Query, any>
+      : Ctx extends CtxGet<infer Res, infer Query, ScopeCtx> | CtxDelete<infer Res, infer Query, ScopeCtx>
         ? (query?: Partial<Query>) => Promise<Res>
         : never
     : never;

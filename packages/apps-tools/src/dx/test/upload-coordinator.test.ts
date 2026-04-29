@@ -132,7 +132,6 @@ describe('UploadCoordinator', () => {
     const statePath = path.join(cwd, '.build-state.json');
     // No dist/manifest.json created — simulates backend-only rebuild that wiped dist/
 
-    let uploadCalled = false;
     const coord = new UploadCoordinator({
       cwd,
       stateFile: '.build-state.json',

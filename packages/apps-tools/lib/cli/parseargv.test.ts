@@ -1,4 +1,3 @@
-import {jest} from '@jest/globals';
 import {parse} from './parseargv.js';
 
 describe('parseargv', function () {
@@ -8,4 +7,3 @@ describe('parseargv', function () {
     expect(parse(baseargs.concat(['--host=foo'])).host).toEqual('foo');
   });
 });
-

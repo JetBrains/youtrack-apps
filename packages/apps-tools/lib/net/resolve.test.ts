@@ -1,4 +1,3 @@
-import {jest} from '@jest/globals';
 import {resolve} from './resolve.js';
 
 describe('resolve', function () {

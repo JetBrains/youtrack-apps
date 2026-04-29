@@ -6,6 +6,11 @@ import os from 'node:os';
 import { discoverWidgetEntries } from '../plugins/vite-plugin-youtrack-widget-entries.js';
 import youtrackWidgetEntries from '../plugins/vite-plugin-youtrack-widget-entries.js';
 
+type WidgetEntriesTestPlugin = {
+  configResolved: (config: { root: string }) => void;
+  options: (options: Record<string, unknown>) => { input?: Record<string, string> };
+};
+
 describe('discoverWidgetEntries', () => {
   let tmpDir: string;
   let widgetsDir: string;
@@ -116,9 +121,9 @@ describe('youtrackWidgetEntries plugin default directory', () => {
     fs.mkdirSync(path.join(expectedDir, 'test-widget'), { recursive: true });
     fs.writeFileSync(path.join(expectedDir, 'test-widget', 'index.html'), '<html></html>');
 
-    const plugin = youtrackWidgetEntries();
-    (plugin as any).configResolved({ root: viteRoot } as any);
-    const result = (plugin as any).options({});
+    const plugin = youtrackWidgetEntries() as unknown as WidgetEntriesTestPlugin;
+    plugin.configResolved({ root: viteRoot });
+    const result = plugin.options({});
 
     assert.ok(
       result.input && result.input['test-widget'],
@@ -131,9 +136,9 @@ describe('youtrackWidgetEntries plugin default directory', () => {
     fs.mkdirSync(path.join(customDir, 'my-widget'), { recursive: true });
     fs.writeFileSync(path.join(customDir, 'my-widget', 'index.html'), '<html></html>');
 
-    const plugin = youtrackWidgetEntries({ widgetsDir: customDir });
-    (plugin as any).configResolved({ root: tmpDir } as any);
-    const result = (plugin as any).options({});
+    const plugin = youtrackWidgetEntries({ widgetsDir: customDir }) as unknown as WidgetEntriesTestPlugin;
+    plugin.configResolved({ root: tmpDir });
+    const result = plugin.options({});
 
     assert.ok(
       result.input && result.input['my-widget'],

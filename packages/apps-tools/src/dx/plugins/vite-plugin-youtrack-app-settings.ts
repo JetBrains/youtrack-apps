@@ -101,7 +101,7 @@ export const safeKey = (key: string): string =>
 /**
  * Convert JSON Schema type to TypeScript type
  */
-export const jsonSchemaToTS = (schema: JSONSchema): string => {
+export function jsonSchemaToTS(schema: JSONSchema): string {
   if (!schema.type) return 'unknown';
   
   switch (schema.type) {
@@ -141,15 +141,15 @@ export const jsonSchemaToTS = (schema: JSONSchema): string => {
     default:
       return 'unknown';
   }
-};
+}
 
 /**
  * Generate TypeScript object type from JSON Schema properties
  */
-export const generateObjectType = (
+export function generateObjectType(
   properties: Record<string, JSONSchema>,
   required: string[] = []
-): string => {
+): string {
   const props = Object.entries(properties).map(([key, schema]) => {
     const isRequired = required.includes(key);
     const optional = isRequired ? '' : '?';
@@ -164,7 +164,7 @@ export const generateObjectType = (
   });
   
   return `{\n  ${props.join('\n  ')}\n  }`;
-};
+}
 
 /**
  * Convert extension property type to TypeScript type

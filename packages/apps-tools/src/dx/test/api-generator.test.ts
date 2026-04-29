@@ -80,7 +80,7 @@ export type Handle = typeof handle;
     project.addSourceFilesAtPaths(handlerFiles);
 
     const allTypes = new Map<string, { namespaceImports: Set<string>; namedImports: Set<string> }>();
-    const apiStructure: Record<string, any> = {};
+    const apiStructure = {};
 
     await Promise.all(
       project.getSourceFiles().map((sf) =>

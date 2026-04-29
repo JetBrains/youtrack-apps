@@ -6,16 +6,42 @@ type Logger = {
 
 type LoggerFactory = (scope: string) => Logger;
 
-type HostAPI = {
-  fetchApp: (path: string, options: { method: string; body?: any; query?: any; scope?: boolean }) => Promise<any>;
-  fetchYouTrack: (path: string, options: { method: string; body?: any; query?: any }) => Promise<any>;
+type HostRequestOptions = {
+  method: string;
+  body?: unknown;
+  query?: unknown;
+  scope?: boolean;
 };
+
+type HostAPI = {
+  fetchApp: (path: string, options: HostRequestOptions) => Promise<unknown>;
+  fetchYouTrack: (path: string, options: HostRequestOptions) => Promise<unknown>;
+};
+
+type Validator = {
+  parse: (value: unknown) => void;
+};
+
+interface SchemaTree {
+  [key: string]: SchemaTree | Validator | undefined;
+}
+
+type ZodImport = () => Promise<{ schema: SchemaTree }>;
 
 export type ApiCreateOptions = {
   appId: string;
   loggerFactory?: LoggerFactory;
-  zodImport?: () => Promise<{ schema: any }>;
+  zodImport?: ZodImport;
 };
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null;
+
+const isSchemaTree = (value: unknown): value is SchemaTree =>
+  isRecord(value) && typeof value.parse !== 'function';
+
+const isValidator = (value: unknown): value is Validator =>
+  isRecord(value) && typeof value.parse === 'function';
 
 const validate = async (
   routePath: string[],
@@ -23,7 +49,7 @@ const validate = async (
   data: unknown,
   type: 'Req' | 'Res',
   loggerFactory?: LoggerFactory,
-  zodImport?: () => Promise<{ schema: any }>
+  zodImport?: ZodImport
 ) => {
   // if (process.env.NODE_ENV !== 'development') {
   //   return;
@@ -36,20 +62,20 @@ const validate = async (
 
     const zodSchemas = await zodImport();
 
-    let current = zodSchemas.schema;
+    let current: SchemaTree | undefined = zodSchemas.schema;
     for (const segment of routePath) {
-      if (current && current[segment]) {
-        current = current[segment];
-      } else {
+      const next: SchemaTree | Validator | undefined = current?.[segment];
+      if (!isSchemaTree(next)) {
         return;
       }
+      current = next;
     }
 
-    const methodSchemas = current?.[method];
+    const methodSchemas: SchemaTree | Validator | undefined = current?.[method];
 
-    if (methodSchemas && methodSchemas[type]) {
-      const validator = methodSchemas[type] as { parse: (v: unknown) => void } | undefined;
-      if (validator) {
+    if (isSchemaTree(methodSchemas)) {
+      const validator = methodSchemas[type];
+      if (isValidator(validator)) {
         logger?.debug('', { action: `${method}-${type}` }, data);
         validator.parse(data);
       } else {
@@ -69,17 +95,15 @@ const routeApiCall = async (
   appId: string,
   routePath: string[],
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
-  data: unknown,
-  loggerFactory?: LoggerFactory
+  data: unknown
 ) => {
-  const logger = loggerFactory ? loggerFactory('routing') : undefined;
+  const dataRecord = isRecord(data) ? data : undefined;
+  const hasProjectId = !!dataRecord && 'projectId' in dataRecord;
+  const hasIssueId = !!dataRecord && 'issueId' in dataRecord;
 
-  const hasProjectId = data && typeof data === 'object' && 'projectId' in (data as any);
-  const hasIssueId = data && typeof data === 'object' && 'issueId' in (data as any);
-
-  if (hasProjectId) {
-    const { projectId, ...restData } = data as any;
-    const fetchOptions: any = { method };
+  if (hasProjectId && dataRecord) {
+    const { projectId, ...restData } = dataRecord;
+    const fetchOptions: HostRequestOptions = { method };
 
     if (method === 'GET' || method === 'DELETE') {
       fetchOptions.query = restData;
@@ -88,14 +112,14 @@ const routeApiCall = async (
     }
 
     return await host.fetchYouTrack(
-      `admin/projects/${projectId}/extensionEndpoints/${appId}/${routePath.join('/')}`,
+      `admin/projects/${String(projectId)}/extensionEndpoints/${appId}/${routePath.join('/')}`,
       fetchOptions
     );
   }
 
-  if (hasIssueId) {
-    const { issueId, ...restData } = data as any;
-    const fetchOptions: any = { method };
+  if (hasIssueId && dataRecord) {
+    const { issueId, ...restData } = dataRecord;
+    const fetchOptions: HostRequestOptions = { method };
 
     if (method === 'GET' || method === 'DELETE') {
       fetchOptions.query = restData;
@@ -104,13 +128,13 @@ const routeApiCall = async (
     }
 
     return await host.fetchYouTrack(
-      `issues/${issueId}/extensionEndpoints/${appId}/${routePath.join('/')}`,
+      `issues/${String(issueId)}/extensionEndpoints/${appId}/${routePath.join('/')}`,
       fetchOptions
     );
   }
 
   const needsScope = routePath[0] !== 'global';
-  const fetchOptions: any = { method };
+  const fetchOptions: HostRequestOptions = { method };
 
   if (method === 'GET' || method === 'DELETE') {
     fetchOptions.query = data;
@@ -125,7 +149,7 @@ const routeApiCall = async (
   return await host.fetchApp(routePath.join('/'), fetchOptions);
 };
 
-const createApiProxy = (host: HostAPI, appId: string, loggerFactory: LoggerFactory | undefined, zodImport: (() => Promise<{ schema: any }>) | undefined, routePath: string[]): unknown => {
+const createApiProxy = (host: HostAPI, appId: string, loggerFactory: LoggerFactory | undefined, zodImport: ZodImport | undefined, routePath: string[]): unknown => {
   return new Proxy(
     {},
     {
@@ -137,7 +161,7 @@ const createApiProxy = (host: HostAPI, appId: string, loggerFactory: LoggerFacto
             // Zod schemas (z.object with all-optional fields) validate correctly.
             const normalizedData = (method === 'GET' || method === 'DELETE') && data === undefined ? {} : data;
             await validate(routePath, method, normalizedData, 'Req', loggerFactory, zodImport);
-            const response = await routeApiCall(host, appId, routePath, method, normalizedData, loggerFactory);
+            const response = await routeApiCall(host, appId, routePath, method, normalizedData);
             await validate(routePath, method, response, 'Res', loggerFactory, zodImport);
             return response;
           };
@@ -151,5 +175,3 @@ const createApiProxy = (host: HostAPI, appId: string, loggerFactory: LoggerFacto
 export const createApi = <T>(host: HostAPI, options: ApiCreateOptions) => {
   return createApiProxy(host, options.appId, options.loggerFactory, options.zodImport, []) as T;
 };
-
-

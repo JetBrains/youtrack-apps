@@ -56,7 +56,7 @@ export class UploadCoordinator {
   private uploadCommand: string | undefined;
   private appDir: string;
   private cwd: string;
-  private uploadTimer: NodeJS.Timeout | null = null;
+  private uploadTimer: ReturnType<typeof setTimeout> | null = null;
   private lastUploadedState: BuildState = { backend: null, frontend: null };
   private watcher: FSWatcher | null = null;
   private readonly handleExit = (): void => {

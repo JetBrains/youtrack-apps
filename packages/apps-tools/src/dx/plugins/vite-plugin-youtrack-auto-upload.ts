@@ -4,6 +4,8 @@ import fs from 'fs-extra';
 import { promises as fsp } from 'node:fs';
 import { hashDirectory, BuildState } from '../upload-coordinator.js';
 
+type NodeError = Error & { code?: string };
+
 export interface AutoUploadOptions {
   /** Whether to enable auto-upload (default: false) */
   enabled?: boolean;
@@ -41,7 +43,7 @@ export default function youtrackAutoUpload(options: AutoUploadOptions = {}): Plu
         await lockHandle.close();
         break;
       } catch (error) {
-        const nodeError = error as NodeJS.ErrnoException;
+        const nodeError = error as NodeError;
         if (nodeError.code !== 'EEXIST') {
           throw nodeError;
         }

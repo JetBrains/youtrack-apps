@@ -1,7 +1,6 @@
 import path from 'node:path';
 import fs from 'fs-extra';
 import { Plugin } from 'vite';
-import { Project, SourceFile } from 'ts-morph';
 import { execSync } from 'child_process';
 
 /**
@@ -114,7 +113,7 @@ const runEslintFix = (files: string | string[]) => {
 /**
  * Convert extension property type to TypeScript type
  */
-export const getTypeScriptType = (prop: ExtensionProperty, entityTypes: Set<string>): string => {
+export const getTypeScriptType = (prop: ExtensionProperty): string => {
   const baseType = typeMapping[prop.type] || (youtrackEntityTypes.has(prop.type) ? prop.type : 'unknown');
 
   if (prop.multi) {
@@ -129,12 +128,11 @@ export const getTypeScriptType = (prop: ExtensionProperty, entityTypes: Set<stri
  * Generate TypeScript type for extension properties
  */
 export const generateExtensionPropertiesType = (
-  properties: Record<string, ExtensionProperty>,
-  entityTypes: Set<string>
+  properties: Record<string, ExtensionProperty>
 ): string => {
   const entries = Object.entries(properties)
     .map(([name, prop]) => {
-      const tsType = getTypeScriptType(prop, entityTypes);
+      const tsType = getTypeScriptType(prop);
       return `  ${name}?: ${tsType};`;
     })
     .join('\n');
@@ -146,10 +144,9 @@ export const generateExtensionPropertiesType = (
  * Generate AppGlobalStorage extension properties type
  */
 const generateGlobalStorageType = (
-  properties: Record<string, ExtensionProperty>,
-  entityTypes: Set<string>
+  properties: Record<string, ExtensionProperty>
 ): string => {
-  const extensionPropertiesType = generateExtensionPropertiesType(properties, entityTypes);
+  const extensionPropertiesType = generateExtensionPropertiesType(properties);
 
   return `/**
  * Global storage extension properties for the app
@@ -162,10 +159,9 @@ export interface AppGlobalStorageExtensionProperties ${extensionPropertiesType}`
  */
 const generateExtendedEntityType = (
   entityType: string,
-  properties: Record<string, ExtensionProperty>,
-  entityTypes: Set<string>
+  properties: Record<string, ExtensionProperty>
 ): string => {
-  const extensionPropertiesType = generateExtensionPropertiesType(properties, entityTypes);
+  const extensionPropertiesType = generateExtensionPropertiesType(properties);
 
   return `/**
  * Extended ${entityType} with app-specific extension properties
@@ -179,7 +175,6 @@ export interface Extended${entityType} extends ${entityType} {
  * Generate all extended entity types
  */
 export const generateExtendedEntities = (extensions: EntityExtensions): string => {
-  const entityTypes = new Set<string>();
   const imports = new Set<string>();
   const globalStorageExt = extensions.entityTypeExtensions.find(ext => ext.entityType === 'AppGlobalStorage');
 
@@ -188,12 +183,10 @@ export const generateExtendedEntities = (extensions: EntityExtensions): string =
 
   extensions.entityTypeExtensions.forEach(ext => {
     if (ext.entityType !== 'AppGlobalStorage') {
-      entityTypes.add(ext.entityType);
       extendedEntityTypes.add(ext.entityType);
     }
     Object.values(ext.properties).forEach(prop => {
       if (youtrackEntityTypes.has(prop.type)) {
-        entityTypes.add(prop.type);
         imports.add(prop.type);
       }
     });
@@ -212,12 +205,12 @@ export const generateExtendedEntities = (extensions: EntityExtensions): string =
   // Generate extended entity types (excluding AppGlobalStorage)
   const extendedTypes = extensions.entityTypeExtensions
     .filter(ext => ext.entityType !== 'AppGlobalStorage')
-    .map(ext => generateExtendedEntityType(ext.entityType, ext.properties, entityTypes))
+    .map(ext => generateExtendedEntityType(ext.entityType, ext.properties))
     .join('\n\n');
 
   // Generate AppGlobalStorage extension properties type
   const globalStorageType = globalStorageExt
-    ? `\n\n${generateGlobalStorageType(globalStorageExt.properties, entityTypes)}`
+    ? `\n\n${generateGlobalStorageType(globalStorageExt.properties)}`
     : '';
 
   // Generate ExtendedProperties map with all possible entities
@@ -484,7 +477,7 @@ export default function youtrackExtensionProperties(): Plugin {
   return {
     name: 'vite-plugin-youtrack-extension-properties',
 
-    async config(config) {
+    async config() {
       // Add generated files to watch ignore list using chokidar function format
       return {
         server: {
@@ -506,4 +499,3 @@ export default function youtrackExtensionProperties(): Plugin {
     }
   };
 }
-
