@@ -3,7 +3,7 @@ to: vite.config.backend.ts
 ---
 import {defineConfig} from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { youtrackApiGenerator, youtrackRouter, youtrackExtensionProperties, youtrackAppSettings, youtrackAutoUpload } from '@jetbrains/youtrack-enhanced-dx-tools';
+import { youtrackApiGenerator, youtrackRouter, youtrackExtensionProperties, youtrackAppSettings, youtrackAutoUpload, youtrackBackendBundles } from '@jetbrains/youtrack-enhanced-dx-tools';
 
 
 export default defineConfig({
@@ -20,6 +20,11 @@ export default defineConfig({
         youtrackApiGenerator(),
         youtrackRouter(),
         youtrackExtensionProperties(),
+        youtrackBackendBundles([
+            { src: 'src/backend/workflows' },
+            { src: 'src/backend/ai-tools' },
+            { src: 'src/backend/sla' },
+        ]),
         youtrackAutoUpload({ enabled: process.env.AUTOUPLOAD === 'true', buildName: 'backend' })
     ],
     build: {

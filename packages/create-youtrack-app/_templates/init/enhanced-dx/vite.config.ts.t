@@ -93,7 +93,7 @@ export default defineConfig({
           dest: ".",
         },
         {
-          src: "*.*",
+          src: "*.{svg,json}",
           dest: ".",
         },
         {
