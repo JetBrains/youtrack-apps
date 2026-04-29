@@ -49,7 +49,7 @@ const webpackConfig = () => ({
   },
   output: {
     path: resolve(__dirname, pkgConfig.dist),
-    filename: pathData => `widgets/${pathData.chunk.name}/[name].js`,
+    filename: pathData => `widgets/${pathData.chunk.name}/[name].[contenthash:8].js`,
     chunkFilename: 'widgets/shared/[name].[chunkhash:4].js',
     devtoolModuleFilenameTemplate: '[absolute-resource-path]'
   },
