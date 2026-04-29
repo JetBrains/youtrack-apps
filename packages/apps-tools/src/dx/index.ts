@@ -6,6 +6,7 @@ export { default as youtrackAutoUpload, type AutoUploadOptions } from './plugins
 export { default as youtrackDevHtml, type DevHtmlOptions } from './plugins/vite-plugin-youtrack-dev-html.js';
 export { default as backendReloadPlugin } from './plugins/vite-plugin-backend-reload.js';
 export { default as youtrackWidgetEntries, type WidgetEntriesOptions } from './plugins/vite-plugin-youtrack-widget-entries.js';
+export { default as youtrackBackendBundles, type BundleDir } from './plugins/vite-plugin-youtrack-backend-bundles.js';
 
 // Types public surface
 export * from './types/index.js';

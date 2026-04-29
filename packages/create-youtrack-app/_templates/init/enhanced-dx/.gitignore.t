@@ -35,3 +35,4 @@ coverage/
 # Build coordination
 .backend-changed
 .build-state.json
+.backend-bundles-sentinel
