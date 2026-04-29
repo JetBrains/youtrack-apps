@@ -27,7 +27,8 @@ to: tsconfig.app.json
     "paths": {
       "@/*": ["./src/*"],
       "@backend/*": ["./src/backend/*"]
-    }
+    },
+    "types": ["@jetbrains/youtrack-workflow-types/scripting-api"]
   },
   "include": [
     "src",

@@ -1,3 +1,4 @@
+import pkg from '../../package.json' with { type: 'json' };
 import {i18n} from '../../lib/i18n/i18n.js';
 import {exit} from '../../lib/cli/exit.js';
 import {parse} from '../../lib/cli/parseargv.js';
@@ -99,6 +100,6 @@ export async function run(argv = process.argv) {
   }
 
   function printVersion() {
-    console.log(require('../../package.json').version);
+    console.log(pkg.version);
   }
 }

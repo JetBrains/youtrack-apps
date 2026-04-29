@@ -20,13 +20,11 @@ export function resolveAppName(appDir?: string): undefined | string {
 
   const pkgPath = path.join(appPath, 'manifest.json');
   if (fs.existsSync(pkgPath)) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    appName = require(pkgPath).name;
+    appName = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).name;
   } else {
     const obsoletePkgPath = path.join(appPath, 'package.json');
     if (fs.existsSync(obsoletePkgPath)) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      appName = require(obsoletePkgPath).name;
+      appName = JSON.parse(fs.readFileSync(obsoletePkgPath, 'utf8')).name;
     }
   }
 

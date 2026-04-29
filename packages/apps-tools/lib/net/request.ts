@@ -1,3 +1,4 @@
+import pkg from '../../package.json' with { type: 'json' };
 import {Config} from '../../@types/types.js';
 
 export function generateRequestParams(
@@ -12,7 +13,7 @@ export function generateRequestParams(
       Authorization: `Bearer ${config.token}`,
       'User-Agent':
         options?.headers?.['User-Agent'] ??
-        [`Nodejs/${process.versions.node}`, `YouTrackCLI/${require('../../package.json').version}`].join(' '),
+        [`Nodejs/${process.versions.node}`, `YouTrackCLI/${pkg.version}`].join(' '),
       ...options?.headers,
     },
     body: options?.body,

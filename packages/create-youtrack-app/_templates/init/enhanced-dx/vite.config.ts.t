@@ -7,7 +7,7 @@ import {fileURLToPath} from 'node:url';
 import { defineConfig } from "vite";
 import react from '@vitejs/plugin-react';
 import { viteStaticCopy } from "vite-plugin-static-copy";
-import { youtrackAutoUpload, youtrackDevHtml, backendReloadPlugin, youtrackWidgetEntries } from '@jetbrains/youtrack-apps-tools';
+import { youtrackAutoUpload, youtrackDevHtml, backendReloadPlugin, youtrackWidgetEntries } from '@jetbrains/youtrack-apps-tools/dx';
 
 const isServing = process.argv.includes('--mode') === false && !process.argv.includes('build');
 

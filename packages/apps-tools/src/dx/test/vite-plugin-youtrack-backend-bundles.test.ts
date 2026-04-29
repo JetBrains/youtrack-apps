@@ -7,7 +7,7 @@ import {
   discoverBundleEntries,
   checkForCollisions,
   createBundleDirWatcher,
-} from '../src/plugins/vite-plugin-youtrack-backend-bundles.js';
+} from '../plugins/vite-plugin-youtrack-backend-bundles.js';
 
 describe('discoverBundleEntries', () => {
   let tmpDir: string;
