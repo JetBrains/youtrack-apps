@@ -42,15 +42,34 @@ export async function validate(config: Config, appDir?: string) {
         : await fetchSchemaAndWriteToTmp(DEFAULT_SCHEMA_URL);
     }
 
+    warnIfStaleDefaults(manifest as Record<string, unknown>);
+
     const validateFn = ajv.compile(schema);
     const valid = validateFn(manifest);
 
     if (!valid) {
-      throw new Error(validateFn.errors?.map(prepareError).join('\n'));
+      exit(new Error(validateFn.errors?.map(prepareError).join('\n')));
+      return;
     }
     console.log(i18n('Manifest is valid!'));
   } catch (error) {
     exit(error);
+  }
+}
+
+function warnIfStaleDefaults(manifest: Record<string, unknown>): void {
+  const vendor = manifest.vendor as Record<string, string> | undefined;
+  const stale: string[] = [];
+
+  if (vendor?.name === 'VendorName') stale.push('vendor.name is still "VendorName"');
+  if (vendor?.url === 'https://vendor.com') stale.push('vendor.url is still "https://vendor.com"');
+  if (typeof manifest.description === 'string' &&
+      /^A YouTrack app created with (TypeScript|JavaScript)$/.test(manifest.description)) {
+    stale.push('description is still the generated default');
+  }
+
+  for (const msg of stale) {
+    console.warn(i18n(`Warning: ${msg} — update manifest.json before publishing`));
   }
 }
 
