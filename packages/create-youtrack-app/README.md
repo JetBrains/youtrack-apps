@@ -66,16 +66,16 @@ npm run g                                             # Shows a menu for choosin
 #### Syntax Reference
 
 **HTTP Handler:** `npm run g -- handler <scope>/<path> [--method METHOD] [--permissions PERMS]`
-- `<scope>`: `global`, `project`, or `issue`
+- `<scope>`: `global`, `project`, `issue`, `article`, or `user`
 - `<path>`: Route path (can be nested with `/`)
 - `--method`: `GET`, `POST`, `PUT`, `DELETE` (default: `GET`)
 - `--permissions`: Comma-separated permissions (optional)
 - **Aliases:** `handler`, `h`
 
 **Extension Property:** `npm run g -- property <Entity>.<name> [--type TYPE] [--set]`
-- `<Entity>`: `Issue`, `Comment`, `User`, or `AppGlobalStorage`
+- `<Entity>`: `Issue`, `User`, `Project`, or `Article`
 - `<name>`: Property name (valid identifier)
-- `--type`: `string`, `integer`, `boolean`, `Issue` (default: `string`)
+- `--type`: `string`, `integer`, `float`, `boolean`, `Issue`, `User`, `Project`, or `Article` (default: `string`)
 - `--set`: Makes it multi-value (optional)
 - **Aliases:** `property`, `prop`, `p`
 

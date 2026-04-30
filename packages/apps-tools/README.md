@@ -72,11 +72,11 @@ Specify values for the `--host` and `--token` parameters to gain authorized acce
 
 Use `--open` to open the app settings in the browser after the upload is complete.
 
-### Verify
+### Validate
 
-`youtrack-app verify <dir> [--schema, --manifest]`
+`youtrack-app validate <dir> [--schema, --manifest]`
 
-This command verifies the app's `manifest.json` from the specified directory against the [YouTrack App JSON schema][json-schema]. One can also specify the `--schema` parameter to provide a custom schema file and the `--manifest` parameter to specify a custom manifest file. When both `dir` and manifest are provided, the manifest file is used.
+This command validates the app's `manifest.json` from the specified directory against the [YouTrack App JSON schema][json-schema]. One can also specify the `--schema` parameter to provide a custom schema file and the `--manifest` parameter to specify a custom manifest file. When both `dir` and manifest are provided, the manifest file is used.
 
 ### Special Instructions for SSL Certificates
 

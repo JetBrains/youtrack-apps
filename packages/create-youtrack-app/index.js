@@ -100,21 +100,16 @@ function runGeneratedFilesLintFix(files) {
   // Replace aliases in argv (create new array to avoid mutation issues)
   const normalizedArgv = argv.map(arg => aliasMap[arg] || arg);
 
-  // Smart pattern detection for positional arguments
-
-  // Pattern 1: HTTP Handler - scope/path syntax
-  // Usage: handler global/health [--method GET] [--permissions read-issue]
   const handlerIndex = normalizedArgv.findIndex(a => a === 'http-handler');
   if (handlerIndex !== -1 && normalizedArgv[handlerIndex + 1]) {
     const pathArg = normalizedArgv[handlerIndex + 1];
 
-    // Pattern: scope/path (e.g., "global/health" or "project/users/profile")
     if (pathArg.includes('/') && !pathArg.startsWith('--')) {
       const segments = pathArg.split('/');
       const scope = segments[0]; // first segment is scope
       const routePath = segments.slice(1).join('/'); // rest is path
 
-      // Validate scope
+
       const validScopes = ['global', 'project', 'issue', 'article', 'user'];
       if (!validScopes.includes(scope)) {
         console.error(styleText("red", `Invalid scope: ${scope}. Must be one of: ${validScopes.join(', ')}`));
@@ -124,7 +119,6 @@ function runGeneratedFilesLintFix(files) {
       const method = args.method || 'GET'; // Default to GET
       const permissions = args.permissions || '';
 
-      // Check if enhanced-dx project
       const pkgPath = path.join(cwd, 'package.json');
       const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
       const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
@@ -134,7 +128,6 @@ function runGeneratedFilesLintFix(files) {
         process.exit(1);
       }
 
-      // Confirm target file
       const targetRel = path.join('src', 'backend', 'router', scope, routePath || '', `${method}.ts`);
       const targetAbs = path.join(cwd, targetRel);
 
@@ -167,24 +160,19 @@ function runGeneratedFilesLintFix(files) {
     }
   }
 
-  // Pattern 2: Extension Property - Entity.propertyName syntax
-  // Usage: property Issue.customStatus [--type string] [--set | --multi true]
   const propIndex = normalizedArgv.findIndex(a => a === 'extension-property');
   if (propIndex !== -1 && normalizedArgv[propIndex + 1]) {
     const propArg = normalizedArgv[propIndex + 1];
 
-    // Pattern: Entity.propertyName (e.g., "Issue.customStatus" or "Comment.rating")
     if (propArg.includes('.') && !propArg.startsWith('--')) {
       const [target, name] = propArg.split('.');
 
-      // Validate target entity
       const validTargets = ['Issue', 'User', 'Project', 'Article'];
       if (!validTargets.includes(target)) {
         console.error(styleText("red", `Invalid target: ${target}. Must be one of: ${validTargets.join(', ')}`));
         process.exit(1);
       }
 
-      // Validate property name (basic check)
       if (!name || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
         console.error(styleText("red", `Invalid property name: ${name}. Must be a valid identifier.`));
         process.exit(1);
@@ -199,7 +187,6 @@ function runGeneratedFilesLintFix(files) {
 
       const isSet = args.set === true || args.set === 'true' || args.multi === true || args.multi === 'true';
 
-      // Directly manipulate the entity-extensions.json file
       const entityExtensionsPath = path.join(cwd, 'src', 'entity-extensions.json');
       let entityExtensions;
 
@@ -227,13 +214,13 @@ function runGeneratedFilesLintFix(files) {
         entityExtensions.entityTypeExtensions.push(extendingEntity);
       }
 
-      // Add the property
+
       extendingEntity.properties[name] = {
         type: type,
         multi: isSet
       };
 
-      // Write back to file
+
       fs.writeFileSync(entityExtensionsPath, JSON.stringify(entityExtensions, null, 2));
 
       console.log(styleText("green", `\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
@@ -241,8 +228,6 @@ function runGeneratedFilesLintFix(files) {
     }
   }
 
-  // Pattern 3: Settings init - settings init syntax with optional args
-  // Usage: settings init [--title "..."] [--description "..."]
   const settingsIndex = normalizedArgv.findIndex(a => a === 'settings');
   if (settingsIndex !== -1 && normalizedArgv[settingsIndex + 1] === 'init') {
     const title = args.title;
@@ -252,13 +237,12 @@ function runGeneratedFilesLintFix(files) {
     if (title && description) {
       const settingsPath = path.join(cwd, 'src', 'settings.json');
 
-      // Check if settings.json already exists
+
       if (fs.existsSync(settingsPath)) {
         console.error(styleText("red", 'Error: settings.json already exists at src/settings.json'));
         process.exit(1);
       }
 
-      // Create the settings schema
       const schema = {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
@@ -277,7 +261,6 @@ function runGeneratedFilesLintFix(files) {
   }
 
   // Pattern 4: Settings add — always non-interactive, never falls through to Hygen
-  // Usage: settings add --name <name> --type <type> [options...]
   if (settingsIndex !== -1 && normalizedArgv[settingsIndex + 1] === 'add') {
     const VALID_TYPES    = ['string', 'integer', 'number', 'boolean', 'object', 'array'];
     const VALID_SCOPES   = ['global', 'project', 'none'];
@@ -294,7 +277,6 @@ function runGeneratedFilesLintFix(files) {
       process.exit(1);
     }
 
-    // -- Validate --type
     const type = args.type;
     if (!type) {
       console.error(styleText("red", 'Error: --type is required'));
@@ -305,14 +287,12 @@ function runGeneratedFilesLintFix(files) {
       process.exit(1);
     }
 
-    // -- Validate --scope (optional)
     const scope = args.scope;
     if (scope !== undefined && !VALID_SCOPES.includes(scope)) {
       console.error(styleText("red", `Invalid scope: "${scope}". Must be one of: ${VALID_SCOPES.join(', ')}`));
       process.exit(1);
     }
 
-    // -- Validate --entity (optional, only valid with object/array)
     const entity = args.entity != null ? String(args.entity) : undefined;
     if (entity !== undefined) {
       if (!['object', 'array'].includes(type)) {
@@ -325,14 +305,12 @@ function runGeneratedFilesLintFix(files) {
       }
     }
 
-    // -- Require settings.json to exist
     const settingsPath = path.join(cwd, 'src', 'settings.json');
     if (!fs.existsSync(settingsPath)) {
       console.error(styleText("red", 'Error: settings.json does not exist at src/settings.json. Run "settings init" first.'));
       process.exit(1);
     }
 
-    // -- Parse settings.json
     let schema;
     try {
       schema = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
@@ -341,19 +319,16 @@ function runGeneratedFilesLintFix(files) {
       process.exit(1);
     }
 
-    // -- Guard duplicate property name
     if (schema.properties && schema.properties[name] !== undefined) {
       console.error(styleText("red", `Error: Property "${name}" already exists in settings.json`));
       process.exit(1);
     }
 
-    // -- Build the property schema object
     const prop = { type };
 
     if (args.title)       prop.title       = args.title;
     if (args.description) prop.description = args.description;
 
-    // String constraints
     if (type === 'string') {
       // Use !== undefined (not truthiness) so value 0 is never dropped
       if (args['min-length'] !== undefined) prop.minLength = Number(args['min-length']);
@@ -383,7 +358,6 @@ function runGeneratedFilesLintFix(files) {
     if (type === 'object' && entity) prop['x-entity'] = entity;
     if (type === 'array'  && entity) prop.items = { type: 'object', 'x-entity': entity };
 
-    // Read-only + optional constant value
     if (args.readonly) {
       prop.readOnly = true;
       if (args.const !== undefined) {
@@ -399,7 +373,6 @@ function runGeneratedFilesLintFix(files) {
     // Scope (omit the key entirely when scope is "none" or not provided)
     if (scope && scope !== 'none') prop['x-scope'] = scope;
 
-    // -- Mutate schema and write back
     if (!schema.properties) schema.properties = {};
     if (!Array.isArray(schema.required)) schema.required = [];
 
@@ -411,9 +384,6 @@ function runGeneratedFilesLintFix(files) {
     return;
   }
 
-  // Pattern 5: Widget - --key flag syntax (non-interactive when --key is provided)
-  // Usage: widget --key <key> --extension-point <ep> [--name <name>] [--description <desc>]
-  //                            [--permissions PERM1,PERM2] [--width <w>] [--height <h>]
   const widgetIndex = normalizedArgv.findIndex(a => a === 'widget');
   if (widgetIndex !== -1 && args.key !== undefined) {
     const key = String(args.key);
@@ -494,7 +464,6 @@ function runGeneratedFilesLintFix(files) {
     (key) => new Set(normalizedArgv).has(key)
   );
 
-  // If some hygen-related params passed in, we call generator directly
   if (hasHygenParams) {
     // Intercept Enhanced DX http-handler flow for richer experience
     const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler') && (new Set(normalizedArgv).has('add') || !normalizedArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
@@ -510,7 +479,6 @@ function runGeneratedFilesLintFix(files) {
           return runHygen();
         }
 
-        // Enhanced DX interactive flow
         const method = await new Select({
           name: 'method',
           message: 'Choose HTTP method:',
@@ -611,7 +579,6 @@ function runGeneratedFilesLintFix(files) {
             lastTabTs = now;
 
             if (key.shift) {
-              // Reverse cycle
               if (lastTabInput !== current) {
                 cycleIndex = names.length; // start from end
               }
@@ -655,19 +622,15 @@ function runGeneratedFilesLintFix(files) {
             return;
           }
 
-          // For other keys, keep footer up-to-date
           updateFooter(current);
           if (typeof pathPrompt.render === 'function') pathPrompt.render();
         });
 
-        // Initialize footer before showing the prompt
         updateFooter('');
         let routePath = await pathPrompt.run();
 
-        // Normalize routePath (trim repeated, leading & trailing slashes)
         routePath = trimPathSegments(routePath);
 
-        // Permissions (optional)
         const { PERMISSIONS } = require(path.join(defaultTemplates, 'consts.js'));
         const permChoices = PERMISSIONS.map(p => ({ name: p.key, message: p.key }));
         const permissions = await new MultiSelect({
@@ -678,7 +641,6 @@ function runGeneratedFilesLintFix(files) {
           validate: () => true
         }).run();
 
-        // Confirm target file and overwrite if exists
         const targetRel = path.join('src', 'backend', 'router', scope, routePath ? routePath : '', `${method}.ts`);
         const targetAbs = path.join(cwd, targetRel);
         if (fs.existsSync(targetAbs)) {
@@ -701,7 +663,6 @@ function runGeneratedFilesLintFix(files) {
           '--permissions', permissions.join(',')
         ];
 
-        // Mark Enhanced DX mode for any underlying prompts and run the specific action
         process.env.EDX = '1';
         await runHygen(hygenArgs);
         runGeneratedFilesLintFix([targetRel]);
@@ -719,7 +680,6 @@ function runGeneratedFilesLintFix(files) {
     return runHygen();
   }
 
-  // Check if we're in an existing enhanced-dx app
   const pkgPath = path.join(cwd, 'package.json');
   const hasPkg = fs.existsSync(pkgPath);
   if (hasPkg) {
@@ -727,7 +687,6 @@ function runGeneratedFilesLintFix(files) {
     const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
 
     if (isEnhancedDX) {
-      // Show interactive menu for what to generate
       const action = await new Select({
         name: 'action',
         message: 'What do you want to generate?',
@@ -740,7 +699,6 @@ function runGeneratedFilesLintFix(files) {
       }).run();
 
       if (action === 'http-handler') {
-        // Interactive flow for http-handler
         const method = await new Select({
           name: 'method',
           message: 'Which HTTP method should this handler respond to?',
@@ -799,7 +757,6 @@ function runGeneratedFilesLintFix(files) {
         console.log(styleText("green", `\n✓ HTTP handler generated\n`));
         return;
       } else if (action === 'extension-property') {
-        // Interactive flow for extension-property
         const target = await new Select({
           name: 'target',
           message: 'Which entity type does this extension property apply to?',
@@ -863,7 +820,6 @@ function runGeneratedFilesLintFix(files) {
         console.log(styleText("green", `\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
         return;
       } else if (action === 'settings') {
-        // Interactive flow for settings
         const settingsAction = await new Select({
           name: 'settingsAction',
           message: 'What do you want to do with settings?',
@@ -874,7 +830,6 @@ function runGeneratedFilesLintFix(files) {
         }).run();
 
         if (settingsAction === 'init') {
-          // Check if settings.json already exists
           const settingsPath = path.join(cwd, 'src', 'settings.json');
           if (fs.existsSync(settingsPath)) {
             console.error(styleText("red", '\nError: settings.json already exists at src/settings.json'));
@@ -882,12 +837,11 @@ function runGeneratedFilesLintFix(files) {
             return;
           }
 
-          // Run hygen for settings init
+
           const hygenArgs = ['settings', 'init'];
           await runHygen(hygenArgs);
           console.log(styleText("green", '\n✓ Settings schema created at src/settings.json\n'));
         } else if (settingsAction === 'add') {
-          // Check if settings.json exists
           const settingsPath = path.join(cwd, 'src', 'settings.json');
           if (!fs.existsSync(settingsPath)) {
             console.error(styleText("red", '\nError: settings.json does not exist'));
@@ -895,14 +849,12 @@ function runGeneratedFilesLintFix(files) {
             return;
           }
 
-          // Run hygen for settings add
           const hygenArgs = ['settings', 'add'];
           await runHygen(hygenArgs);
           console.log(styleText("green", '\n✓ Property added to settings.json\n'));
         }
         return;
       } else if (action === 'widget') {
-        // Run hygen for widget
         return runHygen(['widget', 'add']);
       }
     }
@@ -940,13 +892,11 @@ function runGeneratedFilesLintFix(files) {
     initial: 'my-youtrack-app'
   }).run();
 
-  // Auto-generate other required parameters
   const title = appName.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   const description = `A YouTrack app created with ${appType === 'ts' ? 'TypeScript' : 'JavaScript'}`;
   const vendor = 'VendorName';
   const vendorUrl = 'https://vendor.com';
 
-  // Map js/ts to actual template names
   const templateName = appType === 'js' ? 'vite-app' : 'enhanced-dx';
   const appRes = await runHygen(["init", templateName, "--appName", appName, "--title", title, "--description", description, "--vendor", vendor, "--vendorUrl", vendorUrl, ...argv]);
   if (!appRes.success) {
@@ -978,7 +928,6 @@ Please wait for just a moment. Dependencies are being installed:
     installProcess.stdout.pipe(process.stdout);
     await installProcess;
   } else {
-    // Running from npm — install dependencies from the registry
     const installProcess = execa("npm", ["install"], {cwd});
     installProcess.stdout.pipe(process.stdout);
     await installProcess;
@@ -995,7 +944,7 @@ ${styleText("bold", '🚀 Enhanced DX Features:')}
 - Type-safe API endpoints with automatic type generation
 - File-based routing in src/backend/router/
 - Zod schema validation in dev builds (tree-shaken from production)
-- Example endpoints: /global/health, /project/settings, /issue/metadata
+- Example endpoints: global/demo, global/echo (POST), issue/details, project/demo
 
 ${styleText("bold", 'Development workflow:')}
 1. Add endpoints: Create {GET|POST}.ts files in src/backend/router/
