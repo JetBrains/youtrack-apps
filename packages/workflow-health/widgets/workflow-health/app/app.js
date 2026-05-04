@@ -180,10 +180,6 @@ class Widget extends Component {
   }
 }
 
-if (typeof window !== 'undefined' && window.YTApp && window.YTApp.register) {
-  window.YTApp.register();
-}
-
 DashboardAddons.registerWidget((dashboardApi, registerWidgetApi) =>
   render(
     <Widget
