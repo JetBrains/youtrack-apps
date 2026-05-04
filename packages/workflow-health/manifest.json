@@ -2,7 +2,7 @@
   "name": "workflow-health",
   "title": "Workflow Health Monitor",
   "description": "Provides an overview with links to projects where there are workflow configuration errors.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "icon": "youtrack.svg",
   "minYouTrackVersion": "2024.3.0",
   "vendor": {
