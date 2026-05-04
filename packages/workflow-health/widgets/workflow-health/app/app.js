@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import DashboardAddons from 'hub-dashboard-addons';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
@@ -177,6 +178,10 @@ class Widget extends Component {
       </div>
     );
   }
+}
+
+if (typeof window !== 'undefined' && window.YTApp && window.YTApp.register) {
+  window.YTApp.register();
 }
 
 DashboardAddons.registerWidget((dashboardApi, registerWidgetApi) =>

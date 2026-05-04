@@ -20,6 +20,7 @@ const hubWidgetUiPath = resolve(__dirname, join('node_modules', '@jetbrains', 'h
 
 const webpackConfig = () => ({
   mode: 'development',
+  devtool: 'source-map',
   entry: {
     ...Object.keys(PATHS).reduce((acc, key) => {
       if (PATHS[key].sources && PATHS[key].key) {
@@ -35,9 +36,7 @@ const webpackConfig = () => ({
     devtoolModuleFilenameTemplate: '[absolute-resource-path]'
   },
   optimization: {
-    splitChunks: {
-      chunks: 'all'
-    }
+    splitChunks: false
   },
   resolve: {
     alias: {
