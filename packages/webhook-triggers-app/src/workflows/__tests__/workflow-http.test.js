@@ -476,4 +476,33 @@ describe('sendWebhooks token dispatch', () => {
       expect.stringContaining('contains whitespace')
     );
   });
+
+  it('warns when inline token is shorter than 32 characters', () => {
+    const ctx = {
+      settings: {
+        webhooksOnIssueCreated: 'https://example.com/hook short',
+        webhooksOnAllEvents: '',
+        headerName: 'X-Test-Token',
+      },
+    };
+    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'issueCreated');
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('shorter than 32 characters')
+    );
+  });
+
+  it('does NOT warn about token length for the fallback global token (schema enforces it)', () => {
+    const ctx = {
+      settings: {
+        webhooksOnIssueCreated: 'https://example.com/hook',
+        webhooksOnAllEvents: '',
+        webhookToken: 'short',
+        headerName: 'X-Test-Token',
+      },
+    };
+    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'issueCreated');
+    expect(console.warn).not.toHaveBeenCalledWith(
+      expect.stringContaining('shorter than 32 characters')
+    );
+  });
 });

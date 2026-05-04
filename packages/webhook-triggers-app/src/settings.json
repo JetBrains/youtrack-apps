@@ -10,7 +10,8 @@
       "description": "Used for any webhook URL that does not have its own token. If multiple URLs rely on this default token, they all use the same secret, so if one is compromised, the others are too. For better security, add a token to each URL instead, for example: https://example.com mytoken",
       "type": "string",
       "format": "secret",
-      "x-scope": "PROJECT"
+      "x-scope": "PROJECT",
+      "minLength": 32
     },
     "headerName": {
       "title": "Header name",

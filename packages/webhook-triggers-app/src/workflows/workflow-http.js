@@ -11,6 +11,11 @@ const security = require('./workflow-security');
 const WEBHOOK_TIMEOUT_MS = 5000;
 
 /**
+ * Minimum recommended token length (mirrors the schema minLength on webhookToken)
+ */
+const MIN_TOKEN_LENGTH = 32;
+
+/**
  * Parse comma or newline separated webhook entries from settings.
  * Each line may be "url" or "url token" (split on first whitespace).
  * @param {string} webhooksStr
@@ -181,6 +186,9 @@ function sendWebhooks(ctx, settingsKey, payload, eventName) {
     }
     if (/\s/.test(effectiveToken)) {
       console.warn('[webhooks] Token for ' + entry.url + ' contains whitespace — HTTP header values with spaces may be rejected by some services.');
+    }
+    if (entry.token != null && entry.token.length < MIN_TOKEN_LENGTH) {
+      console.warn('[webhooks] Inline token for ' + entry.url + ' is shorter than ' + MIN_TOKEN_LENGTH + ' characters — short tokens are easier to brute-force. Consider using a longer token.');
     }
     if (entry.token == null) {
       fallbackCount++;
