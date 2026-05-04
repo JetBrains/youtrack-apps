@@ -10,11 +10,11 @@ import styles from './app.css';
 import Content from './content';
 
 class Widget extends Component {
-  static getWidgetTitle = (homeUrl, counter) => {
-    const defaultTitle = 'Workflow Health Monitor';
-    const href = homeUrl ? `${homeUrl}admin/workflows` : undefined;
-    return {text: defaultTitle, href, counter};
-  };
+  static getWidgetTitle = (homeUrl, counter) => ({
+    text: 'Workflow Health Monitor',
+    href: `${homeUrl}/admin/workflows`,
+    counter
+  });
 
   static propTypes = {
     dashboardApi: PropTypes.object,
@@ -23,7 +23,8 @@ class Widget extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {isLoading: true};
+    this.state = {isLoading: true, homeUrl: ''};
+    this.loadGeneration = 0;
 
     props.registerWidgetApi({
       onRefresh: () => this.refresh()
@@ -36,18 +37,22 @@ class Widget extends Component {
 
   async initialize() {
     const {dashboardApi} = this.props;
-    this.setState({isLoading: true});
+    this.setState({isLoading: true, error: undefined});
 
-    const {contextPath} = await dashboardApi.fetchYouTrack('config?fields=contextPath');
-    const homeUrl = contextPath ? `${contextPath}/` : '';
-    this.setState({homeUrl});
-
-    this.loadPermissions();
+    try {
+      const {contextPath} = await dashboardApi.fetchYouTrack('config?fields=contextPath');
+      this.setState({homeUrl: contextPath || ''});
+      this.loadPermissions();
+    } catch (error) {
+      this.setState({error, isLoading: false});
+    }
   }
 
   refresh() {
-    this.setState({isLoading: true, brokenProjects: undefined}, () =>
-      this.loadPermissions()
+    this.loadGeneration++;
+    this.setState(
+      {isLoading: true, brokenProjects: undefined, error: undefined},
+      () => this.loadPermissions()
     );
   }
 
@@ -55,8 +60,12 @@ class Widget extends Component {
     const fields = 'id,project(id)';
     const query = 'permission:jetbrains.jetpass.project-update';
     const url = `api/rest/users/me/sourcedprojectroles?top=-1&fields=${fields}&query=${query}`;
+    const generation = this.loadGeneration;
 
     this.props.dashboardApi.fetchHub(url).then(response => {
+      if (generation !== this.loadGeneration) {
+        return;
+      }
       const roles = response.sourcedprojectroles;
       if (!roles || !roles.length) {
         this.setState({hasPermission: false, isLoading: false});
@@ -67,14 +76,23 @@ class Widget extends Component {
         {hasPermission: true, permittedProjects},
         () => this.loadWorkflows()
       );
+    }).catch(error => {
+      if (generation !== this.loadGeneration) {
+        return;
+      }
+      this.setState({error, isLoading: false});
     });
   }
 
   loadWorkflows() {
     const fields = 'id,name,title,usages(project(id,ringId,name),isBroken)';
     const url = `api/admin/workflows?$top=-1&fields=${fields}`;
+    const generation = this.loadGeneration;
 
     this.props.dashboardApi.fetchYouTrack(url).then(workflows => {
+      if (generation !== this.loadGeneration) {
+        return;
+      }
       const {permittedProjects} = this.state;
       const hasGlobalPermission = permittedProjects.has('0');
       const brokenProjectsSet = {};
@@ -102,17 +120,30 @@ class Widget extends Component {
       this.setState({brokenProjects, isLoading: false});
 
       brokenProjects.forEach(project => {
-        this.loadRules(project).
-          then(() => this.setState({brokenProjects}));
+        this.loadRules(project, generation).
+          then(updated => {
+            if (generation !== this.loadGeneration || !updated) {
+              return;
+            }
+            this.setState({brokenProjects});
+          });
       });
+    }).catch(error => {
+      if (generation !== this.loadGeneration) {
+        return;
+      }
+      this.setState({error, isLoading: false});
     });
   }
 
-  loadRules(project) {
+  loadRules(project, generation) {
     const fields = 'rule(id,workflow(id,name)),isBroken,problems(id,message)';
     const url = `api/admin/projects/${project.id}/workflowRules?$top=-1&fields=${fields}`;
 
     return this.props.dashboardApi.fetchYouTrack(url).then(usages => {
+      if (generation !== this.loadGeneration) {
+        return null;
+      }
       usages.filter(usage => usage.isBroken).forEach(usage => {
         const wfId = usage.rule.workflow.id;
         const problems = project.wfs[wfId].problems;
@@ -128,7 +159,7 @@ class Widget extends Component {
       });
 
       return project;
-    });
+    }).catch(() => null);
   }
 
   removeWidget = () =>
@@ -139,6 +170,7 @@ class Widget extends Component {
       brokenProjects={this.state.brokenProjects}
       hasPermission={this.state.hasPermission}
       isLoading={this.state.isLoading}
+      error={this.state.error}
       homeUrl={this.state.homeUrl}
       onRemove={this.removeWidget}
     />

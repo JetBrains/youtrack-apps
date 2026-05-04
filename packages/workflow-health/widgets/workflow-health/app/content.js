@@ -58,9 +58,20 @@ export default class Content extends Component {
     brokenProjects: PropTypes.array,
     hasPermission: PropTypes.bool,
     isLoading: PropTypes.bool,
+    error: PropTypes.object,
     homeUrl: PropTypes.string,
     onRemove: PropTypes.func.isRequired
   };
+
+  renderErrorMessage() {
+    const {error} = this.props;
+    return (
+      <EmptyWidget
+        face={EmptyWidgetFaces.ERROR}
+        message={(error && error.message) || 'Failed to load workflow data'}
+      />
+    );
+  }
 
   renderNoPermissionsMessage() {
     return (
@@ -153,12 +164,15 @@ export default class Content extends Component {
   }
 
   projectSettingsUrl(projectRingId) {
-    return `${this.props.homeUrl}admin/editProject/${projectRingId}?tab=workflow`;
+    return `${this.props.homeUrl}/admin/editProject/${projectRingId}?tab=workflow`;
   }
 
   render() {
-    const {isLoading, hasPermission, brokenProjects} = this.props;
+    const {isLoading, hasPermission, brokenProjects, error} = this.props;
 
+    if (error) {
+      return this.renderErrorMessage();
+    }
     if (isLoading) {
       return (<LoaderInline/>);
     }
