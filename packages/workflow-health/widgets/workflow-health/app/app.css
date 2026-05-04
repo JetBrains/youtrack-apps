@@ -1,0 +1,80 @@
+@import "@jetbrains/ring-ui/components/global/variables.css";
+
+@value unit, font from "@jetbrains/ring-ui/components/global/global.css";
+
+:global(.widget-body) {
+  margin: 0;
+  padding: 0 calc(unit);
+
+  background: var(--ring-content-background-color);
+
+  font-size: var(--ring-font-size);
+}
+
+.widget {
+  composes: font;
+
+  margin: 0;
+  padding: 0;
+}
+
+.scrollableWrapper {
+  padding: 0 0;
+}
+
+.workflowName {
+  position: relative;
+
+  margin-left: 4px;
+
+  cursor: default;
+
+  font-size: var(--ring-font-size-smaller);
+}
+
+.workflowNameIcon {
+  position: relative;
+  top: -3px;
+  left: -4px;
+}
+
+.errorList {
+  margin-bottom: 4px;
+  margin-left: calc(2 * unit);
+}
+
+.errorListLine {
+  overflow: hidden;
+
+  max-width: 100%;
+
+  cursor: default;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  color: var(--ring-secondary-color);
+
+  font-size: var(--ring-font-size-smaller);
+}
+
+.project {
+  margin-bottom: 10px;
+  padding: 0 unit;
+
+  border: 1px dashed var(--ring-icon-error-color);
+  border-radius: var(--ring-border-radius);
+  box-shadow: 0 1px 4px var(--ring-borders-color);
+}
+
+.projectHeader {
+  margin: 4px 0;
+
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+
+  font-weight: bold;
+}
+
+.widgetForm {
+  margin: calc(3 * unit) 0;
+}
