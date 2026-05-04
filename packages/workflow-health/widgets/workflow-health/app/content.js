@@ -58,22 +58,9 @@ export default class Content extends Component {
     brokenProjects: PropTypes.array,
     hasPermission: PropTypes.bool,
     isLoading: PropTypes.bool,
-    homeUrl: PropTypes.string.isRequired,
+    homeUrl: PropTypes.string,
     onRemove: PropTypes.func.isRequired
   };
-
-  constructor(props) {
-    super(props);
-    this.state = {projects: []};
-  }
-
-  static getDerivedStateFromProps(props) {
-    return {
-      projects: Content.getProjectsSortedModel(
-        props.brokenProjects
-      )
-    };
-  }
 
   renderNoPermissionsMessage() {
     return (
@@ -99,7 +86,6 @@ export default class Content extends Component {
       >
         <div className={styles.projectHeader}>
           <Link
-            pseudo={false}
             target={'_top'}
             href={this.projectSettingsUrl(project.ringId)}
           >
@@ -171,8 +157,7 @@ export default class Content extends Component {
   }
 
   render() {
-    const {isLoading, hasPermission} = this.props;
-    const {projects} = this.state;
+    const {isLoading, hasPermission, brokenProjects} = this.props;
 
     if (isLoading) {
       return (<LoaderInline/>);
@@ -180,12 +165,11 @@ export default class Content extends Component {
     if (!hasPermission) {
       return this.renderNoPermissionsMessage();
     }
-    if (projects && projects.length) {
+    const projects = Content.getProjectsSortedModel(brokenProjects);
+    if (projects.length) {
       return (
         <div>
-          {projects.map(
-            project => this.renderProject(project)
-          )}
+          {projects.map(project => this.renderProject(project))}
         </div>
       );
     }

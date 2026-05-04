@@ -23,10 +23,7 @@ class Widget extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      isLoading: true,
-      homeUrl: ''
-    };
+    this.state = {isLoading: true};
 
     props.registerWidgetApi({
       onRefresh: () => this.refresh()
@@ -62,15 +59,14 @@ class Widget extends Component {
     this.props.dashboardApi.fetchHub(url).then(response => {
       const roles = response.sourcedprojectroles;
       if (!roles || !roles.length) {
-        this.setState({hasPermissions: false, isLoading: false});
-      } else {
-        const permittedProjects = [...new Set(roles.map(role => role.project.id))];
-        this.setState({
-          hasGlobalPermission: permittedProjects.indexOf('0') !== -1,
-          hasPermissions: true,
-          permittedProjects
-        }, () => this.loadWorkflows());
+        this.setState({hasPermission: false, isLoading: false});
+        return;
       }
+      const permittedProjects = new Set(roles.map(role => role.project.id));
+      this.setState(
+        {hasPermission: true, permittedProjects},
+        () => this.loadWorkflows()
+      );
     });
   }
 
@@ -79,41 +75,30 @@ class Widget extends Component {
     const url = `api/admin/workflows?$top=-1&fields=${fields}`;
 
     this.props.dashboardApi.fetchYouTrack(url).then(workflows => {
+      const {permittedProjects} = this.state;
+      const hasGlobalPermission = permittedProjects.has('0');
       const brokenProjectsSet = {};
-      const {hasGlobalPermission, permittedProjects} = this.state;
 
       workflows.forEach(workflow => {
-        if (workflow.usages.length) {
-          if (workflow.usages.find(usage => usage.isBroken)) {
-            const projects = workflow.usages.filter(usage => usage.isBroken).
-              map(usage => ({
-                id: usage.project.id,
-                name: usage.project.name,
-                ringId: usage.project.ringId,
-                wfs: {}
-              }));
-            projects.forEach(project => {
-              if (hasGlobalPermission ||
-                permittedProjects.indexOf(project.ringId) !== -1) {
-                if (!brokenProjectsSet[project.id]) {
-                  brokenProjectsSet[project.id] = project;
-                }
-                brokenProjectsSet[project.id].wfs[workflow.id] = {
-                  id: workflow.id,
-                  name: workflow.name,
-                  title: workflow.title,
-                  loading: true,
-                  problems: []
-                };
-              }
-            });
+        workflow.usages.filter(usage => usage.isBroken).forEach(usage => {
+          const {id, name, ringId} = usage.project;
+          if (!hasGlobalPermission && !permittedProjects.has(ringId)) {
+            return;
           }
-        }
+          if (!brokenProjectsSet[id]) {
+            brokenProjectsSet[id] = {id, name, ringId, wfs: {}};
+          }
+          brokenProjectsSet[id].wfs[workflow.id] = {
+            id: workflow.id,
+            name: workflow.name,
+            title: workflow.title,
+            loading: true,
+            problems: []
+          };
+        });
       });
 
-      const brokenProjects = Object.keys(brokenProjectsSet).map(
-        projectId => brokenProjectsSet[projectId]
-      );
+      const brokenProjects = Object.values(brokenProjectsSet);
       this.setState({brokenProjects, isLoading: false});
 
       brokenProjects.forEach(project => {
@@ -152,7 +137,7 @@ class Widget extends Component {
   renderContent = () => (
     <Content
       brokenProjects={this.state.brokenProjects}
-      hasPermission={this.state.hasPermissions}
+      hasPermission={this.state.hasPermission}
       isLoading={this.state.isLoading}
       homeUrl={this.state.homeUrl}
       onRemove={this.removeWidget}
