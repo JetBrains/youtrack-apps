@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {render} from 'react-dom';
 import ConfigurableWidget from '@jetbrains/hub-widget-ui/dist/configurable-widget';
-import LoaderInline from '@jetbrains/ring-ui/components/loader-inline/loader-inline';
 
 import styles from './app.css';
 

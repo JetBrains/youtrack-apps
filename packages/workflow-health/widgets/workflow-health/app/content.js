@@ -167,7 +167,7 @@ export default class Content extends Component {
   }
 
   projectSettingsUrl(projectRingId) {
-    return `${this.props.homeUrl}/admin/editProject/${projectRingId}?tab=workflow`;
+    return `${this.props.homeUrl}admin/editProject/${projectRingId}?tab=workflow`;
   }
 
   render() {
