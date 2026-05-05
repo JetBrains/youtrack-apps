@@ -97,7 +97,7 @@ export default class Content extends Component {
       >
         <div className={styles.projectHeader}>
           <Link
-            target={'_top'}
+            target={'_blank'}
             href={this.projectSettingsUrl(project.id)}
           >
             {project.name}
