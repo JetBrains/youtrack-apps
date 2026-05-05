@@ -97,8 +97,8 @@ export default class Content extends Component {
       >
         <div className={styles.projectHeader}>
           <Link
-            target={'_top'}
-            href={this.projectSettingsUrl(project.ringId)}
+            target={'_blank'}
+            href={this.projectSettingsUrl(project.id)}
           >
             {project.name}
           </Link>
@@ -163,8 +163,8 @@ export default class Content extends Component {
     );
   }
 
-  projectSettingsUrl(projectRingId) {
-    return `${this.props.homeUrl}/admin/editProject/${projectRingId}?tab=workflow`;
+  projectSettingsUrl(projectId) {
+    return `${this.props.homeUrl}/projects/${projectId}/settings?tab=workflow`;
   }
 
   render() {

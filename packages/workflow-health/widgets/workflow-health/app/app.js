@@ -57,23 +57,33 @@ class Widget extends Component {
   }
 
   loadPermissions() {
-    const fields = 'id,project(id)';
-    const query = 'permission:jetbrains.jetpass.project-update';
-    const url = `api/rest/users/me/sourcedprojectroles?top=-1&fields=${fields}&query=${query}`;
+    const fields = 'permission(key),projects(id),global';
+    const url = `permissions/cache?fields=${fields}`;
     const generation = this.loadGeneration;
+    const updateProjectKey = 'jetbrains.jetpass.project-update';
 
-    this.props.dashboardApi.fetchHub(url).then(response => {
+    this.props.dashboardApi.fetchYouTrack(url).then(response => {
       if (generation !== this.loadGeneration) {
         return;
       }
-      const roles = response.sourcedprojectroles;
-      if (!roles || !roles.length) {
+      const cached = Array.isArray(response) ? response : [];
+      const entry = cached.find(
+        p => p && p.permission && p.permission.key === updateProjectKey
+      );
+      if (!entry) {
         this.setState({hasPermission: false, isLoading: false});
         return;
       }
-      const permittedProjects = new Set(roles.map(role => role.project.id));
+      const hasGlobalPermission = !!entry.global;
+      const permittedProjects = new Set(
+        (entry.projects || []).map(p => p.id)
+      );
+      if (!hasGlobalPermission && permittedProjects.size === 0) {
+        this.setState({hasPermission: false, isLoading: false});
+        return;
+      }
       this.setState(
-        {hasPermission: true, permittedProjects},
+        {hasPermission: true, hasGlobalPermission, permittedProjects},
         () => this.loadWorkflows()
       );
     }).catch(error => {
@@ -86,21 +96,20 @@ class Widget extends Component {
 
   loadWorkflows() {
     const fields = 'id,name,title,usages(project(id,ringId,name),isBroken)';
-    const url = `api/admin/workflows?$top=-1&fields=${fields}`;
+    const url = `admin/workflows?$top=-1&fields=${fields}`;
     const generation = this.loadGeneration;
 
     this.props.dashboardApi.fetchYouTrack(url).then(workflows => {
       if (generation !== this.loadGeneration) {
         return;
       }
-      const {permittedProjects} = this.state;
-      const hasGlobalPermission = permittedProjects.has('0');
+      const {permittedProjects, hasGlobalPermission} = this.state;
       const brokenProjectsSet = {};
 
       workflows.forEach(workflow => {
         workflow.usages.filter(usage => usage.isBroken).forEach(usage => {
           const {id, name, ringId} = usage.project;
-          if (!hasGlobalPermission && !permittedProjects.has(ringId)) {
+          if (!hasGlobalPermission && !permittedProjects.has(id)) {
             return;
           }
           if (!brokenProjectsSet[id]) {
@@ -138,7 +147,7 @@ class Widget extends Component {
 
   loadRules(project, generation) {
     const fields = 'rule(id,workflow(id,name)),isBroken,problems(id,message)';
-    const url = `api/admin/projects/${project.id}/workflowRules?$top=-1&fields=${fields}`;
+    const url = `admin/projects/${project.id}/workflowRules?$top=-1&fields=${fields}`;
 
     return this.props.dashboardApi.fetchYouTrack(url).then(usages => {
       if (generation !== this.loadGeneration) {
