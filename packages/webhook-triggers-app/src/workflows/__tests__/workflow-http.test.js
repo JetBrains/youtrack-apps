@@ -172,7 +172,7 @@ describe('getWebhookEntries', () => {
     ]);
   });
 
-  it('deduplicates: event-specific no-token wins over all-events token when event-specific is listed first', () => {
+  it('deduplicates: all-events token is kept when event-specific entry has no token (token-wins)', () => {
     const ctx = {
       settings: {
         webhooksOnIssueCreated: 'https://a.com',
@@ -180,7 +180,19 @@ describe('getWebhookEntries', () => {
       },
     };
     expect(getWebhookEntries(ctx, 'webhooksOnIssueCreated')).toEqual([
-      { url: 'https://a.com', token: null },
+      { url: 'https://a.com', token: 'token_all' },
+    ]);
+  });
+
+  it('deduplicates: event-specific token wins when both entries have an explicit token', () => {
+    const ctx = {
+      settings: {
+        webhooksOnIssueCreated: 'https://a.com token_specific',
+        webhooksOnAllEvents: 'https://a.com token_all',
+      },
+    };
+    expect(getWebhookEntries(ctx, 'webhooksOnIssueCreated')).toEqual([
+      { url: 'https://a.com', token: 'token_specific' },
     ]);
   });
 

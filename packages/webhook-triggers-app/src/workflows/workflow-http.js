@@ -60,24 +60,23 @@ function getWebhookEntries(ctx, settingsKey) {
   var eventEntries = parseWebhookEntries(ctx.settings[settingsKey] || '');
   var allEventsEntries = parseWebhookEntries(ctx.settings.webhooksOnAllEvents || '');
 
-  var urlSet = Object.create(null);
-  var allEntries = [];
+  var tokenByUrl = Object.create(null);
+  var order = [];
 
-  eventEntries.forEach(function(entry) {
-    if (entry.url && !urlSet[entry.url]) {
-      allEntries.push(entry);
-      urlSet[entry.url] = true;
+  function addEntry(entry) {
+    if (!entry.url) { return; }
+    if (!(entry.url in tokenByUrl)) {
+      order.push(entry.url);
+      tokenByUrl[entry.url] = entry.token;
+    } else if (tokenByUrl[entry.url] == null && entry.token != null) {
+      tokenByUrl[entry.url] = entry.token;
     }
-  });
+  }
 
-  allEventsEntries.forEach(function(entry) {
-    if (entry.url && !urlSet[entry.url]) {
-      allEntries.push(entry);
-      urlSet[entry.url] = true;
-    }
-  });
+  eventEntries.forEach(addEntry);
+  allEventsEntries.forEach(addEntry);
 
-  return allEntries;
+  return order.map(function(url) { return { url: url, token: tokenByUrl[url] }; });
 }
 
 /**
