@@ -11,21 +11,72 @@ const security = require('./workflow-security');
 const WEBHOOK_TIMEOUT_MS = 5000;
 
 /**
+ * Minimum recommended token length (mirrors the schema minLength on webhookToken)
+ */
+const MIN_TOKEN_LENGTH = 32;
+
+/**
+ * Parse comma or newline separated webhook entries from settings.
+ * Each line may be "url" or "url token" (split on first whitespace).
+ * @param {string} webhooksStr
+ * @returns {Array<{url: string, token: string|null}>}
+ */
+function parseWebhookEntries(webhooksStr) {
+  if (!webhooksStr || typeof webhooksStr !== 'string') {
+    return [];
+  }
+  return webhooksStr.split(/[,\n]/)
+    .map(function(segment) {
+      var trimmed = segment.trim();
+      if (!trimmed) {return null;}
+      var spaceIdx = trimmed.search(/\s/);
+      if (spaceIdx === -1) {
+        return { url: trimmed, token: null };
+      }
+      var url = trimmed.slice(0, spaceIdx);
+      var token = trimmed.slice(spaceIdx).trim();
+      return { url: url, token: token || null };
+    })
+    .filter(function(e) { return e !== null; });
+}
+
+/**
  * Parse comma or newline separated webhook URLs from settings
  * @param {string} webhooksStr - Comma or newline separated webhook URLs
  * @returns {Array<string>} Array of trimmed, non-empty URLs
  */
 function parseWebhookUrls(webhooksStr) {
-  if (!webhooksStr || typeof webhooksStr !== 'string') {
-    return [];
+  return parseWebhookEntries(webhooksStr).map(function(e) { return e.url; });
+}
+
+/**
+ * Gets all webhook entries for an event, combining event-specific and "All Events" entries.
+ * Deduplicates by URL (first-wins; event-specific is processed first).
+ * @param {Object} ctx - The workflow context with settings
+ * @param {string} settingsKey - The key in ctx.settings to get webhook entries from
+ * @returns {Array<{url: string, token: string|null}>}
+ */
+function getWebhookEntries(ctx, settingsKey) {
+  var eventEntries = parseWebhookEntries(ctx.settings[settingsKey] || '');
+  var allEventsEntries = parseWebhookEntries(ctx.settings.webhooksOnAllEvents || '');
+
+  var tokenByUrl = Object.create(null);
+  var order = [];
+
+  function addEntry(entry) {
+    if (!entry.url) { return; }
+    if (!(entry.url in tokenByUrl)) {
+      order.push(entry.url);
+      tokenByUrl[entry.url] = entry.token;
+    } else if (tokenByUrl[entry.url] == null && entry.token != null) {
+      tokenByUrl[entry.url] = entry.token;
+    }
   }
-  return webhooksStr.split(/[,\n]/)  // Split by comma OR newline
-    .map(function (s) {
-      return s.trim();
-    })
-    .filter(function (s) {
-      return s.length > 0;
-    });
+
+  eventEntries.forEach(addEntry);
+  allEventsEntries.forEach(addEntry);
+
+  return order.map(function(url) { return { url: url, token: tokenByUrl[url] }; });
 }
 
 /**
@@ -36,33 +87,7 @@ function parseWebhookUrls(webhooksStr) {
  * @returns {Array<string>} Deduplicated array of webhook URLs
  */
 function getWebhookUrls(ctx, settingsKey) {
-  // Parse event-specific webhooks
-  const webhooksStr = ctx.settings[settingsKey] || '';
-  const eventUrls = parseWebhookUrls(webhooksStr);
-
-  // Parse "All Events" webhooks
-  const allEventsWebhooksStr = ctx.settings.webhooksOnAllEvents || '';
-  const allEventsUrls = parseWebhookUrls(allEventsWebhooksStr);
-
-  // Combine and deduplicate
-  const urlSet = {};
-  const allUrls = [];
-
-  eventUrls.forEach(function (url) {
-    if (url && !urlSet[url]) {
-      allUrls.push(url);
-      urlSet[url] = true;
-    }
-  });
-
-  allEventsUrls.forEach(function (url) {
-    if (url && !urlSet[url]) {
-      allUrls.push(url);
-      urlSet[url] = true;
-    }
-  });
-
-  return allUrls;
+  return getWebhookEntries(ctx, settingsKey).map(function(e) { return e.url; });
 }
 
 /**
@@ -75,7 +100,7 @@ function logWebhookResponse(postResult, url) {
     console.warn('[webhooks] Webhook request to ' + url + ' completed but returned no status code (likely timeout after ' + WEBHOOK_TIMEOUT_MS + 'ms)');
     return;
   }
-  
+
   console.log('[webhooks] Webhook sent successfully to ' + url);
   if (postResult) {
     console.log('[webhooks] Response code: ' + (postResult.code || 'unknown'));
@@ -140,33 +165,48 @@ function sendWebhook(url, payload, eventName, token, headerName) {
  * @param {string} eventName - Name of the event for logging
  */
 function sendWebhooks(ctx, settingsKey, payload, eventName) {
-  const token = ctx.settings.webhookToken || null;
-  if (!token) {
-    console.warn('[webhooks] No webhook token configured - webhooks disabled for ' + eventName);
-    return;
-  }
+  var headerName = ctx.settings.headerName || 'X-YouTrack-Token';
+  var globalToken = ctx.settings.webhookToken || null;
 
-  const headerName = ctx.settings.headerName || null;
-  if (!headerName) {
-    console.warn('[webhooks] No header name configured - webhooks disabled for ' + eventName);
-    return;
-  }
-
-  // Get all URLs (event-specific + "All Events", deduplicated)
-  const allUrls = getWebhookUrls(ctx, settingsKey);
-
-  if (allUrls.length === 0) {
+  var allEntries = getWebhookEntries(ctx, settingsKey);
+  if (allEntries.length === 0) {
     console.log('[webhooks] No webhook URLs configured for ' + eventName);
     return;
   }
 
-  console.log('[webhooks] Sending webhooks to ' + allUrls.length + ' URL(s)');
-  allUrls.forEach(function (url) {
-    sendWebhook(url, payload, eventName, token, headerName);
+  console.log('[webhooks] Sending webhooks to ' + allEntries.length + ' URL(s)');
+
+  var fallbackCount = 0;
+  allEntries.forEach(function(entry) {
+    var effectiveToken = entry.token != null ? entry.token : globalToken;
+    if (effectiveToken == null) {
+      console.warn('[webhooks] No token configured for ' + entry.url + ' — skipping');
+      return;
+    }
+    if (/\s/.test(effectiveToken)) {
+      console.warn('[webhooks] Token for ' + entry.url + ' contains whitespace — HTTP header values with spaces may be rejected by some services.');
+    }
+    if (entry.token != null && entry.token.length < MIN_TOKEN_LENGTH) {
+      console.warn('[webhooks] Inline token for ' + entry.url + ' is shorter than ' + MIN_TOKEN_LENGTH + ' characters — short tokens are easier to brute-force. Consider using a longer token.');
+    }
+    if (entry.token == null) {
+      fallbackCount++;
+    }
+    sendWebhook(entry.url, payload, eventName, effectiveToken, headerName);
   });
+
+  if (fallbackCount > 1) {
+    console.warn(
+      '[webhooks] ' + fallbackCount + ' webhook URLs are sharing the global webhookToken fallback. ' +
+      'A token compromise at any one endpoint exposes all others sharing the same token. ' +
+      'Add a per-line inline token to each URL: https://example.com mytoken'
+    );
+  }
 }
 
+exports.parseWebhookEntries = parseWebhookEntries;
 exports.parseWebhookUrls = parseWebhookUrls;
+exports.getWebhookEntries = getWebhookEntries;
 exports.getWebhookUrls = getWebhookUrls;
 exports.sendWebhook = sendWebhook;
 exports.sendWebhooks = sendWebhooks;
