@@ -17,13 +17,11 @@ exports.rule = {
         const issue = ctx.issue;
 
 
-        if (core.shouldSkipIssue(issue, 'On Work Item Updated')) {
+        if (core.shouldSkipIssue(issue)) {
             return false;
         }
 
-
         if (!core.hasWorkItemsUpdated(issue)) {
-            console.log('[webhooks] On Work Item Updated - No updated work items');
             return false;
         }
 

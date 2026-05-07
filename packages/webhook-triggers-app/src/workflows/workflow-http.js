@@ -79,9 +79,8 @@ function logWebhookResponse(postResult, url) {
   console.log('[webhooks] Webhook sent successfully to ' + url);
   if (postResult) {
     console.log('[webhooks] Response code: ' + (postResult.code || 'unknown'));
-    if (postResult.response) {
-      console.log('[webhooks] Response body: ' + postResult.response);
-    }
+    // Response body is intentionally not logged to prevent exposure of data
+    // from internal services reachable from the YouTrack server (SSRF).
   }
 }
 
@@ -108,17 +107,27 @@ function logWebhookError(error, url) {
  * @returns {Object|null} The HTTP response or null on error
  */
 function sendWebhook(url, payload, eventName, token, headerName) {
+  const trimmedUrl = url.trim();
+  const validation = security.validateWebhookUrl(trimmedUrl);
+  if (!validation.valid) {
+    console.error('[webhooks] Blocked webhook to ' + trimmedUrl + ': ' + validation.reason);
+    return null;
+  }
+
+  if (trimmedUrl.startsWith('http://')) {
+    console.warn('[webhooks] Warning: webhook URL uses HTTP (not HTTPS) — the webhook token will be transmitted in plaintext. HTTPS is strongly recommended: ' + trimmedUrl);
+  }
   try {
-    const connection = new http.Connection(url.trim(), null, WEBHOOK_TIMEOUT_MS);
+    const connection = new http.Connection(trimmedUrl, null, WEBHOOK_TIMEOUT_MS);
     connection.addHeader('Content-Type', 'application/json');
     security.addSecurityHeaders(connection, token, headerName);
 
     const postResult = connection.postSync('', '', JSON.stringify(payload));
 
-    logWebhookResponse(postResult, url);
+    logWebhookResponse(postResult, trimmedUrl);
     return postResult;
   } catch (error) {
-    logWebhookError(error, url);
+    logWebhookError(error, trimmedUrl);
     return null;
   }
 }

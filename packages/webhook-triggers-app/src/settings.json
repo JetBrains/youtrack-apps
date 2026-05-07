@@ -7,7 +7,7 @@
   "properties": {
     "webhookToken": {
       "title": "Webhook token",
-      "description": "Token for authentication (required for security). Must be at least 32 characters long.",
+      "description": "The webhook token is a shared secret included in requests to all webhook URLs configured in this project. Only add endpoints you trust. Rotate this token immediately if any recipient is decommissioned or a compromise is suspected. Must be at least 32 characters long.",
       "type": "string",
       "format": "secret",
       "x-scope": "PROJECT"

@@ -17,40 +17,27 @@ exports.rule = {
     guard: core.createGuard(EVENTS.ISSUE_UPDATED.key, function (ctx) {
         var issue = ctx.issue;
 
-        console.log('[webhooks] On Issue Updated - Guard check for issue id: ' + issue.id);
-
-
-        if (core.shouldSkipIssue(issue, 'On Issue Updated')) {
+        if (core.shouldSkipIssue(issue)) {
             return false;
         }
 
-        // Skip if this is issue creation
         if (core.isIssueCreation(issue)) {
-            console.log('[webhooks] On Issue Updated - Skipping issue creation');
             return false;
         }
 
-        // Skip if comments changed (handled by comment workflows)
         if (core.hasCommentsAdded(issue) || core.hasCommentsUpdated(issue) || core.hasCommentsRemoved(issue)) {
-            console.log('[webhooks] On Issue Updated - Skipping, comments changed');
             return false;
         }
 
-        // Skip if work items changed (handled by work item workflows)
         if (core.hasWorkItemsAdded(issue) || core.hasWorkItemsUpdated(issue) || core.hasWorkItemsRemoved(issue)) {
-            console.log('[webhooks] On Issue Updated - Skipping, work items changed');
             return false;
         }
 
-        // Skip if attachments changed (handled by attachment workflows)
         if (core.hasAttachmentsAdded(issue) || core.hasAttachmentsRemoved(issue)) {
-            console.log('[webhooks] On Issue Updated - Skipping, attachments changed');
             return false;
         }
-
 
         if (!core.hasFieldsChanged(issue)) {
-            console.log('[webhooks] On Issue Updated - No fields changed');
             return false;
         }
 

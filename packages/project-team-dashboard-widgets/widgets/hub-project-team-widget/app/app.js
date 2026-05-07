@@ -65,7 +65,7 @@ class Widget extends Component {
       return this.setState({title: undefined});
     }
 
-    const href = homeUrl
+    const href = homeUrl !== null
       ? `${homeUrl}/projects/${selectedProject.key}?tab=people`
       : undefined;
 
@@ -102,7 +102,7 @@ class Widget extends Component {
   }
 
   async initialize(dashboardApi) {
-    const [projects, {systemSettings: {baseUrl}}, {contextPath}, config] = await Promise.all([
+    const [projects, {contextPath}, config] = await Promise.all([
       dashboardApi.fetchYouTrack(
         'admin/projects', {
           query: {
@@ -112,13 +112,11 @@ class Widget extends Component {
           }
         }
       ),
-      dashboardApi.fetchYouTrack('admin/globalSettings?fields=systemSettings(baseUrl)'),
       dashboardApi.fetchYouTrack('config?fields=contextPath'),
       dashboardApi.readConfig()
     ]);
 
-    const root = contextPath ? `${contextPath}/` : '';
-    const homeUrl = `${baseUrl}${root}`;
+    const homeUrl = contextPath ? `${contextPath}/` : '';
 
     this.setState({projects, homeUrl}, () => this.updateTitle());
 
@@ -279,7 +277,7 @@ class Widget extends Component {
   renderContent = () => {
     const {users, owner, homeUrl, permissions} = this.state;
 
-    if (!users || !permissions || !permissions.isInitialized() || !homeUrl) {
+    if (!users || !permissions || !permissions.isInitialized() || homeUrl === null) {
       return (<LoaderInline/>);
     }
 

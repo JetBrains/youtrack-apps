@@ -15,12 +15,11 @@ exports.rule = {
     guard: core.createGuard(EVENTS.ATTACHMENT_DELETED.key, function (ctx) {
         const issue = ctx.issue;
 
-        if (core.shouldSkipIssue(issue, 'On Attachment Deleted')) {
+        if (core.shouldSkipIssue(issue)) {
             return false;
         }
 
         if (!core.hasAttachmentsRemoved(issue)) {
-            console.log('[webhooks] On Attachment Deleted - No removed attachments');
             return false;
         }
 

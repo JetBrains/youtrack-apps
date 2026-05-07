@@ -4,7 +4,8 @@ import {EmbeddableWidgetAPI} from '../../../@types/globals';
 
 export interface WidgetInterface {
     api: API;
-    appsApi: EmbeddableWidgetAPI
+    appsApi: EmbeddableWidgetAPI;
+    homeUrl: string;
 }
 
 const WidgetContext = createContext<WidgetInterface | null>(null);

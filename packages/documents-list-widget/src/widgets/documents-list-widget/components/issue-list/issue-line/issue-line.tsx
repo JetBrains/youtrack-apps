@@ -7,6 +7,7 @@ import ChevronUpIcon from '@jetbrains/icons/chevron-up';
 import ChevronDownIcon from '@jetbrains/icons/chevron-down';
 import type {Color, DateFormats, FieldValue, IssueField, Issue, ColoredSquareModel} from '../types/issue-types';
 import {getIssueLink} from '../../../api';
+import {useWidgetContext} from '../../../widget-context';
 
 import classNames from 'classnames';
 import styles from './issue-line.module.css';
@@ -107,6 +108,7 @@ export interface IssueLineProps {
 }
 
 const IssueLine = ({issue, expanded, dateFormats, onClick}: IssueLineProps) => {
+  const {homeUrl} = useWidgetContext();
   const [highlighted, setHighlighted] = useState(false);
 
   const coloredSquare = getColoredSquareModel(issue);
@@ -147,7 +149,7 @@ const IssueLine = ({issue, expanded, dateFormats, onClick}: IssueLineProps) => {
   };
 
   const resolved = issue.resolved !== undefined && issue.resolved !== null;
-  const issueUrl = getIssueLink(issue.idReadable);
+  const issueUrl = getIssueLink(issue.idReadable, homeUrl);
   const chevronIcon = expanded ? ChevronUpIcon : ChevronDownIcon;
 
   const onMouseOver = () => setHighlighted(true);

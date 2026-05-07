@@ -1,0 +1,11 @@
+{
+  "title": "Migrated Widget Settings",
+  "type": "object",
+  "properties": {
+    "customWidgetConfig": {
+      "title": "Migrated widget settings as JSON string",
+      "description": "The settings of this widget were migrated from a legacy implementation. They differ from the JSON Schema that the app widgets are currently based upon. Please don't use these settings as a reference when creating new widgets. Instead, please refer to the documentation and the native demo apps.",
+      "type": "string"
+    }
+  }
+}
