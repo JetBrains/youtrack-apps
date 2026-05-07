@@ -1,4 +1,4 @@
-import { describe, it, beforeEach, afterEach } from 'node:test';
+import { describe, it, before, after, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -67,6 +67,20 @@ describe('discoverBundleEntries', () => {
 describe('createBundleDirWatcher', () => {
   let tmpDir: string;
   let sentinel: string;
+  let previousChokidarUsePolling: string | undefined;
+
+  before(() => {
+    previousChokidarUsePolling = process.env.CHOKIDAR_USEPOLLING;
+    process.env.CHOKIDAR_USEPOLLING = '1';
+  });
+
+  after(() => {
+    if (previousChokidarUsePolling === undefined) {
+      delete process.env.CHOKIDAR_USEPOLLING;
+      return;
+    }
+    process.env.CHOKIDAR_USEPOLLING = previousChokidarUsePolling;
+  });
 
   // Resolves when sentinel content changes, rejects after timeoutMs.
   function waitForBump(timeoutMs = 5000): Promise<void> {

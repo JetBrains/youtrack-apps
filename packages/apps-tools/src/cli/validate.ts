@@ -14,15 +14,15 @@ const tmpSchemaPath = tmpDir('schema.json');
 export async function validate(config: Config, appDir?: string) {
   try {
     if (!appDir && !config.manifest) {
-      exit(new Error(i18n('Provide an app directory or a manifest file')));
+      return exit(new Error(i18n('Provide an app directory or a manifest file')));
     }
 
     if (config.manifest && !config.manifest.endsWith('.json')) {
-      exit(new Error(i18n('The manifest file must use the .json extension')));
+      return exit(new Error(i18n('The manifest file must use the .json extension')));
     }
 
     if (config.schema && !config.schema.endsWith('.json')) {
-      exit(new Error(i18n('The schema file must use the .json extension')));
+      return exit(new Error(i18n('The schema file must use the .json extension')));
     }
 
     const ajv = new Ajv({strict: false});

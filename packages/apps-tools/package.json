@@ -142,7 +142,7 @@
     "dev": "tsc --watch",
     "lint": "eslint",
     "test": "npm run build && npm run test:dx && npm run test:cli",
-    "test:dx": "node --test --import tsx 'src/dx/test/*.test.ts'",
+    "test:dx": "node --test --import tsx src/dx/test/*.test.ts",
     "test:cli": "jest",
     "test:type": "tsc --noEmit",
     "typecheck:types": "tsc --noEmit -p src/dx/test/types-strict-tsconfig.json",

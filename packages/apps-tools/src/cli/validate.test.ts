@@ -90,7 +90,7 @@ describe('validate', () => {
 
     require('./index').run(['', '', 'validate']);
 
-    expect(console.error).toHaveBeenCalledWith('Error: No directory or manifest file provided');
+    expect(console.error).toHaveBeenCalledWith('Error: Provide an app directory or a manifest file');
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
@@ -100,7 +100,7 @@ describe('validate', () => {
 
     require('./index').run(['', '', 'validate', testDir, '--manifest=foo.txt']);
 
-    expect(console.error).toHaveBeenCalledWith('Error: Manifest file must be a JSON file');
+    expect(console.error).toHaveBeenCalledWith('Error: The manifest file must use the .json extension');
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
@@ -114,7 +114,7 @@ describe('validate', () => {
 
     await require('./index').run(['', '', 'validate', testDir, '--schema=foo.txt']);
 
-    expect(console.error).toHaveBeenCalledWith('Error: Schema file must be a JSON file');
+    expect(console.error).toHaveBeenCalledWith('Error: The schema file must use the .json extension');
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
@@ -171,7 +171,7 @@ describe('validate', () => {
 
     expect(fetch).toHaveBeenCalledWith(DEFAULT_SCHEMA_URL);
     expect(console.error).not.toHaveBeenCalled();
-    expect(console.log).toHaveBeenCalledWith('Manifest is valid!');
+    expect(console.log).toHaveBeenCalledWith('Manifest validation passed');
     expect(process.exit).not.toHaveBeenCalled();
   });
 
