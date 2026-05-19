@@ -9,6 +9,7 @@
   "files": [
     "LICENSE",
     "_templates",
+    "utils",
     "index.js",
     "help.js",
     "README.md",
