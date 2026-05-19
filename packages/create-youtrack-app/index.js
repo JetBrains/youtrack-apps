@@ -616,6 +616,7 @@ function runGeneratedFilesLintFix(files) {
             try {
               pathPrompt.cursor = next.length;
             } catch {
+              // Some Enquirer versions expose cursor as read-only.
             }
             updateFooter(next);
             if (typeof pathPrompt.render === 'function') pathPrompt.render();

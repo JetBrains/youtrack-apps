@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import path from 'node:path';
 
 // Resolve CommonJS module from ES context of Vitest
-// eslint-disable-next-line n/no-missing-require
 const { trimPathSegments } = require(path.resolve(__dirname, '../utils/sanitize.js'));
 
 describe('trimPathSegments', () => {
