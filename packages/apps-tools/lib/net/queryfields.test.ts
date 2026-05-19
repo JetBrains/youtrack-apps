@@ -1,4 +1,4 @@
-import {queryfields} from './queryfields';
+import {queryfields} from './queryfields.js';
 
 describe('queryfields.test', function () {
   it('should create fields query string', function () {

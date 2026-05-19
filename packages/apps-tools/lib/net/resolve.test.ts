@@ -1,4 +1,4 @@
-import {resolve} from './resolve';
+import {resolve} from './resolve.js';
 
 describe('resolve', function () {
   it('should add default protocol', function () {

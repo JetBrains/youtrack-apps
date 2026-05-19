@@ -1,4 +1,4 @@
-import {parse} from './parseargv';
+import {parse} from './parseargv.js';
 
 describe('parseargv', function () {
   it('should parse passed arguments', function () {
@@ -7,4 +7,3 @@ describe('parseargv', function () {
     expect(parse(baseargs.concat(['--host=foo'])).host).toEqual('foo');
   });
 });
-

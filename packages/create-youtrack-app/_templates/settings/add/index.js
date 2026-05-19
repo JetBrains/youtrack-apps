@@ -1,27 +1,50 @@
+const fs = require("node:fs");
+const path = require("node:path");
+
 module.exports = {
   prompt: async ({ prompter, args }) => {
+    const settingsPath = path.resolve(process.cwd(), args.cwd || '', 'src', 'settings.json');
+
+    if (!fs.existsSync(settingsPath)) {
+      console.error('\nError: settings.json does not exist at src/settings.json. Run "settings init" first.\n');
+      process.exit(1);
+    }
+
+    let schema;
+    try {
+      schema = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
+    } catch (e) {
+      console.error(`\nError: Could not parse settings.json: ${e.message}\n`);
+      process.exit(1);
+    }
+
     const { name } = await prompter.prompt({
       type: "input",
       name: "name",
-      message: "What is the name of the property?",
+      message: "What is the name for the property?",
+      validate: (val) => {
+        if (!val || /\s/.test(val)) return 'Must be a non-empty string without whitespace';
+        if (schema.properties && schema.properties[val] !== undefined) return `Property "${val}" already exists`;
+        return true;
+      }
     });
 
     const { title } = await prompter.prompt({
       type: "input",
       name: "title",
-      message: "What is the title of new property?",
+      message: "What title should be displayed for this property?",
     });
 
     const { description } = await prompter.prompt({
       type: "input",
       name: "description",
-      message: "What is the description of new property?",
+      message: "What is the description of this property?",
     });
 
     const { type } = await prompter.prompt({
       type: "select",
       name: "type",
-      message: "What is the type of new property?",
+      message: "What type of value should this property accept?",
       choices: [
         { message: "String", name: "string" },
         { message: "Integer", name: "integer" },
@@ -32,201 +55,183 @@ module.exports = {
       ],
     });
 
-    //type specific questions
-    let xEntity;
+    const prop = { type };
+    if (title) prop.title = title;
+    if (description) prop.description = description;
 
     if (type === "object" || type === "array") {
-      await prompter
-        .prompt({
-          type: "select",
-          name: "xEntity",
-          message: "What is the entity of new property?",
-          choices: [
-            { message: "Issue", name: "Issue" },
-            { message: "User", name: "User" },
-            { message: "Project", name: "Project" },
-            { message: "Project", name: "Project" },
-            { message: "UserGroup", name: "UserGroup" },
-            { message: "Article", name: "Article" },
-          ],
-        })
-        .then((res) => {
-          xEntity = res.xEntity;
-        });
+      const { xEntity } = await prompter.prompt({
+        type: "select",
+        name: "xEntity",
+        message: "Which YouTrack entity type should this property use?",
+        choices: [
+          { message: "Issue", name: "Issue" },
+          { message: "User", name: "User" },
+          { message: "Project", name: "Project" },
+          { message: "UserGroup", name: "UserGroup" },
+          { message: "Article", name: "Article" },
+        ],
+      });
+      if (type === 'object') prop['x-entity'] = xEntity;
+      if (type === 'array') prop.items = { type: 'object', 'x-entity': xEntity };
     }
 
-    let exclusiveMinimum;
-    let exclusiveMaximum;
-    let minimum;
-    let maximum;
-    let multipleOf;
     if (type === "integer" || type === "number") {
       const { hasMinimum } = await prompter.prompt({
         type: "confirm",
         name: "hasMinimum",
-        message: "Do you want to set minimum value for this property?",
+        message: "Do you want to set a lower limit for this property?",
       });
       if (hasMinimum) {
         const { isExclusiveMinimum } = await prompter.prompt({
           type: "confirm",
           name: "isExclusiveMinimum",
           message:
-            "Do you want to set exclusive minimum value for this property?",
+            "Do you want this lower limit to be exclusive?",
         });
         const { xMinimum } = await prompter.prompt({
           type: "number",
           name: "xMinimum",
-          message: "What is the minimum value for this property?",
+          message: "What should the lower limit be?",
         });
         if (isExclusiveMinimum) {
-          exclusiveMinimum = xMinimum;
+          prop.exclusiveMinimum = xMinimum;
         } else {
-          minimum = xMinimum;
+          prop.minimum = xMinimum;
         }
       }
 
       const { hasMaximum } = await prompter.prompt({
         type: "confirm",
         name: "hasMaximum",
-        message: "Do you want to set maximum value for this property?",
+        message: "Do you want to set an upper limit for this property?",
       });
       if (hasMaximum) {
         const { isExclusiveMaximum } = await prompter.prompt({
           type: "confirm",
           name: "isExclusiveMaximum",
           message:
-            "Do you want to set exclusive maximum value for this property?",
+            "Do you want this upper limit to be exclusive?",
         });
         const { xMaximum } = await prompter.prompt({
           type: "number",
           name: "xMaximum",
-          message: "What is the maximum value for this property?",
+          message: "What should the upper limit be?",
         });
         if (isExclusiveMaximum) {
-          exclusiveMaximum = xMaximum;
+          prop.exclusiveMaximum = xMaximum;
         } else {
-          maximum = xMaximum;
+          prop.maximum = xMaximum;
         }
       }
 
       const { hasMultipleOf } = await prompter.prompt({
         type: "confirm",
         name: "hasMultipleOf",
-        message: "Do you want to set multiple value for this property?",
+        message: "Do you want to restrict this property to values that are a multiple of a number?",
       });
       if (hasMultipleOf) {
         const { xMultipleOf } = await prompter.prompt({
           type: "number",
           name: "xMultipleOf",
-          message: "What is the multiple value for this property?",
+          message: "What number must this property be a multiple of?",
         });
-        multipleOf = xMultipleOf;
+        prop.multipleOf = xMultipleOf;
       }
     }
 
-    let minLength;
-    let maxLength;
-    let format;
-    let enumValues;
     if (type === "string") {
       const { hasMinLength } = await prompter.prompt({
         type: "confirm",
         name: "hasMinLength",
-        message: "Do you want to set minimum length for this property?",
+        message: "Do you want to set a minimum length for this property?",
       });
       if (hasMinLength) {
-        await prompter
-          .prompt({
-            type: "number",
-            name: "minLength",
-            message: "What is the minimum length of this property?",
-          })
-          .then((res) => {
-            minLength = res.minLength;
-          });
+        const { minLength } = await prompter.prompt({
+          type: "number",
+          name: "minLength",
+          message: "What is the minimum length for this property?",
+        });
+        prop.minLength = minLength;
       }
 
       const { hasMaxLength } = await prompter.prompt({
         type: "confirm",
         name: "hasMaxLength",
-        message: "Do you want to set maximum length for this property?",
+        message: "Do you want to set a maximum length for this property?",
       });
       if (hasMaxLength) {
-        await prompter
-          .prompt({
-            type: "number",
-            name: "maxLength",
-            message: "What is the maximum length of this property?",
-          })
-          .then((res) => {
-            maxLength = res.maxLength;
-          });
-      }
-      await prompter
-        .prompt({
-          type: "input",
-          name: "format",
-          message: "What is the pattern of this property?",
-        })
-        .then((res) => {
-          format = res.format;
+        const { maxLength } = await prompter.prompt({
+          type: "number",
+          name: "maxLength",
+          message: "What is the maximum length for this property?",
         });
+        prop.maxLength = maxLength;
+      }
+
+      const { format } = await prompter.prompt({
+        type: "input",
+        name: "format",
+        message: 'What format should this property use? Examples: "secret", "date", "date-time", "email", "uri". Leave empty if no specific format is needed. For more options, see https://www.learnjsonschema.com/2020-12/format-annotation/format/',
+      });
+      if (format) prop.format = format;
 
       const { hasEnum } = await prompter.prompt({
         type: "confirm",
         name: "hasEnum",
-        message: "Do you want to set enum values for this property?",
+        message: "Do you want to limit this property to a closed list of values?",
       });
       if (hasEnum) {
-        await prompter
-          .prompt({
-            type: "input",
-            name: "enumString",
-            message:
-              "What is the enum values of this property? (comma separated)",
-          })
-          .then(({ enumString }) => {
-            const values = enumString.split(/,\s*/);
-            enumValues = JSON.stringify(values);
-          });
+        const { enumString } = await prompter.prompt({
+          type: "input",
+          name: "enumString",
+          message:
+            "Enter the allowed values for this property, separated by commas.",
+        });
+        prop.enum = enumString.split(/,\s*/).filter(Boolean);
       }
     }
 
-    //read only specific questions
     const { readOnly } = await prompter.prompt({
       type: "confirm",
       name: "readOnly",
-      message: "Do you want to make this property read only?",
+      message: "Do you want to make this property read-only?",
     });
-
-    let constValue;
-
     if (readOnly) {
-      await prompter
-        .prompt({
-          type: "input",
-          name: "constValue",
-          message: "What is the constant value of this property?",
-        })
-        .then((res) => {
-          if (type === "string") {
-            constValue = `"res.constValue"`;
-          } else {
-            constValue = res.constValue;
+      prop.readOnly = true;
+      const { constValue } = await prompter.prompt({
+        type: "input",
+        name: "constValue",
+        message: "What constant value should this property be restricted to?",
+        validate: (val) => {
+          if (!val) return true;
+          if (type === 'integer' || type === 'number') {
+            return !isNaN(Number(val)) || 'Must be a valid number';
           }
-        });
+          return true;
+        },
+      });
+      if (constValue) {
+        if (type === 'integer' || type === 'number') {
+          prop.const = Number(constValue);
+        } else {
+          try { prop.const = JSON.parse(constValue); }
+          catch { prop.const = constValue; }
+        }
+      }
     }
 
     const { xScope } = await prompter.prompt({
       type: "select",
       name: "xScope",
-      message: "What is the scope of this property?",
+      message: "What scope should this property have?",
       choices: [
         { message: "Global", name: "global" },
         { message: "Project", name: "project" },
         { message: "Not set", name: "none" },
       ],
     });
+    if (xScope && xScope !== 'none') prop['x-scope'] = xScope;
 
     const { required } = await prompter.prompt({
       type: "confirm",
@@ -234,32 +239,20 @@ module.exports = {
       message: "Do you want to make this property required?",
     });
 
-    const { writeOnly } = await prompter.prompt({
-      type: "confirm",
-      name: "writeOnly",
-      message: "Do you want to make this property write only?",
-    });
+    // Programmatically update settings.json (avoids Hygen inject + EJS trailing comma issues)
+    if (!schema.properties) schema.properties = {};
+    if (!Array.isArray(schema.required)) schema.required = [];
 
-    return {
-      name,
-      title,
-      description,
-      type,
-      xEntity,
-      exclusiveMinimum,
-      exclusiveMaximum,
-      minimum,
-      maximum,
-      multipleOf,
-      minLength,
-      maxLength,
-      format,
-      writeOnly,
-      readOnly,
-      constValue,
-      xScope,
-      required,
-      enumValues,
-    };
+    schema.properties[name] = prop;
+    if (required) schema.required.push(name);
+
+    // Remove empty required array for cleaner output
+    if (schema.required.length === 0) delete schema.required;
+
+    fs.writeFileSync(settingsPath, JSON.stringify(schema, null, 2));
+    console.log(`\n✓ Added property "${name}" to src/settings.json\n`);
+
+    // Return skip flag so Hygen templates produce no file output
+    return { _skip: true };
   },
 };

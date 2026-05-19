@@ -1,8 +1,8 @@
-import {AppItem, Config} from '../../@types/types';
-import {resolve} from '../../lib/net/resolve';
-import {exit} from '../../lib/cli/exit';
-import {queryfields} from '../../lib/net/queryfields';
-import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request';
+import {AppItem, Config} from '../../@types/types.js';
+import {resolve} from '../../lib/net/resolve.js';
+import {exit} from '../../lib/cli/exit.js';
+import {queryfields} from '../../lib/net/queryfields.js';
+import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request.js';
 
 export async function list(config: Config): Promise<void> {
   const url = resolve(config.host, '/api/admin/apps');

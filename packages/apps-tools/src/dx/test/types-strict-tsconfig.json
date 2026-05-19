@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": false,
+    "esModuleInterop": true,
+    "types": ["@jetbrains/youtrack-workflow-types/scripting-api"]
+  },
+  "include": ["./types-strict-consumer.ts"]
+}

@@ -1,12 +1,13 @@
-import {i18n} from '../../lib/i18n/i18n';
-import {exit} from '../../lib/cli/exit';
-import {parse} from '../../lib/cli/parseargv';
-import {Config, RequiredParams} from '../../@types/types';
-import {list} from './list';
-import {download} from './download';
-import {upload} from './upload';
-import {resolve} from '../../lib/net/resolve';
-import {validate} from './validate';
+import pkg from '../../package.json' with { type: 'json' };
+import {i18n} from '../../lib/i18n/i18n.js';
+import {exit} from '../../lib/cli/exit.js';
+import {parse} from '../../lib/cli/parseargv.js';
+import {Config, RequiredParams} from '../../@types/types.js';
+import {list} from './list.js';
+import {download} from './download.js';
+import {upload} from './upload.js';
+import {resolve} from '../../lib/net/resolve.js';
+import {validate} from './validate.js';
 
 const options = {
   list: list,
@@ -99,6 +100,6 @@ export async function run(argv = process.argv) {
   }
 
   function printVersion() {
-    console.log(require('../../package.json').version);
+    console.log(pkg.version);
   }
 }

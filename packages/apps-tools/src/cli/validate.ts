@@ -1,12 +1,12 @@
 import Ajv, {AnySchemaObject, ErrorObject} from 'ajv';
 import addFormats from 'ajv-formats';
-import {Config} from '../../@types/types';
+import {Config} from '../../@types/types.js';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import {existsSync} from 'node:fs';
-import {exit} from '../../lib/cli/exit';
-import {i18n} from '../../lib/i18n/i18n';
-import {tmpDir} from '../../lib/fs/tmpdir';
+import {exit} from '../../lib/cli/exit.js';
+import {i18n} from '../../lib/i18n/i18n.js';
+import {tmpDir} from '../../lib/fs/tmpdir.js';
 
 export const DEFAULT_SCHEMA_URL = 'https://json.schemastore.org/youtrack-app.json';
 const tmpSchemaPath = tmpDir('schema.json');
@@ -14,15 +14,15 @@ const tmpSchemaPath = tmpDir('schema.json');
 export async function validate(config: Config, appDir?: string) {
   try {
     if (!appDir && !config.manifest) {
-      exit(new Error(i18n('No directory or manifest file provided')));
+      return exit(new Error(i18n('Provide an app directory or a manifest file')));
     }
 
     if (config.manifest && !config.manifest.endsWith('.json')) {
-      exit(new Error(i18n('Manifest file must be a JSON file')));
+      return exit(new Error(i18n('The manifest file must use the .json extension')));
     }
 
     if (config.schema && !config.schema.endsWith('.json')) {
-      exit(new Error(i18n('Schema file must be a JSON file')));
+      return exit(new Error(i18n('The schema file must use the .json extension')));
     }
 
     const ajv = new Ajv({strict: false});
@@ -42,22 +42,41 @@ export async function validate(config: Config, appDir?: string) {
         : await fetchSchemaAndWriteToTmp(DEFAULT_SCHEMA_URL);
     }
 
+    warnIfStaleDefaults(manifest as Record<string, unknown>);
+
     const validateFn = ajv.compile(schema);
     const valid = validateFn(manifest);
 
     if (!valid) {
-      throw new Error(validateFn.errors?.map(prepareError).join('\n'));
+      exit(new Error(validateFn.errors?.map(prepareError).join('\n')));
+      return;
     }
-    console.log(i18n('Manifest is valid!'));
+    console.log(i18n('Manifest validation passed'));
   } catch (error) {
     exit(error);
   }
 }
 
+function warnIfStaleDefaults(manifest: Record<string, unknown>): void {
+  const vendor = manifest.vendor as Record<string, string> | undefined;
+  const stale: string[] = [];
+
+  if (vendor?.name === 'VendorName') stale.push('vendor.name still uses "VendorName"');
+  if (vendor?.url === 'https://vendor.com') stale.push('vendor.url still uses "https://vendor.com"');
+  if (typeof manifest.description === 'string' &&
+      /^A YouTrack app created with (TypeScript|JavaScript)$/.test(manifest.description)) {
+    stale.push('description still uses the generated default text');
+  }
+
+  for (const msg of stale) {
+    console.warn(i18n(`Warning: ${msg}. Update manifest.json before publishing.`));
+  }
+}
+
 async function fetchSchema(url: string): Promise<AnySchemaObject> {
-  console.log(i18n('Fetching schema...'));
+  console.log(i18n('Fetching the schema...'));
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Failed to fetch schema: ${res.statusText}`);
+  if (!res.ok) throw new Error(`Could not fetch the schema: ${res.statusText}`);
   return (await res.json()) as AnySchemaObject;
 }
 
@@ -96,7 +115,7 @@ async function readSchemaFromTmp(): Promise<string> {
 
 async function fetchSchemaAndWriteToTmp(url: string): Promise<AnySchemaObject> {
   const schema = await fetchSchema(url);
-  console.log(i18n('Writing schema to tmp...'));
+  console.log(i18n('Caching the schema in the tmp directory...'));
   await writeSchemaToTmp(schema);
   return schema;
 }
