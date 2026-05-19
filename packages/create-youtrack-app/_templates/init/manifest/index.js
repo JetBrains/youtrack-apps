@@ -1,5 +1,5 @@
 module.exports = {
-  prompt: ({ prompter, args }) =>
+  prompt: ({ prompter }) =>
     prompter.prompt([
       {
         type: "input",
