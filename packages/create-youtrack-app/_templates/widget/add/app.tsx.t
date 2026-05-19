@@ -40,6 +40,7 @@ const host = await YTApp.register();
 const AppComponent: React.FunctionComponent = () => {
   const callBackend = useCallback(async () => {
     const result = await host.fetchApp('backend/debug', {query: {test: '123'}});
+    // eslint-disable-next-line no-console -- Demo widget shows the sample backend response.
     console.log('request result', result);
   }, []);
 
