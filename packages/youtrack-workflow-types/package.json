@@ -33,6 +33,10 @@
     "LICENSE",
     "README.md"
   ],
+  "scripts": {
+    "build": "echo 'no build required'",
+    "release:ci": "bash scripts/release-ci.sh"
+  },
   "author": "JetBrains",
   "license": "Apache-2.0"
 }
