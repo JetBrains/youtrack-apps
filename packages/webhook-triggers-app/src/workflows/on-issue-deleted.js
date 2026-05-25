@@ -44,5 +44,7 @@ exports.rule = {
         core.sendWebhooks(ctx, EVENTS.ISSUE_DELETED.key, payload, EVENTS.ISSUE_DELETED.name);
     },
 
+    asyncFunctions: core.asyncFunctions,
+
     requirements: {}
 };
