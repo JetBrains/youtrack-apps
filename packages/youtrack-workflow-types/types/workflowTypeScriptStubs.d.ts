@@ -527,6 +527,18 @@ export interface Set<T> {
   /** Find the first element in a Set for which a predicate function returns true. */
   find(predicate: (element: T) => boolean): T | undefined;
 
+  /**
+   * Create a shallow copy of a portion of a Set as an array.
+   * @since 2025.3
+   */
+  slice(start?: number, end?: number): T[];
+
+  /**
+   * Transform each element in a Set and return the results as an array.
+   * @since 2025.3
+   */
+  map<U>(visitor: (element: T, index: number, set: Set<T>) => U): U[];
+
   /** Checks a Set object to determine whether the specified element is present in the collection or not. */
   has(element: T): boolean;
 
@@ -663,7 +675,7 @@ export interface CommonIssueFields {
   /** Date field (ordinal 8). Stores timestamp as number. */
   'Due Date'?: number | null;
   /** Index signature for any other custom fields - includes optional Set methods for multi-value fields */
-  [fieldName: string]: BaseEntity | DynamicFieldValue | Set<BaseEntity> | string | number | null | undefined;
+  [fieldName: string]: DynamicFieldValue | Set<BaseEntity> | string | number | null | undefined;
 }
 
 /**
@@ -1017,6 +1029,18 @@ export declare class Article extends BaseArticle {
   parentArticle: Article;
 
   /**
+   * The groups for which the article is visible when the visibility is restricted to multiple groups.
+   * @since 2026.1
+   */
+  permittedGroups: Set<UserGroup>;
+
+  /**
+   * The list of users for whom the article is visible.
+   * @since 2026.1
+   */
+  permittedUsers: Set<User>;
+
+  /**
    * The project to which the article is assigned.
    */
   project: Project;
@@ -1043,6 +1067,11 @@ export declare class Article extends BaseArticle {
    * The article description. May be an alias for content.
    */
   description: string;
+
+  /**
+   * The drafts created from this article.
+   */
+  readonly drafts: Set<BaseArticle>;
 
   /**
    * Creates a declaration of a rule that a user can apply to an article using a menu option.
@@ -1167,6 +1196,12 @@ export declare class Article extends BaseArticle {
  * Represents a file that is attached to an article.
  */
 export declare class ArticleAttachment extends BaseArticleAttachment {
+  /**
+   * The date and time when the attachment was created as a timestamp.
+   * @since 2026.1
+   */
+  readonly created: number;
+
   /**
    * Creates a declaration of a rule that a user can apply to an article attachment using a menu option.
    * The object that is returned by this method is normally exported to the `rule` property, otherwise it is not treated as a rule.
@@ -1302,6 +1337,12 @@ export declare class ArticleComment extends BaseArticleComment {
  */
 export declare class BaseArticle extends BaseEntity {
   /**
+   * The original article from which the current article draft was created. Returns `null` if the current article is not an article draft.
+   * @since 2026.1
+   */
+  readonly originalArticle: Article;
+
+  /**
    * If the current user has added the 'Star' tag to watch the article, this property is `true`.
    * @since 2023.1
    */
@@ -1399,6 +1440,30 @@ export declare class BaseArticle extends BaseEntity {
  * The base class for article comment.
  */
 export declare class BaseArticleAttachment extends PersistentFile {
+  /**
+   * The URL of the article attachment.
+   * @since 2026.1
+   */
+  readonly fileUrl: string;
+
+  /**
+   * The user who attached the file to the issue.
+   * @since 2026.1
+   */
+  readonly author: User;
+
+  /**
+   * If the attachment is removed, this property is `true`.
+   * @since 2026.1
+   */
+  readonly isRemoved: boolean;
+
+  /**
+   * The image dimensions. For image files, the value is rw=_width_&rh=_height_. For non-image files, the value is `empty`.
+   * @since 2026.1
+   */
+  readonly metaData: string;
+
 }
 
 /**
@@ -2096,6 +2161,12 @@ export declare class Issue extends BaseEntity {
   readonly attachments: Set<IssueAttachment>;
 
   /**
+   * The users added as CCs to the helpdesk ticket. The ticket reporter is excluded automatically. Up to 10 reporter-type users can be kept in CC; extra reporters are removed automatically.
+   * @since 2026.1
+   */
+  ccUsers: Set<User>;
+
+  /**
    * The channel used by the reporter to create the ticket. Possible values are 'FeedbackForm' for online forms or 'MailboxChannel' for email.
    */
   readonly channel: Channel;
@@ -2215,6 +2286,14 @@ export declare class Issue extends BaseEntity {
   pluggedAttributes: { [key: string]: any };
 
   /**
+   * Gantt charts that this issue belongs to.
+   */
+  readonly ganttCharts: {
+    added?: Set<GanttChart>;
+    removed?: Set<GanttChart>;
+  };
+
+  /**
    * Common field: State. Available as a direct property for convenience.
    * Can also be accessed via issue.fields.State
    * Accepts State object, EnumField value from requirements, or string name for assignment.
@@ -2307,7 +2386,7 @@ export declare class Issue extends BaseEntity {
    * @param mimeType The MIME type of the file (if first parameter is binary).
    * @returns The attachment that is added to the issue.
    */
-  addAttachment(contentOrAttachment: ArrayBuffer | Uint8Array | {
+  addAttachment(contentOrAttachment: ArrayBuffer | Uint8Array | string | {
     content: ArrayBuffer | Uint8Array | string,
     name: string,
     charset?: string,
@@ -3265,6 +3344,12 @@ export declare class Project extends BaseEntity {
   readonly isArchived: boolean;
 
   /**
+   * If the time tracking feature is enabled in the project, this property is `true`.
+   * @since 2026.1
+   */
+  readonly isTimeTrackingEnabled: boolean;
+
+  /**
    * A list of all articles that belong to the project.
    * @since 2021.4.23500
    */
@@ -4133,6 +4218,15 @@ export declare class User extends BaseEntity {
    * @returns The tag.
    */
   getTag(name: string, createIfNotExists: boolean): Tag;
+
+  /**
+   * Checks whether the user has the specified permission.
+   * @since 2025.3
+   * @param permissionKey The permission key to check. For the complete list of available permission keys, see {@link https://www.jetbrains.com/help/youtrack/devportal/app-permissions.html}.
+   * @param project The project to check for the specified permission assignment. If omitted, checks if the user has the global role.
+   * @returns If the user has the permission, returns `true`.
+   */
+  hasPermission(permissionKey: string, project: Project): boolean;
 
   /**
    * Checks whether the user is granted the specified role in the specified project. When the project parameter is not specified, checks whether the user has the specified role in any project.
