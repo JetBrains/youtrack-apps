@@ -1,0 +1,4 @@
+interface:
+  display_name: "YouTrack App Builder"
+  short_description: "Build and review YouTrack apps"
+  default_prompt: "Use $youtrack-app-builder to update this YouTrack app safely."
