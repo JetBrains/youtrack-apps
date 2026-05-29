@@ -9,6 +9,7 @@
   "files": [
     "LICENSE",
     "_templates",
+    "resources",
     "utils",
     "index.js",
     "help.js",
@@ -26,8 +27,8 @@
     "lint": "eslint .",
     "generate:test": "bash scripts/generate-test-app.sh",
     "test": "bash scripts/generate-and-test.sh",
-    "test:generator": "node --test test/generator-cli.test.js",
-    "test:generator:watch": "node --test --watch test/generator-cli.test.js",
+    "test:generator": "node --test test/generator-cli.test.js test/skill-cli.test.js",
+    "test:generator:watch": "node --test --watch test/generator-cli.test.js test/skill-cli.test.js",
     "test:settings": "node --test test/settings.test.js",
     "test:settings:watch": "node --test --watch test/settings.test.js",
     "test:widget": "node --test test/widget.test.js",

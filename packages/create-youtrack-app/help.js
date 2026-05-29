@@ -19,6 +19,7 @@ After you have generated an app, you may want to add more features. Add new feat
 * ${styleText("magenta", 'npx @jetbrains/create-youtrack-app extension-property add')} to declare an extension property (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html')})
 * ${styleText("magenta", 'npx @jetbrains/create-youtrack-app http-handler add')} to add an HTTP handler (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html')})
 * ${styleText("magenta", 'npx @jetbrains/create-youtrack-app endpoint add')} to generate a router endpoint
+* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app skill install --agent both')} to install the YouTrack app builder skill for Codex and Claude
 
 
 ${styleText("bold", 'Enhanced DX (experimental)')}
@@ -54,6 +55,11 @@ ${styleText("bold", 'App Settings:')}
 
 ${styleText("bold", 'Interactive Menu:')}
   ${styleText("magenta", 'npm run g')}                                        ${styleText("dim", '# Shows a menu for choosing what to generate')}
+
+${styleText("bold", 'Agent Skill:')}
+  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app skill install')}  ${styleText("dim", '# Install for Codex and Claude')}
+  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app skill update --agent codex')}
+  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app skill status')}
 
 ${styleText("bold", 'Features:')}
 • ${styleText("bold", 'File-based Routing:')} Create endpoints by adding files in ${styleText("cyan", 'src/backend/router/SCOPE/NAME/METHOD.ts')}

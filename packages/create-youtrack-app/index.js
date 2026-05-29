@@ -12,6 +12,12 @@ const argv = process.argv.slice(2);
 const args = require("minimist")(argv);
 const cwd = path.resolve(process.cwd(), args.cwd || ".");
 const { trimPathSegments } = require('./utils/sanitize');
+const {
+  formatInstallResults,
+  formatStatusResults,
+  getSkillStatus,
+  installSkill,
+} = require('./utils/agent-skill');
 
 function isCancelled(e) {
   return e === '' || (e && e.code === 'ERR_USE_AFTER_CLOSE');
@@ -99,6 +105,32 @@ function runGeneratedFilesLintFix(files) {
 
   // Replace aliases in argv (create new array to avoid mutation issues)
   const normalizedArgv = argv.map(arg => aliasMap[arg] || arg);
+
+  const skillIndex = normalizedArgv.findIndex(a => a === 'skill');
+  if (skillIndex !== -1) {
+    const skillAction = normalizedArgv[skillIndex + 1] || 'status';
+    const agent = args.agent || 'both';
+
+    try {
+      if (skillAction === 'install' || skillAction === 'update') {
+        const results = installSkill({ agent });
+        console.log(styleText("green", formatInstallResults(results, skillAction)));
+        return;
+      }
+
+      if (skillAction === 'status') {
+        const statuses = getSkillStatus({ agent });
+        console.log(formatStatusResults(statuses));
+        return;
+      }
+
+      console.error(styleText("red", `Invalid skill command: "${skillAction}". Must be one of: install, update, status.`));
+      process.exit(1);
+    } catch (error) {
+      console.error(styleText("red", `Error: ${(error && error.message) || String(error)}`));
+      process.exit(1);
+    }
+  }
 
   const handlerIndex = normalizedArgv.findIndex(a => a === 'http-handler');
   if (handlerIndex !== -1 && normalizedArgv[handlerIndex + 1]) {
