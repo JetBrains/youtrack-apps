@@ -26,7 +26,88 @@ After you have generated an app, you may want to add more features. Add new feat
 | Add another [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-widgets.html)                         | `npx @jetbrains/create-youtrack-app widget add` |
 | Declare an [extension property](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html) | `npx @jetbrains/create-youtrack-app extension-property add` |
 | Add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html)        | `npx @jetbrains/create-youtrack-app http-handler add` |
+| Install or update the YouTrack app builder skill for Codex and Claude                                                 | `npx @jetbrains/create-youtrack-app skill install --agent both` |
 | View a list of available commands                                                                                      | `npx @jetbrains/create-youtrack-app --help` |
+
+## Agent Skill
+
+The generator also ships the `youtrack-app-builder` agent skill for AI coding agents that support local skill folders.
+Use it to give Codex or Claude YouTrack app development guidance for manifests, workflows, HTTP handlers, settings and extension properties.
+
+Install the skill:
+
+```bash
+npx @jetbrains/create-youtrack-app skill install
+```
+
+Update an existing install from the version bundled with the current package:
+
+```bash
+npx @jetbrains/create-youtrack-app skill update
+```
+
+Check whether the skill is installed:
+
+```bash
+npx @jetbrains/create-youtrack-app skill status
+```
+
+By default, `install`, `update`, and `status` target both Codex and Claude.
+Use `--agent codex`, `--agent claude`, or `--agent both` to choose a target:
+
+```bash
+npx @jetbrains/create-youtrack-app skill install --agent codex
+npx @jetbrains/create-youtrack-app skill update --agent claude
+npx @jetbrains/create-youtrack-app skill status --agent both
+```
+
+The command installs the skill into these folders:
+
+| Agent  | Install path |
+|--------| --- |
+| Codex  | `~/.agents/skills/youtrack-app-builder` |
+| Claude | `~/.claude/skills/youtrack-app-builder` |
+
+Each install writes `.youtrack-skill-install.json` in the target skill folder with the source package version, install timestamp, and target agent.
+
+### Agent Skill Sync Contract
+
+The bundled skill is refreshed by `.github/workflows/update-agent-skill.yml`.
+Required source directory contents:
+
+- `SKILL.md` at the root of `source_path`.
+- Any optional skill files that should be published with the package, such as `agents/openai.yaml`, `references/`, `scripts/`, or `assets/`.
+
+Do not include local install state in the source directory, such as `.youtrack-skill-install.json`; that file is written only when users run `skill install` or `skill update`.
+
+The dispatch payload must use this shape:
+
+```json
+{
+  "event_type": "update-youtrack-agent-skill",
+  "client_payload": {
+    "source_repo": "owner/repository",
+    "source_ref": "main",
+    "source_path": "path/to/skill",
+    "target_branch": "main"
+  }
+}
+```
+
+Payload fields:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `source_repo` | Yes | GitHub repository in `owner/repository` form. |
+| `source_ref` | Yes | Branch, tag, or commit SHA to check out from the source repository. |
+| `source_path` | Yes | Relative path inside the source repository. Absolute paths and `..` segments are rejected. |
+| `target_branch` | No | Branch in this repository to update. Defaults to `main`. |
+
+When triggered, the workflow checks out the source repository and replaces `packages/create-youtrack-app/resources/skill/youtrack-app-builder` with the contents of `source_path`.
+If files changed, it commits directly to `target_branch`.
+
+If the source repository is private, configure `SKILL_SYNC_TOKEN` in this repository with permission to read the source repository and push to the target branch.
+For public source repositories, the default GitHub token is sufficient for checkout, but direct pushes still require this repository's workflow permissions to allow `contents: write`.
 
 ### Enhanced DX: NestJS-Style Code Generation
 
