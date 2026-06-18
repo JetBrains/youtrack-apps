@@ -141,11 +141,12 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint",
-    "test": "npm run build && npm run test:dx && npm run test:cli",
+    "test": "npm run build && npm run typecheck:regression && npm run typecheck:types && npm run test:dx && npm run test:cli",
     "test:dx": "node --test --import tsx src/dx/test/*.test.ts",
     "test:cli": "jest",
     "test:type": "tsc --noEmit",
     "typecheck:types": "tsc --noEmit -p src/dx/test/types-strict-tsconfig.json",
+    "typecheck:regression": "tsc --noEmit -p src/dx/test/regression/regression-tsconfig.json",
     "save-version": "echo '{ \"version\": \"'$npm_package_version'\" }' > dist/package.json",
     "release:ci": "commit-and-tag-version && git push --follow-tags origin main && npm run save-version && npm publish"
   },

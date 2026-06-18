@@ -20,7 +20,10 @@
  */
 
 // Import entity types from the main workflow stubs file
-import type { Issue, Project, User, UserGroup, Article } from './workflowTypeScriptStubs.js';
+import type { Issue, Project, User, UserGroup, Article, AppGlobalStorage } from './workflowTypeScriptStubs.js';
+// Import HTTP Response type for use as the async HTTP response shape in
+// asyncFunctions called as `connection.*Async(..., 'handlerName')` callbacks.
+import type { Response } from './http.js';
 
 // =============================================================================
 // App Type Registry (Module Augmentation Pattern)
@@ -221,18 +224,32 @@ export interface HttpResponse<TResponseBody = unknown> {
 
 /**
  * Base context available to all HTTP handlers.
- * Uses AppTypeRegistry for default settings type - augment the registry for app-specific types.
  *
+ * Carries the AK / S generics so the inner `invokeAsync` / `store` / `load`
+ * methods are typed against the parent handler's `asyncFunctions` keys and
+ * store schema.
+ *
+ * @template S - Optional store schema for ctx.store / ctx.load. Defaults to
+ *   `Record<string, any>` (loose mode — any key/value accepted, ctx.load
+ *   returns `any | undefined`). Supply explicitly via `HttpHandler<S>` to
+ *   get strict typing.
+ * @template AK - Union of asyncFunctions key names declared on the parent
+ *   handler. Inferred from the handler's `asyncFunctions` literal when
+ *   constructed via `defineHttpHandler` or with `satisfies HttpHandler<S>`.
  * @template TSettings - Type of app settings. Defaults to AppTypeRegistry['settings'].
  * @template TRequestBody - Type of the request body. Defaults to unknown.
  * @template TResponseBody - Type of the response body. Defaults to unknown.
  * @template TQueryParams - Type of query parameters. Defaults to unknown.
+ * @template TGlobalStorageExtensions - Type of AppGlobalStorage extension properties.
  */
 export interface BaseHttpContext<
   TSettings = AppTypeRegistry['settings'],
   TRequestBody = unknown,
   TResponseBody = unknown,
-  TQueryParams = unknown
+  TQueryParams = unknown,
+  TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions'],
+  AK extends string = string,
+  S extends object = Record<string, any>
 > {
   /**
    * The HTTP request object with typed body and query params.
@@ -254,6 +271,136 @@ export interface BaseHttpContext<
    * Type is inferred from AppTypeRegistry['settings'] or explicit TSettings.
    */
   readonly settings: TSettings;
+
+  /**
+   * The app-level global storage entity. Use
+   * `ctx.globalStorage.extensionProperties.X` to read/write app-global
+   * values defined in the app's `entity-extensions.json`.
+   */
+  readonly globalStorage: AppGlobalStorage & { extensionProperties: TGlobalStorageExtensions };
+
+  /**
+   * Schedules an async function for execution after the current transaction
+   * commits. The async function must be declared in the handler's
+   * `asyncFunctions` block — `functionName` is constrained to the AK union.
+   *
+   * @param functionName Name of a function declared in `asyncFunctions`.
+   * @param delay Optional delay in milliseconds (default 0, max 7 days).
+   * @param deduplicationKey Optional key; a previously scheduled call with the
+   *   same key and handler-project combination is replaced, enabling debounce
+   *   patterns.
+   */
+  invokeAsync(functionName: AK, delay?: number, deduplicationKey?: string): void;
+
+  /**
+   * Persists a value across async boundaries. When a store schema `S` is
+   * supplied, the key must be a member of `keyof S` and the value must match
+   * `S[K]`. Retrieve later with `ctx.load(key)`.
+   */
+  store<K extends keyof S>(key: K, value: S[K]): void;
+
+  /**
+   * Retrieves a value previously stored with `ctx.store(key, value)`.
+   * Returns `S[K] | undefined` because a value may be absent at read time
+   * (never stored on this path, lost to a cross-execution race).
+   */
+  load<K extends keyof S>(key: K): S[K] | undefined;
+}
+
+/**
+ * Context passed to async functions declared in an HTTP handler's
+ * `asyncFunctions` block.
+ *
+ * Distinct from the sync `BaseHttpContext`: the function may be invoked via
+ * `ctx.invokeAsync('name', delay)` from a sync handler, or as the response
+ * callback of `connection.*Async(..., 'name')`. In the latter case `response`
+ * is populated with the incoming HTTP response from the remote server.
+ *
+ * Scope fields (`target`, `project`, `issue`) are optional because the same
+ * `asyncFunctions` block is shared across all endpoints of the handler — what
+ * is available depends on which endpoint scheduled the call.
+ */
+export interface HttpAsyncFunctionContext<
+  TSettings = AppTypeRegistry['settings'],
+  TIssueExtensions = AppTypeRegistry['issueExtensions'],
+  TProjectExtensions = AppTypeRegistry['projectExtensions'],
+  TArticleExtensions = AppTypeRegistry['articleExtensions'],
+  TUserExtensions = AppTypeRegistry['userExtensions'],
+  TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions'],
+  AK extends string = string,
+  S extends object = Record<string, any>
+> {
+  /**
+   * The currently authenticated user (the user under which the async function
+   * executes — captured at scheduling time).
+   */
+  readonly currentUser: User;
+
+  /**
+   * App settings as key-value pairs. Same type as the parent handler's
+   * sync context.
+   */
+  readonly settings: TSettings;
+
+  /**
+   * The app-level global storage entity. Use
+   * `ctx.globalStorage.extensionProperties.X` to read/write app-global
+   * values defined in the app's `entity-extensions.json`.
+   */
+  readonly globalStorage: AppGlobalStorage & { extensionProperties: TGlobalStorageExtensions };
+
+  /**
+   * The project in context, if the originating endpoint was project-, issue-,
+   * or article-scoped. `undefined` for global- and user-scoped endpoints.
+   */
+  readonly project?: Project & { extensionProperties: TProjectExtensions };
+
+  /**
+   * The issue in context, if the originating endpoint was issue-scoped.
+   * `undefined` otherwise.
+   */
+  readonly issue?: Issue & { extensionProperties: TIssueExtensions };
+
+  /**
+   * The article in context, if the originating endpoint was article-scoped.
+   * `undefined` otherwise.
+   */
+  readonly article?: Article & { extensionProperties: TArticleExtensions };
+
+  /**
+   * The user in context, if the originating endpoint was user-scoped.
+   * `undefined` otherwise.
+   */
+  readonly user?: User & { extensionProperties: TUserExtensions };
+
+  /**
+   * The HTTP response returned by the async HTTP call that triggered this
+   * function (e.g. `connection.postAsync(..., 'onResponse')`). `undefined`
+   * when the function was scheduled via `ctx.invokeAsync` rather than as an
+   * HTTP response callback.
+   *
+   * Body is truncated by the runtime at 1 MB.
+   */
+  readonly response?: Response;
+
+  /**
+   * Schedules another async function for execution. `functionName` is
+   * constrained to the AK union (the keys declared in the parent handler's
+   * `asyncFunctions`). Subject to the 10-hop max chain length.
+   */
+  invokeAsync(functionName: AK, delay?: number, deduplicationKey?: string): void;
+
+  /**
+   * Persists a value to be retrieved later with `ctx.load(key)` from a
+   * subsequent async function in the same chain. Typed against schema S.
+   */
+  store<K extends keyof S>(key: K, value: S[K]): void;
+
+  /**
+   * Retrieves a value stored earlier in the same async chain. Returns
+   * `S[K] | undefined` — narrow before use under strict null checks.
+   */
+  load<K extends keyof S>(key: K): S[K] | undefined;
 }
 
 /**
@@ -271,8 +418,10 @@ export interface ProjectHttpContext<
   TProjectExtensions = AppTypeRegistry['projectExtensions'],
   TRequestBody = unknown,
   TResponseBody = unknown,
-  TQueryParams = unknown
-> extends BaseHttpContext<TSettings, TRequestBody, TResponseBody, TQueryParams> {
+  TQueryParams = unknown,
+  AK extends string = string,
+  S extends object = Record<string, any>
+> extends BaseHttpContext<TSettings, TRequestBody, TResponseBody, TQueryParams, AppTypeRegistry['appGlobalStorageExtensions'], AK, S> {
   /**
    * The project in context with typed extension properties.
    */
@@ -296,8 +445,10 @@ export interface IssueHttpContext<
   TProjectExtensions = AppTypeRegistry['projectExtensions'],
   TRequestBody = unknown,
   TResponseBody = unknown,
-  TQueryParams = unknown
-> extends ProjectHttpContext<TSettings, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams> {
+  TQueryParams = unknown,
+  AK extends string = string,
+  S extends object = Record<string, any>
+> extends ProjectHttpContext<TSettings, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams, AK, S> {
   /**
    * The issue in context with typed extension properties.
    */
@@ -314,10 +465,12 @@ export type HttpHandlerContext<
   TProjectExtensions = AppTypeRegistry['projectExtensions'],
   TRequestBody = unknown,
   TResponseBody = unknown,
-  TQueryParams = unknown
-> = BaseHttpContext<TSettings, TRequestBody, TResponseBody, TQueryParams>
-  | ProjectHttpContext<TSettings, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams>
-  | IssueHttpContext<TSettings, TIssueExtensions, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams>;
+  TQueryParams = unknown,
+  AK extends string = string,
+  S extends object = Record<string, any>
+> = BaseHttpContext<TSettings, TRequestBody, TResponseBody, TQueryParams, AppTypeRegistry['appGlobalStorageExtensions'], AK, S>
+  | ProjectHttpContext<TSettings, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams, AK, S>
+  | IssueHttpContext<TSettings, TIssueExtensions, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams, AK, S>;
 
 /**
  * HTTP endpoint definition.
@@ -338,7 +491,9 @@ export interface HttpEndpoint<
   TProjectExtensions = AppTypeRegistry['projectExtensions'],
   TRequestBody = unknown,
   TResponseBody = unknown,
-  TQueryParams = unknown
+  TQueryParams = unknown,
+  AK extends string = string,
+  S extends object = Record<string, any>
 > {
   /**
    * HTTP method for this endpoint.
@@ -364,10 +519,10 @@ export interface HttpEndpoint<
    * The context is typed based on scope and includes typed request/response.
    */
   handle: (ctx: TScope extends 'issue'
-    ? IssueHttpContext<TSettings, TIssueExtensions, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams>
+    ? IssueHttpContext<TSettings, TIssueExtensions, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams, AK, S>
     : TScope extends 'project'
-      ? ProjectHttpContext<TSettings, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams>
-      : BaseHttpContext<TSettings, TRequestBody, TResponseBody, TQueryParams>
+      ? ProjectHttpContext<TSettings, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams, AK, S>
+      : BaseHttpContext<TSettings, TRequestBody, TResponseBody, TQueryParams, AppTypeRegistry['appGlobalStorageExtensions'], AK, S>
   ) => void | Promise<void>;
 }
 
@@ -382,13 +537,90 @@ export interface HttpEndpoint<
 export interface HttpHandler<
   TSettings = AppTypeRegistry['settings'],
   TIssueExtensions = AppTypeRegistry['issueExtensions'],
-  TProjectExtensions = AppTypeRegistry['projectExtensions']
+  TProjectExtensions = AppTypeRegistry['projectExtensions'],
+  TArticleExtensions = AppTypeRegistry['articleExtensions'],
+  TUserExtensions = AppTypeRegistry['userExtensions'],
+  TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions'],
+  AK extends string = string,
+  S extends object = Record<string, any>
 > {
   /**
-   * Array of endpoint definitions.
+   * Array of endpoint definitions. AK and S generics are propagated into each
+   * endpoint's `handle(ctx)` so `ctx.invokeAsync` / `ctx.store` / `ctx.load`
+   * are typed against the parent handler's `asyncFunctions` keys and
+   * store schema.
    */
-  endpoints: HttpEndpoint<HttpScope, TSettings, TIssueExtensions, TProjectExtensions>[];
+  endpoints: HttpEndpoint<HttpScope, TSettings, TIssueExtensions, TProjectExtensions, unknown, unknown, unknown, AK, S>[];
+
+  /**
+   * Named async functions invoked after the originating transaction commits,
+   * each in its own read-write transaction. Use cases:
+   *
+   * - Schedule by name from a sync endpoint handler via
+   *   `ctx.invokeAsync('functionName', delay)`.
+   * - Pass the function name as the last argument of `connection.*Async(...)`
+   *   to receive the HTTP response on `ctx.response`.
+   *
+   * The keys of this record become the AK union — `ctx.invokeAsync(name)`
+   * accepts only declared names. Supply explicit `<S>` (or use
+   * `defineHttpHandler`) to also type `ctx.store` / `ctx.load`.
+   *
+   * Constraints enforced by the runtime: one async call per execution, max
+   * chain length 10 hops, max delay 1 week.
+   *
+   * @see {@link https://github.com/JetBrains/youtrack/blob/main/docs/apps-workflows/async-functions.md}
+   */
+  asyncFunctions?: Record<
+    AK,
+    (ctx: HttpAsyncFunctionContext<TSettings, TIssueExtensions, TProjectExtensions, TArticleExtensions, TUserExtensions, TGlobalStorageExtensions, AK, S>) => void
+  >;
 }
+
+/**
+ * Helper factory for constructing a typed `HttpHandler` with the async-
+ * functions surface narrowed. Two call shapes:
+ *
+ *   1. **`defineHttpHandler<S, AK>({...})`** — types `ctx.store` / `ctx.load`
+ *      against `S` and narrows `ctx.invokeAsync` to the `AK` union.
+ *      `asyncFunctions` is required and must implement every declared `AK`
+ *      key. Use when the key union is known up front.
+ *   2. **`withStore<S>()({...})` curry from `@jetbrains/youtrack-apps-tools`**
+ *      — same narrowings with `AK` inferred from the `asyncFunctions`
+ *      literal so the key union doesn't need to be spelled out.
+ *
+ * Plain handlers without async functions or a typed store keep using the
+ * `const httpHandler: HttpHandler<...> = {...}` annotation pattern.
+ *
+ * @example
+ * ```typescript
+ * import { defineHttpHandler } from '@jetbrains/youtrack-scripting-api/apps';
+ *
+ * exports.httpHandler = defineHttpHandler<{ count: number }, 'onTick'>({
+ *   endpoints: [{
+ *     scope: 'global', method: 'POST', path: '/tick',
+ *     handle: (ctx) => {
+ *       ctx.store('count', 1);
+ *       ctx.invokeAsync('onTick');
+ *       ctx.response.json({});
+ *     }
+ *   }],
+ *   asyncFunctions: { onTick: (ctx) => { console.log(ctx.load('count')); } }
+ * });
+ * ```
+ */
+export function defineHttpHandler<
+  S extends object,
+  AK extends string,
+  TSettings = AppTypeRegistry['settings'],
+  TIssueExtensions = AppTypeRegistry['issueExtensions'],
+  TProjectExtensions = AppTypeRegistry['projectExtensions'],
+  TArticleExtensions = AppTypeRegistry['articleExtensions'],
+  TUserExtensions = AppTypeRegistry['userExtensions'],
+  TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions']
+>(
+  handler: HttpHandler<TSettings, TIssueExtensions, TProjectExtensions, TArticleExtensions, TUserExtensions, TGlobalStorageExtensions, AK, S>
+    & { asyncFunctions: Record<AK, (ctx: HttpAsyncFunctionContext<TSettings, TIssueExtensions, TProjectExtensions, TArticleExtensions, TUserExtensions, TGlobalStorageExtensions, AK, S>) => void> }
+): HttpHandler<TSettings, TIssueExtensions, TProjectExtensions, TArticleExtensions, TUserExtensions, TGlobalStorageExtensions, AK, S>;
 
 // =============================================================================
 // File-Based Routing Handler Types

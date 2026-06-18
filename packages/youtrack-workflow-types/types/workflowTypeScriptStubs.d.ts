@@ -315,8 +315,13 @@ export interface UserInputSpec {
 
 /**
  * Base execution context for action functions (without requirements).
+ * Generic parameter AK is the union of async function names declared in the rule's
+ * `asyncFunctions` block; it constrains `invokeAsync` to those names.
+ * Generic parameter S is the optional store schema (key -> value type) that types
+ * `ctx.store` and `ctx.load`. Defaults to a permissive map, so without an explicit
+ * schema both methods stay loosely typed.
  */
-export interface BaseActionContext {
+export interface BaseActionContext<AK extends PropertyKey = string, S extends Record<string, unknown> = Record<string, any>> {
   /** The current issue (for Issue rules). */
   issue: Issue;
   /** The current article (for Article rules). */
@@ -345,6 +350,30 @@ export interface BaseActionContext {
    * Use the app-types-generator to get fully typed settings.
    */
   settings?: Record<string, any>;
+  /**
+   * Schedules an async function for execution after the current transaction commits.
+   * The async function must be declared in the `asyncFunctions` block of the rule or AI tool.
+   * @param functionName The name of a function declared in `asyncFunctions`.
+   * @param delay Optional delay in milliseconds (default 0, max 7 days).
+   * @param deduplicationKey Optional key; a previously scheduled call with the same key and
+   * rule-project combination is replaced, enabling debounce patterns.
+   */
+  invokeAsync(functionName: AK, delay?: number, deduplicationKey?: string): void;
+  /**
+   * Persists a value across async boundaries. Retrieve it later with `ctx.load(key)`.
+   * The value can be a primitive, null, or an entity reference. Values are only persisted
+   * when an async function or async HTTP call is scheduled in the same execution.
+   * When a store schema is supplied, the key and value type are checked against it.
+   */
+  store<K extends keyof S>(key: K, value: S[K]): void;
+  /**
+   * Retrieves a value previously stored with `ctx.store(key, value)`, with entity references
+   * resolved back to their entity objects. Only available inside async functions.
+   * When a store schema is supplied, the return type is taken from it and unknown keys are rejected.
+   * The result is `| undefined` because a value may be absent at read time (never stored on this
+   * path, not persisted, or lost to a cross-execution race) - narrow it before use.
+   */
+  load<K extends keyof S>(key: K): S[K] | undefined;
 }
 
 /**
@@ -389,10 +418,29 @@ export type IssueWithRequirements<R extends Record<string, Requirement>> =
  * // Context will have: ctx.Priority['Show-stopper']
  * // And ctx.issue.fields.Priority with proper type
  */
-export type ActionContext<R extends Record<string, Requirement> = Record<string, Requirement>> =
-  Omit<BaseActionContext, 'issue'> & {
+export type ActionContext<R extends Record<string, Requirement> = Record<string, Requirement>, AK extends PropertyKey = string, S extends Record<string, unknown> = Record<string, any>> =
+  Omit<BaseActionContext<AK, S>, 'issue'> & {
     issue: IssueWithRequirements<R>
   } & RequirementsContext<R>;
+
+/**
+ * The execution context for functions declared in a rule's `asyncFunctions`
+ * block. Extends {@link ActionContext} with `response`, the incoming HTTP
+ * response that the runtime populates only when the function runs as an async
+ * HTTP-response callback (`connection.postAsync(uri, params, payload, 'name')`).
+ * The synchronous `action` never receives a response, so it stays off
+ * {@link ActionContext}.
+ */
+export type AsyncActionContext<R extends Record<string, Requirement> = Record<string, Requirement>, AK extends PropertyKey = string, S extends Record<string, unknown> = Record<string, any>> =
+  ActionContext<R, AK, S> & {
+    /**
+     * The incoming HTTP response for async HTTP-response callbacks.
+     * Properties: `isSuccess` (boolean), `body` (string), `code` (number),
+     * `headers` (object), `json()` (parses the body as JSON), and `exception`
+     * (string, if the request failed).
+     */
+    response?: any;
+  };
 
 /**
  * The execution context for guard functions.
@@ -434,15 +482,15 @@ export type GuardFunction<R extends Record<string, Requirement> = Record<string,
  *   }
  * });
  */
-export interface RuleProperties<R extends Record<string, Requirement> = Record<string, Requirement>> {
+export interface RuleProperties<R extends Record<string, Requirement> = Record<string, Requirement>, AK extends string = string, S extends Record<string, unknown> = Record<string, any>> {
   /** Title of the rule */
   title?: string;
   /** Command that triggers the rule */
   command?: string;
   /** Guard function with typed requirements context */
   guard?: GuardFunction<R>;
-  /** Action function with typed requirements context */
-  action?: ActionFunction<R>;
+  /** Action function with typed requirements context. `ctx.invokeAsync` accepts only names declared in `asyncFunctions`. */
+  action?: (ctx: ActionContext<R, AK, S>) => void;
   /** Requirements that get merged into the context */
   requirements?: Requirements<R>;
   /** Run on settings */
@@ -460,6 +508,13 @@ export interface RuleProperties<R extends Record<string, Requirement> = Record<s
   cron?: string;
   /** User input specification */
   userInput?: UserInputSpec;
+  /**
+   * A map of named functions that can be invoked asynchronously from the `action` function
+   * (via `ctx.invokeAsync`) or as HTTP response callbacks. Each function receives an
+   * {@link AsyncActionContext} — the same shape as `action` plus `ctx.response` for HTTP callbacks.
+   * The function names declared here are the only values accepted by `ctx.invokeAsync`.
+   */
+  asyncFunctions?: Record<AK, (ctx: AsyncActionContext<R, AK, S>) => void>;
   /** SLA-specific: onEnter function */
   onEnter?: ActionFunction<R>;
   /** SLA-specific: onBreach function */
@@ -675,7 +730,7 @@ export interface CommonIssueFields {
   /** Date field (ordinal 8). Stores timestamp as number. */
   'Due Date'?: number | null;
   /** Index signature for any other custom fields - includes optional Set methods for multi-value fields */
-  [fieldName: string]: DynamicFieldValue | Set<BaseEntity> | string | number | null | undefined;
+  [fieldName: string]: DynamicFieldValue | Set<BaseEntity> | BaseEntity | string | number | null | undefined;
 }
 
 /**
@@ -1116,13 +1171,13 @@ export declare class Article extends BaseArticle {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a new article draft.
-   * @param project The project where the new article is created.
-   * @param author The author of the article.
-   * @returns Newly created article draft.
+   * @param project The project where the new article draft is created.
+   * @param author The author of the article draft.
+   * @returns The newly created article draft.
    */
   static createDraft(project?: Project, author?: User): BaseArticle;
 
@@ -1168,7 +1223,7 @@ export declare class Article extends BaseArticle {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static onChange<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static onChange<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Attaches a file to the article.
@@ -1242,7 +1297,7 @@ export declare class ArticleAttachment extends BaseArticleAttachment {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for ArticleAttachment entities with extension properties that match the specified query.
@@ -1314,7 +1369,7 @@ export declare class ArticleComment extends BaseArticleComment {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for ArticleComment entities with extension properties that match the specified query.
@@ -1337,13 +1392,13 @@ export declare class ArticleComment extends BaseArticleComment {
  */
 export declare class BaseArticle extends BaseEntity {
   /**
-   * The original article from which the current article draft was created. Returns `null` if the current article is not an article draft.
+   * The article from which the current article draft was created, or `null` if the current article is not a draft.
    * @since 2026.1
    */
   readonly originalArticle: Article;
 
   /**
-   * If the current user has added the 'Star' tag to watch the article, this property is `true`.
+   * If the current user has added the 'Star' to watch the article, this property is `true`.
    * @since 2023.1
    */
   readonly isStarred: boolean;
@@ -2151,7 +2206,7 @@ export declare class Issue extends BaseEntity {
   readonly isResolved: boolean;
 
   /**
-   * If the current user has added the 'Star' tag to watch the issue, this property is `true`.
+   * If the current user has added the 'Star' to watch the issue, this property is `true`.
    */
   readonly isStarred: boolean;
 
@@ -2182,12 +2237,19 @@ export declare class Issue extends BaseEntity {
   readonly created: number;
 
   /**
+   * The customer groups this helpdesk ticket is shared with. Members of these groups can view the ticket and add public comments.
+   * @since 2026.2
+   */
+  readonly customerGroups: Set<UserGroup>;
+
+  /**
    * The text that is entered as the issue description.
    */
   description: string;
 
   /**
    * The collection of Gantt charts that this issue has been added to.
+   * @since 2022.1
    */
   readonly ganttCharts: Set<Gantt>;
 
@@ -2284,14 +2346,6 @@ export declare class Issue extends BaseEntity {
    * Plugged attributes for the issue. Used to store custom data from external integrations.
    */
   pluggedAttributes: { [key: string]: any };
-
-  /**
-   * Gantt charts that this issue belongs to.
-   */
-  readonly ganttCharts: {
-    added?: Set<GanttChart>;
-    removed?: Set<GanttChart>;
-  };
 
   /**
    * Common field: State. Available as a direct property for convenience.
@@ -2462,7 +2516,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a new issue draft.
@@ -2471,7 +2525,7 @@ export declare class Issue extends BaseEntity {
    * @param reporter Issue draft reporter.
    * @returns Newly created issue draft.
    */
-  static createDraft(project: Project, reporter: User): Issue;
+  static createDraft(project: Project, reporter?: User): Issue;
 
   /**
    * Creates a new shared issue draft.
@@ -2525,7 +2579,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static onChange<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static onChange<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a declaration of a rule that is triggered on a set schedule.
@@ -2552,7 +2606,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static onSchedule<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static onSchedule<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a declaration of a custom SLA policy. An SLA policy defines the time goals for the replies from staff and request resolution.
@@ -2595,7 +2649,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the SLA policy.
    */
-  static sla<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static sla<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a declaration of a state-machine rule. The state-machine imposes restrictions for the transitions between values in a custom field.
@@ -2652,13 +2706,13 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static stateMachine<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static stateMachine<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Attaches a file to the issue.
    * Makes `issue.attachments.isChanged` return `true` for the current transaction.
    * @since 2019.2.53994
-   * @param content The content of the file in binary or base64 form.
+   * @param content The content of the file in binary form or as a base64 data URI. Base64 content must use the `data:[MIME type];base64,[content]` syntax.
    * @param name The name of the file.
    * @param charset The charset of the file. Only applicable to text files.
    * @param mimeType The MIME type of the file.
@@ -2692,7 +2746,7 @@ export declare class Issue extends BaseEntity {
    * @param type The work item type.
    * @returns The new work item.
    */
-  addWorkItem(description: string, date: number, author: User, duration: number, type: WorkItemType): IssueWorkItem;
+  addWorkItem(description: string, date?: number, author?: User, duration?: number, type?: WorkItemType): IssueWorkItem;
 
   /**
    * Adds the specified number of minutes to a specified starting point in time.
@@ -2722,7 +2776,7 @@ export declare class Issue extends BaseEntity {
    * @param project Project to create new issue in. Available since 2018.1.40575.
    * @returns The copy of the original issue.
    */
-  copy(project: Project): Issue;
+  copy(project?: Project): Issue;
 
   /**
    * Checks whether the specified tag is attached to an issue.
@@ -2730,7 +2784,7 @@ export declare class Issue extends BaseEntity {
    * @param ignoreVisibilitySettings When `true`, checks all matching tags without regard to their visibility settings. When `false` (default), checks only matching tags that are visible to the current user.
    * @returns If the specified tag is attached to the issue, returns `true`.
    */
-  hasTag(tagName: string, ignoreVisibilitySettings: boolean): boolean;
+  hasTag(tagName: string, ignoreVisibilitySettings?: boolean): boolean;
 
   /**
    * Checks whether the issue is accessible by specified user.
@@ -2897,7 +2951,7 @@ export declare class IssueAttachment extends PersistentFile {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for IssueAttachment entities with extension properties that match the specified query.
@@ -3017,7 +3071,7 @@ export declare class IssueComment extends BaseComment {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements>(ruleProperties?: RuleProperties<R>): RuleProperties<R>;
+  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for IssueComment entities with extension properties that match the specified query.
@@ -3290,6 +3344,12 @@ export declare class Project extends BaseEntity {
   readonly fields: Set<ProjectCustomField>;
 
   /**
+   * The absolute URL of the project icon. Returns the custom uploaded icon when present, otherwise the generated default icon, or `null` when the icon URL cannot be produced.
+   * @since 2026.2
+   */
+  readonly iconUrl: string;
+
+  /**
    * The ID of the project. Use instead of project.shortName, which is deprecated.
    */
   readonly key: string;
@@ -3327,7 +3387,7 @@ export declare class Project extends BaseEntity {
   readonly sharedChangesProcessors: Set<ChangesProcessor>;
 
   /**
-   * A UserGroup object that contains the users and members of groups who are assigned to the project team.
+   * The project team. This UserGroup object contains the users and members of groups who are assigned to the project team.
    * @since 2017.4.38235
    */
   readonly team: UserGroup;
@@ -3354,6 +3414,12 @@ export declare class Project extends BaseEntity {
    * @since 2021.4.23500
    */
   readonly articles: Set<Article>;
+
+  /**
+   * The group that is set automatically as the initial default for the Visible to group in new issues and articles in this project.
+   * @since 2026.2
+   */
+  readonly defaultVisibilityGroup: UserGroup;
 
   /**
    * The description of the project as shown on the project profile page.
@@ -3445,7 +3511,7 @@ export declare class Project extends BaseEntity {
    * @param reporter Issue draft reporter.
    * @returns Newly created issue draft.
    */
-  newDraft(reporter: User): Issue;
+  newDraft(reporter?: User): Issue;
 
 }
 
@@ -3542,7 +3608,7 @@ export declare class ProjectCustomField extends BaseEntity {
 }
 
 /**
- * Represents a project team.
+ * Represents a project team. To access a project team in a workflow, use the `team` property of a `Project` object, such as `ctx.issue.project.team`, or the `teams` property of a `User` object. In rule requirements, reference a project team as a `UserGroup` by name.
  */
 export declare class ProjectTeam extends UserGroup {
   /**
@@ -3573,12 +3639,12 @@ export declare class ProjectType extends BaseEntity {
   /**
    * Identifies a standard project for issue tracking.
    */
-  readonly DEFAULT: ProjectType;
+  static readonly DEFAULT: ProjectType;
 
   /**
    * Identifies a helpdesk project for managing tickets.
    */
-  readonly HELPDESK: ProjectType;
+  static readonly HELPDESK: ProjectType;
 
   /**
    * Name of the project type.
@@ -3710,17 +3776,17 @@ export declare class PullRequestState extends BaseEntity {
   /**
    * The pull request was declined.
    */
-  readonly DECLINED: PullRequestState;
+  static readonly DECLINED: PullRequestState;
 
   /**
    * The pull request was merged.
    */
-  readonly MERGED: PullRequestState;
+  static readonly MERGED: PullRequestState;
 
   /**
    * The pull request is open.
    */
-  readonly OPEN: PullRequestState;
+  static readonly OPEN: PullRequestState;
 
   /**
    * Name of the pull request state.
@@ -3973,7 +4039,7 @@ export declare class Tag extends WatchFolder {
    * @param ignoreVisibilitySettings When `true`, returns all matching tags without regard to their visibility settings. When `false` (default), returns only matching tags that are visible to the current user.
    * @returns The set of tags that match the specified name.
    */
-  static findByName(name: string, ignoreVisibilitySettings: boolean): Set<Tag>;
+  static findByName(name: string, ignoreVisibilitySettings?: boolean): Set<Tag>;
 
   /**
    * Finds tags owned by a specified user without considering the visibility settings for the tags.
@@ -3985,7 +4051,6 @@ export declare class Tag extends WatchFolder {
 
   /**
    * Finds the most relevant tag with the specified name that is visible to the current user.
-   * "Star" tag is excluded from the results.
    * @param name The name of the tag to search for.
    * @returns The most relevant tag.
    */
@@ -4125,10 +4190,16 @@ export declare class User extends BaseEntity {
   readonly registered: number;
 
   /**
-   * The list of user's project teams.
+   * The list of project teams that the user belongs to.
    * @since 2025.3
    */
   readonly teams: Set<ProjectTeam>;
+
+  /**
+   * The user type assigned to the user account for licensing purposes. Possible values include: `UserType.STANDARD_USER` (a standard user), `UserType.AGENT` (a helpdesk agent), and `UserType.REPORTER` (a helpdesk reporter).
+   * @since 2026.2
+   */
+  readonly type: UserType;
 
 
   /**
@@ -4226,15 +4297,15 @@ export declare class User extends BaseEntity {
    * @param project The project to check for the specified permission assignment. If omitted, checks if the user has the global role.
    * @returns If the user has the permission, returns `true`.
    */
-  hasPermission(permissionKey: string, project: Project): boolean;
+  hasPermission(permissionKey: string, project?: Project): boolean;
 
   /**
    * Checks whether the user is granted the specified role in the specified project. When the project parameter is not specified, checks whether the user has the specified role in any project.
    * @param roleName The name of the role to check for.
-   * @param project The project to check for the specified role assignment. If omitted, checks if the user has the global role.
+   * @param project The project to check for the specified role assignment. If omitted, checks whether the user has the specified role in any project.
    * @returns If the user is granted the specified role, returns `true`.
    */
-  hasRole(roleName: string, project: Project): boolean;
+  hasRole(roleName: string, project?: Project): boolean;
 
   /**
    * Checks whether the user is a member of the specified group.
@@ -4295,7 +4366,7 @@ export declare class User extends BaseEntity {
 
   /**
    * Removes the current user from the list of watchers for the article
-   * (removes the `Star` tag).
+   * (removes the `Star`).
    * @since 2023.1
    * @param article The article from which the user is removed as a watcher.
    */
@@ -4303,7 +4374,7 @@ export declare class User extends BaseEntity {
 
   /**
    * Removes the current user from the list of watchers for the issue
-   * (removes the `Star` tag).
+   * (removes the `Star`).
    * @param issue The issue from which the user is removed as a watcher.
    */
   unwatchIssue(issue: Issue): void;
@@ -4315,14 +4386,14 @@ export declare class User extends BaseEntity {
   voteIssue(issue: Issue): void;
 
   /**
-   * Adds the current user to the article as a watcher (adds the `Star` tag).
+   * Adds the current user to the article as a watcher (adds the `Star`).
    * @since 2023.1
    * @param article The article to which the user is added as a watcher.
    */
   watchArticle(article: BaseArticle): void;
 
   /**
-   * Adds the current user to the issue as a watcher (adds the `Star` tag).
+   * Adds the current user to the issue as a watcher (adds the `Star`).
    * @param issue The issue to which the user is added as a watcher.
    */
   watchIssue(issue: Issue): void;
@@ -4363,6 +4434,12 @@ export declare class UserGroup extends BaseEntity {
   readonly users: Set<User>;
 
   /**
+   * The set of helpdesk projects where this group is configured as a customer group. For groups that are not customer groups, this property is an empty set.
+   * @since 2026.2
+   */
+  readonly customerGroupProjects: Set<Project>;
+
+  /**
    * The description of the group.
    */
   readonly description: string;
@@ -4371,6 +4448,12 @@ export declare class UserGroup extends BaseEntity {
    * If the group is the All Users group, this property is `true`.
    */
   readonly isAllUsersGroup: boolean;
+
+  /**
+   * If this group is a helpdesk customer group, this property is `true`.
+   * @since 2026.2
+   */
+  readonly isCustomerGroup: boolean;
 
   /**
    * The name of the group.
@@ -4476,6 +4559,34 @@ export declare class UserProjectCustomField extends ProjectCustomField {
    * @returns If the value can be used for the issue, returns `true`.
    */
   isValuePermittedInIssue(issue: Issue, value: User): boolean;
+
+}
+
+/**
+ * Represents a classification that defines access to advanced helpdesk features and are used to regulate the pricing associated with each user account in YouTrack.
+ * @since 2026.2
+ */
+export declare class UserType extends BaseEntity {
+  /**
+   * Identifies an agent in a helpdesk project.
+   */
+  static readonly AGENT: UserType;
+
+  /**
+   * Identifies a reporter who can submit tickets in helpdesk projects.
+   */
+  static readonly REPORTER: UserType;
+
+  /**
+   * Identifies a standard user account.
+   */
+  static readonly STANDARD_USER: UserType;
+
+  /**
+   * Name of the user type.
+   * @since 2026.2
+   */
+  readonly typeName: string;
 
 }
 

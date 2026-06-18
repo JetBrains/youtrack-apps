@@ -19,8 +19,14 @@
  * @module @jetbrains/youtrack-scripting-api/ai-tools
  */
 
-import type { Issue, User } from './workflowTypeScriptStubs.js';
+import type { Issue, User, AppGlobalStorage } from './workflowTypeScriptStubs.js';
 import type { JSONSchema } from './utility-types.js';
+// Import HTTP Response type for use as the async HTTP response shape in
+// asyncFunctions called as `connection.*Async(..., 'handlerName')` callbacks.
+import type { Response } from './http.js';
+// AI tools share AppTypeRegistry with apps for settings + globalStorage
+// extension property types.
+import type { AppTypeRegistry } from './apps.js';
 
 // =============================================================================
 // AI Tool Annotations
@@ -76,8 +82,25 @@ export interface AIToolAnnotations {
 
 /**
  * Context available to AI tool execute function.
+ *
+ * Carries AK / S generics so `ctx.invokeAsync` / `ctx.store` / `ctx.load`
+ * are typed against the parent tool's `asyncFunctions` keys and store schema,
+ * matching the rule-side `ActionContext<R, AK, S>` pattern.
+ *
+ * @template TArgs - Input arguments shape parsed from the tool's inputSchema.
+ * @template S - Optional store schema. Default loose.
+ * @template AK - Union of asyncFunctions key names declared on the parent tool.
+ * @template TSettings - App settings type. Defaults to AppTypeRegistry['settings'].
+ * @template TGlobalStorageExtensions - AppGlobalStorage extension properties.
+ *   Defaults to AppTypeRegistry['appGlobalStorageExtensions'].
  */
-export interface AIToolContext<TArgs = Record<string, unknown>> {
+export interface AIToolContext<
+  TArgs = Record<string, unknown>,
+  TSettings = AppTypeRegistry['settings'],
+  TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions'],
+  AK extends string = string,
+  S extends object = Record<string, any>
+> {
   /**
    * Input arguments parsed according to inputSchema.
    * Type is inferred from the inputSchema if using json-schema-to-ts.
@@ -93,6 +116,109 @@ export interface AIToolContext<TArgs = Record<string, unknown>> {
    * Issue in context, if available (depends on where tool is invoked).
    */
   readonly issue?: Issue;
+
+  /**
+   * App settings as key-value pairs. Same shape as `BaseHttpContext.settings`.
+   */
+  readonly settings: TSettings;
+
+  /**
+   * The app-level global storage entity. Use
+   * `ctx.globalStorage.extensionProperties.X` to read/write app-global
+   * values defined in the app's `entity-extensions.json`.
+   */
+  readonly globalStorage: AppGlobalStorage & { extensionProperties: TGlobalStorageExtensions };
+
+  /**
+   * Schedules an async function for execution after the current transaction
+   * commits. `functionName` is constrained to the AK union — keys declared
+   * in the parent tool's `asyncFunctions`.
+   *
+   * @param functionName The name of a function declared in `asyncFunctions`.
+   * @param delay Optional delay in milliseconds (default 0, max 7 days).
+   * @param deduplicationKey Optional debounce key.
+   */
+  invokeAsync(functionName: AK, delay?: number, deduplicationKey?: string): void;
+
+  /**
+   * Persists a value across async boundaries. When a store schema `S` is
+   * supplied, key/value are checked against it.
+   */
+  store<K extends keyof S>(key: K, value: S[K]): void;
+
+  /**
+   * Retrieves a value previously stored with `ctx.store(key, value)`.
+   * Returns `S[K] | undefined`.
+   */
+  load<K extends keyof S>(key: K): S[K] | undefined;
+}
+
+/**
+ * Context passed to async functions declared in an AI tool's `asyncFunctions`
+ * block.
+ *
+ * The function may be invoked via `ctx.invokeAsync('name', delay)` from the
+ * tool's `execute` (or another async function), or as the response callback
+ * of `connection.*Async(..., 'name')`. In the latter case `response` is
+ * populated with the incoming HTTP response.
+ */
+export interface AIToolAsyncFunctionContext<
+  TSettings = AppTypeRegistry['settings'],
+  TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions'],
+  AK extends string = string,
+  S extends object = Record<string, any>
+> {
+  /**
+   * Current user under which the async function executes — captured at
+   * scheduling time.
+   */
+  readonly currentUser: User;
+
+  /**
+   * App settings as key-value pairs. Same shape as `AIToolContext.settings`.
+   */
+  readonly settings: TSettings;
+
+  /**
+   * The app-level global storage entity. Use
+   * `ctx.globalStorage.extensionProperties.X` to read/write app-global
+   * values defined in the app's `entity-extensions.json`.
+   */
+  readonly globalStorage: AppGlobalStorage & { extensionProperties: TGlobalStorageExtensions };
+
+  /**
+   * Issue in context, if the tool was invoked with an issue and the value
+   * was carried into the async chain.
+   */
+  readonly issue?: Issue;
+
+  /**
+   * The HTTP response returned by the async HTTP call that triggered this
+   * function (e.g. `connection.postAsync(..., 'onResponse')`). `undefined`
+   * when the function was scheduled via `ctx.invokeAsync`.
+   *
+   * Body is truncated by the runtime at 1 MB.
+   */
+  readonly response?: Response;
+
+  /**
+   * Schedules another async function for execution. `functionName` is
+   * constrained to the AK union (keys declared in the parent tool's
+   * `asyncFunctions`).
+   */
+  invokeAsync(functionName: AK, delay?: number, deduplicationKey?: string): void;
+
+  /**
+   * Persists a value to be retrieved later with `ctx.load(key)`.
+   * Typed against schema S.
+   */
+  store<K extends keyof S>(key: K, value: S[K]): void;
+
+  /**
+   * Retrieves a value stored earlier in the same async chain.
+   * Returns `S[K] | undefined`.
+   */
+  load<K extends keyof S>(key: K): S[K] | undefined;
 }
 
 // =============================================================================
@@ -122,7 +248,11 @@ export interface AIToolContext<TArgs = Record<string, unknown>> {
  */
 export interface AITool<
   TArgs = Record<string, unknown>,
-  TResult = unknown
+  TResult = unknown,
+  TSettings = AppTypeRegistry['settings'],
+  TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions'],
+  AK extends string = string,
+  S extends object = Record<string, any>
 > {
   /**
    * Unique name for the tool (used by AI to invoke it).
@@ -155,11 +285,31 @@ export interface AITool<
   annotations?: AIToolAnnotations;
 
   /**
-   * Execute function that performs the tool's action.
+   * Execute function that performs the tool's action. Ctx generics carry the
+   * AK / S from the parent tool so `ctx.invokeAsync` / `ctx.store` /
+   * `ctx.load` are typed against the tool's `asyncFunctions` keys and
+   * store schema.
+   *
    * @param ctx Context containing arguments and other contextual info
    * @returns Result to return to AI (will be JSON serialized)
    */
-  execute: (ctx: AIToolContext<TArgs>) => TResult | Promise<TResult>;
+  execute: (ctx: AIToolContext<TArgs, TSettings, TGlobalStorageExtensions, AK, S>) => TResult | Promise<TResult>;
+
+  /**
+   * Named async functions invoked after the tool's `execute` transaction
+   * commits. The keys of this record become the AK union — `ctx.invokeAsync`
+   * accepts only declared names. Supply explicit `<TArgs, TResult, S>` (or
+   * use `defineAITool`) to also type `ctx.store` / `ctx.load`.
+   *
+   * Constraints enforced by the runtime: one async call per execution, max
+   * chain length 10 hops, max delay 1 week.
+   *
+   * @see {@link https://github.com/JetBrains/youtrack/blob/main/docs/apps-workflows/async-functions.md}
+   */
+  asyncFunctions?: Record<
+    AK,
+    (ctx: AIToolAsyncFunctionContext<TSettings, TGlobalStorageExtensions, AK, S>) => void
+  >;
 }
 
 // =============================================================================
@@ -167,30 +317,54 @@ export interface AITool<
 // =============================================================================
 
 /**
- * Creates a type-safe AI tool with inferred argument types.
+ * Creates a type-safe AI tool with the async-functions surface narrowed.
+ * Two call shapes:
  *
- * Usage with json-schema-to-ts:
+ *   1. **`defineAITool<TArgs, TResult, S, AK>({...})`** — types arguments,
+ *      result, store schema, and async-function key union. `asyncFunctions`
+ *      is required and must implement every declared `AK` key.
+ *   2. **`withStore<TArgs, TResult, S>()({...})` curry from
+ *      `@jetbrains/youtrack-apps-tools`** — same coverage with `AK` inferred
+ *      from the `asyncFunctions` literal so the key union doesn't need to
+ *      be spelled out.
+ *
+ * Plain AI tools without async functions or a typed store keep using the
+ * `const aiTool: AITool<TArgs, TResult> = {...}` annotation pattern.
+ *
+ * @example
  * ```typescript
- * import { FromSchema } from 'json-schema-to-ts';
- *
- * const inputSchema = {
- *   type: 'object',
- *   properties: {
- *     query: { type: 'string' }
- *   },
- *   required: ['query']
- * } as const;
- *
- * type Args = FromSchema<typeof inputSchema>;
- *
- * export const aiTool = defineAITool<Args, Issue[]>({
- *   name: 'search_issues',
- *   description: 'Search issues',
- *   inputSchema,
+ * exports.aiTool = defineAITool<{ query: string }, string, { last: string }, 'onDone'>({
+ *   name: 'search_issues', description: 'Search issues',
  *   execute: (ctx) => {
- *     // ctx.arguments is typed as Args
- *     return search.search(null, ctx.arguments.query);
- *   }
+ *     ctx.store('last', ctx.arguments.query);
+ *     ctx.invokeAsync('onDone');
+ *     return 'ok';
+ *   },
+ *   asyncFunctions: { onDone: (ctx) => { console.log(ctx.load('last')); } }
+ * });
+ * ```
+ */
+export function defineAITool<
+  TArgs,
+  TResult,
+  S extends object,
+  AK extends string,
+  TSettings = AppTypeRegistry['settings'],
+  TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions']
+>(
+  tool: AITool<TArgs, TResult, TSettings, TGlobalStorageExtensions, AK, S>
+    & { asyncFunctions: Record<AK, (ctx: AIToolAsyncFunctionContext<TSettings, TGlobalStorageExtensions, AK, S>) => void> }
+): AITool<TArgs, TResult, TSettings, TGlobalStorageExtensions, AK, S>;
+
+/**
+ * Plain tool: types only the arguments and result. Use this shape when the
+ * tool has no `asyncFunctions` block and no typed store.
+ *
+ * @example
+ * ```typescript
+ * exports.aiTool = defineAITool<{ query: string }, Issue[]>({
+ *   name: 'search_issues', description: 'Search issues',
+ *   execute: (ctx) => search(ctx.arguments.query)
  * });
  * ```
  */
