@@ -1,14 +1,26 @@
 /**
- * HTTP and webhook communication utilities for YouTrack workflow rules.
+ * Webhook delivery via async function chain.
+ *
+ * Sync action dispatches URL 1 via postAsync; the response handler
+ * `logAndPostNext` logs the result and dispatches URL 2 via another postAsync,
+ * and so on. Each URL costs one async hop. Server `maxChainLength = 10` by
+ * default, giving the practical cap in {@link MAX_WEBHOOK_URLS_PER_EVENT}.
  */
 
 const http = require('@jetbrains/youtrack-scripting-api/http');
 const security = require('./workflow-security');
 
-/**
- * Timeout for webhook HTTP connections in milliseconds
- */
 const WEBHOOK_TIMEOUT_MS = 5000;
+const MAX_WEBHOOK_URLS_PER_EVENT = 10;
+
+const STORE_URLS = 'webhookUrls';
+const STORE_PAYLOAD = 'webhookPayload';
+const STORE_EVENT = 'webhookEvent';
+const STORE_CURRENT_URL = 'webhookCurrentUrl';
+
+// `webhookToken` is `format: "secret"` — at the JS layer its toString() is
+// the literal "secret", and that's what reaches the wire. Same as the sync
+// baseline; awaits a platform-side fix.
 
 /**
  * Parse comma or newline separated webhook URLs from settings
@@ -19,7 +31,7 @@ function parseWebhookUrls(webhooksStr) {
   if (!webhooksStr || typeof webhooksStr !== 'string') {
     return [];
   }
-  return webhooksStr.split(/[,\n]/)  // Split by comma OR newline
+  return webhooksStr.split(/[,\n]/)
     .map(function (s) {
       return s.trim();
     })
@@ -36,15 +48,12 @@ function parseWebhookUrls(webhooksStr) {
  * @returns {Array<string>} Deduplicated array of webhook URLs
  */
 function getWebhookUrls(ctx, settingsKey) {
-  // Parse event-specific webhooks
   const webhooksStr = ctx.settings[settingsKey] || '';
   const eventUrls = parseWebhookUrls(webhooksStr);
 
-  // Parse "All Events" webhooks
   const allEventsWebhooksStr = ctx.settings.webhooksOnAllEvents || '';
   const allEventsUrls = parseWebhookUrls(allEventsWebhooksStr);
 
-  // Combine and deduplicate
   const urlSet = {};
   const allUrls = [];
 
@@ -66,78 +75,106 @@ function getWebhookUrls(ctx, settingsKey) {
 }
 
 /**
- * Logs webhook response details
- * @param {Object} postResult - The HTTP response object
- * @param {string} url - The webhook URL
+ * Logs the outcome of a single webhook delivery.
+ * @param {Object} response - ctx.response from the postAsync handler
+ * @param {string} url - The webhook URL that was hit
  */
-function logWebhookResponse(postResult, url) {
-  if (postResult && !postResult.code) {
+function logWebhookResponse(response, url) {
+  if (!response) {
+    console.warn('[webhooks] No response object received for ' + url);
+    return;
+  }
+  if (response.exception) {
+    console.error('[webhooks] Webhook to ' + url + ' failed: ' + response.exception);
+    return;
+  }
+  if (!response.code) {
     console.warn('[webhooks] Webhook request to ' + url + ' completed but returned no status code (likely timeout after ' + WEBHOOK_TIMEOUT_MS + 'ms)');
     return;
   }
-  
+
   console.log('[webhooks] Webhook sent successfully to ' + url);
-  if (postResult) {
-    console.log('[webhooks] Response code: ' + (postResult.code || 'unknown'));
-    // Response body is intentionally not logged to prevent exposure of data
-    // from internal services reachable from the YouTrack server (SSRF).
-  }
+  console.log('[webhooks] Response code: ' + response.code);
+  // Response body not logged — SSRF: receivers may reflect internal data.
 }
 
 /**
- * Logs webhook error details
- * @param {Error} error - The error object
- * @param {string} url - The webhook URL
+ * Validates a URL, persists post-dispatch state, then fires postAsync with
+ * `logAndPostNext` as the response handler. Stores BEFORE scheduling per
+ * the async-functions "store before invoke" guidance.
+ * @returns {boolean} true on scheduled, false on rejection (caller may retry next URL).
  */
-function logWebhookError(error, url) {
-  console.error('[webhooks] Failed to send webhook to ' + url);
-  const errorMessage = error.message || error.toString() || 'Unknown error';
-  const errorStack = error.stack || 'No stack trace';
-  console.error('[webhooks] Error: ' + errorMessage);
-  console.error('[webhooks] Error stack: ' + errorStack);
-}
-
-/**
- * Sends a webhook to a single URL
- * @param {string} url - The webhook URL
- * @param {Object} payload - The data to send
- * @param {string} eventName - Name of the event for logging
- * @param {string} [token] - Token for authentication header
- * @param {string} [headerName] - Name of the HTTP header for the token
- * @returns {Object|null} The HTTP response or null on error
- */
-function sendWebhook(url, payload, eventName, token, headerName) {
-  const trimmedUrl = url.trim();
-  const validation = security.validateWebhookUrl(trimmedUrl);
+function tryPostWebhook(ctx, url, remainingUrls, token, headerName, payloadJson) {
+  const validation = security.validateWebhookUrl(url);
   if (!validation.valid) {
-    console.error('[webhooks] Blocked webhook to ' + trimmedUrl + ': ' + validation.reason);
-    return null;
+    console.error('[webhooks] Blocked webhook to ' + url + ': ' + validation.reason);
+    return false;
   }
 
-  if (trimmedUrl.startsWith('http://')) {
-    console.warn('[webhooks] Warning: webhook URL uses HTTP (not HTTPS) — the webhook token will be transmitted in plaintext. HTTPS is strongly recommended: ' + trimmedUrl);
+  if (url.startsWith('http://')) {
+    console.warn('[webhooks] Warning: webhook URL uses HTTP (not HTTPS) — the webhook token will be transmitted in plaintext. HTTPS is strongly recommended: ' + url);
   }
+
+  ctx.store(STORE_URLS, JSON.stringify(remainingUrls));
+  ctx.store(STORE_CURRENT_URL, url);
+
   try {
-    const connection = new http.Connection(trimmedUrl, null, WEBHOOK_TIMEOUT_MS);
+    const connection = new http.Connection(url, null, WEBHOOK_TIMEOUT_MS);
     connection.addHeader('Content-Type', 'application/json');
     security.addSecurityHeaders(connection, token, headerName);
-
-    const postResult = connection.postSync('', '', JSON.stringify(payload));
-
-    logWebhookResponse(postResult, trimmedUrl);
-    return postResult;
+    connection.postAsync('', '', payloadJson, 'logAndPostNext');
+    return true;
   } catch (error) {
-    logWebhookError(error, trimmedUrl);
-    return null;
+    const errorMessage = error.message || error.toString() || 'Unknown error';
+    console.error('[webhooks] Failed to schedule webhook to ' + url + ': ' + errorMessage);
+    return false;
   }
 }
 
 /**
- * Sends webhooks to all configured URLs
- * @param {Object} ctx - The workflow context
- * @param {string} settingsKey - The key in ctx.settings to get webhook URLs from
- * @param {Object} payload - The data to send
- * @param {string} eventName - Name of the event for logging
+ * Dispatches the next valid URL via postAsync. Invalid URLs are skipped
+ * synchronously without consuming an async hop.
+ * @returns {boolean} true if scheduled, false if no valid URLs remain.
+ */
+function postNextValid(ctx) {
+  const token = ctx.settings.webhookToken;
+  const headerName = ctx.settings.headerName;
+
+  // Fail closed if settings were cleared mid-chain — addHeader silently
+  // skips a falsy token, which would fan out unauthenticated requests.
+  if (!token || !headerName) {
+    console.warn('[webhooks] Webhook token or header was cleared during chain execution; aborting remaining dispatches');
+    return false;
+  }
+
+  const payloadJson = ctx.load(STORE_PAYLOAD);
+  const urlsJson = ctx.load(STORE_URLS);
+  const urls = urlsJson ? JSON.parse(urlsJson) : [];
+
+  while (urls.length > 0) {
+    const url = urls.shift();
+    if (tryPostWebhook(ctx, url, urls, token, headerName, payloadJson)) {
+      return true;
+    }
+  }
+
+  ctx.store(STORE_URLS, JSON.stringify(urls));
+  return false;
+}
+
+/**
+ * Response handler for each postAsync. Logs the previous response and
+ * dispatches the next URL.
+ */
+function logAndPostNext(ctx) {
+  const url = ctx.load(STORE_CURRENT_URL);
+  logWebhookResponse(ctx.response, url);
+  postNextValid(ctx);
+}
+
+/**
+ * Schedules webhooks via the async function chain. Call from a rule's sync
+ * `action`. The rule must declare `asyncFunctions: core.asyncFunctions`.
  */
 function sendWebhooks(ctx, settingsKey, payload, eventName) {
   const token = ctx.settings.webhookToken || null;
@@ -152,7 +189,6 @@ function sendWebhooks(ctx, settingsKey, payload, eventName) {
     return;
   }
 
-  // Get all URLs (event-specific + "All Events", deduplicated)
   const allUrls = getWebhookUrls(ctx, settingsKey);
 
   if (allUrls.length === 0) {
@@ -160,14 +196,45 @@ function sendWebhooks(ctx, settingsKey, payload, eventName) {
     return;
   }
 
-  console.log('[webhooks] Sending webhooks to ' + allUrls.length + ' URL(s)');
-  allUrls.forEach(function (url) {
-    sendWebhook(url, payload, eventName, token, headerName);
+  // Filter invalid URLs first so the cap applies to URLs that can actually be dispatched.
+  const validUrls = allUrls.filter(function (url) {
+    const validation = security.validateWebhookUrl(url);
+    if (!validation.valid) {
+      console.error('[webhooks] Blocked webhook to ' + url + ': ' + validation.reason);
+      return false;
+    }
+    return true;
   });
+
+  if (validUrls.length === 0) {
+    console.log('[webhooks] No valid webhook URLs for ' + eventName);
+    return;
+  }
+
+  let urls = validUrls;
+  if (validUrls.length > MAX_WEBHOOK_URLS_PER_EVENT) {
+    console.warn('[webhooks] ' + validUrls.length + ' valid URLs configured for ' + eventName + ' but max is ' + MAX_WEBHOOK_URLS_PER_EVENT + ' per event (async chain limit). Extra URLs dropped.');
+    urls = validUrls.slice(0, MAX_WEBHOOK_URLS_PER_EVENT);
+  }
+
+  ctx.store(STORE_URLS, JSON.stringify(urls));
+  ctx.store(STORE_PAYLOAD, JSON.stringify(payload));
+  ctx.store(STORE_EVENT, eventName);
+
+  console.log('[webhooks] Scheduling ' + urls.length + ' webhook(s) for ' + eventName);
+  postNextValid(ctx);
 }
+
+const asyncFunctions = {
+  logAndPostNext: logAndPostNext,
+};
 
 exports.parseWebhookUrls = parseWebhookUrls;
 exports.getWebhookUrls = getWebhookUrls;
-exports.sendWebhook = sendWebhook;
 exports.sendWebhooks = sendWebhooks;
-
+exports.logAndPostNext = logAndPostNext;
+exports.logWebhookResponse = logWebhookResponse;
+exports.postNextValid = postNextValid;
+exports.asyncFunctions = asyncFunctions;
+exports.MAX_WEBHOOK_URLS_PER_EVENT = MAX_WEBHOOK_URLS_PER_EVENT;
+exports.WEBHOOK_TIMEOUT_MS = WEBHOOK_TIMEOUT_MS;

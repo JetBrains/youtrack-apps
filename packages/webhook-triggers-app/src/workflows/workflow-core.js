@@ -14,8 +14,8 @@ const utilsModule = require('./workflow-utils');
 
 exports.parseWebhookUrls = httpModule.parseWebhookUrls;
 exports.getWebhookUrls = httpModule.getWebhookUrls;
-exports.sendWebhook = httpModule.sendWebhook;
 exports.sendWebhooks = httpModule.sendWebhooks;
+exports.asyncFunctions = httpModule.asyncFunctions;
 
 exports.createGuard = guardsModule.createGuard;
 exports.shouldSkipIssue = guardsModule.shouldSkipIssue;

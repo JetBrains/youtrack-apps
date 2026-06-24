@@ -51,5 +51,7 @@ exports.rule = {
         core.sendWebhooks(ctx, EVENTS.COMMENT_ADDED.key, payload, EVENTS.COMMENT_ADDED.name);
     },
 
+    asyncFunctions: core.asyncFunctions,
+
     requirements: {}
 };
