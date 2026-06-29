@@ -9,9 +9,14 @@ export interface Config {
   schema: string | null;
   open: string | null;
   json: boolean;
+  yaml: boolean;
   yes: boolean;
   project: string | null;
   top: string | null;
+  skip: string | null;
+  limit: string | null;
+  settings: string | null;
+  enabled: string | null;
   cwd: string;
 }
 

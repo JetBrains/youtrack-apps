@@ -330,7 +330,7 @@ describe('NestJS-Style Code Generation', () => {
 
     ruleCases.forEach(([type, name, expectedCall]) => {
       test(`should create ${type} rule`, () => {
-        const result = runCLI(`rule ${type} ${name}`, { silent: true });
+        const result = runCLI(`rule add ${type} ${name}`, { silent: true });
 
         assert.strictEqual(result.success, true, 'Command should succeed');
         assert.strictEqual(
@@ -344,6 +344,14 @@ describe('NestJS-Style Code Generation', () => {
           'Should contain the expected Issue rule call'
         );
       });
+    });
+
+    test('should keep legacy rule syntax as an alias', () => {
+      const result = runCLI('rule onChange legacy-rule', { silent: true });
+
+      assert.strictEqual(result.success, true, 'Command should succeed');
+      assert.strictEqual(fileExists('src/backend/workflows/legacy-rule.js'), true);
+      assert.strictEqual(fileContains('src/backend/workflows/legacy-rule.js', 'entities.Issue.onChange'), true);
     });
 
     test('should generate placeholder templates without sample business values', () => {
@@ -389,7 +397,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should reject invalid rule type clearly', () => {
-      const result = runCLI('rule invalid notify-invalid', { silent: true });
+      const result = runCLI('rule add invalid notify-invalid', { silent: true });
 
       assert.strictEqual(result.success, false, 'Command should fail');
       assert.ok(result.output.includes('Invalid rule type'));
@@ -397,8 +405,8 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should reject kebab-case rule type aliases', () => {
-      const onChangeResult = runCLI('rule on-change notify-alias', { silent: true });
-      const stateMachineResult = runCLI('rule state-machine state-alias', { silent: true });
+      const onChangeResult = runCLI('rule add on-change notify-alias', { silent: true });
+      const stateMachineResult = runCLI('rule add state-machine state-alias', { silent: true });
 
       assert.strictEqual(onChangeResult.success, false, 'on-change alias should fail');
       assert.strictEqual(stateMachineResult.success, false, 'state-machine alias should fail');
@@ -407,7 +415,7 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should reject nested rule names', () => {
-      const result = runCLI('rule onChange nested/name', { silent: true });
+      const result = runCLI('rule add onChange nested/name', { silent: true });
 
       assert.strictEqual(result.success, false, 'Command should fail');
       assert.ok(result.output.includes('Nested paths are not supported'));
@@ -415,14 +423,14 @@ describe('NestJS-Style Code Generation', () => {
     });
 
     test('should reject rule names with file extensions', () => {
-      const result = runCLI('rule onChange notify-extension.js', { silent: true });
+      const result = runCLI('rule add onChange notify-extension.js', { silent: true });
 
       assert.strictEqual(result.success, false, 'Command should fail');
       assert.ok(result.output.includes('Do not include a file extension'));
     });
 
     test('should reject rule names with empty dashed segments', () => {
-      const result = runCLI('rule onChange bad--rule', { silent: true });
+      const result = runCLI('rule add onChange bad--rule', { silent: true });
 
       assert.strictEqual(result.success, false, 'Command should fail');
       assert.ok(result.output.includes('single hyphens'));
@@ -435,7 +443,7 @@ describe('NestJS-Style Code Generation', () => {
       fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
       fs.writeFileSync(absolutePath, originalContent);
 
-      const result = runCLI('rule onChange existing-rule', { silent: true });
+      const result = runCLI('rule add onChange existing-rule', { silent: true });
 
       assert.strictEqual(result.success, false, 'Command should fail');
       assert.ok(result.output.includes('already exists'));
@@ -450,7 +458,7 @@ describe('NestJS-Style Code Generation', () => {
         JSON.stringify({ name: 'minimal-rule-app', version: '0.0.0' }, null, 2)
       );
 
-      const result = runCLI('rule onChange minimal-rule', { cwd: MINIMAL_APP_DIR, silent: true });
+      const result = runCLI('rule add onChange minimal-rule', { cwd: MINIMAL_APP_DIR, silent: true });
 
       assert.strictEqual(result.success, true, 'Command should succeed');
       assert.strictEqual(
@@ -464,7 +472,7 @@ describe('NestJS-Style Code Generation', () => {
       fs.rmSync(EMPTY_RULE_DIR, { recursive: true, force: true });
       fs.mkdirSync(EMPTY_RULE_DIR, { recursive: true });
 
-      const result = runCLI('rule onChange standalone-rule', { cwd: EMPTY_RULE_DIR, silent: true });
+      const result = runCLI('rule add onChange standalone-rule', { cwd: EMPTY_RULE_DIR, silent: true });
 
       assert.strictEqual(result.success, true, result.output);
       assert.strictEqual(

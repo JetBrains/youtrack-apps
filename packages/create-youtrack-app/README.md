@@ -39,7 +39,7 @@ After you have generated an app, you may want to add more features. Add new feat
 | Add another [widget](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-widgets.html)                         | `npx @jetbrains/create-youtrack-app widget add` |
 | Declare an [extension property](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html) | `npx @jetbrains/create-youtrack-app extension-property add` |
 | Add an [HTTP handler](https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html)        | `npx @jetbrains/create-youtrack-app http-handler add` |
-| Add a classic workflow rule                                                                                           | `npx @jetbrains/create-youtrack-app rule onChange notify-on-change` |
+| Add a classic workflow rule                                                                                           | `npx @jetbrains/create-youtrack-app rule add onChange notify-on-change` |
 | View a list of available commands                                                                                      | `npx @jetbrains/create-youtrack-app --help` |
 
 ## App Skill Commands
@@ -55,7 +55,7 @@ Supported agents are Claude Code, Codex CLI and Junie. Global installs use symli
 
 ## Classic Workflow Rules
 
-**Syntax:** `npx @jetbrains/create-youtrack-app rule <type> <name>`
+**Syntax:** `npx @jetbrains/create-youtrack-app rule add <type> <name>`
 - `<type>`: `onChange`, `onSchedule`, `action`, `stateMachine`, or `sla`
 - `<name>`: lowercase dashed filename stem, for example `notify-on-change`
 - Creates `src/backend/workflows/<name>.js`

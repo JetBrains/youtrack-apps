@@ -3,27 +3,30 @@ import {exit} from '../../../lib/cli/exit.js';
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {AppProject, AppRule, formatBoolean, formatProjectLabel, printJson} from '../management/types.js';
+import {paginationFromConfig, printPaginationNotice} from '../pagination.js';
 
 export async function search(config: Config, query?: string): Promise<void> {
   try {
-    const results = await createAppManagementOperations(config).search(query);
+    const pagination = paginationFromConfig(config);
+    const result = await createAppManagementOperations(config).search(query, pagination);
 
     if (config.json) {
-      printJson(results);
+      printJson(result);
       return;
     }
 
-    if (!results.length) {
+    if (!result.items.length) {
       console.log(i18n('No apps found'));
       return;
     }
 
-    for (const app of results) {
-      console.log(`${app.name} (${app.id})`);
-      for (const rule of app.matchedRules) {
+    for (const app of result.items) {
+      console.log(formatApp(app));
+      for (const rule of app.matchedRules ?? []) {
         console.log(`  rule: ${formatRule(rule)}`);
       }
     }
+    printPaginationNotice('apps', result, pagination);
   } catch (error) {
     exit(error);
   }
@@ -59,6 +62,14 @@ export async function info(config: Config, appName?: string): Promise<void> {
   } catch (error) {
     exit(error);
   }
+}
+
+function formatApp(app: {id: string; name: string; title?: string}): string {
+  if (app.title && app.title !== app.name) {
+    return `${app.title} (${app.name}, ${app.id})`;
+  }
+
+  return `${app.name} (${app.id})`;
 }
 
 function formatRule(rule: AppRule): string {

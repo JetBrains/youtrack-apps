@@ -4,45 +4,13 @@ description: Guides building, debugging, extending, and managing JetBrains YouTr
 ---
 
 # YouTrack App Builder
-Build, modify, validate, deploy, inspect, and manage YouTrack apps. Use this file to choose the app surface or
-management
-operation, then read only the directly linked technical reference files and API references.
 
-# Constraints
-- Do not search the web or attempt to inspect the underlying npm package files, source code, or directories. Rely only on the commands and reference links provided.
-- If a command requires a target app, directory, project short name, or output format, and it is not explicitly provided in the user prompt, you must prompt the user for input.
-- Never run `youtrack-app upload` on a source directory. You must always build first.
-- Never run `npx` commands. Always run local cli commands provided.
-- If the request is for a new app, you are strictly forbidden from generating any source files until you have explicitly generated/run the base project initialization command (`create-youtrack-app`). You cannot build features inside a project container that does not exist.
-- Exploring `node_modules` is strictly forbidden.
+# Mandatory Operating Steps
 
-# Workflow
-1. First determine whether the request is app management, a new app, a new module in an app, or a change to existing
-   code.
-2. Use [App Management](#app-management) when the request is contains listing, uploading, downloading, validating,
-   searching, inspecting, deleting, enabling, disabling, attaching, detaching, logs, or requirement errors.
-3. Use [Project and Module Scaffolding CLI](#project-and-module-scaffolding-cli) when creating a brand new app or adding
-   new surface
-4. Always read [Manifest](#manifest) when creating an app, adding a module, changing permissions/settings/package
-   metadata, or checking whether a surface is declared.
-5. See [Rules](#rules) when the request describes YouTrack automation triggered by changes, commands, schedules, or
-   state transitions.
-6. See [Custom API Endpoints](#custom-api-endpoints) when the request describes callable backend behavior such as HTTP
-   routes, webhooks, integration callbacks, health checks, or MCP tools.
-7. See [API Reference](#api-reference) only after the selected technical reference names the exact API areas needed.
-8. Resolve missing instance facts before writing code or running management commands: projects, fields, states, users,
-   groups, permissions, secrets,
-   schedules, and external endpoints.
-9. Always read [Guidelines](#guidelines) for important notes when building any app surface.
-10. Implement the smallest complete app, module, or change that satisfies the request.
-11. For every generated file do a final pass and validate [JS API Usage](#js-api-usage)
+When this skill is loaded, always follow this [PROTOCOL](./references/operating-steps.md) in order for every YouTrack app task.
+Do not skip, reorder, or silently complete steps.
 
-# Final output
-This output checklist applies only when creating or modifying app code.
-
-- Generated or modified files.
-- For every used entity and method/property output: `Does entity x have this property/method: Yes/No (ref)`
-- For every used function output: `Does function x exist in JS API: Yes/No (ref)`
+For any task that involves code generation, file modification, app management commands, validation, deployment, or YouTrack instance inspection, maintain this checklist internally and expose the PLAN before acting. 
 
 # App Management
 Use app management when the request is about operating on existing YouTrack apps or scaffolding brand new apps.
@@ -70,6 +38,18 @@ Use the `youtrack-app` CLI for app lifecycle and inspection operations.
 For app management final output, report the command that was run, the target app or directory, the important result, and
 any follow-up command needed.
 
+### YouTrack Exploration Commands
+
+| Operation| Usage |
+| --- | --- |
+| Lists all projects by short name and ID. | `youtrack-app project-list` |
+| Shows details for one project. Resolves by exact project ID, short name, or name, ignoring case. | `youtrack-app project-info <project>` |
+| Lists custom fields configured for a project. Resolves the project by exact ID, short name, or name. | `youtrack-app project-fields <project>` |
+| Lists user groups with IDs and user counts. | `youtrack-app group-list` |
+| Prints IDs of users that are direct members of a user group. Resolves by exact group ID or name. | `youtrack-app group-members <group>` |
+| Lists users with login, ID, and display name. | `youtrack-app user-list` |
+| Shows details for one user. Resolves by exact user ID, login, name, or full name. | `youtrack-app user-info <user>` |
+
 # Project and Module Scaffolding CLI
 
 ## Create YouTrack App commands
@@ -80,14 +60,14 @@ any follow-up command needed.
 | Add one or more properties to the setting schema created using the command listed above | `create-youtrack-app settings add`                   |
 | Declare an extension property                                                           | `create-youtrack-app extension-property add`         |
 | Add an HTTP handler                                                                     | `create-youtrack-app http-handler add`               |
-| Add a workflow rule                                                                     | `create-youtrack-app rule onChange notify-on-change` |
+| Add a workflow rule                                                                     | `create-youtrack-app rule add onChange notify-on-change` |
 | View a list of available commands                                                       | `create-youtrack-app --help`                         |
 
 ## Creating inital app project
 - Run `create-youtrack-app --app-name [name] --title [app title] --description [app description]`
 
 ## Workflow Rules
-Syntax: `create-youtrack-app rule <type> <name>`
+Syntax: `create-youtrack-app rule add <type> <name>`
 
 - `<type>`: `onChange`, `onSchedule`, `action`, `stateMachine`, or `sla`
 - `<name>`: lowercase dashed filename stem, for example `notify-on-change`
@@ -163,6 +143,9 @@ Use guidelines as a must when writing code for any app surface.
 - Never put issue link types into requirements section for any chosen surface.
 - For every entity property or method validate the reference file. Only listed reference files are allowed.
 - Never compare whole objects, always compare by name, login, key, id or similar.
+
+## Fron-end
+- Whether user requests modification of the UI or a new component/s always use `Ring UI`.
 
 ## Logging
 Use when deciding whether to log, what level/detail to log, and how to keep logs useful without exposing sensitive data.

@@ -228,9 +228,14 @@ export class UploadCoordinator {
       schema: null,
       open: null,
       json: false,
+      yaml: false,
       yes: false,
       project: null,
       top: null,
+      skip: null,
+      limit: null,
+      settings: null,
+      enabled: null,
       cwd: this.cwd
     };
 

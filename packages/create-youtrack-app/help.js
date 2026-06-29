@@ -24,16 +24,16 @@ After you have generated an app, you may want to add more features. Add new feat
 * ${styleText("magenta", 'npx @jetbrains/create-youtrack-app widget add')} to add another widget (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-widgets.html')})
 * ${styleText("magenta", 'npx @jetbrains/create-youtrack-app extension-property add')} to declare an extension property (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html')})
 * ${styleText("magenta", 'npx @jetbrains/create-youtrack-app http-handler add')} to add an HTTP handler (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html')})
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule onChange notify-on-change')} to add a classic workflow rule
+* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add onChange notify-on-change')} to add a classic workflow rule
 * ${styleText("magenta", 'npx @jetbrains/create-youtrack-app endpoint add')} to generate a router endpoint
 * ${styleText("magenta", 'npx @jetbrains/create-youtrack-app skill install')} to choose where to install the YouTrack app builder skill
 
 ${styleText("bold", 'Classic Workflow Rules:')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule onChange notify-on-change')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule onSchedule weekly-digest')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule action apply-template')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule stateMachine issue-state')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule sla first-reply-sla')}
+  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add onChange notify-on-change')}
+  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add onSchedule weekly-digest')}
+  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add action apply-template')}
+  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add stateMachine issue-state')}
+  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add sla first-reply-sla')}
   ${styleText("dim", '# Creates src/backend/workflows/<name>.js without modifying manifest.json')}
   ${styleText("dim", '# In generated JavaScript apps, npm run build packages backend-only apps when no widgets exist')}
 

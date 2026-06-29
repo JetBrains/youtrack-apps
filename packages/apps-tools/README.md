@@ -24,19 +24,31 @@ If you prefer to install it as a dependency in your development environment, run
 
 The package includes scripts for synchronizing local changes with your YouTrack. The following commands are available:
 
-- `youtrack-app list`
+- `youtrack-app list [--skip N] [--limit N] [--json]`
 - `youtrack-app upload <directory>`
 - `youtrack-app download <app>`
 - `youtrack-app validate <directory>`
-- `youtrack-app search <query> [--json]`
+- `youtrack-app search <query> [--skip N] [--limit N] [--json]`
 - `youtrack-app info <app> [--json]`
+- `youtrack-app scripts <app> [--json]`
+- `youtrack-app settings <app> [--project <project-short-name>] [--json]`
+- `youtrack-app settings-set <app> [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
+- `youtrack-app tag-search <query> [--project <project-short-name>] [--skip N] [--limit N] [--json] [--yaml]`
 - `youtrack-app delete <app> [--yes]`
 - `youtrack-app enable <app> [--project <project-short-name>]`
 - `youtrack-app disable <app> [--project <project-short-name>]`
 - `youtrack-app attach <app> --project <project-short-name>`
 - `youtrack-app detach <app> --project <project-short-name>`
 - `youtrack-app logs <app> [--top N] [--json]`
+- `youtrack-app script-logs <app> <script> [--skip N] [--limit N] [--json]`
 - `youtrack-app requirement-errors <app> [--json]`
+- `youtrack-app project-list [--skip N] [--limit N] [--json] [--yaml]`
+- `youtrack-app project-info <project> [--yaml]`
+- `youtrack-app project-fields <project> [--yaml]`
+- `youtrack-app group-list [--skip N] [--limit N] [--json] [--yaml]`
+- `youtrack-app group-members <group> [--yaml]`
+- `youtrack-app user-list [--skip N] [--limit N] [--json] [--yaml]`
+- `youtrack-app user-info <user> [--yaml]`
 
 ### Using Environment Variables
 
@@ -47,9 +59,40 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 
 If these variables are set, you can omit `--host` and `--token`. If you provide both environment variables and command-line arguments, the command-line arguments take precedence.
 
+### Pagination
+
+List-style commands fetch the first 50 results by default. This applies to `list`, `search`, `tag-search`, `script-logs`, `project-list`, `group-list`, and `user-list`.
+
+Use these flags to page through results:
+
+| Option | Description |
+| ------ | :---------- |
+| `--skip N` | Start at result offset `N`. |
+| `--limit N` | Request up to `N` results. |
+
+For example, `youtrack-app list --skip 100 --limit 50` requests up to 50 results starting at offset 100.
+
+When text output is truncated, the CLI prints a hint such as `Showing 50 apps. Use --skip 50 --limit 50 for more.`
+For JSON and YAML output, list-style commands return an object with `items` and `pagination` metadata:
+
+```json
+{
+  "items": [],
+  "pagination": {
+    "skip": 0,
+    "limit": 50,
+    "returned": 50,
+    "nextSkip": 50,
+    "hasMore": true
+  }
+}
+```
+
+Skip and limit pagination is intended for browsing. For synchronization against changing datasets, resource-specific cursor, timestamp, or ID filters are more stable when available.
+
 ### List
 
-`youtrack-app list --host --token`
+`youtrack-app list --host --token [--skip N] [--limit N] [--json]`
 
 This command lists all apps available in your YouTrack. To use it, specify the following parameters:
 
@@ -93,15 +136,44 @@ When both `dir` and `--manifest` are provided, the manifest file is used.
 
 ### Search
 
-`youtrack-app search <query> --host --token [--json]`
+`youtrack-app search <query> --host --token [--skip N] [--limit N] [--json]`
 
-This command searches installed apps by app ID, app name, rule ID, rule name, and rule title.
+This command searches installed apps by app title or package name.
 
 ### Info
 
 `youtrack-app info <app> --host --token [--json]`
 
 This command shows app details, including enabled state, attached projects, rules, and requirement errors when available.
+
+### Scripts
+
+`youtrack-app scripts <app> --host --token [--json]`
+
+This command shows package metadata, manifest content, settings schema content, entity extension content, and app scripts.
+Use `--json` when another tool needs to inspect the raw response.
+
+### Settings
+
+`youtrack-app settings <app> --host --token [--project <project-short-name>] [--json]`
+
+This command reads app settings. The app argument is resolved by title or package name.
+Without `--project`, it reads the global app configuration.
+With `--project`, it reads the app configuration for the project identified by short name.
+
+`youtrack-app settings-set <app> --host --token [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
+
+This command updates app settings. The app argument is resolved by title or package name.
+Without `--project`, `--settings` is written as `globalSettings`.
+With `--project`, `--settings` is written as `projectSettings`.
+The settings value must be a JSON string, for example `--settings '{"apiUrl":"https://api.example.test"}'`.
+Pass secret masks such as `<***>` back unchanged to keep existing masked secret values.
+
+### Tag Search
+
+`youtrack-app tag-search <query> --host --token [--project <project-short-name>] [--skip N] [--limit N] [--json] [--yaml]`
+
+This command searches visible usable tags by query. With `--project`, it returns project-relevant tag suggestions for the project identified by short name.
 
 ### Delete
 
@@ -132,11 +204,51 @@ These commands attach an app to a project or detach it from a project. The proje
 
 This command prints app log entries. Use `--top` to limit the number of returned entries.
 
+`youtrack-app script-logs <app> <script> --host --token [--skip N] [--limit N] [--json]`
+
+This command prints log entries for a script. The app argument is a package name or ID. The script argument is a script, module, or rule name or ID.
+
 ### Requirement Errors
 
 `youtrack-app requirement-errors <app> --host --token [--json]`
 
 This command prints requirement errors reported for an app from broken pluggable object usages.
+
+### Projects
+
+`youtrack-app project-list --host --token [--skip N] [--limit N] [--json] [--yaml]`
+
+This command lists projects in your YouTrack by short name and ID.
+
+`youtrack-app project-info <project> --host --token [--yaml]`
+
+This command shows project details. The project is resolved by exact project ID, short name, or name, ignoring case.
+
+`youtrack-app project-fields <project> --host --token [--yaml]`
+
+This command lists custom fields configured for a project. The project is resolved by exact project ID, short name, or name, ignoring case.
+
+### User Groups
+
+`youtrack-app group-list --host --token [--skip N] [--limit N] [--json] [--yaml]`
+
+This command lists user groups with their IDs and user counts.
+
+`youtrack-app group-members <group> --host --token [--yaml]`
+
+This command prints the IDs of users that are direct members of a user group. The group is resolved by exact group ID or name, ignoring case.
+
+### Users
+
+`youtrack-app user-list --host --token [--skip N] [--limit N] [--json] [--yaml]`
+
+This command lists users with login, ID, and display name.
+
+`youtrack-app user-info <user> --host --token [--yaml]`
+
+This command shows user details. The user is resolved by exact user ID, login, name, or full name, ignoring case.
+
+For these project, user group, and user commands, text output is used by default. Pass `--json` or `--yaml` to print structured output.
 
 ## Enhanced DX Support
 

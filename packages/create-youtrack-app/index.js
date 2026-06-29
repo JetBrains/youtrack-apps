@@ -482,12 +482,29 @@ function handleRuleCommand(ruleArgs) {
     return false;
   }
 
-  if (ruleArgs.length !== 3) {
-    console.error(styleText("red", 'Usage: rule <type> <name>'));
+  const usage = 'Usage: rule add <type> <name>';
+  let ruleType;
+  let name;
+
+  if (ruleArgs[1] === 'add') {
+    if (ruleArgs.length !== 4) {
+      console.error(styleText("red", usage));
+      process.exit(1);
+    }
+    [, , ruleType, name] = ruleArgs;
+  } else {
+    if (ruleArgs.length !== 3) {
+      console.error(styleText("red", usage));
+      process.exit(1);
+    }
+    [, ruleType, name] = ruleArgs;
+  }
+
+  if (!ruleType || !name) {
+    console.error(styleText("red", usage));
     process.exit(1);
   }
 
-  const [, ruleType, name] = ruleArgs;
   const relativePath = createWorkflowRule(ruleType, name);
 
   console.log(styleText("green", `\n✓ Workflow rule created at ${relativePath}\n`));
@@ -585,7 +602,7 @@ function printAppCommandHelp() {
 This looks like an existing YouTrack app, so no new app was scaffolded.
 
 Use one of these commands to add a feature:
-  ${styleText("magenta", 'create-youtrack-app rule onChange notify-on-change')}
+  ${styleText("magenta", 'create-youtrack-app rule add onChange notify-on-change')}
   ${styleText("magenta", 'create-youtrack-app http-handler add')}
   ${styleText("magenta", 'create-youtrack-app settings init')}
   ${styleText("magenta", 'create-youtrack-app settings add')}
@@ -613,7 +630,7 @@ async function promptForRule() {
     initial: 'notify-on-change',
   }).run();
 
-  handleRuleCommand(['rule', ruleType, name]);
+  handleRuleCommand(['rule', 'add', ruleType, name]);
 }
 
 async function promptForSettingsAction() {
