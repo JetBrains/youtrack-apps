@@ -20,7 +20,7 @@
  */
 
 // Import entity types from the main workflow stubs file
-import type { Issue, Project, User, UserGroup, Article, AppGlobalStorage } from './workflowTypeScriptStubs.js';
+import type { Issue, Project, User, UserGroup, Article, AppGlobalStorage, AsyncStoreValue } from './workflowTypeScriptStubs.js';
 // Import HTTP Response type for use as the async HTTP response shape in
 // asyncFunctions called as `connection.*Async(..., 'handlerName')` callbacks.
 import type { Response } from './http.js';
@@ -235,7 +235,7 @@ export interface HttpResponse<TResponseBody = unknown> {
  *   get strict typing.
  * @template AK - Union of asyncFunctions key names declared on the parent
  *   handler. Inferred from the handler's `asyncFunctions` literal when
- *   constructed via `defineHttpHandler` or with `satisfies HttpHandler<S>`.
+ *   constructed via the `withStore<S>()` curry or with `satisfies HttpHandler<S>`.
  * @template TSettings - Type of app settings. Defaults to AppTypeRegistry['settings'].
  * @template TRequestBody - Type of the request body. Defaults to unknown.
  * @template TResponseBody - Type of the response body. Defaults to unknown.
@@ -249,7 +249,7 @@ export interface BaseHttpContext<
   TQueryParams = unknown,
   TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions'],
   AK extends string = string,
-  S extends object = Record<string, any>
+  S extends Record<keyof S, AsyncStoreValue> = Record<string, any>
 > {
   /**
    * The HTTP request object with typed body and query params.
@@ -328,7 +328,7 @@ export interface HttpAsyncFunctionContext<
   TUserExtensions = AppTypeRegistry['userExtensions'],
   TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions'],
   AK extends string = string,
-  S extends object = Record<string, any>
+  S extends Record<keyof S, AsyncStoreValue> = Record<string, any>
 > {
   /**
    * The currently authenticated user (the user under which the async function
@@ -420,7 +420,7 @@ export interface ProjectHttpContext<
   TResponseBody = unknown,
   TQueryParams = unknown,
   AK extends string = string,
-  S extends object = Record<string, any>
+  S extends Record<keyof S, AsyncStoreValue> = Record<string, any>
 > extends BaseHttpContext<TSettings, TRequestBody, TResponseBody, TQueryParams, AppTypeRegistry['appGlobalStorageExtensions'], AK, S> {
   /**
    * The project in context with typed extension properties.
@@ -447,7 +447,7 @@ export interface IssueHttpContext<
   TResponseBody = unknown,
   TQueryParams = unknown,
   AK extends string = string,
-  S extends object = Record<string, any>
+  S extends Record<keyof S, AsyncStoreValue> = Record<string, any>
 > extends ProjectHttpContext<TSettings, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams, AK, S> {
   /**
    * The issue in context with typed extension properties.
@@ -467,7 +467,7 @@ export type HttpHandlerContext<
   TResponseBody = unknown,
   TQueryParams = unknown,
   AK extends string = string,
-  S extends object = Record<string, any>
+  S extends Record<keyof S, AsyncStoreValue> = Record<string, any>
 > = BaseHttpContext<TSettings, TRequestBody, TResponseBody, TQueryParams, AppTypeRegistry['appGlobalStorageExtensions'], AK, S>
   | ProjectHttpContext<TSettings, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams, AK, S>
   | IssueHttpContext<TSettings, TIssueExtensions, TProjectExtensions, TRequestBody, TResponseBody, TQueryParams, AK, S>;
@@ -493,7 +493,7 @@ export interface HttpEndpoint<
   TResponseBody = unknown,
   TQueryParams = unknown,
   AK extends string = string,
-  S extends object = Record<string, any>
+  S extends Record<keyof S, AsyncStoreValue> = Record<string, any>
 > {
   /**
    * HTTP method for this endpoint.
@@ -542,7 +542,7 @@ export interface HttpHandler<
   TUserExtensions = AppTypeRegistry['userExtensions'],
   TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions'],
   AK extends string = string,
-  S extends object = Record<string, any>
+  S extends Record<keyof S, AsyncStoreValue> = Record<string, any>
 > {
   /**
    * Array of endpoint definitions. AK and S generics are propagated into each
@@ -562,8 +562,8 @@ export interface HttpHandler<
    *   to receive the HTTP response on `ctx.response`.
    *
    * The keys of this record become the AK union — `ctx.invokeAsync(name)`
-   * accepts only declared names. Supply explicit `<S>` (or use
-   * `defineHttpHandler`) to also type `ctx.store` / `ctx.load`.
+   * accepts only declared names. Use the `withStore<S>()` curry from
+   * `@jetbrains/youtrack-apps-tools` to also type `ctx.store` / `ctx.load`.
    *
    * Constraints enforced by the runtime: one async call per execution, max
    * chain length 10 hops, max delay 1 week.
@@ -577,25 +577,21 @@ export interface HttpHandler<
 }
 
 /**
- * Helper factory for constructing a typed `HttpHandler` with the async-
- * functions surface narrowed. Two call shapes:
+ * Authoring a typed `HttpHandler`. This module is type-only — there is no
+ * runtime factory to call. Use one of these patterns:
  *
- *   1. **`defineHttpHandler<S, AK>({...})`** — types `ctx.store` / `ctx.load`
- *      against `S` and narrows `ctx.invokeAsync` to the `AK` union.
- *      `asyncFunctions` is required and must implement every declared `AK`
- *      key. Use when the key union is known up front.
- *   2. **`withStore<S>()({...})` curry from `@jetbrains/youtrack-apps-tools`**
- *      — same narrowings with `AK` inferred from the `asyncFunctions`
- *      literal so the key union doesn't need to be spelled out.
- *
- * Plain handlers without async functions or a typed store keep using the
- * `const httpHandler: HttpHandler<...> = {...}` annotation pattern.
+ *   1. **Plain handler** — annotate or `satisfies`:
+ *      `const httpHandler = {...} satisfies HttpHandler<TSettings>;`
+ *   2. **Async / typed store** — the `withStore<S>()({...})` curry from
+ *      `@jetbrains/youtrack-apps-tools` (a runtime identity helper). It types
+ *      `ctx.store` / `ctx.load` against `S` and infers the `AK` union from the
+ *      `asyncFunctions` literal, so the key union doesn't need to be spelled out.
  *
  * @example
  * ```typescript
- * import { defineHttpHandler } from '@jetbrains/youtrack-scripting-api/apps';
+ * import { withStore } from '@jetbrains/youtrack-apps-tools/dx/runtime';
  *
- * exports.httpHandler = defineHttpHandler<{ count: number }, 'onTick'>({
+ * exports.httpHandler = withStore<{ count: number }>()({
  *   endpoints: [{
  *     scope: 'global', method: 'POST', path: '/tick',
  *     handle: (ctx) => {
@@ -608,19 +604,6 @@ export interface HttpHandler<
  * });
  * ```
  */
-export function defineHttpHandler<
-  S extends object,
-  AK extends string,
-  TSettings = AppTypeRegistry['settings'],
-  TIssueExtensions = AppTypeRegistry['issueExtensions'],
-  TProjectExtensions = AppTypeRegistry['projectExtensions'],
-  TArticleExtensions = AppTypeRegistry['articleExtensions'],
-  TUserExtensions = AppTypeRegistry['userExtensions'],
-  TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions']
->(
-  handler: HttpHandler<TSettings, TIssueExtensions, TProjectExtensions, TArticleExtensions, TUserExtensions, TGlobalStorageExtensions, AK, S>
-    & { asyncFunctions: Record<AK, (ctx: HttpAsyncFunctionContext<TSettings, TIssueExtensions, TProjectExtensions, TArticleExtensions, TUserExtensions, TGlobalStorageExtensions, AK, S>) => void> }
-): HttpHandler<TSettings, TIssueExtensions, TProjectExtensions, TArticleExtensions, TUserExtensions, TGlobalStorageExtensions, AK, S>;
 
 // =============================================================================
 // File-Based Routing Handler Types

@@ -1,5 +1,6 @@
 import type { HttpHandler, HttpAsyncFunctionContext, AppTypeRegistry } from '@jetbrains/youtrack-workflow-types/apps';
 import type { AITool, AIToolAsyncFunctionContext } from '@jetbrains/youtrack-workflow-types/ai-tools';
+import type { AsyncStoreValue } from '@jetbrains/youtrack-workflow-types/workflowTypeScriptStubs';
 
 /**
  * Curry helper for the async-functions surface. First call binds the store
@@ -8,10 +9,10 @@ import type { AITool, AIToolAsyncFunctionContext } from '@jetbrains/youtrack-wor
  * `asyncFunctions` literal — both narrowings active in a single bare call
  * site, no manual key union required.
  *
- * Sidesteps the TS partial-inference limit hit by the explicit
- * `defineHttpHandler<S, AK>({...})` / `defineAITool<TArgs, TResult, S, AK>({...})`
- * forms, where supplying explicit type args would force the caller to also
- * list the AK union by hand.
+ * Sidesteps the TS partial-inference limit: annotating the handler/tool type
+ * directly (or `satisfies HttpHandler<...>` / `satisfies AITool<...>`) cannot
+ * infer AK, so the caller would have to spell out the async key union by hand.
+ * The curry binds the store schema first, then infers AK from `asyncFunctions`.
  *
  * Two overloads, selected by generic arg count:
  *   - `withStore<S>()` → HTTP handler curry
@@ -54,7 +55,7 @@ import type { AITool, AIToolAsyncFunctionContext } from '@jetbrains/youtrack-wor
  * });
  * ```
  */
-export function withStore<S extends object>(): <
+export function withStore<S extends Record<keyof S, AsyncStoreValue>>(): <
   AK extends string,
   TSettings = AppTypeRegistry['settings'],
   TIssueExtensions = AppTypeRegistry['issueExtensions'],
@@ -66,7 +67,7 @@ export function withStore<S extends object>(): <
   handler: HttpHandler<TSettings, TIssueExtensions, TProjectExtensions, TArticleExtensions, TUserExtensions, TGlobalStorageExtensions, AK, S>
     & { asyncFunctions: Record<AK, (ctx: HttpAsyncFunctionContext<TSettings, TIssueExtensions, TProjectExtensions, TArticleExtensions, TUserExtensions, TGlobalStorageExtensions, AK, S>) => void> }
 ) => HttpHandler<TSettings, TIssueExtensions, TProjectExtensions, TArticleExtensions, TUserExtensions, TGlobalStorageExtensions, AK, S>;
-export function withStore<TArgs, TResult, S extends object>(): <
+export function withStore<TArgs, TResult, S extends Record<keyof S, AsyncStoreValue>>(): <
   AK extends string,
   TSettings = AppTypeRegistry['settings'],
   TGlobalStorageExtensions = AppTypeRegistry['appGlobalStorageExtensions']

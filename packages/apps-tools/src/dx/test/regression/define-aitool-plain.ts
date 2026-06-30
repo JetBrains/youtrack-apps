@@ -1,27 +1,29 @@
-// Regression fixture — JT-96765 finding 1.
+// Regression fixture — JT-96765 AI tool authoring shapes.
 //
-// `defineAITool<TArgs, TResult>({...})` (no async functions, no store schema)
-// is the original public shape. The async-surface sync replaced it with a
-// single overload that requires `S`, `AK`, and an `asyncFunctions` block, so
-// plain tools stopped compiling. Both shapes must compile.
+// The typings module is type-only: there is no `defineAITool` runtime value.
+//   - Plain tool (no async, no store): `{...} satisfies AITool<TArgs, TResult>`.
+//   - Async/store tool: the `withStore<TArgs, TResult, S>()` curry (runtime
+//     identity; AK inferred from `asyncFunctions`).
+// Both shapes must compile.
 
-import { defineAITool } from '@jetbrains/youtrack-workflow-types/ai-tools';
+import type { AITool } from '@jetbrains/youtrack-workflow-types/ai-tools';
+import { withStore } from '../../utility/withStore.js';
 
 type Args = { query: string };
 
-// Plain tool: two type args, no asyncFunctions.
-const plain = defineAITool<Args, string>({
+// Plain tool: types arguments + result, no asyncFunctions.
+const plain = {
   name: 'search',
   description: 'Search issues',
   execute: (ctx) => {
     const q: string = ctx.arguments.query; // arguments typed as Args
     return q;
   }
-});
+} satisfies AITool<Args, string>;
 void plain;
 
-// Async/store tool: the narrowing overload still works alongside it.
-const withAsync = defineAITool<Args, string, { last: string }, 'onDone'>({
+// Async/store tool via the curry: store typed against S, AK inferred.
+const withAsync = withStore<Args, string, { last: string }>()({
   name: 'search',
   description: 'Search issues',
   execute: (ctx) => {

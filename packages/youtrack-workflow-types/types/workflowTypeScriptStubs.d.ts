@@ -314,6 +314,15 @@ export interface UserInputSpec {
 }
 
 /**
+ * Values that survive an async-store round-trip (`ctx.store` -> `ctx.load`).
+ * The runtime (`AbstractScriptingContext.storeAsync`/`loadAsync`) only preserves
+ * primitives and entity references; any other object is coerced via `toString()`
+ * and would load back as a string. Store schemas are constrained to these so the
+ * type system never promises an object the runtime cannot return.
+ */
+export type AsyncStoreValue = string | number | boolean | null | BaseEntity;
+
+/**
  * Base execution context for action functions (without requirements).
  * Generic parameter AK is the union of async function names declared in the rule's
  * `asyncFunctions` block; it constrains `invokeAsync` to those names.
@@ -321,7 +330,7 @@ export interface UserInputSpec {
  * `ctx.store` and `ctx.load`. Defaults to a permissive map, so without an explicit
  * schema both methods stay loosely typed.
  */
-export interface BaseActionContext<AK extends PropertyKey = string, S extends Record<string, unknown> = Record<string, any>> {
+export interface BaseActionContext<AK extends PropertyKey = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>> {
   /** The current issue (for Issue rules). */
   issue: Issue;
   /** The current article (for Article rules). */
@@ -418,7 +427,7 @@ export type IssueWithRequirements<R extends Record<string, Requirement>> =
  * // Context will have: ctx.Priority['Show-stopper']
  * // And ctx.issue.fields.Priority with proper type
  */
-export type ActionContext<R extends Record<string, Requirement> = Record<string, Requirement>, AK extends PropertyKey = string, S extends Record<string, unknown> = Record<string, any>> =
+export type ActionContext<R extends Record<string, Requirement> = Record<string, Requirement>, AK extends PropertyKey = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>> =
   Omit<BaseActionContext<AK, S>, 'issue'> & {
     issue: IssueWithRequirements<R>
   } & RequirementsContext<R>;
@@ -431,7 +440,7 @@ export type ActionContext<R extends Record<string, Requirement> = Record<string,
  * The synchronous `action` never receives a response, so it stays off
  * {@link ActionContext}.
  */
-export type AsyncActionContext<R extends Record<string, Requirement> = Record<string, Requirement>, AK extends PropertyKey = string, S extends Record<string, unknown> = Record<string, any>> =
+export type AsyncActionContext<R extends Record<string, Requirement> = Record<string, Requirement>, AK extends PropertyKey = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>> =
   ActionContext<R, AK, S> & {
     /**
      * The incoming HTTP response for async HTTP-response callbacks.
@@ -482,7 +491,7 @@ export type GuardFunction<R extends Record<string, Requirement> = Record<string,
  *   }
  * });
  */
-export interface RuleProperties<R extends Record<string, Requirement> = Record<string, Requirement>, AK extends string = string, S extends Record<string, unknown> = Record<string, any>> {
+export interface RuleProperties<R extends Record<string, Requirement> = Record<string, Requirement>, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>> {
   /** Title of the rule */
   title?: string;
   /** Command that triggers the rule */
@@ -1171,7 +1180,7 @@ export declare class Article extends BaseArticle {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a new article draft.
@@ -1223,7 +1232,7 @@ export declare class Article extends BaseArticle {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static onChange<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static onChange<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Attaches a file to the article.
@@ -1297,7 +1306,7 @@ export declare class ArticleAttachment extends BaseArticleAttachment {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for ArticleAttachment entities with extension properties that match the specified query.
@@ -1369,7 +1378,7 @@ export declare class ArticleComment extends BaseArticleComment {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for ArticleComment entities with extension properties that match the specified query.
@@ -2516,7 +2525,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a new issue draft.
@@ -2579,7 +2588,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static onChange<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static onChange<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a declaration of a rule that is triggered on a set schedule.
@@ -2606,7 +2615,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static onSchedule<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static onSchedule<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a declaration of a custom SLA policy. An SLA policy defines the time goals for the replies from staff and request resolution.
@@ -2649,7 +2658,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the SLA policy.
    */
-  static sla<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static sla<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a declaration of a state-machine rule. The state-machine imposes restrictions for the transitions between values in a custom field.
@@ -2706,7 +2715,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static stateMachine<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static stateMachine<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Attaches a file to the issue.
@@ -2951,7 +2960,7 @@ export declare class IssueAttachment extends PersistentFile {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for IssueAttachment entities with extension properties that match the specified query.
@@ -3071,7 +3080,7 @@ export declare class IssueComment extends BaseComment {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<S extends Record<string, unknown> = Record<string, any>, R extends Requirements = Requirements, AK extends string = string>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for IssueComment entities with extension properties that match the specified query.

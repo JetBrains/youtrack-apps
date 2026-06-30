@@ -14,7 +14,7 @@ import { Issue } from '@jetbrains/youtrack-workflow-types/workflowTypeScriptStub
 
 const requirements = { Stage: { type: 'string' } } as const;
 
-Issue.onChange<{ url: string }, typeof requirements, 'onResponse'>({
+Issue.onChange<typeof requirements, 'onResponse', { url: string }>({
   requirements,
   action: (ctx) => {
     ctx.store('url', 'https://example.com'); // available in sync action
