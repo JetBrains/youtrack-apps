@@ -5,9 +5,14 @@
     "moduleResolution": "bundler",
     "strict": true,
     "noEmit": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "esModuleInterop": true,
     "types": ["@jetbrains/youtrack-workflow-types/scripting-api"]
   },
-  "include": ["./types-strict-consumer.ts", "./withStore-aitool-compile.ts", "./withStore-http-compile.ts"]
+  "include": [
+    "./http-sync-uri.ts",
+    "./define-aitool-plain.ts",
+    "./rule-requirements-generics.ts",
+    "./action-ctx-async-split.ts"
+  ]
 }

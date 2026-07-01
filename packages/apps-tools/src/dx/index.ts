@@ -13,3 +13,4 @@ export * from './types/index.js';
 
 // Utilities
 export { withPermissions } from './utility/withPermissions.js';
+export { withStore } from './utility/withStore.js';

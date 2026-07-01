@@ -4,5 +4,6 @@
 
 export * from './types/index.js';
 export { withPermissions } from './utility/withPermissions.js';
+export { withStore } from './utility/withStore.js';
 export { set } from './utility/set.js';
 export type { KnownKeys, ExtensionValue } from './utility/set.js';
