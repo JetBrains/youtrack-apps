@@ -1,10 +1,32 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import {
   getTypeScriptType,
   generateExtensionPropertiesType,
   generateExtendedEntities,
 } from '../plugins/vite-plugin-youtrack-extension-properties.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+const APPS_TOOLS_ROOT = path.join(__dirname, '..', '..', '..');
+const WORKFLOW_TYPES_ROOT = path.join(APPS_TOOLS_ROOT, '..', 'youtrack-workflow-types');
+const TSC_PATH = require.resolve('typescript/bin/tsc');
+
+const writeJson = (filePath: string, value: unknown) => {
+  fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`);
+};
+
+const linkWorkflowTypesPackage = (fixtureRoot: string) => {
+  const scopeDir = path.join(fixtureRoot, 'node_modules', '@jetbrains');
+  fs.mkdirSync(scopeDir, { recursive: true });
+  fs.symlinkSync(WORKFLOW_TYPES_ROOT, path.join(scopeDir, 'youtrack-workflow-types'), 'dir');
+};
 
 describe('getTypeScriptType', () => {
   const entityTypes = new Set(['Issue', 'Project', 'User']);
@@ -81,7 +103,8 @@ describe('generateExtendedEntities', () => {
       ],
     });
 
-    assert.ok(output.includes('export interface ExtendedIssue extends Issue'), `Missing ExtendedIssue, got:\n${output}`);
+    assert.ok(output.includes("export type IssueExtensionProperties = {"), `Missing IssueExtensionProperties, got:\n${output}`);
+    assert.ok(output.includes("export type ExtendedIssue = Omit<Issue, 'extensionProperties'> & {"), `Missing ExtendedIssue, got:\n${output}`);
     assert.ok(output.includes('priority?: number;'), `Missing priority, got:\n${output}`);
     assert.ok(output.includes('label?: string;'), `Missing label, got:\n${output}`);
     assert.ok(!output.includes('readonly'), `Should NOT contain readonly, got:\n${output}`);
@@ -140,5 +163,128 @@ describe('generateExtendedEntities', () => {
 
     assert.ok(output.includes("import type { Issue, User }"), `Missing imports, got:\n${output}`);
     assert.ok(output.includes('assignee?: User;'), `Missing User property, got:\n${output}`);
+  });
+
+  it('registers app-local extension properties for search queries', () => {
+    const output = generateExtendedEntities({
+      entityTypeExtensions: [
+        {
+          entityType: 'Issue',
+          properties: {
+            customNote: { type: 'string' },
+            tags: { type: 'string', multi: true },
+          },
+        },
+      ],
+    });
+
+    assert.ok(
+      output.includes("declare module '@jetbrains/youtrack-workflow-types/workflowTypeScriptStubs'"),
+      `Missing workflow type augmentation, got:\n${output}`,
+    );
+    assert.ok(
+      output.includes('Issue: IssueExtensionProperties;'),
+      `Missing issue extension registry entry, got:\n${output}`,
+    );
+  });
+
+  it('type-checks app-local extension property search queries', () => {
+    const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'youtrack-extension-search-'));
+    const srcRoot = path.join(fixtureRoot, 'src');
+    const apiRoot = path.join(srcRoot, 'api');
+    const extensions = {
+      entityTypeExtensions: [
+        {
+          entityType: 'Issue',
+          properties: {
+            customNote: { type: 'string' },
+            customScore: { type: 'integer' },
+            owner: { type: 'User' },
+            tags: { type: 'string', multi: true },
+          },
+        },
+      ],
+    };
+
+    try {
+      fs.mkdirSync(apiRoot, { recursive: true });
+      writeJson(path.join(fixtureRoot, 'package.json'), {
+        name: 'youtrack-extension-search-consumer',
+        private: true,
+        type: 'module',
+      });
+      writeJson(path.join(fixtureRoot, 'tsconfig.json'), {
+        compilerOptions: {
+          target: 'ES2022',
+          lib: ['ES2022'],
+          module: 'ESNext',
+          moduleResolution: 'bundler',
+          strict: true,
+          noEmit: true,
+          skipLibCheck: true,
+          esModuleInterop: true,
+          baseUrl: '.',
+          paths: {
+            '@/*': ['./src/*'],
+          },
+          types: ['@jetbrains/youtrack-workflow-types/scripting-api'],
+        },
+        include: ['src/**/*.ts'],
+      });
+      fs.writeFileSync(path.join(apiRoot, 'extended-entities.d.ts'), generateExtendedEntities(extensions));
+      fs.writeFileSync(path.join(srcRoot, 'consumer.ts'), `
+import { Issue, User } from '@jetbrains/youtrack-scripting-api/entities';
+import { search } from '@jetbrains/youtrack-scripting-api/search';
+
+const owner = User.findByLogin('root');
+
+Issue.findByExtensionProperties({
+  customNote: 'hello',
+  customScore: 42,
+  owner,
+});
+
+Issue.findByExtensionProperties({ customNote: 'hello' });
+
+search({
+  query: '',
+  extensionPropertiesQuery: {
+    customNote: null,
+    customScore: 1,
+    owner,
+  },
+});
+
+search({
+  query: '',
+  extensionPropertiesQuery: {
+    customNote: 'hello',
+  },
+});
+
+// @ts-expect-error unknown extension property names are rejected
+Issue.findByExtensionProperties({ missing: 'hello' });
+
+// @ts-expect-error declared extension property values keep their app-local type
+Issue.findByExtensionProperties({ customNote: 42 });
+
+// @ts-expect-error multi-value extension properties are not searchable
+Issue.findByExtensionProperties({ tags: new Set(['frontend']) });
+`);
+      linkWorkflowTypesPackage(fixtureRoot);
+
+      const result = spawnSync(process.execPath, [TSC_PATH, '--noEmit', '-p', 'tsconfig.json', '--pretty', 'false'], {
+        cwd: fixtureRoot,
+        encoding: 'utf8',
+      });
+
+      assert.strictEqual(
+        result.status,
+        0,
+        [result.stdout, result.stderr].filter(Boolean).join('\n')
+      );
+    } finally {
+      fs.rmSync(fixtureRoot, { recursive: true, force: true });
+    }
   });
 });
