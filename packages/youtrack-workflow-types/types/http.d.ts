@@ -202,6 +202,84 @@ export class Connection {
    * @returns An object that represents an HTTP response.
    */
   optionsSync(uri?: string, queryParams?: Array<QueryParam> | Record<string, string | string[]>): Response;
+
+  /**
+   * Sends an asynchronous HTTP request. The request is executed after the current transaction
+   * commits; the response is delivered to the named async function as `ctx.response`.
+   * @param requestType A valid HTTP request type.
+   * @param uri A relative URI.
+   * @param queryParams The query parameters.
+   * @param payload The payload to be sent in the request.
+   * @param callbackFunctionName The name of a function declared in the rule's `asyncFunctions` block.
+   */
+  doAsync(requestType: string, uri: string | undefined, queryParams: Array<QueryParam> | Record<string, string | string[]> | null | undefined, payload: string | any | undefined, callbackFunctionName: string): void;
+
+  /**
+   * Executes an asynchronous GET request. The response is delivered to the named async function as `ctx.response`.
+   * @param uri The request URI.
+   * @param queryParams The query parameters.
+   * @param callbackFunctionName The name of a function declared in the rule's `asyncFunctions` block.
+   */
+  getAsync(uri: string | undefined, queryParams: Array<QueryParam> | Record<string, string | string[]> | null | undefined, callbackFunctionName: string): void;
+
+  /**
+   * Executes an asynchronous HEAD request. The response is delivered to the named async function as `ctx.response`.
+   * @param uri The request URI.
+   * @param queryParams The query parameters.
+   * @param callbackFunctionName The name of a function declared in the rule's `asyncFunctions` block.
+   */
+  headAsync(uri: string | undefined, queryParams: Array<QueryParam> | Record<string, string | string[]> | null | undefined, callbackFunctionName: string): void;
+
+  /**
+   * Executes an asynchronous POST request. The response is delivered to the named async function as `ctx.response`.
+   * @param uri The request URI.
+   * @param queryParams The query parameters.
+   * @param payload The payload to be sent in the request.
+   * @param callbackFunctionName The name of a function declared in the rule's `asyncFunctions` block.
+   */
+  postAsync(uri: string | undefined, queryParams: Array<QueryParam> | Record<string, string | string[]> | null | undefined, payload: string | any | undefined, callbackFunctionName: string): void;
+
+  /**
+   * Executes an asynchronous PUT request. The response is delivered to the named async function as `ctx.response`.
+   * @param uri The request URI.
+   * @param queryParams The query parameters.
+   * @param payload The payload to be sent in the request.
+   * @param callbackFunctionName The name of a function declared in the rule's `asyncFunctions` block.
+   */
+  putAsync(uri: string | undefined, queryParams: Array<QueryParam> | Record<string, string | string[]> | null | undefined, payload: string | undefined, callbackFunctionName: string): void;
+
+  /**
+   * Executes an asynchronous PATCH request. The response is delivered to the named async function as `ctx.response`.
+   * @param uri The request URI.
+   * @param queryParams The query parameters.
+   * @param payload The payload to be sent in the request.
+   * @param callbackFunctionName The name of a function declared in the rule's `asyncFunctions` block.
+   */
+  patchAsync(uri: string | undefined, queryParams: Array<QueryParam> | Record<string, string | string[]> | null | undefined, payload: string | undefined, callbackFunctionName: string): void;
+
+  /**
+   * Executes an asynchronous DELETE request. The response is delivered to the named async function as `ctx.response`.
+   * @param uri The request URI.
+   * @param queryParams The query parameters.
+   * @param callbackFunctionName The name of a function declared in the rule's `asyncFunctions` block.
+   */
+  deleteAsync(uri: string | undefined, queryParams: Array<QueryParam> | Record<string, string | string[]> | null | undefined, callbackFunctionName: string): void;
+
+  /**
+   * Executes an asynchronous CONNECT request. The response is delivered to the named async function as `ctx.response`.
+   * @param uri request URI.
+   * @param queryParams The query parameters.
+   * @param callbackFunctionName The name of a function declared in the rule's `asyncFunctions` block.
+   */
+  connectAsync(uri: string | undefined, queryParams: Array<QueryParam> | Record<string, string | string[]> | null | undefined, callbackFunctionName: string): void;
+
+  /**
+   * Executes an asynchronous OPTIONS request. The response is delivered to the named async function as `ctx.response`.
+   * @param uri request URI.
+   * @param queryParams The query parameters.
+   * @param callbackFunctionName The name of a function declared in the rule's `asyncFunctions` block.
+   */
+  optionsAsync(uri: string | undefined, queryParams: Array<QueryParam> | Record<string, string | string[]> | null | undefined, callbackFunctionName: string): void;
 }
 
 /**
