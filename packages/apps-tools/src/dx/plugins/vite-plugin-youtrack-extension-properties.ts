@@ -80,6 +80,8 @@ const youtrackEntityTypes = new Set([
   'BaseEntity',
 ]);
 
+const getExtensionPropertiesTypeName = (entityType: string) => `${entityType}ExtensionProperties`;
+
 /**
  * Try to run local ESLint with project rules to auto-fix formatting of generated files.
  */
@@ -162,13 +164,19 @@ const generateExtendedEntityType = (
   properties: Record<string, ExtensionProperty>
 ): string => {
   const extensionPropertiesType = generateExtensionPropertiesType(properties);
+  const extensionPropertiesTypeName = getExtensionPropertiesTypeName(entityType);
 
   return `/**
+ * App-specific extension properties for ${entityType}
+ */
+export type ${extensionPropertiesTypeName} = ${extensionPropertiesType};
+
+/**
  * Extended ${entityType} with app-specific extension properties
  */
-export interface Extended${entityType} extends ${entityType} {
-  extensionProperties: ${extensionPropertiesType};
-}`;
+export type Extended${entityType} = Omit<${entityType}, 'extensionProperties'> & {
+  extensionProperties: ${extensionPropertiesTypeName};
+};`;
 };
 
 /**
@@ -213,6 +221,14 @@ export const generateExtendedEntities = (extensions: EntityExtensions): string =
     ? `\n\n${generateGlobalStorageType(globalStorageExt.properties)}`
     : '';
 
+  const registryAugmentation = extendedEntityTypes.size > 0
+    ? `\n\ndeclare module '@jetbrains/youtrack-workflow-types/workflowTypeScriptStubs' {
+  interface ExtensionPropertiesRegistry {
+${Array.from(extendedEntityTypes).sort().map(entityType => `    ${entityType}: ${getExtensionPropertiesTypeName(entityType)};`).join('\n')}
+  }
+}`
+    : '';
+
   // Generate ExtendedProperties map with all possible entities
   const allPossibleEntities = ['Issue', 'Project', 'Article', 'User'];
   const extendedPropertiesMap = allPossibleEntities.map(entityType => {
@@ -232,7 +248,7 @@ ${extendedPropertiesMap}
 ${globalStorageEntry}
 };`;
 
-  return `${importStatements}${extendedTypes}${globalStorageType}${extendedPropertiesType}`;
+  return `${importStatements}${extendedTypes}${globalStorageType}${registryAugmentation}${extendedPropertiesType}`;
 };
 
 /**

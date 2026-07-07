@@ -232,10 +232,53 @@ export interface NamedFieldValue extends BaseEntity {
  * This is used when the field type is not known from requirements.
  * Entity values typically have a .name property.
  *
- * For convenience, this type has an optional .name property to avoid requiring
- * type guards in common patterns like `oldValue('State').name`.
+ * For convenience, non-null values have an optional .name property to avoid
+ * requiring type guards in common patterns like `oldValue('State').name`.
  */
-export type FieldValue = (NamedFieldValue | string | number | null) & { name?: string };
+export type FieldValue = ((BaseEntity | string | number) & { name?: string }) | null;
+
+/**
+ * Default entity-backed issue field value type.
+ * Numeric values are reserved for numeric and date fields.
+ */
+export type CommonIssueFieldValue = ((BaseEntity | string) & { name?: string }) | null;
+
+/**
+ * Values supported by extension properties.
+ */
+export type ExtensionPropertyValue = string | number | boolean | BaseEntity | null;
+
+/**
+ * Values supported in extension-property search queries.
+ */
+export type ExtensionPropertiesSearchValue = ExtensionPropertyValue;
+
+/**
+ * Registry for app-specific extension property types.
+ * Apps can augment this interface from generated local declarations.
+ */
+export interface ExtensionPropertiesRegistry {}
+
+type UnionToIntersection<T> =
+  (T extends unknown ? (value: T) => void : never) extends (value: infer I) => void ? I : never;
+
+type AppExtensionProperties =
+  keyof ExtensionPropertiesRegistry extends never
+    ? never
+    : UnionToIntersection<ExtensionPropertiesRegistry[keyof ExtensionPropertiesRegistry]>;
+
+type ExtensionPropertiesSearchQueryFrom<TProperties> = Partial<{
+  [K in keyof TProperties as TProperties[K] extends Set<unknown> | undefined ? never : K]:
+    Extract<NonNullable<TProperties[K]>, ExtensionPropertiesSearchValue> | null;
+}>;
+
+/**
+ * Query object accepted by findByExtensionProperties methods.
+ */
+export type ExtensionPropertiesSearchQuery =
+  [AppExtensionProperties] extends [never]
+    ? Record<string, ExtensionPropertiesSearchValue>
+    : ExtensionPropertiesSearchQueryFrom<AppExtensionProperties>;
 
 /**
  * Maps requirement type to its corresponding Field entity type.
@@ -721,21 +764,21 @@ export interface DynamicFieldValue {
  */
 export interface CommonIssueFields {
   /** Single state field (ordinal 2). Values: Submitted, Open, In Progress, etc. */
-  State?: BaseEntity | string | null;
+  State?: CommonIssueFieldValue;
   /** Single enum field (ordinal 0). Values: Show-stopper, Critical, Major, Normal, Minor */
-  Priority?: BaseEntity | string | null;
+  Priority?: CommonIssueFieldValue;
   /** Single enum field (ordinal 1). Values: Bug, Feature, Task, etc. */
-  Type?: BaseEntity | string | null;
+  Type?: CommonIssueFieldValue;
   /** Single user field (ordinal 3). */
-  Assignee?: BaseEntity | string | null;
+  Assignee?: CommonIssueFieldValue;
   /** Single owned field (ordinal 4). */
-  Subsystem?: BaseEntity | string | null;
+  Subsystem?: CommonIssueFieldValue;
   /** Multi version field (ordinal 5). Use .add() to add versions. */
   'Fix versions'?: Set<ProjectVersion>;
   /** Multi version field (ordinal 6). Use .add() to add versions. */
   'Affected versions'?: Set<ProjectVersion>;
   /** Single build field (ordinal 7). */
-  'Fixed in build'?: BaseEntity | string | null;
+  'Fixed in build'?: CommonIssueFieldValue;
   /** Date field (ordinal 8). Stores timestamp as number. */
   'Due Date'?: number | null;
   /** Index signature for any other custom fields - includes optional Set methods for multi-value fields */
@@ -837,7 +880,7 @@ export declare class BaseEntity {
    * The object containing extension properties for this entity and their values.
    * Extension properties are custom properties that might be added to core YouTrack entities by an app.
    */
-  extensionProperties?: Record<string, FieldValue>;
+  extensionProperties: Record<string, ExtensionPropertyValue>;
 
   /**
    * Asserts that a value is set for a field.
@@ -949,7 +992,7 @@ export declare class Agile extends BaseEntity {
  * }
    * @returns The set of Agile entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<Agile>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<Agile>;
 
   /**
    * Returns a set of agile boards that have the specified name.
@@ -1201,7 +1244,7 @@ export declare class Article extends BaseArticle {
  * }
    * @returns The set of Article entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<Article>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<Article>;
 
   /**
    * Finds an article by its visible ID.
@@ -1319,7 +1362,7 @@ export declare class ArticleAttachment extends BaseArticleAttachment {
  * }
    * @returns The set of ArticleAttachment entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<ArticleAttachment>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<ArticleAttachment>;
 
 }
 
@@ -1391,7 +1434,7 @@ export declare class ArticleComment extends BaseArticleComment {
  * }
    * @returns The set of ArticleComment entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<ArticleComment>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<ArticleComment>;
 
 }
 
@@ -1666,7 +1709,7 @@ export declare class Build extends Field {
  * }
    * @returns The set of Build entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<Build>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<Build>;
 
 }
 
@@ -1719,7 +1762,7 @@ export declare class BundleProjectCustomField extends ProjectCustomField {
  * }
    * @returns The set of BundleProjectCustomField entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<BundleProjectCustomField>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<BundleProjectCustomField>;
 
   /**
    * Adds a value to the set of values for the custom field. If a value with the specified name already exists in the set, an exception is thrown.
@@ -1783,7 +1826,7 @@ export declare class Calendar24x7 extends Calendar {
  * }
    * @returns The set of Calendar24x7 entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<Calendar24x7>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<Calendar24x7>;
 
   /**
    * Returns an instance of a Calendar24x7 entity.
@@ -1855,7 +1898,7 @@ export declare class EnumField extends Field {
  * }
    * @returns The set of EnumField entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<EnumField>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<EnumField>;
 
 }
 
@@ -1874,7 +1917,7 @@ export declare class FeedbackForm extends Channel {
  * }
    * @returns The set of FeedbackForm entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<FeedbackForm>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<FeedbackForm>;
 
 }
 
@@ -2040,7 +2083,7 @@ export declare class Gantt extends BaseEntity {
  * }
    * @returns The set of Gantt entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<Gantt>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<Gantt>;
 
   /**
    * Finds the most relevant chart with the specified name that is visible to the current user.
@@ -2090,7 +2133,7 @@ export declare class GroupProjectCustomField extends ProjectCustomField {
  * }
    * @returns The set of GroupProjectCustomField entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<GroupProjectCustomField>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<GroupProjectCustomField>;
 
   /**
    * Returns the value that matches the specified name in a custom field that stores values as a user group.
@@ -2555,7 +2598,7 @@ export declare class Issue extends BaseEntity {
  * }
    * @returns The set of Issue entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<Issue>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<Issue>;
 
   /**
    * Finds an issue by its visible ID.
@@ -2973,7 +3016,7 @@ export declare class IssueAttachment extends PersistentFile {
  * }
    * @returns The set of IssueAttachment entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<IssueAttachment>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<IssueAttachment>;
 
   /**
    * Permanently deletes the attachment.
@@ -3093,7 +3136,7 @@ export declare class IssueComment extends BaseComment {
  * }
    * @returns The set of IssueComment entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<IssueComment>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<IssueComment>;
 
   /**
    * Attaches a file to the issue comment.
@@ -3150,7 +3193,7 @@ export declare class IssueLinkPrototype extends BaseEntity {
  * }
    * @returns The set of IssueLinkPrototype entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<IssueLinkPrototype>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<IssueLinkPrototype>;
 
   /**
    * Finds an issue link type by its name.
@@ -3199,7 +3242,7 @@ export declare class IssueWorkItem extends BaseWorkItem {
  * }
    * @returns The set of IssueWorkItem entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<IssueWorkItem>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<IssueWorkItem>;
 
   /**
    * Permanently deletes the work item.
@@ -3224,7 +3267,7 @@ export declare class MailboxChannel extends Channel {
  * }
    * @returns The set of MailboxChannel entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<MailboxChannel>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<MailboxChannel>;
 
 }
 
@@ -3253,7 +3296,7 @@ export declare class OwnedField extends Field {
  * }
    * @returns The set of OwnedField entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<OwnedField>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<OwnedField>;
 
 }
 
@@ -3287,7 +3330,7 @@ export declare class PeriodProjectCustomField extends SimpleProjectCustomField {
  * }
    * @returns The set of PeriodProjectCustomField entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<PeriodProjectCustomField>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<PeriodProjectCustomField>;
 
 }
 
@@ -3333,7 +3376,7 @@ export declare class PersistentFile extends BaseEntity {
  * }
    * @returns The set of PersistentFile entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<PersistentFile>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<PersistentFile>;
 
 }
 
@@ -3466,7 +3509,7 @@ export declare class Project extends BaseEntity {
  * }
    * @returns The set of Project entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<Project>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<Project>;
 
   /**
    * Finds a project by ID.
@@ -3637,7 +3680,7 @@ export declare class ProjectTeam extends UserGroup {
  * }
    * @returns The set of ProjectTeam entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<ProjectTeam>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<ProjectTeam>;
 
 }
 
@@ -3671,7 +3714,7 @@ export declare class ProjectType extends BaseEntity {
  * }
    * @returns The set of ProjectType entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<ProjectType>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<ProjectType>;
 
 }
 
@@ -3710,7 +3753,7 @@ export declare class ProjectVersion extends Field {
  * }
    * @returns The set of ProjectVersion entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<ProjectVersion>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<ProjectVersion>;
 
 }
 
@@ -3773,7 +3816,7 @@ export declare class PullRequest extends AbstractVcsItem {
  * }
    * @returns The set of PullRequest entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<PullRequest>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<PullRequest>;
 
 }
 
@@ -3813,7 +3856,7 @@ export declare class PullRequestState extends BaseEntity {
  * }
    * @returns The set of PullRequestState entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<PullRequestState>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<PullRequestState>;
 
 }
 
@@ -3847,7 +3890,7 @@ export declare class SavedQuery extends WatchFolder {
  * }
    * @returns The set of SavedQuery entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<SavedQuery>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<SavedQuery>;
 
   /**
    * Finds a list of saved searches with the specified name. The list only includes saved searches that are visible to the current user.
@@ -3881,7 +3924,7 @@ export declare class SimpleCalendar extends Calendar {
  * }
    * @returns The set of SimpleCalendar entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<SimpleCalendar>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<SimpleCalendar>;
 
 }
 
@@ -3900,7 +3943,7 @@ export declare class SimpleProjectCustomField extends ProjectCustomField {
  * }
    * @returns The set of SimpleProjectCustomField entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<SimpleProjectCustomField>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<SimpleProjectCustomField>;
 
 }
 
@@ -3944,7 +3987,7 @@ export declare class Sprint extends BaseEntity {
  * }
    * @returns The set of Sprint entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<Sprint>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<Sprint>;
 
   /**
    * Adds the issue to the sprint.
@@ -3999,7 +4042,7 @@ export declare class State extends Field {
  * }
    * @returns The set of State entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<State>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<State>;
 
 }
 
@@ -4040,7 +4083,7 @@ export declare class Tag extends WatchFolder {
  * }
    * @returns The set of Tag entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<Tag>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<Tag>;
 
   /**
    * Finds a set of tags with the specified name. The tags that were created by the current user are returned at the top of the list.
@@ -4100,7 +4143,7 @@ export declare class TextProjectCustomField extends SimpleProjectCustomField {
  * }
    * @returns The set of TextProjectCustomField entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<TextProjectCustomField>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<TextProjectCustomField>;
 
 }
 
@@ -4246,7 +4289,7 @@ export declare class User extends BaseEntity {
  * }
    * @returns The set of User entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<User>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<User>;
 
   /**
    * Finds a user by login.
@@ -4490,7 +4533,7 @@ export declare class UserGroup extends BaseEntity {
  * }
    * @returns The set of UserGroup entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<UserGroup>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<UserGroup>;
 
   /**
    * Finds a group by name.
@@ -4543,7 +4586,7 @@ export declare class UserProjectCustomField extends ProjectCustomField {
  * }
    * @returns The set of UserProjectCustomField entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<UserProjectCustomField>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<UserProjectCustomField>;
 
   /**
    * Returns the value that matches the specified login in a custom field that stores values as a user type.
@@ -4653,7 +4696,7 @@ export declare class VcsChange extends AbstractVcsItem {
  * }
    * @returns The set of VcsChange entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<VcsChange>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<VcsChange>;
 
   /**
    * Extracts commands from vcs change on behalf of provided user
@@ -4755,7 +4798,7 @@ export declare class WorkItemAttributeValue extends BaseEntity {
  * }
    * @returns The set of WorkItemAttributeValue entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<WorkItemAttributeValue>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<WorkItemAttributeValue>;
 
 }
 
@@ -4786,7 +4829,7 @@ export declare class WorkItemProjectAttribute extends BaseEntity {
  * }
    * @returns The set of WorkItemProjectAttribute entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<WorkItemProjectAttribute>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<WorkItemProjectAttribute>;
 
   /**
    * Returns the attribute value with the given name or null if such value does not exist.
@@ -4818,7 +4861,7 @@ export declare class WorkItemType extends BaseEntity {
  * }
    * @returns The set of WorkItemType entities that contain the specified extension properties.
    */
-  static findByExtensionProperties(extensionPropertiesQuery: JSON): Set<WorkItemType>;
+  static findByExtensionProperties(extensionPropertiesQuery: ExtensionPropertiesSearchQuery): Set<WorkItemType>;
 
   /**
    * Returns the set of work item types that are available in a project.

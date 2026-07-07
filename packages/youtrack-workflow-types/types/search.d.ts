@@ -4,24 +4,34 @@
  * @module @jetbrains/youtrack-scripting-api/search
  */
 
-import { Issue, WatchFolder, User } from './workflowTypeScriptStubs';
+import { Issue, WatchFolder, User, ExtensionPropertiesSearchQuery } from './workflowTypeScriptStubs';
 
 /**
  * Query object that supports searching by extension properties.
  */
-export interface SearchQuery {
-  /**
-   * A YouTrack search query string.
-   */
-  query: string;
+export type SearchQuery =
+  | {
+      /**
+       * A YouTrack search query string.
+       */
+      query: string;
 
-  /**
-   * Extension properties to search by.
-   */
-  extensionPropertiesQuery?: {
-    [key: string]: string;
-  };
-}
+      /**
+       * Extension properties to search by.
+       */
+      extensionPropertiesQuery?: ExtensionPropertiesSearchQuery;
+    }
+  | {
+      /**
+       * A YouTrack search query string.
+       */
+      query?: string;
+
+      /**
+       * Extension properties to search by.
+       */
+      extensionPropertiesQuery: ExtensionPropertiesSearchQuery;
+    };
 
 /**
  * Returns issues that match a search query.

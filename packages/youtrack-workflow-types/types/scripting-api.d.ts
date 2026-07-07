@@ -52,6 +52,14 @@ declare module '@jetbrains/youtrack-scripting-api/search' {
   export * from '@jetbrains/youtrack-workflow-types/search';
 }
 
+declare module '@jetbrains/youtrack-scripting-api/strings' {
+  export * from '@jetbrains/youtrack-workflow-types/strings';
+}
+
+declare module '@jetbrains/youtrack-scripting-api/notifications' {
+  export * from '@jetbrains/youtrack-workflow-types/notifications';
+}
+
 declare module '@jetbrains/youtrack-scripting-api/packages' {
   export * from '@jetbrains/youtrack-workflow-types/packages';
 }
