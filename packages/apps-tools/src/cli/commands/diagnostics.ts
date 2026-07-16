@@ -7,7 +7,7 @@ import {paginationFromConfig, printPaginationNotice} from '../pagination.js';
 
 export async function logs(config: Config, appName?: string): Promise<void> {
   try {
-    const entries = await createAppManagementOperations(config).getLogs(appName, config.top);
+    const entries = await createAppManagementOperations(config).getLogs(appName, config.limit);
 
     if (config.json) {
       printJson(entries);

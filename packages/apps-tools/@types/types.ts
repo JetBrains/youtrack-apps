@@ -12,7 +12,6 @@ export interface Config {
   yaml: boolean;
   yes: boolean;
   project: string | null;
-  top: string | null;
   skip: string | null;
   limit: string | null;
   settings: string | null;

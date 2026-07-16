@@ -235,6 +235,8 @@ exports.rule = entities.Issue.onChange({
 
 Schedules an asynchronous DELETE request.
 
+Since: `2026.2`  
+
 ##### Parameters
 
 | Name | Type | Description |
@@ -247,6 +249,8 @@ Schedules an asynchronous DELETE request.
 
 Schedules an asynchronous HTTP request. The request is executed after the current transaction commits,
 and the response is passed to the named async function handler.
+
+Since: `2026.2`  
 
 ##### Parameters
 
@@ -262,6 +266,8 @@ and the response is passed to the named async function handler.
 
 Schedules an asynchronous GET request.
 
+Since: `2026.2`  
+
 ##### Parameters
 
 | Name | Type | Description |
@@ -273,6 +279,8 @@ Schedules an asynchronous GET request.
 #### patchAsync
 
 Schedules an asynchronous PATCH request.
+
+Since: `2026.2`  
 
 ##### Parameters
 
@@ -287,6 +295,8 @@ Schedules an asynchronous PATCH request.
 
 Schedules an asynchronous POST request.
 
+Since: `2026.2`  
+
 ##### Parameters
 
 | Name | Type | Description |
@@ -299,6 +309,8 @@ Schedules an asynchronous POST request.
 #### putAsync
 
 Schedules an asynchronous PUT request.
+
+Since: `2026.2`  
 
 ##### Parameters
 

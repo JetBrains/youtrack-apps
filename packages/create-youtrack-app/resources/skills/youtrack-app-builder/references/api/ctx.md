@@ -13,11 +13,11 @@ If your workflow updates private custom fields or adds new custom field values, 
 In this case, the project administrator who implements this workflow is delegating their permission to any user who triggers this workflow rule.
 
 ## Specifics on Context
-This section what are the contents fo the `ctx` object and where do they come from for all surfaces.
-- [On-change context](../surfaces/rules/on-change.md#context): `ctx` for on-change rule.
-- [Scheduled rule context](../surfaces/rules/on-schedule.md#context): `ctx` for on-schedule rule.
-- [Action rule context](../surfaces/rules/action.md#context): `ctx` for action rule.
-- [State machine context](../surfaces/rules/state-machine.md#context): `ctx` for state-machine rule.
-- [MCP tool context](../surfaces/custom-api-endpoints/mcp-tool.md#context): `ctx` for mcp tools.
-- [HTTP handler context](../surfaces/custom-api-endpoints/http-handler.md#context): `ctx` for http handlers.
+This section what are the contents fo the `ctx` object and where do they come from for all script types.
+- [On-change context](../surfaces.md#on-change-rule): `ctx` for on-change rule.
+- [Scheduled rule context](../surfaces.md#on-schedule-rule): `ctx` for on-schedule rule.
+- [Action rule context](../surfaces.md#action-rule): `ctx` for action rule.
+- [State machine context](../surfaces.md#state-machine-rule): `ctx` for state-machine rule.
+- [MCP tool context](../surfaces.md#mcp-tool): `ctx` for mcp tools.
+- [HTTP handler context](../surfaces.md#http-handler): `ctx` for http handlers.
 

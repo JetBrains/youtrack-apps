@@ -231,7 +231,6 @@ export class UploadCoordinator {
       yaml: false,
       yes: false,
       project: null,
-      top: null,
       skip: null,
       limit: null,
       settings: null,

@@ -209,8 +209,8 @@ export class AppManagementOperations {
     return await this.client.listProjects(undefined, pagination);
   }
 
-  async getProjectInfo(projectKey?: string): Promise<ProjectDetails> {
-    const project = await this.requireProjectByKey(projectKey);
+  async getProjectInfo(projectKey?: string, pagination?: PaginationOptions): Promise<ProjectDetails> {
+    const project = await this.requireProjectByKey(projectKey, pagination);
     if (!project.shortName) {
       throw new Error(i18n(`Project "${projectKey}" does not have a short name`));
     }
@@ -223,8 +223,8 @@ export class AppManagementOperations {
     return details;
   }
 
-  async getProjectFields(projectKey?: string): Promise<ProjectFieldsResult> {
-    const project = await this.requireProjectByKey(projectKey);
+  async getProjectFields(projectKey?: string, pagination?: PaginationOptions): Promise<ProjectFieldsResult> {
+    const project = await this.requireProjectByKey(projectKey, pagination);
     const fields = await this.client.getProjectFields(project.shortName ?? project.id);
     return {project, fields};
   }
@@ -233,8 +233,8 @@ export class AppManagementOperations {
     return await this.client.listGroups(pagination);
   }
 
-  async getGroupMembers(groupKey?: string): Promise<GroupMembersResult> {
-    const group = await this.requireGroupByKey(groupKey);
+  async getGroupMembers(groupKey?: string, pagination?: PaginationOptions): Promise<GroupMembersResult> {
+    const group = await this.requireGroupByKey(groupKey, pagination);
     const details = await this.client.getGroupMembers(group.id);
     return {group, members: details?.ownUsers ?? []};
   }
@@ -243,8 +243,8 @@ export class AppManagementOperations {
     return await this.client.listUsers(pagination);
   }
 
-  async getUserInfo(userKey?: string): Promise<UserInfoResult> {
-    const user = await this.requireUserByKey(userKey);
+  async getUserInfo(userKey?: string, pagination?: PaginationOptions): Promise<UserInfoResult> {
+    const user = await this.requireUserByKey(userKey, pagination);
     const details = await this.client.getUser(user.id);
     if (!details) {
       throw new Error(i18n(`User "${userKey}" was not found`));
@@ -318,39 +318,39 @@ export class AppManagementOperations {
     return {project, usage};
   }
 
-  private async requireProjectByKey(projectKey?: string): Promise<ProjectDetails> {
+  private async requireProjectByKey(projectKey?: string, pagination?: PaginationOptions): Promise<ProjectDetails> {
     if (!projectKey) {
       throw new Error(i18n('Project key should be defined'));
     }
 
     return requireExactMatch(
-      (await this.client.listProjects(PROJECT_RESOLVE_FIELDS, {limit: RESOURCE_RESOLVE_LIMIT})).items,
+      (await this.client.listProjects(PROJECT_RESOLVE_FIELDS, resourceResolvePagination(pagination))).items,
       projectKey,
       project => [project.id, project.shortName, project.name],
       'Project',
     );
   }
 
-  private async requireGroupByKey(groupKey?: string): Promise<UserGroup> {
+  private async requireGroupByKey(groupKey?: string, pagination?: PaginationOptions): Promise<UserGroup> {
     if (!groupKey) {
       throw new Error(i18n('Group key should be defined'));
     }
 
     return requireExactMatch(
-      (await this.client.listGroups({limit: RESOURCE_RESOLVE_LIMIT})).items,
+      (await this.client.listGroups(resourceResolvePagination(pagination))).items,
       groupKey,
       group => [group.id, group.name],
       'Group',
     );
   }
 
-  private async requireUserByKey(userKey?: string): Promise<UserSummary> {
+  private async requireUserByKey(userKey?: string, pagination?: PaginationOptions): Promise<UserSummary> {
     if (!userKey) {
       throw new Error(i18n('User key should be defined'));
     }
 
     return requireExactMatch(
-      (await this.client.listUsers({limit: RESOURCE_RESOLVE_LIMIT})).items,
+      (await this.client.listUsers(resourceResolvePagination(pagination))).items,
       userKey,
       user => [user.id, user.login, user.name, user.fullName],
       'User',
@@ -395,6 +395,13 @@ function validateTop(top: string | null): string | null {
   }
 
   return top;
+}
+
+function resourceResolvePagination(pagination?: PaginationOptions): PaginationOptions {
+  return {
+    limit: pagination?.limit ?? RESOURCE_RESOLVE_LIMIT,
+    skip: pagination?.skip,
+  };
 }
 
 function normalizeLogs(data: LogEntry[] | LogsResponse | undefined): LogEntry[] {

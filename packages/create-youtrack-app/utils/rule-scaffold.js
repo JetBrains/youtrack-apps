@@ -33,7 +33,7 @@ function validateRuleName(name) {
 }
 
 function resolveRuleTarget(cwd, name) {
-  const relativePath = path.join('src', 'backend', 'workflows', `${name}.js`);
+  const relativePath = path.join('src', 'workflows', `${name}.js`);
 
   return {
     relativePath,

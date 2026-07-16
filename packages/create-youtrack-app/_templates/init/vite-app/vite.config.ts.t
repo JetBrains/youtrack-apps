@@ -1,7 +1,6 @@
 ---
  to: vite.config.ts
 ---
-import {existsSync, readdirSync, readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {defineConfig} from 'vite';
 import {viteStaticCopy} from 'vite-plugin-static-copy';
@@ -15,7 +14,24 @@ export default defineConfig({
   plugins: [
     react(),
     viteStaticCopy({
-      targets: getStaticCopyTargets()
+      targets: [
+        {
+          src: '../manifest.json',
+          dest: '.'
+        },
+        {
+          src: '*.*',
+          dest: '.'
+        },
+        {
+          src: 'workflows/*.js',
+          dest: '.'
+        },
+        {
+          src: '../public/*.*',
+          dest: '.'
+        }
+      ]
     }),
     viteStaticCopy({
       targets: [
@@ -39,67 +55,8 @@ export default defineConfig({
     assetsDir: 'widgets/assets',
     rollupOptions: {
       input: {
-        ...getWidgetInputs()
+        // List every widget entry point here
       }
     }
   }
 });
-
-type ManifestWidget = {
-  key?: string;
-  indexPath?: string;
-};
-
-function getStaticCopyTargets(): Array<{src: string; dest: string}> {
-  return [
-    {
-      src: '../manifest.json',
-      dest: '.'
-    },
-    hasTopLevelFiles(resolve(__dirname, 'src'))
-      ? {
-        src: '*.*',
-        dest: '.'
-      }
-      : null,
-    hasTopLevelFiles(resolve(__dirname, 'public'))
-      ? {
-        src: '../public/*.*',
-        dest: '.'
-      }
-      : null
-  ].filter((target): target is {src: string; dest: string} => target !== null);
-}
-
-function getWidgetInputs(): Record<string, string> {
-  const manifestPath = resolve(__dirname, 'manifest.json');
-  if (!existsSync(manifestPath)) {
-    return {};
-  }
-
-  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-  const widgets = Array.isArray(manifest.widgets) ? manifest.widgets : [];
-
-  return Object.fromEntries(
-    widgets
-      .filter((widget: ManifestWidget) => widget.key && widget.indexPath)
-      .map((widget: ManifestWidget) => [
-        toInputName(widget.key as string),
-        resolve(__dirname, 'src/widgets', widget.indexPath as string)
-      ])
-  );
-}
-
-function toInputName(key: string): string {
-  return key
-    .replace(/-([a-z0-9])/g, (_, value: string) => value.toUpperCase())
-    .replace(/[^a-zA-Z0-9_$]/g, '_');
-}
-
-function hasTopLevelFiles(dirPath: string): boolean {
-  if (!existsSync(dirPath)) {
-    return false;
-  }
-
-  return readdirSync(dirPath, {withFileTypes: true}).some(dirent => dirent.isFile());
-}

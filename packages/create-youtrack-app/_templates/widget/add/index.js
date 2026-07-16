@@ -65,10 +65,10 @@ module.exports = {
   prompt: async ({ prompter, args, h }) => {
     const manifestPath = path.resolve(process.cwd(), args.cwd || '', 'manifest.json');
     let existingKeys = new Set();
-    if (fs.existsSync(manifestPath)) {
-      const manifest = readJsonFile(manifestPath, 'manifest.json');
+    try {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
       existingKeys = new Set((manifest.widgets || []).map(w => w.key));
-    }
+    } catch { /* manifest may not exist yet during init */ }
 
     const { key } = args.key ? args : await prompter.prompt({
       type: "input",
@@ -235,14 +235,3 @@ module.exports = {
     return result;
   },
 };
-
-function readJsonFile(filePath, label) {
-  try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-  } catch (error) {
-    const hint = error && error.message && error.message.includes('Expected double-quoted')
-      ? ' Check for a trailing comma or an unquoted property name.'
-      : '';
-    throw new Error(`Could not parse ${label}: ${(error && error.message) || String(error)}.${hint}`);
-  }
-}

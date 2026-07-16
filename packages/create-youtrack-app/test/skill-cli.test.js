@@ -15,7 +15,6 @@ const CLI_PATH = path.join(PKG_DIR, 'index.js');
 const TEST_HOME = path.join(PKG_DIR, 'tmp', 'test-skill-home');
 const TEST_PROJECT = path.join(PKG_DIR, 'tmp', 'test-skill-project');
 const SKILL_NAME = 'youtrack-app-builder';
-const METADATA_FILENAME = `${SKILL_NAME}.youtrack-skill-install.json`;
 
 function runCLI(args) {
   try {
@@ -57,12 +56,6 @@ function targetDirFor(root, agent) {
   return path.join(root, agentConfigDir(agent), 'skills', SKILL_NAME);
 }
 
-function metadata(agent, scope = 'global') {
-  return JSON.parse(
-    fs.readFileSync(path.join(path.dirname(targetDir(agent, scope)), METADATA_FILENAME), 'utf8')
-  );
-}
-
 describe('Agent skill CLI', () => {
   beforeEach(() => {
     fs.rmSync(TEST_HOME, { recursive: true, force: true });
@@ -86,10 +79,6 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(fs.lstatSync(targetDir('codex')).isSymbolicLink(), true);
     assert.strictEqual(fs.lstatSync(targetDir('claude')).isSymbolicLink(), true);
     assert.strictEqual(fs.lstatSync(targetDir('junie')).isSymbolicLink(), true);
-    assert.strictEqual(metadata('codex').targetAgent, 'codex');
-    assert.strictEqual(metadata('claude').targetAgent, 'claude');
-    assert.strictEqual(metadata('junie').targetAgent, 'junie');
-    assert.strictEqual(metadata('codex').deploymentType, 'symlink');
   });
 
   test('project-level install uses hard copies', () => {
@@ -104,7 +93,6 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(results[0].deploymentType, 'copy');
     assert.strictEqual(fs.existsSync(path.join(targetDir('codex', 'project'), 'SKILL.md')), true);
     assert.strictEqual(fs.lstatSync(targetDir('codex', 'project')).isSymbolicLink(), false);
-    assert.strictEqual(metadata('codex', 'project').scope, 'project');
   });
 
   test('project-level install uses the current directory without searching parent project markers', () => {

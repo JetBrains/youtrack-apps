@@ -1,11 +1,9 @@
 ---
-to: "<%= (() => { const rawRoutePath = typeof routePath === 'undefined' ? '' : routePath; const clean = String(rawRoutePath || '').split('/').filter(Boolean).join('/'); const p = 'src/backend/router/' + ytScope + (clean ? '/' + clean : '') + '/' + method + '.ts'; return p; })() %>"
+to: "<%= (() => { const clean = String(routePath || '').split('/').filter(Boolean).join('/'); const p = 'src/backend/router/' + ytScope + (clean ? '/' + clean : '') + '/' + method + '.ts'; return p; })() %>"
 ---
 <%
   const toPascal = (s) => s.split(/[\/_-]+/).filter(Boolean).map(p => p.charAt(0).toUpperCase() + p.slice(1)).join('');
-  const rawRoutePath = typeof routePath === 'undefined' ? '' : routePath;
-  const routeLabel = String(rawRoutePath || '');
-  const segments = routeLabel.split('/').filter(Boolean);
+  const segments = (routePath || '').split('/').filter(Boolean);
   const base = toPascal([ytScope].concat(segments).join('/')) || 'Root';
   const reqType = base + method + 'Req';
   const resType = base + method + 'Res';
@@ -45,10 +43,10 @@ export type <%= resType %> = {
 
 function handle(ctx: <%- method === 'GET' || method === 'DELETE' ? `${ctxType}<${resType}, ${reqType}, "${ytScope}">` : `${ctxType}<${reqType}, ${resType}, never, "${ytScope}">` %>): void {
 <% if (method === 'GET' || method === 'DELETE') { %>
-  const msg = ctx.request.getParameter('message') || 'Hello from <%= ytScope %>/<%= routeLabel %> <%= method %>!';
+  const msg = ctx.request.getParameter('message') || 'Hello from <%= ytScope %>/<%= (routePath || "") %> <%= method %>!';
 <% } else { %>
   const body = ctx.request.json() as <%= reqType %>;
-  const msg = body.message || 'Hello from <%= ytScope %>/<%= routeLabel %> <%= method %>!';
+  const msg = body.message || 'Hello from <%= ytScope %>/<%= (routePath || "") %> <%= method %>!';
 <% } %>
   const response: <%= resType %> = {
     ok: true,

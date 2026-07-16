@@ -247,6 +247,33 @@ describe('AppManagementOperations', () => {
 
     await expect(operations.getProjectInfo('cp')).rejects.toThrow('Project "cp" is ambiguous');
   });
+
+  it('exact resource matching uses a 100 item resolver page by default', async () => {
+    const gateway = fakeGateway({projects: [projectDetails()]});
+    const operations = new AppManagementOperations(gateway);
+
+    await operations.getProjectInfo('CP');
+
+    expect(gateway.projectListRequests).toEqual([{limit: 100, skip: undefined}]);
+  });
+
+  it('exact resource matching forwards explicit pagination options', async () => {
+    const gateway = fakeGateway({
+      projects: [projectDetails()],
+      groups: [{id: 'group-1', name: 'Developers', userCount: 2}],
+      users: [{id: 'user-1', login: 'root', name: 'root'}],
+    });
+    const operations = new AppManagementOperations(gateway);
+    const pagination = {skip: 100, limit: 25};
+
+    await operations.getProjectInfo('CP', pagination);
+    await operations.getGroupMembers('Developers', pagination);
+    await operations.getUserInfo('root', pagination);
+
+    expect(gateway.projectListRequests).toContainEqual(pagination);
+    expect(gateway.groupListRequests).toContainEqual(pagination);
+    expect(gateway.userListRequests).toContainEqual(pagination);
+  });
 });
 
 interface FakeGateway extends YouTrackAppsGateway {
@@ -266,6 +293,9 @@ interface FakeGateway extends YouTrackAppsGateway {
   workflowGetRequests: string[];
   workflowSearchRequests: string[];
   userRequests: string[];
+  projectListRequests: PaginationOptions[];
+  groupListRequests: PaginationOptions[];
+  userListRequests: PaginationOptions[];
 }
 
 function fakeGateway(overrides: {
@@ -305,6 +335,9 @@ function fakeGateway(overrides: {
     workflowGetRequests: [],
     workflowSearchRequests: [],
     userRequests: [],
+    projectListRequests: [],
+    groupListRequests: [],
+    userListRequests: [],
     async listApps(): Promise<PaginatedResult<AppDetails>> {
       return page(overrides.apps ?? [app]);
     },
@@ -320,7 +353,8 @@ function fakeGateway(overrides: {
       gateway.appPackageRequests.push(appName);
       return findApp(overrides.apps ?? [app], appName) ?? app;
     },
-    async listProjects(): Promise<PaginatedResult<ProjectDetails>> {
+    async listProjects(_fields?: unknown, pagination: PaginationOptions = {}): Promise<PaginatedResult<ProjectDetails>> {
+      gateway.projectListRequests.push(pagination);
       return page(overrides.projects ?? [project]);
     },
     async getProject(projectShortName: string): Promise<ProjectDetails | null> {
@@ -339,14 +373,16 @@ function fakeGateway(overrides: {
       gateway.projectTagRequests.push({projectId, query});
       return page(overrides.tags ?? []);
     },
-    async listGroups(): Promise<PaginatedResult<UserGroup>> {
+    async listGroups(pagination: PaginationOptions = {}): Promise<PaginatedResult<UserGroup>> {
+      gateway.groupListRequests.push(pagination);
       return page(overrides.groups ?? []);
     },
     async getGroupMembers(groupId: string): Promise<UserGroupMembers | null> {
       gateway.groupMembersRequests.push(groupId);
       return overrides.groupMembers ?? {ownUsers: []};
     },
-    async listUsers(): Promise<PaginatedResult<UserSummary>> {
+    async listUsers(pagination: PaginationOptions = {}): Promise<PaginatedResult<UserSummary>> {
+      gateway.userListRequests.push(pagination);
       return page(overrides.users ?? []);
     },
     async getUser(userId: string): Promise<UserDetails | null> {

@@ -1,97 +1,129 @@
 const { styleText } = require("node:util");
 
+const createApp = 'npx @jetbrains/create-youtrack-app';
 
 console.log(`
-To generate a new app, run the following command
+${styleText("bold", 'Create YouTrack App')}
 
-===
-${styleText("magenta", 'npm init @jetbrains/youtrack-app')}
-===
+Use this generator to create a new YouTrack app or add features to an existing
+app directory. Run commands from the directory where the app should be created
+or modified.
 
-... and follow the prompts. ${styleText("bold", 'Enhanced DX (experimental) features are described below.')}
+${styleText("bold", 'Create a New App')}
 
-To generate a JavaScript app non-interactively (dependencies are installed after scaffolding):
+Interactive setup:
+  ${styleText("magenta", createApp)}
+  ${styleText("dim", '# npm create @jetbrains/youtrack-app and npm init @jetbrains/youtrack-app run the same initializer flow')}
 
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --app-name my-youtrack-app --title "My YouTrack App" --description "Internal YouTrack app" --vendor "My Company" --vendor-url "https://example.com"')}
+Non-interactive setup:
+  ${styleText("magenta", `${createApp} --name my-youtrack-app`)}
+  ${styleText("dim", '# Only --name is required. Title, description, vendor, and vendor URL are optional.')}
 
-Use ${styleText("magenta", '--template enhanced-dx')} or ${styleText("magenta", '--template ts')} for a TypeScript Enhanced DX app.
+Choose the generated app shape:
+  ${styleText("magenta", `${createApp} --name my-ts-app`)} ${styleText("dim", '# TypeScript Enhanced DX app; default')}
+  ${styleText("magenta", `${createApp} --name my-js-app --type js`)} ${styleText("dim", '# JavaScript app shell')}
+  ${styleText("magenta", `${createApp} --name backend-api --type ts --backend-only`)} ${styleText("dim", '# Enhanced DX without the sample widget')}
 
-After you have generated an app, you may want to add more features. Add new features quickly with one of these commands:
+${styleText("bold", 'Commands for both ts and js apps')}
 
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to view a list of available commands
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings init')} to add a declaration for the app settings (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html')})
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings add')} to add one or more properties to the setting schema created using the command listed above
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app widget add')} to add another widget (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-widgets.html')})
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app extension-property add')} to declare an extension property (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html')})
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app http-handler add')} to add an HTTP handler (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html')})
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add onChange notify-on-change')} to add a classic workflow rule
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app endpoint add')} to generate a router endpoint
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app skill install')} to choose where to install the YouTrack app builder skill
+These commands work in both JavaScript and TypeScript app directories.
 
-${styleText("bold", 'Classic Workflow Rules:')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add onChange notify-on-change')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add onSchedule weekly-digest')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add action apply-template')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add stateMachine issue-state')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app rule add sla first-reply-sla')}
-  ${styleText("dim", '# Creates src/backend/workflows/<name>.js without modifying manifest.json')}
-  ${styleText("dim", '# In generated JavaScript apps, npm run build packages backend-only apps when no widgets exist')}
+  ${styleText("magenta", `${createApp} settings init`)}
+    Interactive: create src/settings.json.
 
+  ${styleText("magenta", `${createApp} settings init --title "Settings" --description "App configuration"`)}
+    Non-interactive: create src/settings.json.
 
-${styleText("bold", 'Enhanced DX (experimental)')}
+  ${styleText("magenta", `${createApp} settings add`)}
+    Interactive: add a property to src/settings.json.
 
-${styleText("bold", 'Usage:')}
-  - Choose "TypeScript (Enhanced DX with file-based routing)" when prompted. A sample ${styleText("cyan", 'MAIN_MENU_ITEM')} widget with backend endpoints will be added automatically.
-  - Run ${styleText("magenta", 'npm run dev')} to rebuild and update the app continuously.
+  ${styleText("magenta", `${createApp} settings add --name apiUrl --type string`)}
+    Non-interactive: add a property to src/settings.json.
 
-${styleText("bold", 'Code Generation:')}
-Inside an Enhanced DX app, use ${styleText("magenta", 'npm run generate')} (or ${styleText("magenta", 'npm run g')}) to add features:
+  ${styleText("magenta", `${createApp} widget add`)}
+    Interactive: add a widget.
 
-${styleText("bold", 'Widgets:')}
-  ${styleText("magenta", 'npm run g -- widget --key my-panel --extension-point ISSUE_BELOW_SUMMARY')}
-  ${styleText("magenta", 'npm run g -- widget --key admin-page --extension-point MAIN_MENU_ITEM --name "Admin Page"')}
-  ${styleText("dim", '# Creates src/widgets/<key>/ and injects an entry into manifest.json')}
-  ${styleText("dim", '# Extension points: MAIN_MENU_ITEM, DASHBOARD_WIDGET, ISSUE_BELOW_SUMMARY, PROJECT_SETTINGS, ...')}
+  ${styleText("magenta", `${createApp} widget --key issue-panel --extension-point ISSUE_BELOW_SUMMARY`)}
+    Non-interactive: add a widget.
 
-${styleText("bold", 'HTTP Handlers:')}
-  ${styleText("magenta", 'npm run g -- handler global/health')}              ${styleText("dim", '# GET handler (default)')}
-  ${styleText("magenta", 'npm run g -- handler project/users --method POST')} ${styleText("dim", '# POST handler')}
-  ${styleText("magenta", 'npm run g -- h issue/comments --method POST --permissions read-issue,update-issue')}
+  ${styleText("magenta", `${createApp} widget --key dashboard-card --extension-point DASHBOARD_WIDGET --name "Dashboard Card"`)}
+    Non-interactive: add a named dashboard widget.
 
-${styleText("bold", 'Extension Properties:')}
-  ${styleText("magenta", 'npm run g -- property Issue.customStatus')}         ${styleText("dim", '# string type (default)')}
-  ${styleText("magenta", 'npm run g -- property Comment.rating --type integer')}
-  ${styleText("magenta", 'npm run g -- p Issue.tags --type string --set')}    ${styleText("dim", '# multi-value property')}
+  ${styleText("magenta", `${createApp} extension-property add`)}
+    Interactive: declare an app-owned entity extension property.
 
-${styleText("bold", 'App Settings:')}
-  ${styleText("magenta", 'npm run g -- settings init --title "..." --description "..."')} ${styleText("dim", '# Create settings schema')}
-  ${styleText("magenta", 'npm run g -- settings init')}                       ${styleText("dim", '# Interactive mode')}
-  ${styleText("magenta", 'npm run g -- settings add')}                        ${styleText("dim", '# Add property (interactive)')}
-  ${styleText("magenta", 'npm run g -- s init --title "..." --description "..."')}        ${styleText("dim", '# Short alias')}
+  ${styleText("magenta", `${createApp} property Issue.customStatus`)}
+    Non-interactive: declare an extension property.
 
-${styleText("bold", 'Interactive Menu:')}
-  ${styleText("magenta", 'npm run g')}                                        ${styleText("dim", '# Shows a menu for choosing what to generate')}
+  ${styleText("magenta", `${createApp} p Issue.tags --type string --set`)}
+    Non-interactive: declare a multi-value extension property using the short alias.
 
-${styleText("bold", 'Agent Skill:')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app skill install')}  ${styleText("dim", '# Detect agents and choose global/project installation')}
-  ${styleText("magenta", 'npx @jetbrains/create-youtrack-app skill status')}   ${styleText("dim", '# Show installed skill status')}
+  ${styleText("magenta", `${createApp} http-handler add`)}
+    Interactive: add an HTTP handler.
+    
+  ${styleText("magenta", 'npm run build')}
+    Build backend and frontend, then validate dist. Works for backend only apps as well.
 
-${styleText("bold", 'Features:')}
-• ${styleText("bold", 'File-based Routing:')} Create endpoints by adding files in ${styleText("cyan", 'src/backend/router/SCOPE/NAME/METHOD.ts')}
-  - e.g. ${styleText("cyan", 'src/backend/router/project/demo/GET.ts')} for a GET request
+${styleText("bold", 'JavaScript App (--type js)')}
 
-• ${styleText("bold", 'TypeScript Backend:')} TypeScript support with automatic type generation
-  - Use ${styleText("magenta", '@zod-to-schema')} annotation for the endpoint Request and Response types (see the sample endpoints)
-  - Annotated types are used to generate schemas (${styleText("cyan", 'api.zod.ts')}) and type definitions (${styleText("cyan", 'api.d.ts')}) in the ${styleText("cyan", 'src/api/')} folder
+JavaScript apps start as backend.js and manifest.js. Add rule/script types.
 
-• ${styleText("bold", 'Client:')} Custom TS endpoints are accessible via type-safe API client with autocompletion and type checking
-  - ${styleText("magenta", 'import { createApi } from "@/api";')}
-  - ${styleText("magenta", 'const host = await YTApp.register(); const api = createApi(host);')}
-  - ${styleText("magenta", 'const result = await api.project.demo.GET({ projectId: "ABC", message: "hello" });')}
+Classic workflow rule templates:
+  ${styleText("magenta", `${createApp} rule add onChange notify-on-change`)}
+  ${styleText("magenta", `${createApp} rule add onSchedule weekly-digest`)}
+  ${styleText("magenta", `${createApp} rule add action apply-template`)}
+  ${styleText("magenta", `${createApp} rule add stateMachine issue-state`)}
+  ${styleText("magenta", `${createApp} rule add sla first-reply-sla`)}
 
-• ${styleText("bold", 'Zod Validation:')} Runtime validation in development mode. Use ${styleText("magenta", 'npm run dev')}
+Generated files:
+  ${styleText("cyan", 'src/workflows/<name>.js')}
 
-• ${styleText("bold", 'Vite-powered:')} Custom plugins handle routing and type generation
-  - api plugin: ${styleText("bold", 'vite-plugin-youtrack-api-generator.ts')}
-  - router plugin: ${styleText("bold", 'vite-plugin-youtrack-router.ts')}
+Notes:
+  ${styleText("dim", '- Widget generation creates src/widgets/<key>/, updates manifest.json, and adds a Vite entry.')}
+  ${styleText("dim", '- npm run build can package backend-only apps before widgets exist.')}
+
+${styleText("bold", 'TypeScript App (--type ts / Enhanced DX)')}
+
+Enhanced DX apps include TypeScript, file-based backend routing, generated API
+types, a typed frontend client, and Vite plugins for local development.
+The default scaffold includes a sample ${styleText("cyan", 'MAIN_MENU_ITEM')} widget and example routes:
+${styleText("cyan", 'global/demo')}, ${styleText("cyan", 'global/echo')} (${styleText("cyan", 'POST')}), ${styleText("cyan", 'issue/details')}, and ${styleText("cyan", 'project/demo')}.
+
+Common commands:
+  ${styleText("magenta", 'npm run dev')}
+    Rebuild and upload continuously during development.
+
+Enhanced DX-only generator commands:
+  ${styleText("magenta", `${createApp} handler global/health`)}
+    Non-interactive: add a GET handler.
+
+  ${styleText("magenta", `${createApp} handler project/users --method POST`)}
+    Non-interactive: add a POST handler.
+
+  ${styleText("magenta", `${createApp} h issue/comments --method POST --permissions READ_ISSUE,UPDATE_ISSUE`)}
+    Non-interactive: add a POST handler with permissions using the short alias.
+
+  ${styleText("magenta", `${createApp} endpoint add`)}
+    Interactive: add a typed router endpoint with scope, path, method, request type, and response type prompts.
+
+Enhanced DX features:
+  ${styleText("bold", 'File-based routing:')} create handlers in ${styleText("cyan", 'src/backend/router/<scope>/<path>/<METHOD>.ts')}.
+  ${styleText("bold", 'Handler contracts:')} add ${styleText("magenta", '@zod-to-schema')} to exported request/response types and export ${styleText("cyan", 'type Handle = typeof handle')}.
+  ${styleText("bold", 'Generated API types:')} backend builds generate route types in ${styleText("cyan", 'src/api/api.d.ts')} and Zod schemas in ${styleText("cyan", 'src/api/api.zod.ts')}.
+  ${styleText("bold", 'Typed client:')} widgets call backend handlers through the generated client from ${styleText("cyan", 'src/api')}.
+    ${styleText("magenta", 'import {createApi} from "@/api";')}
+    ${styleText("magenta", 'const host = await YTApp.register();')}
+    ${styleText("magenta", 'const api = createApi(host);')}
+    ${styleText("magenta", 'const result = await api.project.demo.GET({projectId: "DEMO", message: "hello"});')}
+  ${styleText("bold", 'Dev validation:')} Zod validation runs in development builds.
+  ${styleText("bold", 'Build order:')} backend builds first so generated API files exist before frontend code imports them.
+  ${styleText("bold", 'Widget generation:')} creates ${styleText("cyan", 'src/widgets/<key>/')} and updates ${styleText("cyan", 'manifest.json')}; Vite discovers widget entries automatically.
+
+${styleText("bold", 'Agent Skill')}
+
+  ${styleText("magenta", `${createApp} skill install`)}
+    Interactive: install the YouTrack app builder skill for supported coding agents.
+
+  ${styleText("magenta", `${createApp} skill status`)}
+    Non-interactive: show installed skill status for supported coding agents.
 `);

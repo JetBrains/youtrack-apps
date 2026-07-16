@@ -1,8 +1,8 @@
 ---
-to: src/backend/workflows/weekly-digest.ts
+to: src/workflows/weekly-digest.ts
 ---
 import { Issue } from '@jetbrains/youtrack-scripting-api/entities';
-import { requirements } from '../requirements';
+import { requirements } from '../backend/requirements';
 
 export const rule = Issue.onSchedule({
   title: 'Weekly digest',

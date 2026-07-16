@@ -4,8 +4,6 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
 const SKILL_NAME = 'youtrack-app-builder';
-const PACKAGE_NAME = '@jetbrains/create-youtrack-app';
-const METADATA_FILENAME = '.youtrack-skill-install.json';
 
 const ALL_AGENTS = 'all';
 const ALL_SCOPES = 'all';
@@ -53,16 +51,6 @@ function getSkillSourceDir() {
 
 function getHomeDir() {
   return process.env.YOUTRACK_SKILL_HOME || os.homedir();
-}
-
-function getPackageVersion() {
-  const packageJsonPath = path.join(__dirname, '..', 'package.json');
-  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  return pkg.version;
-}
-
-function normalizeSlashes(value) {
-  return String(value).replace(/\\/g, '/');
 }
 
 function assertSupportedAgent(agentId) {
@@ -114,10 +102,6 @@ function getAgentSkillsDir(agentId, scope, options = {}) {
     : resolveProjectRoot(options);
 
   return path.join(rootDir, agent.configDir, 'skills');
-}
-
-function getMetadataPath(targetDir) {
-  return path.join(path.dirname(targetDir), `${SKILL_NAME}${METADATA_FILENAME}`);
 }
 
 function ensureSkillSourceExists(sourceDir = getSkillSourceDir()) {
@@ -177,64 +161,21 @@ function deploySkill(planItem) {
   copySkillDirectory(planItem.sourceDir, planItem.targetDir);
 }
 
-function writeInstallMetadata(planItem) {
-  const metadata = {
-    skill: SKILL_NAME,
-    targetAgent: planItem.agent,
-    scope: planItem.scope,
-    deploymentType: planItem.deploymentType,
-    sourcePackage: PACKAGE_NAME,
-    sourcePackageVersion: getPackageVersion(),
-    targetDir: normalizeSlashes(planItem.targetDir),
-    installedAt: new Date().toISOString(),
-  };
-
-  fs.writeFileSync(
-    getMetadataPath(planItem.targetDir),
-    JSON.stringify(metadata, null, 2)
-  );
-
-  return metadata;
-}
-
 function installSkill(options = {}) {
   return createInstallPlan(options).map(planItem => {
     deploySkill(planItem);
-    const metadata = writeInstallMetadata(planItem);
 
     return {
       agent: planItem.agent,
       scope: planItem.scope,
       targetDir: planItem.targetDir,
       deploymentType: planItem.deploymentType,
-      metadata,
     };
   });
 }
 
-function readMetadata(targetDir) {
-  const metadataPath = getMetadataPath(targetDir);
-  const legacyMetadataPath = path.join(targetDir, METADATA_FILENAME);
-  const pathToRead = fs.existsSync(metadataPath) ? metadataPath : legacyMetadataPath;
-
-  if (!fs.existsSync(pathToRead)) {
-    return { metadata: null, metadataPath, error: null };
-  }
-
-  try {
-    return {
-      metadata: JSON.parse(fs.readFileSync(pathToRead, 'utf8')),
-      metadataPath: pathToRead,
-      error: null,
-    };
-  } catch (error) {
-    return { metadata: null, metadataPath: pathToRead, error };
-  }
-}
-
 function getInstallStatus(agentId, scope, options = {}) {
   const targetDir = path.join(getAgentSkillsDir(agentId, scope, options), SKILL_NAME);
-  const metadataResult = readMetadata(targetDir);
   const targetExists = fs.existsSync(targetDir);
   const targetStats = targetExists ? fs.lstatSync(targetDir) : null;
 
@@ -244,9 +185,6 @@ function getInstallStatus(agentId, scope, options = {}) {
     targetDir,
     installed: targetExists,
     isSymlink: Boolean(targetStats && targetStats.isSymbolicLink()),
-    metadata: metadataResult.metadata,
-    metadataPath: metadataResult.metadataPath,
-    metadataError: metadataResult.error,
   };
 }
 
@@ -326,11 +264,7 @@ function formatStatusResults(statuses) {
     const deployment = status.isSymlink ? 'symlink' : 'copy';
 
     if (status.installed) {
-      const version = status.metadata && status.metadata.sourcePackageVersion ? status.metadata.sourcePackageVersion : 'unknown';
-      const installedAt = status.metadata && status.metadata.installedAt ? status.metadata.installedAt : 'unknown time';
-      lines.push(`- ${agentName} (${status.scope}): installed (${deployment}, version ${version}, installed ${installedAt})`);
-    } else if (status.metadataError) {
-      lines.push(`- ${agentName} (${status.scope}): not installed (metadata is invalid)`);
+      lines.push(`- ${agentName} (${status.scope}): installed (${deployment})`);
     } else {
       lines.push(`- ${agentName} (${status.scope}): not installed`);
     }

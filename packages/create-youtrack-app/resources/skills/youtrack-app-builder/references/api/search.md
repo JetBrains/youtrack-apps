@@ -19,7 +19,7 @@ If a sort order is not specified explicitly in the query, the issues that are re
 
 #### Returns
 
-Return type: [`Set.<Issue>`](set.md).
+Return type: `Set.<Issue>`.
 
 The set of issues found by the search.
 
