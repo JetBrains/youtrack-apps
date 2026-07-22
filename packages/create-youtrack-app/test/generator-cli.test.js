@@ -412,8 +412,9 @@ describe('NestJS-Style Code Generation', () => {
       const result = runCLI('rule add onChange notify-cli-rule', { silent: true });
 
       assert.strictEqual(result.success, true, 'Command should succeed');
-      assert.strictEqual(fileExists('src/workflows/notify-cli-rule.js'), true);
-      assert.strictEqual(fileExists('src/backend/workflows/notify-cli-rule.js'), false);
+      assert.strictEqual(fileExists('src/workflows/notify-cli-rule.ts'), true);
+      assert.strictEqual(fileExists('src/workflows/notify-cli-rule.js'), false);
+      assert.strictEqual(fileExists('src/backend/workflows/notify-cli-rule.ts'), false);
     });
   });
 

@@ -5,48 +5,23 @@ import {createAppManagementOperations} from '../management/app-management-operat
 import {LogEntry, printJson, RuleLogEntry} from '../management/types.js';
 import {paginationFromConfig, printPaginationNotice} from '../pagination.js';
 
-export async function logs(config: Config, appName?: string): Promise<void> {
+export async function logs(config: Config, args?: string): Promise<void> {
   try {
-    const entries = await createAppManagementOperations(config).getLogs(appName, config.limit);
+    const [appName, scriptName] = splitLogArgs(args);
+    if (scriptName) {
+      try {
+        await printScriptLogs(config, appName, scriptName);
+      } catch (error) {
+        if (await tryPrintAppLogs(config, args)) {
+          return;
+        }
 
-    if (config.json) {
-      printJson(entries);
+        throw error;
+      }
       return;
     }
 
-    if (!entries.length) {
-      console.log(i18n('No log entries found'));
-      return;
-    }
-
-    for (const entry of entries) {
-      console.log(formatLogEntry(entry));
-    }
-  } catch (error) {
-    exit(error);
-  }
-}
-
-export async function scriptLogs(config: Config, args?: string): Promise<void> {
-  try {
-    const [appName, scriptName] = splitScriptLogArgs(args);
-    const pagination = paginationFromConfig(config);
-    const result = await createAppManagementOperations(config).getScriptLogs(appName, scriptName, pagination);
-
-    if (config.json) {
-      printJson(result);
-      return;
-    }
-
-    if (!result.items.length) {
-      console.log(i18n('No log entries found'));
-      return;
-    }
-
-    for (const entry of result.items) {
-      console.log(formatRuleLogEntry(entry));
-    }
-    printPaginationNotice('log entries', result, pagination);
+    await printAppLogs(config, appName);
   } catch (error) {
     exit(error);
   }
@@ -76,6 +51,53 @@ export async function requirementErrors(config: Config, appName?: string): Promi
   }
 }
 
+async function tryPrintAppLogs(config: Config, appName: string | undefined): Promise<boolean> {
+  try {
+    await printAppLogs(config, appName);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function printAppLogs(config: Config, appName: string | undefined): Promise<void> {
+  const entries = await createAppManagementOperations(config).getLogs(appName, config.limit);
+
+  if (config.json) {
+    printJson(entries);
+    return;
+  }
+
+  if (!entries.length) {
+    console.log(i18n('No log entries found'));
+    return;
+  }
+
+  for (const entry of entries) {
+    console.log(formatLogEntry(entry));
+  }
+}
+
+async function printScriptLogs(config: Config, appName: string | undefined, scriptName: string): Promise<void> {
+  const pagination = paginationFromConfig(config);
+  const result = await createAppManagementOperations(config).getScriptLogs(appName, scriptName, pagination);
+
+  if (config.json) {
+    printJson(result);
+    return;
+  }
+
+  if (!result.items.length) {
+    console.log(i18n('No log entries found'));
+    return;
+  }
+
+  for (const entry of result.items) {
+    console.log(formatRuleLogEntry(entry));
+  }
+  printPaginationNotice('log entries', result, pagination);
+}
+
 function formatLogEntry(entry: LogEntry): string {
   if (typeof entry === 'string') {
     return entry;
@@ -87,9 +109,9 @@ function formatLogEntry(entry: LogEntry): string {
   return [timestamp, level, message].filter(Boolean).join(' ');
 }
 
-function splitScriptLogArgs(args: string | undefined): [string | undefined, string | undefined] {
+function splitLogArgs(args: string | undefined): [string | undefined, string | undefined] {
   const parts = (args ?? '').split(/\s+/).filter(Boolean);
-  return [parts[0], parts[1]];
+  return [parts[0], parts.slice(1).join(' ') || undefined];
 }
 
 function formatRuleLogEntry(entry: RuleLogEntry): string {

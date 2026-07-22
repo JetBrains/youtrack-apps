@@ -6,10 +6,10 @@ import {formatBoolean, printYaml, UserSummary} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
 import {printList} from './output.js';
 
-export async function userList(config: Config): Promise<void> {
+export async function userList(config: Config, query?: string): Promise<void> {
   try {
     const pagination = paginationFromConfig(config);
-    const result = await createAppManagementOperations(config).listUsers(pagination);
+    const result = await createAppManagementOperations(config).listUsers(query, pagination);
 
     printList({
       config,

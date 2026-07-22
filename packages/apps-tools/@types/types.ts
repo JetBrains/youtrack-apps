@@ -16,6 +16,7 @@ export interface Config {
   limit: string | null;
   settings: string | null;
   enabled: string | null;
+  field: string | null;
   cwd: string;
 }
 

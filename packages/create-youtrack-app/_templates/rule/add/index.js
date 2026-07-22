@@ -39,15 +39,17 @@ module.exports = {
     validateRuleType(answers.ruleType);
     validateRuleName(answers.name);
 
+    const isEnhancedDX = args.isEnhancedDX === true || args.isEnhancedDX === 'true';
     const targetCwd = path.resolve(process.cwd(), args.cwd || '.');
-    const target = resolveRuleTarget(targetCwd, answers.name);
+    const target = resolveRuleTarget(targetCwd, answers.name, isEnhancedDX);
     if (fs.existsSync(target.absolutePath)) {
       throw new Error(`Workflow rule already exists at ${target.relativePath}`);
     }
 
     return {
       ...answers,
-      content: renderRuleTemplate(answers.ruleType),
+      isEnhancedDX,
+      content: renderRuleTemplate(answers.ruleType, isEnhancedDX),
     };
   },
 };

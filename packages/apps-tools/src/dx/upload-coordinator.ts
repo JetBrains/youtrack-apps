@@ -235,6 +235,7 @@ export class UploadCoordinator {
       limit: null,
       settings: null,
       enabled: null,
+      field: null,
       cwd: this.cwd
     };
 

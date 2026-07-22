@@ -56,7 +56,7 @@ async function confirmDelete(config: Config, appName?: string): Promise<boolean>
   }
 
   const prompt = createInterface({input: process.stdin, output: process.stdout});
-  const answer = await prompt.question(i18n(`Delete app "${appName}"? Type "yes" to continue: `));
+  const answer = await prompt.question(i18n(`Permanently delete app "${appName}" and everything app-related? Type "yes" to continue: `));
   prompt.close();
   return answer.trim().toLowerCase() === 'yes';
 }

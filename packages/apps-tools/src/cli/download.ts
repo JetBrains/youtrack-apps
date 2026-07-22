@@ -9,6 +9,7 @@ import {tmpDir} from '../../lib/fs/tmpdir.js';
 import {i18n} from '../../lib/i18n/i18n.js';
 import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request.js';
 import {resolve} from '../../lib/net/resolve.js';
+import {createAppManagementOperations} from './management/app-management-operations.js';
 
 export async function download(config: Config, appName?: string) {
   if (!appName) {
@@ -17,16 +18,16 @@ export async function download(config: Config, appName?: string) {
   }
   appName = appName.toString();
 
-  const url = resolve(config.host, `/api/admin/apps/${appName.replace(/^@/, '')}`);
-  const options = {
-    headers: {
-      Accept: 'application/zip',
-      'Content-Type': 'application/json',
-    },
-  };
-  const requestParams = generateRequestParams(config, url.href, options);
-
   try {
+    const app = await createAppManagementOperations(config).resolveApp(appName, ['id']);
+    const url = resolve(config.host, `/api/admin/apps/${app.id}`);
+    const options = {
+      headers: {
+        Accept: 'application/zip',
+        'Content-Type': 'application/json',
+      },
+    };
+    const requestParams = generateRequestParams(config, url.href, options);
     const res = await fetch(requestParams);
     if (!res.ok || !res.body) {
       const errorMessage = await prepareErrorMessage(res);

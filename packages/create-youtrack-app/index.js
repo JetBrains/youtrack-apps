@@ -235,22 +235,24 @@ async function handleRuleCommand(ruleArgs) {
     return false;
   }
 
-  const usage = 'Usage: rule add <type> <name>';
+  const usage = 'Usage: rule add <type> --name <name>';
   let ruleType;
   let name;
 
   if (ruleArgs[1] === 'add') {
-    if (ruleArgs.length !== 4) {
+    if (ruleArgs.length < 3 || ruleArgs.length > 4) {
       console.error(styleText("red", usage));
       process.exit(1);
     }
-    [, , ruleType, name] = ruleArgs;
+    [, , ruleType] = ruleArgs;
+    name = ruleArgs[3] || args.name;
   } else {
-    if (ruleArgs.length !== 3) {
+    if (ruleArgs.length < 2 || ruleArgs.length > 3) {
       console.error(styleText("red", usage));
       process.exit(1);
     }
-    [, ruleType, name] = ruleArgs;
+    [, ruleType] = ruleArgs;
+    name = ruleArgs[2] || args.name;
   }
 
   if (!ruleType || !name) {
@@ -261,7 +263,11 @@ async function handleRuleCommand(ruleArgs) {
   validateRuleType(ruleType);
   validateRuleName(name);
 
-  const { relativePath, absolutePath } = resolveRuleTarget(cwd, name);
+  const pkgPath = path.join(cwd, 'package.json');
+  const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
+  const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+
+  const { relativePath, absolutePath } = resolveRuleTarget(cwd, name, isEnhancedDX);
 
   if (fs.existsSync(absolutePath)) {
     throw new Error(`Workflow rule already exists at ${relativePath}`);
@@ -274,6 +280,8 @@ async function handleRuleCommand(ruleArgs) {
     ruleType,
     '--name',
     name,
+    '--isEnhancedDX',
+    String(isEnhancedDX),
     '--cwd',
     cwd,
   ]);
@@ -349,7 +357,12 @@ async function handleRuleCommand(ruleArgs) {
         process.exit(1);
       }
 
-      const method = args.method || 'GET'; // Default to GET
+      const method = String(args.method || 'GET').toUpperCase(); // Default to GET
+      const validMethods = ['GET', 'POST', 'PUT', 'DELETE'];
+      if (!validMethods.includes(method)) {
+        console.error(styleText("red", `Invalid method: ${method}. Must be one of: ${validMethods.join(', ')}`));
+        process.exit(1);
+      }
       const permissions = args.permissions || '';
 
       const pkgPath = path.join(cwd, 'package.json');
@@ -357,8 +370,35 @@ async function handleRuleCommand(ruleArgs) {
       const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
 
       if (!isEnhancedDX) {
-        console.error(styleText("red", 'This command requires an Enhanced DX project.'));
-        process.exit(1);
+        const handlerName = args.handler != null ? String(args.handler) : 'backend';
+        if (!/^[a-z][a-z0-9-]*$/.test(handlerName)) {
+          console.error(styleText("red", `Invalid handler name: "${handlerName}". Must start with a lowercase letter and contain only lowercase letters, numbers, and hyphens.`));
+          process.exit(1);
+        }
+
+        const handlerRel = path.join('src', `${handlerName}.js`);
+        const hygenArgs = [
+          'http-handler',
+          'add',
+          '--handlerName',
+          handlerName,
+          '--path',
+          routePath,
+          '--method',
+          method,
+          '--handlerScope',
+          scope,
+          '--permissions',
+          permissions,
+          '--cwd',
+          cwd
+        ];
+
+        console.log(styleText("cyan", `\nAdding ${method} handler to ${handlerRel}...\n`));
+        await runHygen(hygenArgs);
+        runGeneratedFilesLintFix([handlerRel]);
+        console.log(styleText("green", `\n✓ HTTP handler created successfully!\n`));
+        return;
       }
 
       const targetRel = path.join('src', 'backend', 'router', scope, routePath || '', `${method}.ts`);

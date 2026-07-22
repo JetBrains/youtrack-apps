@@ -32,8 +32,12 @@ function validateRuleName(name) {
   }
 }
 
-function resolveRuleTarget(cwd, name) {
-  const relativePath = path.join('src', 'workflows', `${name}.js`);
+function getRuleExtension(isEnhancedDX = false) {
+  return isEnhancedDX ? 'ts' : 'js';
+}
+
+function resolveRuleTarget(cwd, name, isEnhancedDX = false) {
+  const relativePath = path.join('src', 'workflows', `${name}.${getRuleExtension(isEnhancedDX)}`);
 
   return {
     relativePath,
@@ -41,14 +45,16 @@ function resolveRuleTarget(cwd, name) {
   };
 }
 
-function renderRequirements() {
+function renderJsRequirements() {
   return '  requirements: { /* TODO: add requirements */ },';
 }
 
-function renderRuleTemplate(ruleType) {
-  validateRuleType(ruleType);
+function renderTsRequirements() {
+  return '  requirements,';
+}
 
-  const ruleBodies = {
+function buildRuleBodies(renderRequirements) {
+  return {
     onChange: `  title: '', // TODO: add rule title
   guard: (ctx) => {
     // TODO: return true when the rule should run
@@ -99,6 +105,22 @@ ${renderRequirements()}`,
   },
 ${renderRequirements()}`,
   };
+}
+
+function renderRuleTemplate(ruleType, isEnhancedDX = false) {
+  validateRuleType(ruleType);
+
+  const ruleBodies = buildRuleBodies(isEnhancedDX ? renderTsRequirements : renderJsRequirements);
+
+  if (isEnhancedDX) {
+    return `import { Issue } from '@jetbrains/youtrack-scripting-api/entities';
+import { requirements } from '../backend/requirements';
+
+export const rule = Issue.${ruleType}({
+${ruleBodies[ruleType]}
+});
+`;
+  }
 
   return `const entities = require('@jetbrains/youtrack-scripting-api/entities');
 
@@ -108,19 +130,20 @@ ${ruleBodies[ruleType]}
 `;
 }
 
-function buildRuleScaffold(cwd, ruleType, name) {
+function buildRuleScaffold(cwd, ruleType, name, isEnhancedDX = false) {
   validateRuleType(ruleType);
   validateRuleName(name);
 
   return {
-    ...resolveRuleTarget(cwd, name),
-    content: renderRuleTemplate(ruleType),
+    ...resolveRuleTarget(cwd, name, isEnhancedDX),
+    content: renderRuleTemplate(ruleType, isEnhancedDX),
   };
 }
 
 module.exports = {
   VALID_RULE_TYPES,
   buildRuleScaffold,
+  getRuleExtension,
   renderRuleTemplate,
   resolveRuleTarget,
   validateRuleName,

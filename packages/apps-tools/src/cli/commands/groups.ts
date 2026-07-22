@@ -2,14 +2,14 @@ import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
-import {printYaml, UserGroup} from '../management/types.js';
+import {GroupMembersResult, printJson, printYaml, UserGroup} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
 import {printList} from './output.js';
 
-export async function groupList(config: Config): Promise<void> {
+export async function groupList(config: Config, query?: string): Promise<void> {
   try {
     const pagination = paginationFromConfig(config);
-    const result = await createAppManagementOperations(config).listGroups(pagination);
+    const result = await createAppManagementOperations(config).listGroups(query, pagination);
 
     printList({
       config,
@@ -26,7 +26,26 @@ export async function groupList(config: Config): Promise<void> {
 
 export async function groupMembers(config: Config, groupKey?: string): Promise<void> {
   try {
+    if (!groupKey) {
+      const pagination = paginationFromConfig(config);
+      const result = await createAppManagementOperations(config).listGroupMembers(pagination);
+      printList({
+        config,
+        result,
+        pagination,
+        resourceName: 'user groups',
+        emptyMessage: i18n('No user groups found'),
+        formatItem: formatGroupMembers,
+      });
+      return;
+    }
+
     const result = await createAppManagementOperations(config).getGroupMembers(groupKey, paginationFromConfig(config));
+
+    if (config.json) {
+      printJson(result);
+      return;
+    }
 
     if (config.yaml) {
       printYaml(result);
@@ -47,6 +66,15 @@ export async function groupMembers(config: Config, groupKey?: string): Promise<v
 }
 
 function formatGroup(group: UserGroup): string {
-  const users = group.userCount === undefined ? 'unknown' : group.userCount.toString();
-  return `${group.name} (${group.id}), users: ${users}`;
+  return `${group.name} (${group.id})`;
+}
+
+function formatGroupMembers(result: GroupMembersResult): string[] {
+  const lines = [formatGroup(result.group)];
+  if (!result.members.length) {
+    lines.push('  no direct members');
+    return lines;
+  }
+
+  return lines.concat(result.members.map(member => `  ${member.id}`));
 }
