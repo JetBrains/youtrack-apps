@@ -5,79 +5,176 @@
  * `logAndPostNext` logs the result and dispatches URL 2 via another postAsync,
  * and so on. Each URL costs one async hop. Server `maxChainLength = 10` by
  * default, giving the practical cap in {@link MAX_WEBHOOK_URLS_PER_EVENT}.
+ *
+ * Settings model (arrays): `ctx.settings.triggers` is an array of
+ * `{event, url, secret}` rows. Each row is one endpoint with its own token;
+ * `ctx.settings.headerName` is the shared header the token is sent in.
+ *
+ * Secret handling: a `format: 'secret'` value must be passed as the live
+ * setting object to the http.js connection (`addHeader`) — the JVM substitutes
+ * the real value at send time. It must NEVER be stringified (that yields the
+ * mask `<***>`) or round-tripped through `ctx.store` (that loses the live
+ * binding). So we store only the URL queue across async hops and re-resolve
+ * each URL's live secret from `ctx.settings.triggers` at dispatch time.
  */
 
 const http = require('@jetbrains/youtrack-scripting-api/http');
 const security = require('./workflow-security');
+const {ALL_EVENTS_TYPE} = require('./constants');
 
 const WEBHOOK_TIMEOUT_MS = 5000;
 const MAX_WEBHOOK_URLS_PER_EVENT = 10;
 
 const STORE_URLS = 'webhookUrls';
+const STORE_EVENT_TYPE = 'webhookEventType';
 const STORE_PAYLOAD = 'webhookPayload';
 const STORE_EVENT = 'webhookEvent';
 const STORE_CURRENT_URL = 'webhookCurrentUrl';
 
-// `webhookToken` is `format: "secret"` — at the JS layer its toString() is
-// the literal "secret", and that's what reaches the wire. Same as the sync
-// baseline; awaits a platform-side fix.
-
 /**
- * Parse comma or newline separated webhook URLs from settings
- * @param {string} webhooksStr - Comma or newline separated webhook URLs
- * @returns {Array<string>} Array of trimmed, non-empty URLs
+ * Normalizes a settings array value into a plain JS array of rows.
+ *
+ * The shape depends on the runtime context:
+ * - HTTP handlers and (since JT-97417) workflow rules get a real JS Array.
+ * - Older/other runtimes may hand back an iterable host wrapper. Handle both;
+ *   every access is guarded so a rule NEVER throws (which would block issue
+ *   creation) — worst case is an empty list.
  */
-function parseWebhookUrls(webhooksStr) {
-  if (!webhooksStr || typeof webhooksStr !== 'string') {
+function toRows(value) {
+  if (value == null) {
     return [];
   }
-  return webhooksStr.split(/[,\n]/)
-    .map(function (s) {
-      return s.trim();
-    })
-    .filter(function (s) {
-      return s.length > 0;
-    });
+  if (Array.isArray(value)) {
+    return value;
+  }
+  const out = [];
+  // Documented multi-value idiom. The property probe itself can throw when the
+  // member is a non-whitelisted host getter, so it lives inside the try too.
+  try {
+    if (typeof value.forEach === 'function') {
+      value.forEach(function (row) { out.push(row); });
+      return out;
+    }
+  } catch (e) {
+    out.length = 0;
+  }
+  // Iterable host object.
+  try {
+    for (const row of value) {
+      out.push(row);
+    }
+    if (out.length) {
+      return out;
+    }
+  } catch (e) {
+    out.length = 0;
+  }
+  // ScriptingSequence-style size()/get().
+  try {
+    if (typeof value.size === 'function' && typeof value.get === 'function') {
+      const n = value.size();
+      for (let i = 0; i < n; i++) {
+        out.push(value.get(i));
+      }
+      return out;
+    }
+  } catch (e) {
+    out.length = 0;
+  }
+  // Array-like.
+  try {
+    if (typeof value.length === 'number') {
+      for (let i = 0; i < value.length; i++) {
+        out.push(value[i]);
+      }
+      return out;
+    }
+  } catch (e) {
+    out.length = 0;
+  }
+  console.warn('[webhooks] Could not read triggers setting in this context; treating as empty.');
+  return out;
 }
 
 /**
- * Gets all webhook URLs for an event, combining event-specific and "All Events" URLs.
- * Deduplicates URLs to avoid sending multiple times to the same endpoint.
- * @param {Object} ctx - The workflow context with settings
- * @param {string} settingsKey - The key in ctx.settings to get webhook URLs from
- * @returns {Array<string>} Deduplicated array of webhook URLs
+ * Reads one field from a row that may be a plain JS object or a host Map
+ * (`.get(key)`), returning undefined when absent. Returns the value as-is —
+ * for a `secret` field this is the live setting object, not a string.
  */
-function getWebhookUrls(ctx, settingsKey) {
-  const webhooksStr = ctx.settings[settingsKey] || '';
-  const eventUrls = parseWebhookUrls(webhooksStr);
+function rowField(row, key) {
+  if (row == null) {
+    return undefined;
+  }
+  const direct = row[key];
+  if (direct !== undefined) {
+    return direct;
+  }
+  if (typeof row.get === 'function') {
+    return row.get(key);
+  }
+  return undefined;
+}
 
-  const allEventsWebhooksStr = ctx.settings.webhooksOnAllEvents || '';
-  const allEventsUrls = parseWebhookUrls(allEventsWebhooksStr);
+function normalizeUrl(row) {
+  const raw = rowField(row, 'url');
+  return raw != null ? String(raw).trim() : '';
+}
 
-  const urlSet = {};
-  const allUrls = [];
+function rowMatchesEvent(row, eventType) {
+  const event = rowField(row, 'event');
+  return event === eventType || event === ALL_EVENTS_TYPE;
+}
 
-  eventUrls.forEach(function (url) {
-    if (url && !urlSet[url]) {
-      allUrls.push(url);
-      urlSet[url] = true;
+/**
+ * Ordered, de-duplicated list of URLs configured for an event (event-specific
+ * rows + "All events" rows). URLs only — secrets are resolved live at dispatch.
+ * @returns {Array<string>}
+ */
+function getWebhookTargets(ctx, eventType) {
+  const rows = toRows(ctx.settings.triggers);
+
+  const seen = {};
+  const urls = [];
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || typeof row !== 'object' || !rowMatchesEvent(row, eventType)) {
+      continue;
     }
-  });
-
-  allEventsUrls.forEach(function (url) {
-    if (url && !urlSet[url]) {
-      allUrls.push(url);
-      urlSet[url] = true;
+    const url = normalizeUrl(row);
+    if (!url || seen[url]) {
+      continue;
     }
-  });
+    seen[url] = true;
+    urls.push(url);
+  }
+  return urls;
+}
 
-  return allUrls;
+/**
+ * Resolves the LIVE secret object for a given event+URL from the current
+ * settings, matching getWebhookTargets' precedence (first matching row wins,
+ * so an event-specific row beats an "All events" row). Returns the live
+ * `format: 'secret'` object (for http.js JVM substitution) — never a string —
+ * or null when the row has no token.
+ */
+function resolveTriggerSecret(ctx, eventType, url) {
+  const rows = toRows(ctx.settings.triggers);
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row || typeof row !== 'object' || !rowMatchesEvent(row, eventType)) {
+      continue;
+    }
+    if (normalizeUrl(row) !== url) {
+      continue;
+    }
+    const secret = rowField(row, 'secret');
+    return secret != null ? secret : null;
+  }
+  return null;
 }
 
 /**
  * Logs the outcome of a single webhook delivery.
- * @param {Object} response - ctx.response from the postAsync handler
- * @param {string} url - The webhook URL that was hit
  */
 function logWebhookResponse(response, url) {
   if (!response) {
@@ -99,15 +196,24 @@ function logWebhookResponse(response, url) {
 }
 
 /**
- * Validates a URL, persists post-dispatch state, then fires postAsync with
- * `logAndPostNext` as the response handler. Stores BEFORE scheduling per
- * the async-functions "store before invoke" guidance.
+ * Validates a URL, resolves its live secret, persists post-dispatch state, then
+ * fires postAsync with `logAndPostNext` as the response handler. Stores BEFORE
+ * scheduling per the async-functions "store before invoke" guidance.
  * @returns {boolean} true on scheduled, false on rejection (caller may retry next URL).
  */
-function tryPostWebhook(ctx, url, remainingUrls, token, headerName, payloadJson) {
+function tryPostWebhook(ctx, url, remainingUrls, eventType, headerName, payloadJson) {
   const validation = security.validateWebhookUrl(url);
   if (!validation.valid) {
     console.error('[webhooks] Blocked webhook to ' + url + ': ' + validation.reason);
+    return false;
+  }
+
+  // Live secret object — passed straight to http.js so the JVM substitutes the
+  // real token at send time. Fail closed if a matching row has no token, rather
+  // than send an unauthenticated request.
+  const secret = resolveTriggerSecret(ctx, eventType, url);
+  if (secret == null) {
+    console.warn('[webhooks] Trigger for ' + url + ' has no token configured; skipping to avoid an unauthenticated request');
     return false;
   }
 
@@ -121,7 +227,7 @@ function tryPostWebhook(ctx, url, remainingUrls, token, headerName, payloadJson)
   try {
     const connection = new http.Connection(url, null, WEBHOOK_TIMEOUT_MS);
     connection.addHeader('Content-Type', 'application/json');
-    security.addSecurityHeaders(connection, token, headerName);
+    security.addSecurityHeaders(connection, secret, headerName);
     connection.postAsync('', '', payloadJson, 'logAndPostNext');
     return true;
   } catch (error) {
@@ -132,28 +238,28 @@ function tryPostWebhook(ctx, url, remainingUrls, token, headerName, payloadJson)
 }
 
 /**
- * Dispatches the next valid URL via postAsync. Invalid URLs are skipped
- * synchronously without consuming an async hop.
+ * Dispatches the next valid URL via postAsync. Invalid / tokenless URLs are
+ * skipped synchronously without consuming an async hop.
  * @returns {boolean} true if scheduled, false if no valid URLs remain.
  */
 function postNextValid(ctx) {
-  const token = ctx.settings.webhookToken;
   const headerName = ctx.settings.headerName;
 
-  // Fail closed if settings were cleared mid-chain — addHeader silently
-  // skips a falsy token, which would fan out unauthenticated requests.
-  if (!token || !headerName) {
-    console.warn('[webhooks] Webhook token or header was cleared during chain execution; aborting remaining dispatches');
+  // Fail closed if the header name was cleared mid-chain — without it the
+  // token cannot be attached and requests would go out unauthenticated.
+  if (!headerName) {
+    console.warn('[webhooks] Header name was cleared during chain execution; aborting remaining dispatches');
     return false;
   }
 
+  const eventType = ctx.load(STORE_EVENT_TYPE);
   const payloadJson = ctx.load(STORE_PAYLOAD);
   const urlsJson = ctx.load(STORE_URLS);
   const urls = urlsJson ? JSON.parse(urlsJson) : [];
 
   while (urls.length > 0) {
     const url = urls.shift();
-    if (tryPostWebhook(ctx, url, urls, token, headerName, payloadJson)) {
+    if (tryPostWebhook(ctx, url, urls, eventType, headerName, payloadJson)) {
       return true;
     }
   }
@@ -176,28 +282,22 @@ function logAndPostNext(ctx) {
  * Schedules webhooks via the async function chain. Call from a rule's sync
  * `action`. The rule must declare `asyncFunctions: core.asyncFunctions`.
  */
-function sendWebhooks(ctx, settingsKey, payload, eventName) {
-  const token = ctx.settings.webhookToken || null;
-  if (!token) {
-    console.warn('[webhooks] No webhook token configured - webhooks disabled for ' + eventName);
-    return;
-  }
-
+function sendWebhooks(ctx, eventType, payload, eventName) {
   const headerName = ctx.settings.headerName || null;
   if (!headerName) {
     console.warn('[webhooks] No header name configured - webhooks disabled for ' + eventName);
     return;
   }
 
-  const allUrls = getWebhookUrls(ctx, settingsKey);
+  const urls = getWebhookTargets(ctx, eventType);
 
-  if (allUrls.length === 0) {
-    console.log('[webhooks] No webhook URLs configured for ' + eventName);
+  if (urls.length === 0) {
+    console.log('[webhooks] No webhook triggers configured for ' + eventName);
     return;
   }
 
   // Filter invalid URLs first so the cap applies to URLs that can actually be dispatched.
-  const validUrls = allUrls.filter(function (url) {
+  const validUrls = urls.filter(function (url) {
     const validation = security.validateWebhookUrl(url);
     if (!validation.valid) {
       console.error('[webhooks] Blocked webhook to ' + url + ': ' + validation.reason);
@@ -207,21 +307,22 @@ function sendWebhooks(ctx, settingsKey, payload, eventName) {
   });
 
   if (validUrls.length === 0) {
-    console.log('[webhooks] No valid webhook URLs for ' + eventName);
+    console.log('[webhooks] No valid webhook triggers for ' + eventName);
     return;
   }
 
-  let urls = validUrls;
+  let dispatchUrls = validUrls;
   if (validUrls.length > MAX_WEBHOOK_URLS_PER_EVENT) {
-    console.warn('[webhooks] ' + validUrls.length + ' valid URLs configured for ' + eventName + ' but max is ' + MAX_WEBHOOK_URLS_PER_EVENT + ' per event (async chain limit). Extra URLs dropped.');
-    urls = validUrls.slice(0, MAX_WEBHOOK_URLS_PER_EVENT);
+    console.warn('[webhooks] ' + validUrls.length + ' valid triggers configured for ' + eventName + ' but max is ' + MAX_WEBHOOK_URLS_PER_EVENT + ' per event (async chain limit). Extra triggers dropped.');
+    dispatchUrls = validUrls.slice(0, MAX_WEBHOOK_URLS_PER_EVENT);
   }
 
-  ctx.store(STORE_URLS, JSON.stringify(urls));
+  ctx.store(STORE_URLS, JSON.stringify(dispatchUrls));
+  ctx.store(STORE_EVENT_TYPE, eventType);
   ctx.store(STORE_PAYLOAD, JSON.stringify(payload));
   ctx.store(STORE_EVENT, eventName);
 
-  console.log('[webhooks] Scheduling ' + urls.length + ' webhook(s) for ' + eventName);
+  console.log('[webhooks] Scheduling ' + dispatchUrls.length + ' webhook(s) for ' + eventName);
   postNextValid(ctx);
 }
 
@@ -229,8 +330,8 @@ const asyncFunctions = {
   logAndPostNext: logAndPostNext,
 };
 
-exports.parseWebhookUrls = parseWebhookUrls;
-exports.getWebhookUrls = getWebhookUrls;
+exports.getWebhookTargets = getWebhookTargets;
+exports.resolveTriggerSecret = resolveTriggerSecret;
 exports.sendWebhooks = sendWebhooks;
 exports.logAndPostNext = logAndPostNext;
 exports.logWebhookResponse = logWebhookResponse;

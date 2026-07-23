@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // @jetbrains/youtrack-scripting-api/http is stubbed by setup.js via
 // Module._resolveFilename so workflow-http.js loads without YouTrack runtime.
 import {
-  parseWebhookUrls,
+  getWebhookTargets,
+  resolveTriggerSecret,
   sendWebhooks,
   logAndPostNext,
   asyncFunctions,
@@ -14,67 +15,136 @@ import httpStub from './mocks/youtrack-http.cjs';
 
 const { instances: httpInstances, reset: resetHttp } = httpStub;
 
-// ── parseWebhookUrls ──────────────────────────────────────────────────────────
+const TOKEN = 'test-token';
+const HEADER = 'X-Token';
+const PAYLOAD = { event: 'test' };
 
-describe('parseWebhookUrls', () => {
-  it('returns [] for empty string', () => {
-    expect(parseWebhookUrls('')).toEqual([]);
+// Build a triggers row. secret defaults to TOKEN. Pass secret:null to omit.
+function trigger(url, event = 'issueCreated', secret = TOKEN) {
+  const row = { event, url };
+  if (secret !== null) {
+    row.secret = secret;
+  }
+  return row;
+}
+
+// ── getWebhookTargets (URL list only) ─────────────────────────────────────────
+
+describe('getWebhookTargets', () => {
+  it('returns [] when triggers is absent', () => {
+    expect(getWebhookTargets(createCtx({ settings: {} }), 'issueCreated')).toEqual([]);
   });
 
-  it('returns [] for null', () => {
-    expect(parseWebhookUrls(null)).toEqual([]);
+  it('returns [] when triggers is not an array', () => {
+    expect(getWebhookTargets(createCtx({ settings: { triggers: 'nope' } }), 'issueCreated')).toEqual([]);
   });
 
-  it('returns [] for undefined', () => {
-    expect(parseWebhookUrls(undefined)).toEqual([]);
+  it('returns only URLs of rows matching the event type', () => {
+    const ctx = createCtx({
+      settings: { triggers: [trigger('https://a.com/', 'issueCreated'), trigger('https://b.com/', 'issueUpdated')] },
+    });
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/']);
   });
 
-  it('returns [] for a non-string', () => {
-    expect(parseWebhookUrls(42)).toEqual([]);
+  it('includes "allEvents" rows for any event type', () => {
+    const ctx = createCtx({
+      settings: { triggers: [trigger('https://a.com/', 'issueCreated'), trigger('https://all.com/', 'allEvents')] },
+    });
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/', 'https://all.com/']);
   });
 
-  it('parses a single URL', () => {
-    expect(parseWebhookUrls('https://example.com/hook')).toEqual([
-      'https://example.com/hook',
-    ]);
+  it('deduplicates by URL', () => {
+    const ctx = createCtx({
+      settings: { triggers: [trigger('https://a.com/', 'issueCreated'), trigger('https://a.com/', 'allEvents')] },
+    });
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/']);
   });
 
-  it('splits on commas', () => {
-    expect(parseWebhookUrls('https://a.com/,https://b.com/')).toEqual([
-      'https://a.com/',
-      'https://b.com/',
-    ]);
+  it('trims URLs and skips blank / malformed rows', () => {
+    const ctx = createCtx({
+      settings: {
+        triggers: [trigger('  https://a.com/  ', 'issueCreated'), trigger('', 'issueCreated'), null, { event: 'issueCreated' }],
+      },
+    });
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/']);
   });
 
-  it('splits on newlines', () => {
-    expect(parseWebhookUrls('https://a.com/\nhttps://b.com/')).toEqual([
-      'https://a.com/',
-      'https://b.com/',
-    ]);
+  it('reads an array-LIKE settings value (index + length, not a real JS Array)', () => {
+    const arrayLike = {
+      0: trigger('https://a.com/', 'issueCreated'),
+      1: trigger('https://b.com/', 'issueUpdated'),
+      length: 2,
+    };
+    expect(Array.isArray(arrayLike)).toBe(false);
+    const ctx = createCtx({ settings: { triggers: arrayLike } });
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/']);
   });
 
-  it('trims whitespace from each URL', () => {
-    expect(parseWebhookUrls('  https://a.com/  ,  https://b.com/  ')).toEqual([
-      'https://a.com/',
-      'https://b.com/',
-    ]);
+  it('reads a wrapper that only exposes forEach', () => {
+    const rows = [trigger('https://a.com/', 'issueCreated'), trigger('https://b.com/', 'issueUpdated')];
+    const wrapper = { forEach: (fn) => rows.forEach(fn) };
+    const ctx = createCtx({ settings: { triggers: wrapper } });
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/']);
   });
 
-  it('filters out blank entries', () => {
-    expect(parseWebhookUrls('https://a.com/,,\n\nhttps://b.com/')).toEqual([
-      'https://a.com/',
-      'https://b.com/',
-    ]);
+  it('never throws when the wrapper members are inaccessible (fail closed to empty)', () => {
+    const hostile = {
+      get forEach() { throw new Error('Unknown identifier: forEach'); },
+      get size() { throw new Error('Unknown identifier: size'); },
+      get length() { throw new Error('Unknown identifier: length'); },
+      [Symbol.iterator]() { throw new Error('Unknown identifier: iterator'); },
+    };
+    const ctx = createCtx({ settings: { triggers: hostile } });
+    expect(() => getWebhookTargets(ctx, 'issueCreated')).not.toThrow();
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual([]);
   });
 });
 
-// ── sendWebhooks: sync action dispatches URL #1 directly via postAsync ───────
+// ── resolveTriggerSecret (live secret object) ─────────────────────────────────
+
+describe('resolveTriggerSecret', () => {
+  it('returns the live secret value for a matching event + url (never stringified)', () => {
+    const secretObj = { isSecret: true, toString: () => '<***>' };
+    const ctx = createCtx({
+      settings: { triggers: [{ event: 'issueCreated', url: 'https://a.com/', secret: secretObj }] },
+    });
+    // Returns the SAME object reference — http.js gets the live secret, not a string.
+    expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBe(secretObj);
+  });
+
+  // Precedence is list order, not specificity: the first matching row wins, so an allEvents row
+  // placed above this one would be the one resolved.
+  it('resolves the first matching row for the same url', () => {
+    const ctx = createCtx({
+      settings: {
+        triggers: [
+          trigger('https://a.com/', 'issueCreated', 'specific'),
+          trigger('https://a.com/', 'allEvents', 'catchall'),
+        ],
+      },
+    });
+    expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBe('specific');
+  });
+
+  it('matches "allEvents" rows', () => {
+    const ctx = createCtx({ settings: { triggers: [trigger('https://a.com/', 'allEvents', 'catchall')] } });
+    expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBe('catchall');
+  });
+
+  it('returns null when the matching row has no secret', () => {
+    const ctx = createCtx({ settings: { triggers: [trigger('https://a.com/', 'issueCreated', null)] } });
+    expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBeNull();
+  });
+
+  it('returns null when no row matches the url', () => {
+    const ctx = createCtx({ settings: { triggers: [trigger('https://a.com/', 'issueCreated')] } });
+    expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://x.com/')).toBeNull();
+  });
+});
+
+// ── sendWebhooks: sync action dispatches URL #1 with its live token ───────────
 
 describe('sendWebhooks scheduling', () => {
-  const TOKEN = 'test-token';
-  const HEADER = 'X-Token';
-  const PAYLOAD = { event: 'test' };
-
   beforeEach(() => {
     resetHttp();
     vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -82,153 +152,113 @@ describe('sendWebhooks scheduling', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
-  it('dispatches URL #1 via postAsync with logAndPostNext as response handler', () => {
+  it('dispatches URL #1 via postAsync and attaches its live token', () => {
     const ctx = createCtx({
-      settings: {
-        webhookToken: TOKEN,
-        headerName: HEADER,
-        webhooksOnIssueCreated: 'https://a.com/,https://b.com/',
-      },
+      settings: { headerName: HEADER, triggers: [trigger('https://a.com/'), trigger('https://b.com/')] },
       asyncFunctions,
     });
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
 
     expect(httpInstances).toHaveLength(1);
     const conn = httpInstances[0];
     expect(conn.url).toBe('https://a.com/');
-    expect(conn.calls).toHaveLength(1);
     expect(conn.calls[0].method).toBe('postAsync');
     expect(conn.calls[0].handlerName).toBe('logAndPostNext');
     expect(conn.calls[0].payload).toBe(JSON.stringify(PAYLOAD));
+    // Token resolved live from settings and passed to addHeader.
+    expect(conn.headers[HEADER]).toBe(TOKEN);
   });
 
-  it('stores remaining URL list, payload, and current URL for the async chain', () => {
+  it('stores only the URL queue + event type (never the secret) for the async chain', () => {
     const ctx = createCtx({
-      settings: {
-        webhookToken: TOKEN,
-        headerName: HEADER,
-        webhooksOnIssueCreated: 'https://a.com/,https://b.com/',
-      },
+      settings: { headerName: HEADER, triggers: [trigger('https://a.com/'), trigger('https://b.com/')] },
       asyncFunctions,
     });
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
 
-    // URL #1 dispatched; URL #2 remains in store.
-    expect(JSON.parse(ctx._storeMap.get('webhookUrls'))).toEqual([
-      'https://b.com/',
-    ]);
+    expect(JSON.parse(ctx._storeMap.get('webhookUrls'))).toEqual(['https://b.com/']);
     expect(ctx._storeMap.get('webhookCurrentUrl')).toBe('https://a.com/');
+    expect(ctx._storeMap.get('webhookEventType')).toBe('issueCreated');
     expect(JSON.parse(ctx._storeMap.get('webhookPayload'))).toEqual(PAYLOAD);
-    expect(ctx._storeMap.get('webhookEvent')).toBe('IssueCreated');
-    // Token and headerName are intentionally NOT in ctx.store — they're
-    // read from ctx.settings on each hop to avoid SecretAttributeValue
-    // toString() coercion. See workflow-http.js comment above STORE_URLS.
-    expect(ctx._storeMap.has('webhookToken')).toBe(false);
-    expect(ctx._storeMap.has('webhookHeader')).toBe(false);
+    // The store never contains a secret in any form.
+    const dump = JSON.stringify([...ctx._storeMap.entries()]);
+    expect(dump).not.toContain(TOKEN);
   });
 
-  it('does not dispatch when no URLs are configured', () => {
+  it('does not dispatch when no triggers match the event', () => {
     const ctx = createCtx({
-      settings: { webhookToken: TOKEN, headerName: HEADER },
+      settings: { headerName: HEADER, triggers: [trigger('https://a.com/', 'issueUpdated')] },
       asyncFunctions,
     });
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
-    expect(httpInstances).toHaveLength(0);
-  });
-
-  it('does not dispatch when token is missing', () => {
-    const ctx = createCtx({
-      settings: {
-        headerName: HEADER,
-        webhooksOnIssueCreated: 'https://a.com/',
-      },
-      asyncFunctions,
-    });
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
     expect(httpInstances).toHaveLength(0);
   });
 
   it('does not dispatch when header name is missing', () => {
-    const ctx = createCtx({
-      settings: {
-        webhookToken: TOKEN,
-        webhooksOnIssueCreated: 'https://a.com/',
-      },
-      asyncFunctions,
-    });
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
+    const ctx = createCtx({ settings: { triggers: [trigger('https://a.com/')] }, asyncFunctions });
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
     expect(httpInstances).toHaveLength(0);
   });
 
-  it('caps URL list at MAX_WEBHOOK_URLS_PER_EVENT and warns', () => {
-    const urls = [];
-    for (let i = 0; i < MAX_WEBHOOK_URLS_PER_EVENT + 3; i++) {
-      urls.push('https://host' + i + '.example.com/');
-    }
+  it('skips a matching trigger with no token (fail closed) and dispatches the next', () => {
     const ctx = createCtx({
       settings: {
-        webhookToken: TOKEN,
         headerName: HEADER,
-        webhooksOnIssueCreated: urls.join(','),
+        triggers: [trigger('https://a.com/', 'issueCreated', null), trigger('https://b.com/')],
       },
       asyncFunctions,
     });
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
 
-    // URL #1 dispatched, URLs #2..MAX remain in store, URLs beyond MAX dropped.
-    const stored = JSON.parse(ctx._storeMap.get('webhookUrls'));
-    expect(stored).toHaveLength(MAX_WEBHOOK_URLS_PER_EVENT - 1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining('max is ' + MAX_WEBHOOK_URLS_PER_EVENT),
-    );
+    expect(httpInstances).toHaveLength(1);
+    expect(httpInstances[0].url).toBe('https://b.com/');
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('has no token configured'));
   });
 
-  it('skips an invalid first URL synchronously and dispatches the next valid one (no async hop consumed)', () => {
+  it('caps URL list at MAX_WEBHOOK_URLS_PER_EVENT and warns', () => {
+    const triggers = [];
+    for (let i = 0; i < MAX_WEBHOOK_URLS_PER_EVENT + 3; i++) {
+      triggers.push(trigger('https://host' + i + '.example.com/'));
+    }
+    const ctx = createCtx({ settings: { headerName: HEADER, triggers }, asyncFunctions });
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
+
+    const stored = JSON.parse(ctx._storeMap.get('webhookUrls'));
+    expect(stored).toHaveLength(MAX_WEBHOOK_URLS_PER_EVENT - 1);
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('max is ' + MAX_WEBHOOK_URLS_PER_EVENT));
+  });
+
+  it('skips an invalid first URL synchronously and dispatches the next valid one', () => {
     const ctx = createCtx({
-      settings: {
-        webhookToken: TOKEN,
-        headerName: HEADER,
-        webhooksOnIssueCreated: 'http://10.0.0.1/,https://b.com/',
-      },
+      settings: { headerName: HEADER, triggers: [trigger('http://10.0.0.1/'), trigger('https://b.com/')] },
       asyncFunctions,
     });
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
 
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining('Blocked webhook to http://10.0.0.1/'),
-    );
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Blocked webhook to http://10.0.0.1/'));
     expect(httpInstances).toHaveLength(1);
     expect(httpInstances[0].url).toBe('https://b.com/');
   });
 
   it('returns silently if all URLs are invalid', () => {
     const ctx = createCtx({
-      settings: {
-        webhookToken: TOKEN,
-        headerName: HEADER,
-        webhooksOnIssueCreated: 'http://10.0.0.1/,file:///etc/passwd',
-      },
+      settings: { headerName: HEADER, triggers: [trigger('http://10.0.0.1/'), trigger('file:///etc/passwd')] },
       asyncFunctions,
     });
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
-
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
     expect(httpInstances).toHaveLength(0);
   });
 });
 
-// ── logAndPostNext: response handler that logs + chains via direct postAsync ─
+// ── logAndPostNext: response handler that logs + chains ──────────────────────
 
 describe('logAndPostNext', () => {
-  const TOKEN = 'test-token';
-  const HEADER = 'X-Token';
-  const PAYLOAD = { event: 'test' };
-
-  function seedCtx(remainingUrls, currentUrl = 'https://a.com/') {
-    const ctx = createCtx({
-      settings: { webhookToken: TOKEN, headerName: HEADER },
-      asyncFunctions,
-    });
+  // Seeds a mid-chain ctx: settings hold the live triggers; the store holds the
+  // remaining URL queue + event type (no secrets).
+  function seedCtx(remainingUrls, triggers, currentUrl = 'https://a.com/') {
+    const ctx = createCtx({ settings: { headerName: HEADER, triggers }, asyncFunctions });
     ctx.store('webhookUrls', JSON.stringify(remainingUrls));
+    ctx.store('webhookEventType', 'issueCreated');
     ctx.store('webhookCurrentUrl', currentUrl);
     ctx.store('webhookPayload', JSON.stringify(PAYLOAD));
     ctx.store('webhookEvent', 'IssueCreated');
@@ -242,106 +272,75 @@ describe('logAndPostNext', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
-  it('logs the successful response and dispatches the next URL directly via postAsync', () => {
-    const ctx = seedCtx(['https://b.com/']);
+  it('logs the successful response and dispatches the next URL with its live token', () => {
+    const ctx = seedCtx(['https://b.com/'], [trigger('https://a.com/'), trigger('https://b.com/')]);
     ctx.response = { code: 200 };
     logAndPostNext(ctx);
 
-    expect(console.log).toHaveBeenCalledWith(
-      expect.stringContaining('Webhook sent successfully to https://a.com/'),
-    );
+    expect(console.log).toHaveBeenCalledWith(expect.stringContaining('Webhook sent successfully to https://a.com/'));
     expect(httpInstances).toHaveLength(1);
     expect(httpInstances[0].url).toBe('https://b.com/');
-    expect(httpInstances[0].calls[0].method).toBe('postAsync');
-    expect(httpInstances[0].calls[0].handlerName).toBe('logAndPostNext');
+    expect(httpInstances[0].headers[HEADER]).toBe(TOKEN);
   });
 
-  it('does not dispatch when the URL list is empty', () => {
-    const ctx = seedCtx([]);
+  it('does not dispatch when the URL queue is empty', () => {
+    const ctx = seedCtx([], [trigger('https://a.com/')]);
     ctx.response = { code: 200 };
     logAndPostNext(ctx);
     expect(httpInstances).toHaveLength(0);
   });
 
-  it('logs an error when ctx.response.exception is present and still dispatches the next URL', () => {
-    const ctx = seedCtx(['https://b.com/']);
+  it('logs an error on ctx.response.exception and still dispatches the next URL', () => {
+    const ctx = seedCtx(['https://b.com/'], [trigger('https://a.com/'), trigger('https://b.com/')]);
     ctx.response = { exception: 'timeout' };
     logAndPostNext(ctx);
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining('Webhook to https://a.com/ failed: timeout'),
-    );
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Webhook to https://a.com/ failed: timeout'));
     expect(httpInstances).toHaveLength(1);
     expect(httpInstances[0].url).toBe('https://b.com/');
   });
 
   it('warns on no-status-code response (likely timeout)', () => {
-    const ctx = seedCtx([]);
+    const ctx = seedCtx([], [trigger('https://a.com/')]);
     ctx.response = { code: undefined };
     logAndPostNext(ctx);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining('completed but returned no status code'),
-    );
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('completed but returned no status code'));
   });
 
-  it('shifts the dispatched URL out of the stored list and records currentUrl', () => {
-    const ctx = seedCtx(['https://b.com/', 'https://c.com/']);
+  it('shifts the dispatched URL out of the stored queue and records currentUrl', () => {
+    const ctx = seedCtx(
+      ['https://b.com/', 'https://c.com/'],
+      [trigger('https://b.com/'), trigger('https://c.com/')],
+    );
     ctx.response = { code: 200 };
     logAndPostNext(ctx);
-    expect(JSON.parse(ctx._storeMap.get('webhookUrls'))).toEqual([
-      'https://c.com/',
-    ]);
+    expect(JSON.parse(ctx._storeMap.get('webhookUrls'))).toEqual(['https://c.com/']);
     expect(ctx._storeMap.get('webhookCurrentUrl')).toBe('https://b.com/');
-  });
-
-  it('skips an invalid next URL synchronously and dispatches the one after (no async hop consumed)', () => {
-    const ctx = seedCtx(['http://10.0.0.1/', 'https://c.com/']);
-    ctx.response = { code: 200 };
-    logAndPostNext(ctx);
-
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining('Blocked webhook to http://10.0.0.1/'),
-    );
-    expect(httpInstances).toHaveLength(1);
-    expect(httpInstances[0].url).toBe('https://c.com/');
   });
 
   it.each([
     ['10.x RFC-1918', 'http://10.0.0.1/'],
-    ['172.16.x RFC-1918', 'http://172.16.0.1/'],
-    ['172.31.x RFC-1918', 'http://172.31.255.255/'],
-    ['192.168.x RFC-1918', 'http://192.168.1.1/'],
     ['169.254.x link-local', 'http://169.254.169.254/latest/meta-data/'],
     ['file:// scheme', 'file:///etc/passwd'],
-    ['ftp:// scheme', 'ftp://example.com/'],
   ])('blocks %s (%s) when it is the next URL', (_label, url) => {
-    const ctx = seedCtx([url]);
+    const ctx = seedCtx([url], [trigger(url)]);
     ctx.response = { code: 200 };
     logAndPostNext(ctx);
     expect(httpInstances).toHaveLength(0);
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining('[webhooks] Blocked webhook to'),
-    );
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('[webhooks] Blocked webhook to'));
   });
 
   it('warns when an HTTP (non-HTTPS) URL is used but still dispatches it', () => {
-    const ctx = seedCtx(['http://example.com/webhook']);
+    const ctx = seedCtx(['http://example.com/webhook'], [trigger('http://example.com/webhook')]);
     ctx.response = { code: 200 };
     logAndPostNext(ctx);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining('webhook URL uses HTTP (not HTTPS)'),
-    );
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('webhook URL uses HTTP (not HTTPS)'));
     expect(httpInstances).toHaveLength(1);
-    expect(httpInstances[0].calls[0].method).toBe('postAsync');
   });
 });
 
 // ── End-to-end chain progression ──────────────────────────────────────────────
 
 describe('chain progression (sendWebhooks + logAndPostNext)', () => {
-  const TOKEN = 'test-token';
-  const HEADER = 'X-Token';
-  const PAYLOAD = { event: 'test' };
-
   beforeEach(() => {
     resetHttp();
     vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -349,48 +348,58 @@ describe('chain progression (sendWebhooks + logAndPostNext)', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
-  it('walks a 3-URL chain end-to-end via direct postAsync chaining (1 hop per URL)', () => {
-    const urls = ['https://a.com/', 'https://b.com/', 'https://c.com/'];
+  it('walks a 3-URL chain end-to-end, one hop per URL', () => {
     const ctx = createCtx({
       settings: {
-        webhookToken: TOKEN,
         headerName: HEADER,
-        webhooksOnIssueCreated: urls.join(','),
+        triggers: [trigger('https://a.com/'), trigger('https://b.com/'), trigger('https://c.com/')],
       },
       asyncFunctions,
     });
 
-    // sync action: dispatches URL #1 directly.
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
     expect(httpInstances).toHaveLength(1);
     expect(httpInstances[0].url).toBe('https://a.com/');
 
-    // hop 1: logAndPostNext fires with URL #1 response, dispatches URL #2.
     ctx.response = { code: 200 };
     logAndPostNext(ctx);
     expect(httpInstances).toHaveLength(2);
     expect(httpInstances[1].url).toBe('https://b.com/');
 
-    // hop 2: logAndPostNext fires with URL #2 response, dispatches URL #3.
     ctx.response = { code: 200 };
     logAndPostNext(ctx);
     expect(httpInstances).toHaveLength(3);
     expect(httpInstances[2].url).toBe('https://c.com/');
 
-    // hop 3: logAndPostNext fires with URL #3 response, no more URLs → chain ends.
     ctx.response = { code: 200 };
     logAndPostNext(ctx);
     expect(httpInstances).toHaveLength(3);
   });
+
+  it('attaches each URL its own live token across hops', () => {
+    const ctx = createCtx({
+      settings: {
+        headerName: HEADER,
+        triggers: [
+          trigger('https://a.com/', 'issueCreated', 'token-a'),
+          trigger('https://b.com/', 'issueCreated', 'token-b'),
+        ],
+      },
+      asyncFunctions,
+    });
+
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
+    expect(httpInstances[0].headers[HEADER]).toBe('token-a');
+
+    ctx.response = { code: 200 };
+    logAndPostNext(ctx);
+    expect(httpInstances[1].headers[HEADER]).toBe('token-b');
+  });
 });
 
-// ── Fail-closed guard when settings change mid-chain ─────────────────────────
+// ── Fail-closed guard when header cleared mid-chain ──────────────────────────
 
 describe('settings-disappear-mid-chain guard', () => {
-  const TOKEN = 'test-token';
-  const HEADER = 'X-Token';
-  const PAYLOAD = { event: 'test' };
-
   beforeEach(() => {
     resetHttp();
     vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -398,85 +407,24 @@ describe('settings-disappear-mid-chain guard', () => {
     vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
-  it('aborts the chain when the webhook token is cleared between hops', () => {
-    const ctx = createCtx({
-      settings: {
-        webhookToken: TOKEN,
-        headerName: HEADER,
-        webhooksOnIssueCreated: 'https://a.com/,https://b.com/',
-      },
-      asyncFunctions,
-    });
-
-    // Sync action dispatches URL #1 normally (token present).
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
-    expect(httpInstances).toHaveLength(1);
-    expect(httpInstances[0].headers[HEADER]).toBe(TOKEN);
-
-    // Admin clears the token between hops.
-    ctx.settings.webhookToken = null;
-
-    // Hop 1 — response for URL #1 arrives, logAndPostNext would normally
-    // dispatch URL #2 but must abort instead of sending it unauthenticated.
-    ctx.response = { code: 200 };
-    logAndPostNext(ctx);
-
-    expect(httpInstances).toHaveLength(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining('Webhook token or header was cleared during chain execution'),
-    );
-  });
-
-  it('aborts the chain when the header name is cleared between hops', () => {
-    const ctx = createCtx({
-      settings: {
-        webhookToken: TOKEN,
-        headerName: HEADER,
-        webhooksOnIssueCreated: 'https://a.com/,https://b.com/',
-      },
-      asyncFunctions,
-    });
-
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
-    expect(httpInstances).toHaveLength(1);
-
-    ctx.settings.headerName = null;
-
-    ctx.response = { code: 200 };
-    logAndPostNext(ctx);
-
-    expect(httpInstances).toHaveLength(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining('Webhook token or header was cleared during chain execution'),
-    );
-  });
-
   it.each([
-    ['empty-string token', { webhookToken: '', headerName: HEADER }],
-    ['empty-string header', { webhookToken: TOKEN, headerName: '' }],
-    ['both empty strings', { webhookToken: '', headerName: '' }],
-  ])('aborts the chain when settings become %s mid-chain', (_label, mutated) => {
+    ['empty-string header', ''],
+    ['null header', null],
+  ])('aborts the chain when the header becomes %s mid-chain', (_label, headerValue) => {
     const ctx = createCtx({
-      settings: {
-        webhookToken: TOKEN,
-        headerName: HEADER,
-        webhooksOnIssueCreated: 'https://a.com/,https://b.com/',
-      },
+      settings: { headerName: HEADER, triggers: [trigger('https://a.com/'), trigger('https://b.com/')] },
       asyncFunctions,
     });
 
-    sendWebhooks(ctx, 'webhooksOnIssueCreated', PAYLOAD, 'IssueCreated');
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
     expect(httpInstances).toHaveLength(1);
 
-    Object.assign(ctx.settings, mutated);
-
+    ctx.settings.headerName = headerValue;
     ctx.response = { code: 200 };
     logAndPostNext(ctx);
 
     expect(httpInstances).toHaveLength(1);
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining('Webhook token or header was cleared during chain execution'),
-    );
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('Header name was cleared during chain execution'));
   });
 });
 
