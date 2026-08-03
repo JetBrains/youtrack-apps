@@ -8,8 +8,17 @@ const Logger = require("hygen/dist/logger");
 const path = require("node:path");
 const fs = require('node:fs');
 const defaultTemplates = path.join(__dirname, "_templates");
-const argv = process.argv.slice(2);
+const publicArgv = process.argv.slice(2);
+const publicRoute = routePublicCommand(publicArgv);
+const argv = publicRoute.argv;
+// Keep positional arguments from routed argv, but restore global options that
+// routing intentionally removes. In particular, --cwd must be read from the
+// original invocation regardless of where it appears.
 const args = require("minimist")(argv);
+const originalArgs = require("minimist")(publicArgv);
+if (originalArgs.cwd !== undefined) {
+  args.cwd = originalArgs.cwd;
+}
 const cwd = path.resolve(process.cwd(), args.cwd || ".");
 const { trimPathSegments } = require('./utils/sanitize');
 const {
@@ -24,6 +33,169 @@ const {
   validateRuleName,
   validateRuleType,
 } = require('./utils/rule-scaffold');
+
+function routePublicCommand(rawArgv) {
+  const parsed = require('minimist')(rawArgv);
+  if (parsed.help || parsed.h) {
+    return { argv: rawArgv, meta: 'help' };
+  }
+  if (parsed.version) {
+    return { argv: rawArgv, meta: 'version' };
+  }
+
+  if (parsed._.length === 0) {
+    const unknownBareFlag = Object.keys(parsed).find(key => !['_', 'cwd'].includes(key));
+    return unknownBareFlag
+      ? { argv: rawArgv, error: 'Expected command syntax: create-youtrack-app <entity> <action> [options]' }
+      : { argv: rawArgv };
+  }
+
+  if (parsed._.length !== 2) {
+    return { argv: rawArgv, error: 'Expected command syntax: create-youtrack-app <entity> <action> [options]' };
+  }
+
+  const key = `${parsed._[0]}:${parsed._[1]}`;
+  const commandFlags = {
+    'app:init': ['name', 'type', 'title', 'description', 'vendor', 'vendor-url', 'backend-only', 'install'],
+    'rule:add': ['type', 'name'],
+    'http-handler:add': ['scope', 'path', 'method', 'permissions', 'handler'],
+    'settings:init': ['title', 'description'],
+    'settings:add': ['name', 'type', 'title', 'description', 'scope', 'entity', 'required', 'readonly', 'const', 'min-length', 'max-length', 'format', 'enum', 'min', 'max', 'exclusive-min', 'exclusive-max', 'multiple-of'],
+    'extension-property:add': ['entity', 'name', 'type', 'set'],
+    'widget:add': ['key', 'extension-point', 'name', 'description', 'permissions', 'width', 'height'],
+    // TypeScript Enhanced DX command. With no flags it remains interactive;
+    // endpoint flags are forwarded when an agent wants non-interactive output.
+    'endpoint:add': ['scope', 'path', 'method', 'request-type', 'response-type', 'controller'],
+    'skill:install': ['agent', 'scope'],
+    'skill:status': ['agent', 'scope'],
+  };
+  const allowed = commandFlags[key];
+  if (!allowed) {
+    return { argv: rawArgv, error: `Unknown command "${parsed._[0]} ${parsed._[1]}"` };
+  }
+  const withCommand = result => ({ ...result, command: key });
+
+  const unknownFlag = Object.keys(parsed).find(flag => !['_', 'cwd', ...allowed].includes(flag));
+  if (unknownFlag) {
+    return { argv: rawArgv, error: `Unknown option "--${unknownFlag}"` };
+  }
+
+  const booleanFlags = new Set(['backend-only', 'install', 'required', 'readonly', 'set']);
+  const valuelessFlag = Object.keys(parsed).find(flag => flag !== '_' && parsed[flag] === true && !booleanFlags.has(flag));
+  if (valuelessFlag) {
+    return { argv: rawArgv, error: `Option "--${valuelessFlag}" requires a value` };
+  }
+
+  if (key === 'rule:add') {
+    if (!flagValue(parsed.type) || !flagValue(parsed.name)) {
+      return { argv: rawArgv, error: 'Usage: rule add --type <type> --name <name>' };
+    }
+    return withCommand({
+      argv: ['rule', 'add', String(parsed.type), ...removeOptions(buildCommandArgv('rule', 'add', parsed, allowed).slice(2), ['type'])],
+    });
+  }
+
+  if (key === 'http-handler:add') {
+    const scope = flagValue(parsed.scope);
+    const routePath = flagValue(parsed.path);
+    if (scope || routePath) {
+      if (!scope) {
+        return { argv: rawArgv, error: 'Option "--scope" is required when --path is provided' };
+      }
+      return withCommand({
+        argv: ['http-handler', `${scope}/${routePath || ''}`, ...removeOptions(buildCommandArgv('http-handler', 'add', parsed, allowed).slice(2), ['scope', 'path'])],
+      });
+    }
+  }
+
+  if (key === 'extension-property:add') {
+    const entity = flagValue(parsed.entity);
+    const name = flagValue(parsed.name);
+    if (entity || name) {
+      if (!entity || !name) {
+        return { argv: rawArgv, error: 'Options "--entity" and "--name" must be provided together' };
+      }
+      return withCommand({
+        argv: ['extension-property', `${entity}.${name}`, ...removeOptions(buildCommandArgv('extension-property', 'add', parsed, allowed).slice(2), ['entity'])],
+      });
+    }
+  }
+
+  if (key === 'app:init') {
+    return withCommand({ argv: buildCommandArgv('app', 'init', parsed, allowed).slice(2) });
+  }
+
+  return withCommand({ argv: rawArgv });
+}
+
+function flagValue(value) {
+  return value === undefined || value === null || value === false || value === true ? undefined : String(value);
+}
+
+function buildCommandArgv(entity, action, parsed, allowedFlags) {
+  const result = [entity, action];
+
+  for (const flag of allowedFlags) {
+    if (!Object.hasOwn(parsed, flag)) {
+      continue;
+    }
+
+    const values = Array.isArray(parsed[flag]) ? parsed[flag] : [parsed[flag]];
+    for (const value of values) {
+      if (value === false) {
+        result.push(`--no-${flag}`);
+      } else if (value === true) {
+        result.push(`--${flag}`);
+      } else {
+        result.push(`--${flag}`, String(value));
+      }
+    }
+  }
+
+  return result;
+}
+
+function removeOptions(values, optionNames) {
+  const result = [];
+  for (let index = 0; index < values.length; index++) {
+    const value = values[index];
+    const matchingName = optionNames.find(name => value === `--${name}` || value.startsWith(`--${name}=`));
+    if (!matchingName) {
+      result.push(value);
+      continue;
+    }
+    if (value === `--${matchingName}` && values[index + 1] !== undefined && !values[index + 1].startsWith('-')) {
+      index++;
+    }
+  }
+  return result;
+}
+
+function validateEndpointController() {
+  if (args.controller === undefined || args.controller === '') {
+    return;
+  }
+
+  const scope = String(args.scope || '');
+  const routePath = String(args.path || '').replace(/^\/+|\/+$/g, '');
+  const endpointPath = scope === 'custom' ? routePath : `${scope}/${routePath}`;
+  const controllerModule = endpointPath.replace(/\//g, '.');
+  const controllerCandidates = ['.ts', '.tsx', '.js'].map(extension => path.join(
+    cwd,
+    'src',
+    'backend',
+    'controllers',
+    `${controllerModule}.controller${extension}`
+  ));
+
+  if (!controllerCandidates.some(candidate => fs.existsSync(candidate))) {
+    const expectedPath = path.relative(cwd, controllerCandidates[0]);
+    throw new Error(
+      `Controller module not found for --controller ${args.controller}: ${expectedPath}. ` +
+      'Create this module and export the controller function, or omit --controller to generate an inline handler.'
+    );
+  }
+}
 
 function isCancelled(e) {
   return e === '' || (e && e.code === 'ERR_USE_AFTER_CLOSE');
@@ -206,54 +378,19 @@ async function handleSkillCommand(skillAction) {
   return false;
 }
 
-function getCommandArgs(commandName, normalizedArgv, positionalArgs) {
-  const positionalIndex = positionalArgs.findIndex(arg => arg === commandName);
-  if (positionalIndex !== -1) {
-    return positionalArgs.slice(positionalIndex);
-  }
-
-  const rawIndex = normalizedArgv.findIndex(arg => arg === commandName);
-  if (rawIndex === -1) {
-    return null;
-  }
-
-  const commandArgs = [];
-  for (const arg of normalizedArgv.slice(rawIndex)) {
-    if (commandArgs.length > 0 && arg.startsWith('--')) {
-      break;
-    }
-    if (arg !== '--') {
-      commandArgs.push(arg);
-    }
-  }
-
-  return commandArgs;
-}
-
 async function handleRuleCommand(ruleArgs) {
   if (!ruleArgs) {
     return false;
   }
 
-  const usage = 'Usage: rule add <type> --name <name>';
-  let ruleType;
-  let name;
-
-  if (ruleArgs[1] === 'add') {
-    if (ruleArgs.length < 3 || ruleArgs.length > 4) {
-      console.error(styleText("red", usage));
-      process.exit(1);
-    }
-    [, , ruleType] = ruleArgs;
-    name = ruleArgs[3] || args.name;
-  } else {
-    if (ruleArgs.length < 2 || ruleArgs.length > 3) {
-      console.error(styleText("red", usage));
-      process.exit(1);
-    }
-    [, ruleType] = ruleArgs;
-    name = ruleArgs[2] || args.name;
+  const usage = 'Usage: rule add --type <type> --name <name>';
+  if (ruleArgs[1] !== 'add' || ruleArgs.length !== 3) {
+    console.error(styleText("red", usage));
+    process.exit(1);
   }
+
+  const ruleType = ruleArgs[2];
+  const name = args.name;
 
   if (!ruleType || !name) {
     console.error(styleText("red", usage));
@@ -295,37 +432,30 @@ async function handleRuleCommand(ruleArgs) {
 }
 
 (async function run() {
+  if (publicRoute.error) {
+    console.error(styleText("red", `Error: ${publicRoute.error}`));
+    process.exit(1);
+  }
+
+  if (publicRoute.meta === 'version') {
+    console.log(require('./package.json').version);
+    return;
+  }
+
   if ('help' in args || 'h' in args) {
     require('./help');
     return;
   }
 
-  // Map short aliases to full commands for NestJS-style simplicity
-  const aliasMap = {
-    'handler': 'http-handler',
-    'h': 'http-handler',
-    'property': 'extension-property',
-    'prop': 'extension-property',
-    'p': 'extension-property',
-    'setting': 'settings',
-    's': 'settings'
-  };
+  const normalizedArgv = argv;
 
-  // Replace aliases in argv (create new array to avoid mutation issues)
-  const normalizedArgv = argv.map(arg => aliasMap[arg] || arg);
-  const positionalArgs = args._.map(arg => aliasMap[arg] || arg);
-
-  const skillIndex = normalizedArgv.findIndex(a => a === 'skill');
-  if (skillIndex !== -1) {
-    const skillAction = normalizedArgv[skillIndex + 1] || 'status';
+  if (publicRoute.command === 'skill:install' || publicRoute.command === 'skill:status') {
+    const skillAction = publicRoute.command.split(':')[1];
 
     try {
       if (await handleSkillCommand(skillAction)) {
         return;
       }
-
-      console.error(styleText("red", `Invalid skill command: "${skillAction}". Must be one of: install, status.`));
-      process.exit(1);
     } catch (error) {
       console.error(styleText("red", `Error: ${(error && error.message) || String(error)}`));
       process.exit(1);
@@ -333,7 +463,7 @@ async function handleRuleCommand(ruleArgs) {
   }
 
   try {
-    if (await handleRuleCommand(getCommandArgs('rule', normalizedArgv, positionalArgs))) {
+    if (publicRoute.command === 'rule:add' && await handleRuleCommand(['rule', 'add', String(args.type)])) {
       return;
     }
   } catch (error) {
@@ -458,7 +588,7 @@ async function handleRuleCommand(ruleArgs) {
         process.exit(1);
       }
 
-      const isSet = args.set === true || args.set === 'true' || args.multi === true || args.multi === 'true';
+      const isSet = args.set === true || args.set === 'true';
 
       const entityExtensionsPath = path.join(cwd, 'src', 'entity-extensions.json');
       let entityExtensions;
@@ -738,6 +868,28 @@ async function handleRuleCommand(ruleArgs) {
   );
 
   if (hasHygenParams) {
+    const isEndpointCmd = new Set(normalizedArgv).has('endpoint');
+    if (isEndpointCmd) {
+      const pkgPath = path.join(cwd, 'package.json');
+      const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
+      const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+
+      if (!isEnhancedDX) {
+        console.error(styleText("red", 'This command requires a TypeScript Enhanced DX project.'));
+        process.exit(1);
+        return;
+      }
+
+      try {
+        validateEndpointController();
+      } catch (error) {
+        console.error(styleText("red", `Error: ${error.message}`));
+        process.exit(1);
+      }
+
+      return runHygen();
+    }
+
     // Intercept Enhanced DX http-handler flow for richer experience
     const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler') && (new Set(normalizedArgv).has('add') || !normalizedArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
     if (isHttpHandlerCmd) {

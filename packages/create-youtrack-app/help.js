@@ -28,18 +28,19 @@ ${heading('Create YouTrack App')}
 Scaffold a YouTrack app or add features to the current app.
 
 Usage:
-  ${command(`${createApp} [command] [options]`)}
+  ${command(`${createApp} <entity> <action> [options]`)}
 
 Common:
   ${command('--cwd <path>')}        Run from another directory.
   ${command('--help, -h')}          Show help.
+  ${command('--version')}           Print the CLI version.
   Names: app/rule/widget keys use ${code('[a-z][a-z0-9-]*')}; extension
   properties use ${code('[A-Za-z_][A-Za-z0-9_]*')}; settings keys reject whitespace.
 
 
 ${heading('App Initialization')}
 
-  ${command(`${createApp} [options]`)}
+  ${command(`${createApp} app init [options]`)}
 
   Creates a new app. Missing values are prompted in an interactive terminal.
   Project type is selected here only; feature commands infer the existing app.
@@ -59,30 +60,29 @@ ${heading('App Initialization')}
 
 ${heading('Backend and Workflows')}
 
-  ${command(`${createApp} rule add <type> --name <name>`)}
+  ${command(`${createApp} rule add --type <type> --name <name>`)}
 
   Adds a workflow rule.
 
   Args:
-    ${command('<type>')}                onChange | onSchedule | action | stateMachine | sla.
+    ${command('--type <type>')}         onChange | onSchedule | action | stateMachine | sla.
     ${command('--name <name>')}         Rule filename stem.
 
-  Compatibility: ${command('rule add <type> <name>')}, ${command('rule <type> <name>')}.
   Output: JS apps write ${code('src/workflows/<name>.js')}; TS apps write ${code('src/workflows/<name>.ts')}.
 
 
-  ${command(`${createApp} http-handler <scope>/<path> [options]`)}
+  ${command(`${createApp} http-handler add [options]`)}
 
-  Adds an HTTP handler. ${command('http-handler add')} opens the interactive flow.
-  Aliases: ${command('handler')}, ${command('h')}.
+  Adds an HTTP handler. Omit --scope and --path to open the interactive flow.
 
   Args:
-    ${command('<scope>/<path>')}         scope: global | project | issue | article | user.
+    ${command('--scope <scope>')}        global | project | issue | article | user.
+    ${command('--path <path>')}          Route path below the selected scope. Empty means the scope root.
     ${command('--method <method>')}      GET | POST | PUT | DELETE. Default: GET.
     ${command('--permissions <csv>')}    Permission keys, comma-separated.
     ${command('--handler <name>')}       JS apps only: handler file stem. Default: backend.
 
-  JS usage: ${command('http-handler <scope>/<path> --handler <name>')} writes
+  JS usage: ${command('http-handler add --scope <scope> --path <path> --handler <name>')} writes
   ${code('src/<name>.js')}; omit ${command('--handler')} to update ${code('src/backend.js')}.
   TS output:
   ${code('src/backend/router/<scope>/<path>/<METHOD>.ts')}.
@@ -93,7 +93,7 @@ ${heading('App Persistance')}
   ${command(`${createApp} settings init [options]`)}
 
   Creates ${code('src/settings.json')} when absent. Missing values are prompted
-  interactively. Aliases: ${command('setting init')}, ${command('s init')}.
+  interactively.
 
   Options:
     ${command('--title <text>')}         Settings schema title.
@@ -102,8 +102,7 @@ ${heading('App Persistance')}
 
   ${command(`${createApp} settings add --name <name> --type <type> [options]`)}
 
-  Adds one property to ${code('src/settings.json')}. Aliases:
-  ${command('setting add')}, ${command('s add')}.
+  Adds one property to ${code('src/settings.json')}.
 
   Options:
     ${command('--name <name>')}          Property key.
@@ -126,23 +125,23 @@ ${heading('App Persistance')}
     ${command('--multiple-of <n>')}      Number/integer multiple.
 
 
-  ${command(`${createApp} extension-property <Entity>.<name> [options]`)}
+  ${command(`${createApp} extension-property add [options]`)}
 
-  Updates ${code('src/entity-extensions.json')}. ${command('extension-property add')} opens
-  the interactive flow. Aliases: ${command('property')}, ${command('prop')}, ${command('p')}.
+  Updates ${code('src/entity-extensions.json')}. Omit --entity and --name to open
+  the interactive flow.
 
   Args:
-    ${command('<Entity>')}               Issue | User | Project | Article.
-    ${command('<name>')}                 Extension property key.
+    ${command('--entity <Entity>')}      Issue | User | Project | Article.
+    ${command('--name <name>')}          Extension property key.
     ${command('--type <type>')}          string | integer | float | boolean | Issue | User | Project | Article.
-    ${command('--set')}                  Multi-value property. Alias: --multi.
+    ${command('--set')}                  Multi-value property.
 
 
 ${heading('Widgets')}
 
-  ${command(`${createApp} widget --key <key> --extension-point <point> [options]`)}
+  ${command(`${createApp} widget add --key <key> --extension-point <point> [options]`)}
 
-  Adds a widget and manifest entry. ${command('widget add')} opens the interactive flow.
+  Adds a widget and manifest entry. Omit widget flags to open the interactive flow.
 
   Options:
     ${command('--key <key>')}            Widget key.
@@ -178,13 +177,17 @@ ${heading('Advanced tools')}
   ${command(`${createApp} endpoint add`)}
 
   Interactive typed endpoint generator for TypeScript apps with Advanced tools.
+  Omit the options to answer prompts interactively, or provide them for non-interactive generation.
 
   Values:
-    scope: global | issue | project | custom.
-    method: GET | POST | PUT | DELETE.
-    request type: type name or never. Default: never.
-    response type: type name or never. Default: never.
-    controller: function name, or empty to generate inline.
+    ${command('--scope <scope>')}          global | issue | project | custom.
+    ${command('--path <path>')}           Path below the selected scope.
+    ${command('--method <method>')}       GET | POST | PUT | DELETE.
+    ${command('--request-type <type>')}   Request type name or never. Default: never.
+    ${command('--response-type <type>')}  Response type name or never. Default: never.
+    ${command('--controller <name>')}     Existing exported function in
+                                             src/backend/controllers/<scope>.<path>.controller.ts.
+                                             Omit to generate an inline handler.
 
   Output: ${code('src/backend/router/<path>/<METHOD>.ts')}; backend builds generate
   ${code('src/api/api.d.ts')} and ${code('src/api/api.zod.ts')}.

@@ -81,7 +81,7 @@ export class AppManagementOperations {
     }
 
     if (!fileKey) {
-      throw new Error(i18n(`File key is required. Run "youtrack-app info ${appName}" to list file keys.`));
+      throw new Error(i18n(`File key is required. Run "youtrack-app app info --app ${appName}" to list file keys.`));
     }
 
     const app = await this.getPackage(appName);

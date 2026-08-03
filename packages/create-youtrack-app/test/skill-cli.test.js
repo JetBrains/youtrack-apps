@@ -81,6 +81,13 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(fs.lstatSync(targetDir('junie')).isSymbolicLink(), true);
   });
 
+  test('--version prints the package version', () => {
+    const result = runCLI(['--version']);
+
+    assert.strictEqual(result.success, true, result.output);
+    assert.strictEqual(result.output.trim(), require('../package.json').version);
+  });
+
   test('project-level install uses hard copies', () => {
     const results = installSkill({
       agent: 'codex',
@@ -153,7 +160,6 @@ describe('Agent skill CLI', () => {
     const result = runCLI(['skill', 'discover']);
 
     assert.strictEqual(result.success, false, 'Command should fail');
-    assert.match(result.output, /Invalid skill command: "discover"/);
-    assert.match(result.output, /install, status/);
+    assert.match(result.output, /Unknown command "skill discover"/);
   });
 });

@@ -17,11 +17,10 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "start": "node index.js --cwd ./tmp",
+    "start": "node index.js app init --cwd ./tmp",
     "widget": "node index.js widget add --cwd ./tmp",
     "http-handler": "node index.js http-handler add --cwd ./tmp",
     "settings": "node index.js settings init --cwd ./tmp",
-    "manifest": "node index.js init manifest --cwd ./tmp",
     "extension-property": "node index.js extension-property add --cwd ./tmp",
     "settings-property": "node index.js settings add --cwd ./tmp",
     "lint": "eslint .",

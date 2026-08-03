@@ -387,7 +387,7 @@ describe('AppManagementOperations', () => {
       query: 'developers',
       pagination: {limit: 100, skip: undefined},
     });
-    expect(gateway.groupMembersRequests).toEqual(['group-1']);
+    expect(gateway.groupMembersRequests).toEqual(['developers', 'group-1']);
   });
 
   it('listGroups allows an empty query and lists groups', async () => {
@@ -443,7 +443,7 @@ describe('AppManagementOperations', () => {
       query: 'ROOT',
       pagination: {limit: 100, skip: undefined},
     });
-    expect(gateway.userRequests).toEqual(['user-1']);
+    expect(gateway.userRequests).toEqual(['ROOT', 'user-1']);
   });
 
   it('listUsers allows an empty query and lists users', async () => {

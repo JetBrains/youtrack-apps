@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -p tsconfig.app.json && vite build && youtrack-app validate dist",
+    "build": "tsc -p tsconfig.app.json && vite build && youtrack-app app validate",
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
     "i18n:extract": "angular-gettext-cli --files \"{src/**/*.js,src/**/*.ts,src/**/*.tsx}\" --dest translations/default.pot --marker-name=i18n --module-method-plural=plural --module-name=i18n",
@@ -13,7 +13,7 @@
     "release:ci": "npm run release:bump-version && npm run build && npm run pack && npm run upload:marketplace && git push --follow-tags origin main",
     "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer $pluginsRepositoryToken\" -F \"pluginId=$pluginRepositoryID\" -F \"file=@documents-list-widget.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin",
     "pack": "rm -rf documents-list-widget.zip && cd dist/ && bestzip ../documents-list-widget.zip *",
-    "upload": "youtrack-app upload dist"
+    "upload": "youtrack-app app upload"
   },
   "dependencies": {
     "@jetbrains/icons": "^5.12.0",

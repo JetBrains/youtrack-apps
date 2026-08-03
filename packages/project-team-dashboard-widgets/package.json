@@ -9,7 +9,7 @@
     "start": "NODE_OPTIONS=--openssl-legacy-provider webpack serve",
     "build": "rm -rf dist && NODE_OPTIONS=--openssl-legacy-provider webpack --mode development",
     "pack": "rm -rf project-team-dashboard-widgets.zip && cd dist && zip -r ../project-team-dashboard-widgets .",
-    "upload": "youtrack-app upload dist",
+    "upload": "youtrack-app app upload",
     "lint": "eslint . --quiet=true && npm run stylelint",
     "test": "echo \"No tests defined\"",
     "stylelint": "stylelint --ignore-path .gitignore **/*.css",

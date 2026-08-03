@@ -2,7 +2,8 @@ import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
-import {AppConfiguration, AppSettingsUpdate, formatBoolean, formatProjectLabel, printJson} from '../management/types.js';
+import {AppConfiguration, AppSettingsUpdate, formatBoolean, formatProjectLabel} from '../management/types.js';
+import {printStructured} from './output.js';
 
 export async function settings(config: Config, appName?: string): Promise<void> {
   try {
@@ -63,8 +64,7 @@ function stringifySettings(value: string): string {
 }
 
 function printSettings(config: Config, result: AppConfiguration): void {
-  if (config.json) {
-    printJson(result);
+  if (printStructured(config, result)) {
     return;
   }
 

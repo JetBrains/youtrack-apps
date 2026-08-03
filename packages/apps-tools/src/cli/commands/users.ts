@@ -2,9 +2,9 @@ import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
-import {formatBoolean, printYaml, UserSummary} from '../management/types.js';
+import {formatBoolean, UserSummary} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
-import {printList} from './output.js';
+import {printList, printStructured} from './output.js';
 
 export async function userList(config: Config, query?: string): Promise<void> {
   try {
@@ -28,8 +28,7 @@ export async function userInfo(config: Config, userKey?: string): Promise<void> 
   try {
     const user = await createAppManagementOperations(config).getUserInfo(userKey, paginationFromConfig(config));
 
-    if (config.yaml) {
-      printYaml(user);
+    if (printStructured(config, user)) {
       return;
     }
 

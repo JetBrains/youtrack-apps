@@ -6,11 +6,9 @@ import {
   AppCatalogResult,
   AppModuleReference,
   formatBoolean,
-  printJson,
-  printYaml,
 } from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
-import {printList} from './output.js';
+import {printList, printStructured} from './output.js';
 
 export async function list(config: Config): Promise<void> {
   try {
@@ -34,13 +32,7 @@ export async function info(config: Config, appName?: string): Promise<void> {
   try {
     const details = await createAppManagementOperations(config).getCatalog(appName);
 
-    if (config.json) {
-      printJson(details);
-      return;
-    }
-
-    if (config.yaml) {
-      printYaml(details);
+    if (printStructured(config, details)) {
       return;
     }
 

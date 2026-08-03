@@ -19,7 +19,7 @@ installed and for what agents.
 
 **Problem:** There was no direct scaffolding for classic YouTrack scripts / workflows. 
 
-**Solution:** `create-youtrack-app rule add <type> <name>` scaffolds classic
+**Solution:** `create-youtrack-app rule add --type <type> --name <name>` scaffolds classic
 workflow rules under `src/workflows/<name>.js` for `onChange`,
 `onSchedule`, `action`, `stateMachine`, and `sla` rules. Each rule type gets a
 matching template shape, with validation for rule type and filename.
@@ -33,17 +33,17 @@ these common flows because it consumed more tokens than direct CLI commands.
 **Solution:** `youtrack-app` now exposes app lifecycle and inspection commands
 for `list`, `info`, `upload`, `download`, `validate`, `scripts`,
 `settings`, `settings-set`, `delete`, `enable`, `disable`, `attach`, `detach`,
-`logs`, `script-logs`, and `requirement-errors`. Commands accept
+`logs`, and `requirement-errors`. Commands accept
 `YOUTRACK_HOST` and `YOUTRACK_API_TOKEN`, and can emit structured output where
 automation needs it.
 
-### Parameterized App Creation CLI
+### Parameterized App Initialization CLI
 **Problem:** Interactive app creation worked for humans, but agents could not
 use it efficiently.
 
-**Solution:** New app creation accepts non-interactive flags such as
-`--app-name`, `--title`, `--description`, `--vendor`, `--vendor-url`,
-`--type`. The default type is TypeScript `--template ts` Enhanced DX app
+**Solution:** `create-youtrack-app app init` accepts non-interactive flags such as
+`--name`, `--title`, `--description`, `--vendor`, `--vendor-url`,
+`--type`. The default type is TypeScript `--type ts` Enhanced DX app
 and `--type js` creates the JavaScript Vite app, and
 dependencies are installed after scaffolding.
 
@@ -64,6 +64,12 @@ JSON/YAML output where useful.
 
 **Solution:** Move the command explanation from skill sources into the `--help` for each package. This gives us, cleaner `SKILL.md` and more room in context for additional information. Also, we made sure that command calls were constant across the `--help`, by using `npx`. 
 
+### Consistent CLI Command Structure
+
+**Problem:** Commands mixed verb-first, compound, aliased, and positional forms.
+
+**Solution:** Both CLIs use `<entity> <action> [--param value]`. The redesign is intentionally breaking: legacy aliases and positional operands are rejected.
+
 
 ## Open questions
 
@@ -78,6 +84,3 @@ JSON/YAML output where useful.
 
 ### Wording of `Enhanced DX`
 **Question:** Can it be renamed to `advanced tools` since it indeed provides advanced tooling. In fresh context `Enhanced DX` is not self explanatory in terms of what it provides?
-
-### Consistent command structure in `apps-tools` 
-**Question:** Can we make all commands follow the same pattern like `youtrack-app <entity> <action> [--param value] [--param2 value]`? There will be some non-ordinary cases like `youtrack-app app`. Do we keep this backward comaptible or just bump the major version?

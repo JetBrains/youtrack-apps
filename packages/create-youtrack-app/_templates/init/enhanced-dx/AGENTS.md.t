@@ -112,9 +112,9 @@ Available only when the scope matches the third generic:
 Preferred: use the built-in generator:
 
 ```bash
-npm run g -- handler <scope>/<path>              # GET by default
-npm run g -- handler project/users --method POST
-npm run g -- h issue/notes --method POST --permissions READ_ISSUE
+npm run g -- http-handler add --scope <scope> --path <path>              # GET by default
+npm run g -- http-handler add --scope project --path users --method POST
+npm run g -- http-handler add --scope issue --path notes --method POST --permissions READ_ISSUE
 ```
 
 Or create the file manually following the shape above, then rebuild to regenerate types:
@@ -130,8 +130,8 @@ npm run build:backend
 Custom fields on YouTrack entities are declared in `src/entity-extensions.json`. After editing, rebuild to regenerate types:
 
 ```bash
-npm run g -- property Issue.myField           # string, single-value
-npm run g -- property Issue.tags --type string --set  # multi-value
+npm run g -- extension-property add --entity Issue --name myField           # string, single-value
+npm run g -- extension-property add --entity Issue --name tags --type string --set  # multi-value
 npm run build:backend
 ```
 

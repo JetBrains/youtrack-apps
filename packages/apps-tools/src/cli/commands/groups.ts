@@ -2,9 +2,9 @@ import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
 import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
-import {GroupMembersResult, printJson, printYaml, UserGroup} from '../management/types.js';
+import {GroupMembersResult, UserGroup} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
-import {printList} from './output.js';
+import {printList, printStructured} from './output.js';
 
 export async function groupList(config: Config, query?: string): Promise<void> {
   try {
@@ -42,13 +42,7 @@ export async function groupMembers(config: Config, groupKey?: string): Promise<v
 
     const result = await createAppManagementOperations(config).getGroupMembers(groupKey, paginationFromConfig(config));
 
-    if (config.json) {
-      printJson(result);
-      return;
-    }
-
-    if (config.yaml) {
-      printYaml(result);
+    if (printStructured(config, result)) {
       return;
     }
 

@@ -4,6 +4,20 @@ import {PaginatedResult, PaginationOptions, printPaginationNotice} from '../pagi
 
 type ListLine = string | string[];
 
+export function printStructured(config: Config, data: unknown): boolean {
+  if (config.json) {
+    printJson(data);
+    return true;
+  }
+
+  if (config.yaml) {
+    printYaml(data);
+    return true;
+  }
+
+  return false;
+}
+
 export function printList<T>(options: {
   config: Config;
   result: PaginatedResult<T>;
@@ -14,13 +28,7 @@ export function printList<T>(options: {
 }): void {
   const {config, result, pagination, resourceName, emptyMessage, formatItem} = options;
 
-  if (config.json) {
-    printJson(result);
-    return;
-  }
-
-  if (config.yaml) {
-    printYaml(result);
+  if (printStructured(config, result)) {
     return;
   }
 

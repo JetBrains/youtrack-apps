@@ -5,18 +5,19 @@ Create YouTrack App
 Scaffold a YouTrack app or add features to the current app.
 
 Usage:
-  npx @jetbrains/create-youtrack-app [command] [options]
+  npx @jetbrains/create-youtrack-app <entity> <action> [options]
 
 Common:
   --cwd <path>        Run from another directory.
   --help, -h          Show help.
+  --version           Print the CLI version.
   Names: app/rule/widget keys use [a-z][a-z0-9-]*; extension
   properties use [A-Za-z_][A-Za-z0-9_]*; settings keys reject whitespace.
 
 
 App Initialization
 
-  npx @jetbrains/create-youtrack-app [options]
+  npx @jetbrains/create-youtrack-app app init [options]
 
   Creates a new app. Missing values are prompted in an interactive terminal.
   Project type is selected here only; feature commands infer the existing app.
@@ -36,30 +37,29 @@ App Initialization
 
 Backend and Workflows
 
-  npx @jetbrains/create-youtrack-app rule add <type> --name <name>
+  npx @jetbrains/create-youtrack-app rule add --type <type> --name <name>
 
   Adds a workflow rule.
 
   Args:
-    <type>                onChange | onSchedule | action | stateMachine | sla.
+    --type <type>         onChange | onSchedule | action | stateMachine | sla.
     --name <name>         Rule filename stem.
 
-  Compatibility: rule add <type> <name>, rule <type> <name>.
   Output: JS apps write src/workflows/<name>.js; TS apps write src/workflows/<name>.ts.
 
 
-  npx @jetbrains/create-youtrack-app http-handler <scope>/<path> [options]
+  npx @jetbrains/create-youtrack-app http-handler add [options]
 
-  Adds an HTTP handler. http-handler add opens the interactive flow.
-  Aliases: handler, h.
+  Adds an HTTP handler. Omit --scope and --path to open the interactive flow.
 
   Args:
-    <scope>/<path>         scope: global | project | issue | article | user.
+    --scope <scope>        global | project | issue | article | user.
+    --path <path>          Route path below the selected scope. Empty means the scope root.
     --method <method>      GET | POST | PUT | DELETE. Default: GET.
     --permissions <csv>    Permission keys, comma-separated.
     --handler <name>       JS apps only: handler file stem. Default: backend.
 
-  JS usage: http-handler <scope>/<path> --handler <name> writes
+  JS usage: http-handler add --scope <scope> --path <path> --handler <name> writes
   src/<name>.js; omit --handler to update src/backend.js.
   TS output:
   src/backend/router/<scope>/<path>/<METHOD>.ts.
@@ -70,7 +70,7 @@ App Persistance
   npx @jetbrains/create-youtrack-app settings init [options]
 
   Creates src/settings.json when absent. Missing values are prompted
-  interactively. Aliases: setting init, s init.
+  interactively.
 
   Options:
     --title <text>         Settings schema title.
@@ -79,8 +79,7 @@ App Persistance
 
   npx @jetbrains/create-youtrack-app settings add --name <name> --type <type> [options]
 
-  Adds one property to src/settings.json. Aliases:
-  setting add, s add.
+  Adds one property to src/settings.json.
 
   Options:
     --name <name>          Property key.
@@ -103,23 +102,23 @@ App Persistance
     --multiple-of <n>      Number/integer multiple.
 
 
-  npx @jetbrains/create-youtrack-app extension-property <Entity>.<name> [options]
+  npx @jetbrains/create-youtrack-app extension-property add [options]
 
-  Updates src/entity-extensions.json. extension-property add opens
-  the interactive flow. Aliases: property, prop, p.
+  Updates src/entity-extensions.json. Omit --entity and --name to open
+  the interactive flow.
 
   Args:
-    <Entity>               Issue | User | Project | Article.
-    <name>                 Extension property key.
+    --entity <Entity>      Issue | User | Project | Article.
+    --name <name>          Extension property key.
     --type <type>          string | integer | float | boolean | Issue | User | Project | Article.
-    --set                  Multi-value property. Alias: --multi.
+    --set                  Multi-value property.
 
 
 Widgets
 
-  npx @jetbrains/create-youtrack-app widget --key <key> --extension-point <point> [options]
+  npx @jetbrains/create-youtrack-app widget add --key <key> --extension-point <point> [options]
 
-  Adds a widget and manifest entry. widget add opens the interactive flow.
+  Adds a widget and manifest entry. Omit widget flags to open the interactive flow.
 
   Options:
     --key <key>            Widget key.
@@ -155,13 +154,17 @@ Advanced tools
   npx @jetbrains/create-youtrack-app endpoint add
 
   Interactive typed endpoint generator for TypeScript apps with Advanced tools.
+  Omit the options to answer prompts interactively, or provide them for non-interactive generation.
 
   Values:
-    scope: global | issue | project | custom.
-    method: GET | POST | PUT | DELETE.
-    request type: type name or never. Default: never.
-    response type: type name or never. Default: never.
-    controller: function name, or empty to generate inline.
+    --scope <scope>          global | issue | project | custom.
+    --path <path>           Path below the selected scope.
+    --method <method>       GET | POST | PUT | DELETE.
+    --request-type <type>   Request type name or never. Default: never.
+    --response-type <type>  Response type name or never. Default: never.
+    --controller <name>     Existing exported function in
+                                             src/backend/controllers/<scope>.<path>.controller.ts.
+                                             Omit to generate an inline handler.
 
   Output: src/backend/router/<path>/<METHOD>.ts; backend builds generate
   src/api/api.d.ts and src/api/api.zod.ts.

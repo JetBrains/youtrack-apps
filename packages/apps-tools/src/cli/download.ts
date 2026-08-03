@@ -10,6 +10,7 @@ import {i18n} from '../../lib/i18n/i18n.js';
 import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request.js';
 import {resolve} from '../../lib/net/resolve.js';
 import {createAppManagementOperations} from './management/app-management-operations.js';
+import {printStructured} from './commands/output.js';
 
 export async function download(config: Config, appName?: string) {
   if (!appName) {
@@ -55,10 +56,18 @@ export async function download(config: Config, appName?: string) {
     }
 
     await zl.extract(tempZipPath, path.resolve(output, appName));
-    if (!shouldOverwrite) {
-      console.log(i18n(`File extracted into '${output}'`));
-    } else {
-      console.log(i18n(`File extracted into '${output}' and existing files are overwritten`));
+    const result = {
+      action: 'downloaded',
+      app: appName,
+      output: path.resolve(output, appName),
+      overwritten: shouldOverwrite,
+    };
+    if (printStructured(config, result)) {
+      return;
     }
+
+    console.log(shouldOverwrite
+      ? i18n(`File extracted into '${output}' and existing files are overwritten`)
+      : i18n(`File extracted into '${output}'`));
   }
 }

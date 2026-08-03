@@ -39,13 +39,13 @@ describe('resolveAppName util', function () {
     resolveAppName(testDir);
 
     expect(console.error).toHaveBeenCalledWith("Error: App doesn't contain manifest.json file");
-    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledWith(2);
   });
 
   it("should fail if app folder doesn't exist", async function () {
     resolveAppName(testDir);
 
     expect(console.error).toHaveBeenCalledWith("Error: App directory doesn't exist");
-    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledWith(2);
   });
 });
