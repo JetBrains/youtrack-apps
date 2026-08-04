@@ -5,6 +5,8 @@ const path = require('node:path');
 const { execFileSync } = require('node:child_process');
 
 const {
+  findSkillDirectory,
+  downloadSkill,
   installSkill,
   getSkillStatus,
   runSystemAgentScan,
@@ -14,7 +16,8 @@ const PKG_DIR = path.join(__dirname, '..');
 const CLI_PATH = path.join(PKG_DIR, 'index.js');
 const TEST_HOME = path.join(PKG_DIR, 'tmp', 'test-skill-home');
 const TEST_PROJECT = path.join(PKG_DIR, 'tmp', 'test-skill-project');
-const SKILL_NAME = 'youtrack-app-builder';
+const TEST_SOURCE = path.join(PKG_DIR, 'tmp', 'test-skill-source');
+const SKILL_NAME = 'youtrack-apps-skill';
 
 function runCLI(args) {
   try {
@@ -60,19 +63,88 @@ describe('Agent skill CLI', () => {
   beforeEach(() => {
     fs.rmSync(TEST_HOME, { recursive: true, force: true });
     fs.rmSync(TEST_PROJECT, { recursive: true, force: true });
+    fs.rmSync(TEST_SOURCE, { recursive: true, force: true });
     fs.mkdirSync(TEST_PROJECT, { recursive: true });
+    fs.mkdirSync(TEST_SOURCE, { recursive: true });
+    fs.writeFileSync(path.join(TEST_SOURCE, 'SKILL.md'), '# Test skill\n');
     fs.writeFileSync(path.join(TEST_PROJECT, 'package.json'), '{"name":"test-project"}\n');
+  });
+
+  test('findSkillDirectory locates a nested skill directory', () => {
+    const nested = path.join(TEST_SOURCE, 'release', SKILL_NAME);
+    fs.mkdirSync(nested, { recursive: true });
+    fs.writeFileSync(path.join(nested, 'SKILL.md'), '# Test skill\n');
+    assert.strictEqual(findSkillDirectory(path.join(TEST_SOURCE, 'release')), nested);
+
+    const empty = path.join(TEST_SOURCE, 'empty');
+    fs.mkdirSync(empty, { recursive: true });
+    assert.strictEqual(findSkillDirectory(empty), null);
+  });
+
+  test('skill download authenticates release and asset requests with GITHUB_TOKEN', async () => {
+    const requests = [];
+    const fetch = async (url, options) => {
+      requests.push({ url, options });
+
+      if (requests.length === 1) {
+        return {
+          ok: true,
+          json: async () => ({
+            assets: [{
+              name: 'youtrack-apps-skill.zip',
+              url: 'https://api.github.com/repos/JetBrains/youtrack-app-agent-kit/releases/assets/1',
+            }],
+          }),
+        };
+      }
+
+      return { ok: false, status: 500 };
+    };
+
+    await assert.rejects(
+      downloadSkill({
+        cacheDir: path.join(TEST_HOME, 'authenticated-cache'),
+        fetch,
+        githubToken: 'test-token',
+      }),
+      /HTTP 500/
+    );
+
+    assert.strictEqual(requests.length, 2);
+    assert.strictEqual(requests[0].options.headers.Authorization, 'Bearer test-token');
+    assert.strictEqual(requests[1].options.headers.Authorization, 'Bearer test-token');
+    assert.strictEqual(requests[0].options.headers.Accept, 'application/vnd.github+json');
+    assert.strictEqual(requests[1].options.headers.Accept, 'application/octet-stream');
+  });
+
+  test('skill download does not send authorization without a GitHub token', async () => {
+    const requests = [];
+    const fetch = async (url, options) => {
+      requests.push({ url, options });
+      return { ok: false, status: 404 };
+    };
+
+    await assert.rejects(
+      downloadSkill({
+        cacheDir: path.join(TEST_HOME, 'unauthenticated-cache'),
+        fetch,
+        githubToken: '',
+      }),
+      /release is not available yet/
+    );
+
+    assert.strictEqual(requests.length, 1);
+    assert.strictEqual('Authorization' in requests[0].options.headers, false);
   });
 
   afterEach(() => {
     fs.rmSync(TEST_HOME, { recursive: true, force: true });
     fs.rmSync(TEST_PROJECT, { recursive: true, force: true });
+    fs.rmSync(TEST_SOURCE, { recursive: true, force: true });
   });
 
-  test('skill install defaults to global symlinks for all supported agents in non-interactive mode', () => {
-    const result = runCLI(['skill', 'install']);
-
-    assert.strictEqual(result.success, true, result.output);
+  test('skill install defaults to global symlinks for all supported agents', async () => {
+    await installSkill({ sourceDir: TEST_SOURCE, homeDir: TEST_HOME });
     assert.strictEqual(fs.existsSync(path.join(targetDir('codex'), 'SKILL.md')), true);
     assert.strictEqual(fs.existsSync(path.join(targetDir('claude'), 'SKILL.md')), true);
     assert.strictEqual(fs.existsSync(path.join(targetDir('junie'), 'SKILL.md')), true);
@@ -88,8 +160,9 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(result.output.trim(), require('../package.json').version);
   });
 
-  test('project-level install uses hard copies', () => {
-    const results = installSkill({
+  test('project-level install uses hard copies', async () => {
+    const results = await installSkill({
+      sourceDir: TEST_SOURCE,
       agent: 'codex',
       scope: 'project',
       cwd: TEST_PROJECT,
@@ -102,12 +175,13 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(fs.lstatSync(targetDir('codex', 'project')).isSymbolicLink(), false);
   });
 
-  test('project-level install uses the current directory without searching parent project markers', () => {
+  test('project-level install uses the current directory without searching parent project markers', async () => {
     const nestedProjectDir = path.join(TEST_PROJECT, 'examples', 'nested-app');
     fs.mkdirSync(nestedProjectDir, { recursive: true });
     fs.mkdirSync(path.join(TEST_PROJECT, '.git'));
 
-    const results = installSkill({
+    const results = await installSkill({
+      sourceDir: TEST_SOURCE,
       agent: 'codex',
       scope: 'project',
       cwd: nestedProjectDir,
@@ -120,8 +194,9 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(fs.existsSync(path.join(targetDir('codex', 'project'), 'SKILL.md')), false);
   });
 
-  test('status reports installed and not installed based on target directories', () => {
-    installSkill({
+  test('status reports installed and not installed based on target directories', async () => {
+    await installSkill({
+      sourceDir: TEST_SOURCE,
       agent: 'codex',
       scope: 'global',
       homeDir: TEST_HOME,

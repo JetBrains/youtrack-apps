@@ -9,7 +9,6 @@
   "files": [
     "LICENSE",
     "_templates",
-    "resources",
     "utils",
     "index.js",
     "help.js",

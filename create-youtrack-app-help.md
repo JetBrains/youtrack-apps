@@ -26,7 +26,7 @@ App Initialization
     --name <name>         App package name.
     --type <type>         js | ts. Default: ts.
                           js = basic JavaScript app.
-                          ts = TypeScript app with Advanced tools.
+                          ts = TypeScript app with Enhanced DX.
     --title <text>        Manifest title. Default: title-cased --name.
     --description <text>  Manifest description. Default: derived from --type.
     --vendor <text>       Manifest vendor name. Default: VendorName.
@@ -140,20 +140,20 @@ App Lifecycle
                                              Upload dist.
 
 
-Advanced tools
+Enhanced DX
 
-  Advanced tools are available only for TypeScript apps selected with
+  Enhanced DX is available only for TypeScript apps selected with
   --type ts during app initialization. They add file-based routing,
   generated API types, typed widget client, dev Zod validation, watch upload,
   and optional frontend hot reload.
 
   Generated package scripts:
-    npm run dev                           Start the Advanced tools dev workflow.
+    npm run dev                           Start the Enhanced DX dev workflow.
     npm run g -- <generator-command>      Run this generator in the app.
 
   npx @jetbrains/create-youtrack-app endpoint add
 
-  Interactive typed endpoint generator for TypeScript apps with Advanced tools.
+  Interactive typed endpoint generator for TypeScript apps with Enhanced DX.
   Omit the options to answer prompts interactively, or provide them for non-interactive generation.
 
   Values:

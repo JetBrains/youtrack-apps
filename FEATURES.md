@@ -83,4 +83,4 @@ JSON/YAML output where useful.
 **Question:** Can we achieve consistency across TS and JS commands?
 
 ### Wording of `Enhanced DX`
-**Question:** Can it be renamed to `advanced tools` since it indeed provides advanced tooling. In fresh context `Enhanced DX` is not self explanatory in terms of what it provides?
+**Question:** Can it be renamed to `Enhanced DX` since it indeed provides advanced tooling. In fresh context `Enhanced DX` is not self explanatory in terms of what it provides?

@@ -364,7 +364,7 @@ function getSkillStatusOptions() {
 async function handleSkillCommand(skillAction) {
   if (skillAction === 'install') {
     const installOptions = await resolveSkillInstallOptions();
-    const results = installSkill({ ...installOptions, cwd });
+    const results = await installSkill({ ...installOptions, cwd });
     console.log(styleText("green", formatInstallResults(results, skillAction)));
     return true;
   }

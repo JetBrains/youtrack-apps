@@ -27,7 +27,7 @@ npx @jetbrains/create-youtrack-app \
   --vendor-url "https://example.com"
 ```
 
-Use `--type ts` to create a TypeScript app with advanced tools, or `--type js` for the basic JavaScript app.
+Use `--type ts` to create a TypeScript app with Enhanced DX, or `--type js` for the basic JavaScript app.
 For a TypeScript app without the sample widget, add `--backend-only`.
 
 ## Adding Features to a Generated App
@@ -48,13 +48,14 @@ After you have generated an app, you may want to add more features. Add new feat
 ## App Skill Commands
 
 The skill gives supported AI coding agents YouTrack app development guidance.
+It is downloaded from the latest GitHub release when installed.
 
 | Command | Description |
 | --- | --- |
 | `npx @jetbrains/create-youtrack-app skill install` | Detects supported agents and lets you choose agents plus global or project installation. |
 | `npx @jetbrains/create-youtrack-app skill status` | Shows global and project installation status. |
 
-Supported agents are Claude Code, Codex CLI and Junie. Global installs use symlinks in the agent home config. Project installs use hard copies under the current directory.
+Supported agents are Claude Code, Codex CLI and Junie. Global installs use symlinks in the agent home config. Project installs use hard copies under the current directory. If the skill is unavailable, installation fails with an explicit error. For a release in a private GitHub repository, set `GITHUB_TOKEN` to a token with read access before running `skill install`.
 
 ## Classic Workflow Rules
 
