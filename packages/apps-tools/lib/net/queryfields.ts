@@ -1,5 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function queryfields(it: Record<string, any> | string[] | string | undefined): string {
+export type QueryField = string | QueryField[] | {[key: string]: QueryField} | undefined;
+
+export function queryfields(it: QueryField): string {
   if (it === undefined) {
     return '';
   }

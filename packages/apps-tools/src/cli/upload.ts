@@ -8,6 +8,7 @@ import {i18n} from '../../lib/i18n/i18n.js';
 import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request.js';
 import {resolve} from '../../lib/net/resolve.js';
 import {resolveAppName} from './upload-utils.js';
+import {printStructured} from './commands/output.js';
 
 export async function upload(config: Config, appDir?: string) {
   const appName = resolveAppName(appDir);
@@ -50,17 +51,17 @@ export async function upload(config: Config, appDir?: string) {
       const {id} = (await res.json()) as unknown as {id: string};
       const appLink = `${config.host}/admin/apps?selected=${id}&tab=settings`;
 
-      if (isCreate) {
-        console.log(i18n('App "' + appName + '" created'));
-      } else {
-        console.log(i18n('App "' + appName + '" uploaded'));
+      const action = isCreate ? 'created' : 'uploaded';
+      const printed = printStructured(config, {action, app: {name: appName, id}});
+      if (!printed) {
+        console.log(i18n('App "' + appName + '" ' + action));
       }
 
       if (config.open) {
         // using dynamic import as we compile to cjs
         const {default: openInBrowser} = await import('open');
         await openInBrowser(appLink);
-      } else {
+      } else if (!config.json && !config.yaml) {
         console.log(i18n(`To configure the app please proceed to: ${appLink}`));
       }
     } catch (error) {

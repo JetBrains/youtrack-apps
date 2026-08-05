@@ -227,6 +227,15 @@ export class UploadCoordinator {
       manifest: null,
       schema: null,
       open: null,
+      json: false,
+      yaml: false,
+      yes: false,
+      project: null,
+      skip: null,
+      limit: null,
+      settings: null,
+      enabled: null,
+      field: null,
       cwd: this.cwd
     };
 

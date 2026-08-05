@@ -7,7 +7,7 @@
 
 export {validate, DEFAULT_SCHEMA_URL} from './src/cli/validate.js';
 export {upload} from './src/cli/upload.js';
-export {list} from './src/cli/list.js';
+export {list} from './src/cli/commands/discovery.js';
 export {download} from './src/cli/download.js';
 
 export type {Config, AppItem, RequiredParams, ErrorWithStatusCodeAndData, ResponseData} from './@types/types.js';

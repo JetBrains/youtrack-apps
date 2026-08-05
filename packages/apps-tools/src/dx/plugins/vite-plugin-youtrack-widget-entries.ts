@@ -59,7 +59,7 @@ export default function youtrackWidgetEntries(options: WidgetEntriesOptions = {}
       if (names.length === 0) {
         throw new Error(
           `[widget-entries] No widgets found in ${resolvedWidgetsDir}.\n` +
-          `Create at least one widget with: npm run g -- widget --key <name>`
+          `Create at least one widget with: npm run g -- widget add --key <name>`
         );
       }
 

@@ -9,7 +9,7 @@
     "start": "NODE_OPTIONS=--openssl-legacy-provider webpack serve",
     "build": "rm -rf dist && NODE_OPTIONS=--openssl-legacy-provider webpack --mode production",
     "pack": "rm -rf issue-dashboard-widgets.zip && cd dist && zip -r ../issue-dashboard-widgets .",
-    "upload": "youtrack-app upload dist",
+    "upload": "youtrack-app app upload",
     "test": "karma start",
     "lint": "eslint . --quiet=true && npm run stylelint",
     "stylelint": "stylelint --ignore-path .gitignore **/*.css",
