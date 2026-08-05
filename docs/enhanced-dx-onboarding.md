@@ -217,9 +217,9 @@ Inside an Enhanced DX project, `npm run g` is a shorthand for the scaffolding CL
 ### Generate a widget
 
 ```bash
-npm run g -- widget --key my-panel --extension-point ISSUE_BELOW_SUMMARY
-npm run g -- widget --key admin-page --extension-point MAIN_MENU_ITEM --name "Admin Page"
-npm run g -- widget --key project-tab --extension-point PROJECT_SETTINGS --permissions read-project
+npm run g -- widget add --key my-panel --extension-point ISSUE_BELOW_SUMMARY
+npm run g -- widget add --key admin-page --extension-point MAIN_MENU_ITEM --name "Admin Page"
+npm run g -- widget add --key project-tab --extension-point PROJECT_SETTINGS --permissions read-project
 ```
 
 This creates `src/widgets/<key>/` (React component, HTML, CSS, Vite config) and injects the entry into `manifest.json` automatically. No manual manifest editing needed.
@@ -231,9 +231,9 @@ Optional flags: `--name`, `--description`, `--permissions <PERM1,PERM2>`, `--wid
 ### Generate a handler
 
 ```bash
-npm run g -- handler global/health                                   # GET (default)
-npm run g -- handler project/users --method POST
-npm run g -- h issue/comments --method POST --permissions read-issue,update-issue
+npm run g -- http-handler add --scope global --path health                                   # GET (default)
+npm run g -- http-handler add --scope project --path users --method POST
+npm run g -- http-handler add --scope issue --path comments --method POST --permissions read-issue,update-issue
 ```
 
 This creates the file at the correct path with the right types, `@zod-to-schema` annotations, and `Handle` export already in place.
@@ -246,9 +246,9 @@ Valid target entities: `Issue`, `User`, `Project`, `Article`.
 Valid types: `string` (default), `integer`, `float`, `boolean`, `Issue`, `User`, `Project`, `Article`.
 
 ```bash
-npm run g -- property Issue.customStatus           # string, single-value
-npm run g -- property Issue.tags --type string --set   # multi-value
-npm run g -- p Article.rating --type integer
+npm run g -- extension-property add --entity Issue --name customStatus           # string, single-value
+npm run g -- extension-property add --entity Issue --name tags --type string --set   # multi-value
+npm run g -- extension-property add --entity Article --name rating --type integer
 ```
 
 Access in handlers after rebuilding:
