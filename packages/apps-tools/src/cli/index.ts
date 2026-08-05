@@ -23,6 +23,8 @@ import {tagSearch} from './commands/tags.js';
 import {usages} from './commands/usages.js';
 import {fieldValues} from './commands/field-values.js';
 import {visibility} from './commands/visibility.js';
+import {restRequest} from './commands/rest.js';
+import type {RawRestRequestArgs} from './commands/rest.js';
 
 type Command<TArgument = unknown> = {
   execute: (config: Config, argument?: TArgument) => Promise<unknown>;
@@ -101,6 +103,10 @@ const commands = {
   'group:members': command(groupMembers, {argument: stringArg('group'), flags: ['group', 'skip', 'limit']}),
   'user:list': command(userList, {argument: stringArg('query'), flags: ['query', 'skip', 'limit']}),
   'user:info': command(userInfo, {argument: stringArg('user'), flags: ['user'], required: ['user']}),
+  'rest:request': command(
+    (config, argument) => restRequest(config, argument as RawRestRequestArgs),
+    {argument: args => ({path: optionalArgString(args.path) ?? undefined, method: optionalArgString(args.method) ?? undefined, body: optionalArgString(args.body) ?? undefined, header: args.header as string | string[] | undefined}), flags: ['path', 'method', 'body', 'header', 'yes'], required: ['path']},
+  ),
 } satisfies Record<string, Command>;
 
 function command<TArgument>(execute: Command<TArgument>['execute'], options: Omit<Command<TArgument>, 'execute'> = {}): Command {
@@ -389,6 +395,20 @@ export async function run(argv = process.argv) {
     });
     br();
 
+    printSection(i18n('Raw REST API'));
+    printCommand(i18n('rest request --path <path> [--method METHOD] [--body JSON] [--header name:value] [--yes]'), {
+      does: i18n('Makes an authenticated request to a relative path on the configured YouTrack host.'),
+      args: [
+        i18n('--path <path> is a relative REST path, including any query string.'),
+        i18n('--method defaults to GET. Supported methods are GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.'),
+        i18n('--yes is required for DELETE requests.'),
+        i18n('--body JSON sends a JSON request body.'),
+        i18n('--header name:value adds a request header and may be repeated.'),
+        i18n('See https://www.jetbrains.com/help/youtrack/devportal/rest-api-reference.html for available paths and payloads.'),
+      ],
+    });
+    br();
+
     printSection(i18n('Dangerous commands'));
     printCommand(i18n('app delete --app <app> [--yes]'), {
       does: i18n('Danger: permanently deletes the installed app and everything app-related from the YouTrack instance.'),
@@ -481,6 +501,13 @@ function validateCommandArgs(commandKey: string, selectedCommand: Command, args:
 
   if (commandKey === 'group:members' && Object.hasOwn(args, 'group') && (Object.hasOwn(args, 'skip') || Object.hasOwn(args, 'limit'))) {
     return 'Options "--skip" and "--limit" are only supported when "--group" is omitted';
+  }
+
+  if (commandKey === 'rest:request' && Object.hasOwn(args, 'method')) {
+    const method = optionalArgString(args.method)?.toUpperCase();
+    if (!method || !['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'].includes(method)) {
+      return 'Option "--method" must be one of GET, POST, PUT, PATCH, DELETE, HEAD, or OPTIONS';
+    }
   }
 
   const valuelessFlag = Object.keys(args).find(key => key !== '_' && args[key] === true && !booleanFlags.has(key));

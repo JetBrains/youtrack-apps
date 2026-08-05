@@ -17,6 +17,7 @@ import {projectFields, projectInfo, projectList} from './commands/projects.js';
 import {tagSearch} from './commands/tags.js';
 import {groupList, groupMembers} from './commands/groups.js';
 import {userInfo, userList} from './commands/users.js';
+import {restRequest} from './commands/rest.js';
 
 nock.back.setMode('record');
 jest.mock('./commands/discovery');
@@ -36,6 +37,7 @@ jest.mock('./commands/projects');
 jest.mock('./commands/tags');
 jest.mock('./commands/groups');
 jest.mock('./commands/users');
+jest.mock('./commands/rest');
 
 describe('index', function () {
   beforeEach(function () {
@@ -187,6 +189,15 @@ describe('index', function () {
     expect(process.exit).not.toHaveBeenCalled();
   });
 
+  it('should pass --yes to DELETE REST requests', async function () {
+    await require('./index').run(['', '', 'rest', 'request', '--path=/api/issues/1', '--method=DELETE', '--host=foo', '--token=bar', '--yes']);
+
+    expect(restRequest).toHaveBeenCalledWith(
+      expect.objectContaining({host: 'foo', token: 'bar', yes: true}),
+      {path: '/api/issues/1', method: 'DELETE', body: undefined, header: undefined},
+    );
+  });
+
   it('should pass app and script args to logs', function () {
     jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
@@ -280,6 +291,7 @@ describe('index', function () {
     ['group members', ['group', 'members', '--group=developers'], groupMembers, 'developers'],
     ['user list', ['user', 'list', '--query=alex'], userList, 'alex'],
     ['user info', ['user', 'info', '--user=alex'], userInfo, 'alex'],
+    ['rest request', ['rest', 'request', '--path=/api/issues'], restRequest, {path: '/api/issues', method: undefined, body: undefined, header: undefined}],
   ])('should route %s', async (_name, commandArgs, handler, expectedArgument) => {
     await require('./index').run(['', '', ...commandArgs, '--host=foo', '--token=bar']);
 

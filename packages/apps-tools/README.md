@@ -53,6 +53,7 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `youtrack-app user list [--query <query>] [--skip N] [--limit N]`
 - `youtrack-app user info --user <user>`
 - `youtrack-app app delete --app <app> [--yes]`
+- `youtrack-app rest request --path <path> [--method METHOD] [--body JSON] [--header name:value]`
 
 ### Using Environment Variables
 
@@ -62,6 +63,16 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 - `YOUTRACK_API_TOKEN` - Your permanent token for accessing the YouTrack API.
 
 Configure these variables once, or pass `--host` and `--token` to each command. If you provide both environment variables and command-line arguments, the command-line arguments take precedence.
+
+### Raw REST API
+
+`youtrack-app rest request --path <path> [--method METHOD] [--body JSON] [--header name:value] --host --token`
+
+This command makes an authenticated request to a relative path on the configured YouTrack host. The method defaults to `GET`; `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, and `OPTIONS` are supported. Include query parameters in the path, for example:
+
+`youtrack-app rest request --path '/api/issues?query=for:me'`
+
+Use `--body` for a JSON request body and repeat `--header name:value` to add request headers. Successful JSON responses are printed as formatted JSON, or as YAML with `--yaml`. Non-JSON responses are printed as text. HTTP errors are reported with their status and response description.
 
 ### Pagination
 
