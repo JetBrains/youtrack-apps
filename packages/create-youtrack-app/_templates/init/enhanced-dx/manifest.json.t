@@ -10,7 +10,7 @@ to: manifest.json
     "name": "<%= vendor || 'Your Company' %>",
     "url": "<%= vendorUrl || 'https://example.com' %>"
   },
-  "icon": "icon.svg",
+  "icon": "icon.svg"<% if (backendOnly !== 'true') { %>,
   "widgets": [
     {
       "key": "enhanced-dx",
@@ -20,5 +20,5 @@ to: manifest.json
       "iconPath": "enhanced-dx/widget-icon.svg",
       "description": "<%= description %>"
     }
-  ]
+  ]<% } %>
 }

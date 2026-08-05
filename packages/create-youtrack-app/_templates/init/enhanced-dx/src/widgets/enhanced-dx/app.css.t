@@ -1,5 +1,5 @@
 ---
-to: src/widgets/enhanced-dx/app.css
+to: "<%= backendOnly === 'true' ? '' : 'src/widgets/enhanced-dx/app.css' %>"
 ---
 .widget {
   display: flex;

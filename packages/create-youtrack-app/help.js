@@ -1,76 +1,207 @@
 const { styleText } = require("node:util");
+const createApp = 'npx @jetbrains/create-youtrack-app';
+const command = value => styleText("magenta", value);
+const heading = value => styleText("bold", value);
+const code = value => styleText("cyan", value);
 
+const extensionPoints = [
+  'ADMINISTRATION_MENU_ITEM',
+  'ARTICLE_ABOVE_ACTIVITY_STREAM',
+  'ARTICLE_OPTIONS_MENU_ITEM',
+  'DASHBOARD_WIDGET',
+  'HELPDESK_CHANNEL',
+  'ISSUE_ABOVE_ACTIVITY_STREAM',
+  'ISSUE_BELOW_SUMMARY',
+  'ISSUE_FIELD_PANEL_FIRST',
+  'ISSUE_FIELD_PANEL_LAST',
+  'ISSUE_OPTIONS_MENU_ITEM',
+  'MAIN_MENU_ITEM',
+  'MARKDOWN',
+  'PROJECT_SETTINGS',
+  'USER_CARD',
+  'USER_PROFILE_SETTINGS',
+].join(', ');
 
 console.log(`
-To generate a new app, run the following command
+${heading('Create YouTrack App')}
 
-===
-${styleText("magenta", 'npm init @jetbrains/youtrack-app')}
-===
+Scaffold a YouTrack app or add features to the current app.
 
-... and follow the prompts. ${styleText("bold", 'Enhanced DX (experimental) features are described below.')}
+Usage:
+  ${command(`${createApp} <entity> <action> [options]`)}
 
-After you have generated an app, you may want to add more features. Add new features quickly with one of these commands:
-
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app --help')} to view a list of available commands
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings init')} to add a declaration for the app settings (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/app-settings.html')})
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app settings add')} to add one or more properties to the setting schema created using the command listed above
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app widget add')} to add another widget (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-widgets.html')})
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app extension-property add')} to declare an extension property (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-extension-properties.html')})
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app http-handler add')} to add an HTTP handler (${styleText("underline", 'https://www.jetbrains.com/help/youtrack/devportal-apps/apps-reference-http-handlers.html')})
-* ${styleText("magenta", 'npx @jetbrains/create-youtrack-app endpoint add')} to generate a router endpoint
+Common:
+  ${command('--cwd <path>')}        Run from another directory.
+  ${command('--help, -h')}          Show help.
+  ${command('--version')}           Print the CLI version.
+  Names: app/rule/widget keys use ${code('[a-z][a-z0-9-]*')}; extension
+  properties use ${code('[A-Za-z_][A-Za-z0-9_]*')}; settings keys reject whitespace.
 
 
-${styleText("bold", 'Enhanced DX (experimental)')}
+${heading('App Initialization')}
 
-${styleText("bold", 'Usage:')}
-  - Choose "TypeScript (Enhanced DX with file-based routing)" when prompted. A sample ${styleText("cyan", 'MAIN_MENU_ITEM')} widget with backend endpoints will be added automatically.
-  - Run ${styleText("magenta", 'npm run dev')} to rebuild and update the app continuously.
+  ${command(`${createApp} app init [options]`)}
 
-${styleText("bold", 'Code Generation:')}
-Inside an Enhanced DX app, use ${styleText("magenta", 'npm run generate')} (or ${styleText("magenta", 'npm run g')}) to add features:
+  Creates a new app. Missing values are prompted in an interactive terminal.
+  Project type is selected here only; feature commands infer the existing app.
 
-${styleText("bold", 'Widgets:')}
-  ${styleText("magenta", 'npm run g -- widget --key my-panel --extension-point ISSUE_BELOW_SUMMARY')}
-  ${styleText("magenta", 'npm run g -- widget --key admin-page --extension-point MAIN_MENU_ITEM --name "Admin Page"')}
-  ${styleText("dim", '# Creates src/widgets/<key>/ and injects an entry into manifest.json')}
-  ${styleText("dim", '# Extension points: MAIN_MENU_ITEM, DASHBOARD_WIDGET, ISSUE_BELOW_SUMMARY, PROJECT_SETTINGS, ...')}
+  Options:
+    ${command('--name <name>')}         App package name.
+    ${command('--type <type>')}         js | ts. Default: ts.
+                          js = basic JavaScript app.
+                          ts = TypeScript app with Enhanced DX.
+    ${command('--title <text>')}        Manifest title. Default: title-cased --name.
+    ${command('--description <text>')}  Manifest description. Default: derived from --type.
+    ${command('--vendor <text>')}       Manifest vendor name. Default: VendorName.
+    ${command('--vendor-url <url>')}    Manifest vendor URL. Default: https://vendor.com.
+    ${command('--backend-only')}        For --type ts, omit the sample widget.
+    ${command('--no-install')}          Skip dependency install.
 
-${styleText("bold", 'HTTP Handlers:')}
-  ${styleText("magenta", 'npm run g -- handler global/health')}              ${styleText("dim", '# GET handler (default)')}
-  ${styleText("magenta", 'npm run g -- handler project/users --method POST')} ${styleText("dim", '# POST handler')}
-  ${styleText("magenta", 'npm run g -- h issue/comments --method POST --permissions read-issue,update-issue')}
 
-${styleText("bold", 'Extension Properties:')}
-  ${styleText("magenta", 'npm run g -- property Issue.customStatus')}         ${styleText("dim", '# string type (default)')}
-  ${styleText("magenta", 'npm run g -- property Comment.rating --type integer')}
-  ${styleText("magenta", 'npm run g -- p Issue.tags --type string --set')}    ${styleText("dim", '# multi-value property')}
+${heading('Backend and Workflows')}
 
-${styleText("bold", 'App Settings:')}
-  ${styleText("magenta", 'npm run g -- settings init --title "..." --description "..."')} ${styleText("dim", '# Create settings schema')}
-  ${styleText("magenta", 'npm run g -- settings init')}                       ${styleText("dim", '# Interactive mode')}
-  ${styleText("magenta", 'npm run g -- settings add')}                        ${styleText("dim", '# Add property (interactive)')}
-  ${styleText("magenta", 'npm run g -- s init --title "..." --description "..."')}        ${styleText("dim", '# Short alias')}
+  ${command(`${createApp} rule add --type <type> --name <name>`)}
 
-${styleText("bold", 'Interactive Menu:')}
-  ${styleText("magenta", 'npm run g')}                                        ${styleText("dim", '# Shows a menu for choosing what to generate')}
+  Adds a workflow rule.
 
-${styleText("bold", 'Features:')}
-• ${styleText("bold", 'File-based Routing:')} Create endpoints by adding files in ${styleText("cyan", 'src/backend/router/SCOPE/NAME/METHOD.ts')}
-  - e.g. ${styleText("cyan", 'src/backend/router/project/demo/GET.ts')} for a GET request
+  Args:
+    ${command('--type <type>')}         onChange | onSchedule | action | stateMachine | sla.
+    ${command('--name <name>')}         Rule filename stem.
 
-• ${styleText("bold", 'TypeScript Backend:')} TypeScript support with automatic type generation
-  - Use ${styleText("magenta", '@zod-to-schema')} annotation for the endpoint Request and Response types (see the sample endpoints)
-  - Annotated types are used to generate schemas (${styleText("cyan", 'api.zod.ts')}) and type definitions (${styleText("cyan", 'api.d.ts')}) in the ${styleText("cyan", 'src/api/')} folder
+  Output: JS apps write ${code('src/<name>.js')}; TS apps write ${code('src/workflows/<name>.ts')}.
 
-• ${styleText("bold", 'Client:')} Custom TS endpoints are accessible via type-safe API client with autocompletion and type checking
-  - ${styleText("magenta", 'import { createApi } from "@/api";')}
-  - ${styleText("magenta", 'const host = await YTApp.register(); const api = createApi(host);')}
-  - ${styleText("magenta", 'const result = await api.project.demo.GET({ projectId: "ABC", message: "hello" });')}
 
-• ${styleText("bold", 'Zod Validation:')} Runtime validation in development mode. Use ${styleText("magenta", 'npm run dev')}
+  ${command(`${createApp} http-handler add [options]`)}
 
-• ${styleText("bold", 'Vite-powered:')} Custom plugins handle routing and type generation
-  - api plugin: ${styleText("bold", 'vite-plugin-youtrack-api-generator.ts')}
-  - router plugin: ${styleText("bold", 'vite-plugin-youtrack-router.ts')}
+  Adds an HTTP handler. Omit --scope and --path to open the interactive flow.
+
+  Args:
+    ${command('--scope <scope>')}        global | project | issue | article | user.
+    ${command('--path <path>')}          Route path below the selected scope. Empty means the scope root.
+    ${command('--method <method>')}      GET | POST | PUT | DELETE. Default: GET.
+    ${command('--permissions <csv>')}    Permission keys, comma-separated.
+    ${command('--handler <name>')}       JS apps only: handler file stem. Default: backend.
+
+  JS usage: ${command('http-handler add --scope <scope> --path <path> --handler <name>')} writes
+  ${code('src/<name>.js')}; omit ${command('--handler')} to update ${code('src/backend.js')}.
+  TS output:
+  ${code('src/backend/router/<scope>/<path>/<METHOD>.ts')}.
+
+
+${heading('App Persistance')}
+
+  ${command(`${createApp} settings init [options]`)}
+
+  Creates ${code('src/settings.json')} when absent. Missing values are prompted
+  interactively.
+
+  Options:
+    ${command('--title <text>')}         Settings schema title.
+    ${command('--description <text>')}   Settings schema description.
+
+
+  ${command(`${createApp} settings add --name <name> --type <type> [options]`)}
+
+  Adds one property to ${code('src/settings.json')}.
+
+  Options:
+    ${command('--name <name>')}          Property key.
+    ${command('--type <type>')}          string | integer | number | boolean | object | array.
+    ${command('--title <text>')}         Property title.
+    ${command('--description <text>')}   Property description.
+    ${command('--scope <scope>')}        global | project | none. Default: none.
+    ${command('--entity <entity>')}      Issue | User | Project | UserGroup | Article; only object/array.
+    ${command('--required')}             Add to required[].
+    ${command('--readonly')}             Mark read-only.
+    ${command('--const <value>')}        Constant value for read-only property.
+    ${command('--min-length <n>')}       String minimum length.
+    ${command('--max-length <n>')}       String maximum length.
+    ${command('--format <format>')}      String format, for example secret, date, date-time, email, uri.
+    ${command('--enum <csv>')}           String allowed values.
+    ${command('--min <n>')}              Number/integer inclusive minimum.
+    ${command('--max <n>')}              Number/integer inclusive maximum.
+    ${command('--exclusive-min <n>')}    Number/integer exclusive minimum.
+    ${command('--exclusive-max <n>')}    Number/integer exclusive maximum.
+    ${command('--multiple-of <n>')}      Number/integer multiple.
+
+
+  ${command(`${createApp} extension-property add [options]`)}
+
+  Updates ${code('src/entity-extensions.json')}. Omit --entity and --name to open
+  the interactive flow.
+
+  Args:
+    ${command('--entity <Entity>')}      Issue | User | Project | Article.
+    ${command('--name <name>')}          Extension property key.
+    ${command('--type <type>')}          string | integer | float | boolean | Issue | User | Project | Article.
+    ${command('--set')}                  Multi-value property.
+
+
+${heading('Widgets')}
+
+  ${command(`${createApp} widget add --key <key> --extension-point <point> [options]`)}
+
+  Adds a widget and manifest entry. Omit widget flags to open the interactive flow.
+
+  Options:
+    ${command('--key <key>')}            Widget key.
+    ${command('--extension-point <p>')}  ${extensionPoints}
+    ${command('--name <text>')}          Display name. Default: title-cased --key.
+    ${command('--description <text>')}   Widget description.
+    ${command('--permissions <csv>')}    Permission keys, comma-separated.
+    ${command('--width <n>')}            Expected width in pixels.
+    ${command('--height <n>')}           Expected height in pixels.
+
+  Output: ${code('src/widgets/<key>/')} plus manifest widget entry.
+
+
+${heading('App Lifecycle')}
+
+  Generated package scripts:
+    ${command('npm run build')}                         Build and validate dist.
+    ${command('npm run upload -- --host <url> --token <token> [--open]')}
+                                             Upload dist.
+
+
+${heading('Enhanced DX')}
+
+  Enhanced DX is available only for TypeScript apps selected with
+  ${command('--type ts')} during app initialization. They add file-based routing,
+  generated API types, typed widget client, dev Zod validation, watch upload,
+  and optional frontend hot reload.
+
+  Generated package scripts:
+    ${command('npm run dev')}                           Start the Enhanced DX dev workflow.
+    ${command('npm run g -- <generator-command>')}      Run this generator in the app.
+
+  ${command(`${createApp} endpoint add`)}
+
+  Interactive typed endpoint generator for TypeScript apps with Enhanced DX.
+  Omit the options to answer prompts interactively, or provide them for non-interactive generation.
+
+  Values:
+    ${command('--scope <scope>')}          global | issue | project | custom.
+    ${command('--path <path>')}           Path below the selected scope.
+    ${command('--method <method>')}       GET | POST | PUT | DELETE.
+    ${command('--request-type <type>')}   Request type name or never. Default: never.
+    ${command('--response-type <type>')}  Response type name or never. Default: never.
+    ${command('--controller <name>')}     Existing exported function in
+                                             src/backend/controllers/<scope>.<path>.controller.ts.
+                                             Omit to generate an inline handler.
+
+  Output: ${code('src/backend/router/<path>/<METHOD>.ts')}; backend builds generate
+  ${code('src/api/api.d.ts')} and ${code('src/api/api.zod.ts')}.
+
+
+${heading('Agent Skill')}
+
+  ${command(`${createApp} skill install [options]`)}
+  ${command(`${createApp} skill status [options]`)}
+
+  Downloads, installs, or reports the YouTrack app builder skill from GitHub.
+
+  Options:
+    ${command('--agent <agent>')}        claude | codex | junie | all. Default: all.
+    ${command('--scope <scope>')}        global | project | all. install default: global.
+
 `);

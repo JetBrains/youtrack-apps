@@ -1,8 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import path from 'node:path';
-
-// Resolve CommonJS module from ES context of Vitest
-const { trimPathSegments } = require(path.resolve(__dirname, '../utils/sanitize.js'));
+const assert = require('node:assert/strict');
+const {describe, it} = require('node:test');
+const {trimPathSegments} = require('../utils/sanitize.js');
 
 describe('trimPathSegments', () => {
   const cases = [
@@ -20,7 +18,7 @@ describe('trimPathSegments', () => {
 
   it('normalizes various forms of slashes', () => {
     for (const c of cases) {
-      expect(trimPathSegments(c.in)).toBe(c.out);
+      assert.equal(trimPathSegments(c.in), c.out);
     }
   });
 });

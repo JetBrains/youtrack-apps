@@ -94,26 +94,24 @@ describe('App Settings', () => {
       assert.ok(result.output.includes('already exists'), 'Should show "already exists" error');
     });
 
-    test('should work with "setting" alias', () => {
+    test('should reject removed "setting" alias', () => {
       const settingsPath = path.join(TEST_APP_DIR, 'src', 'settings.json');
       if (fs.existsSync(settingsPath)) fs.unlinkSync(settingsPath);
 
       const result = runCLI('setting init --title "Alias Test" --description "Testing alias"', { silent: true });
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(fileExists('src/settings.json'), true);
-      assert.strictEqual(JSON.parse(readFile('src/settings.json')).title, 'Alias Test');
+      assert.strictEqual(result.success, false);
+      assert.match(result.output, /Unknown command/);
     });
 
-    test('should work with "s" short alias', () => {
+    test('should reject removed "s" short alias', () => {
       const settingsPath = path.join(TEST_APP_DIR, 'src', 'settings.json');
       if (fs.existsSync(settingsPath)) fs.unlinkSync(settingsPath);
 
       const result = runCLI('s init --title "Short Alias" --description "Testing short"', { silent: true });
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(fileExists('src/settings.json'), true);
-      assert.strictEqual(JSON.parse(readFile('src/settings.json')).title, 'Short Alias');
+      assert.strictEqual(result.success, false);
+      assert.match(result.output, /Unknown command/);
     });
 
     test('should handle titles with special characters', () => {
@@ -126,11 +124,11 @@ describe('App Settings', () => {
       assert.strictEqual(JSON.parse(readFile('src/settings.json')).title, "My App's Settings");
     });
 
-    test('alias mapping should exist in source code', () => {
+    test('canonical settings actions should exist in the command registry', () => {
       const indexContent = fs.readFileSync(path.join(PKG_DIR, 'index.js'), 'utf8');
 
-      assert.ok(indexContent.includes("'s': 'settings'"), 's alias should be mapped to settings');
-      assert.ok(indexContent.includes("'setting': 'settings'"), 'setting alias should be mapped to settings');
+      assert.ok(indexContent.includes("'settings:init'"));
+      assert.ok(indexContent.includes("'settings:add'"));
     });
   });
 
@@ -487,18 +485,16 @@ describe('App Settings', () => {
 
     // ── Aliases ────────────────────────────────────────────────────────────
 
-    test('should work with "setting add" alias', () => {
+    test('should reject removed "setting add" alias', () => {
       const result = runCLI('setting add --name aliasSettingProp --type string', { silent: true });
-      assert.strictEqual(result.success, true, result.output);
-
-      assert.ok(readSettings().properties.aliasSettingProp);
+      assert.strictEqual(result.success, false);
+      assert.match(result.output, /Unknown command/);
     });
 
-    test('should work with "s add" short alias', () => {
+    test('should reject removed "s add" short alias', () => {
       const result = runCLI('s add --name aliasShortProp --type integer', { silent: true });
-      assert.strictEqual(result.success, true, result.output);
-
-      assert.ok(readSettings().properties.aliasShortProp);
+      assert.strictEqual(result.success, false);
+      assert.match(result.output, /Unknown command/);
     });
 
     // ── Error cases ────────────────────────────────────────────────────────

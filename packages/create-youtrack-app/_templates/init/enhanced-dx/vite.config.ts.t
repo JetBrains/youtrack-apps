@@ -1,5 +1,5 @@
 ---
-to: vite.config.ts
+to: "<%= backendOnly === 'true' ? '' : 'vite.config.ts' %>"
 ---
 import { resolve, dirname } from "node:path";
 import fs from 'node:fs';
