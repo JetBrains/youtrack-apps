@@ -45,7 +45,7 @@ Backend and Workflows
     --type <type>         onChange | onSchedule | action | stateMachine | sla.
     --name <name>         Rule filename stem.
 
-  Output: JS apps write src/workflows/<name>.js; TS apps write src/workflows/<name>.ts.
+  Output: JS apps write src/<name>.js; TS apps write src/workflows/<name>.ts.
 
 
   npx @jetbrains/create-youtrack-app http-handler add [options]

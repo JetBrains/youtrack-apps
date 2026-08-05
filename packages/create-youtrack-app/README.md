@@ -62,7 +62,8 @@ Supported agents are Claude Code, Codex CLI and Junie. Global installs use symli
 **Syntax:** `npx @jetbrains/create-youtrack-app rule add --type <type> --name <name>`
 - `<type>`: `onChange`, `onSchedule`, `action`, `stateMachine`, or `sla`
 - `<name>`: lowercase dashed filename stem, for example `notify-on-change`
-- Creates `src/workflows/<name>.js`
+- JavaScript apps create `src/<name>.js`, beside handlers and shared helpers.
+- TypeScript Enhanced DX apps create `src/workflows/<name>.ts`.
 
 This command only scaffolds the classic workflow source file and does not update `manifest.json`.
 

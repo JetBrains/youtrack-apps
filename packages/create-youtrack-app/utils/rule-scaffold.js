@@ -37,7 +37,9 @@ function getRuleExtension(isEnhancedDX = false) {
 }
 
 function resolveRuleTarget(cwd, name, isEnhancedDX = false) {
-  const relativePath = path.join('src', 'workflows', `${name}.${getRuleExtension(isEnhancedDX)}`);
+  const relativePath = isEnhancedDX
+    ? path.join('src', 'workflows', `${name}.ts`)
+    : path.join('src', `${name}.js`);
 
   return {
     relativePath,

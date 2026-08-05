@@ -20,9 +20,10 @@ installed and for what agents.
 **Problem:** There was no direct scaffolding for classic YouTrack scripts / workflows. 
 
 **Solution:** `create-youtrack-app rule add --type <type> --name <name>` scaffolds classic
-workflow rules under `src/workflows/<name>.js` for `onChange`,
-`onSchedule`, `action`, `stateMachine`, and `sla` rules. Each rule type gets a
-matching template shape, with validation for rule type and filename.
+workflow rules under `src/<name>.js` for JavaScript apps and
+`src/workflows/<name>.ts` for TypeScript Enhanced DX apps. It supports
+`onChange`, `onSchedule`, `action`, `stateMachine`, and `sla` rules. Each rule
+type gets a matching template shape, with validation for rule type and filename.
 
 ### App Management Tooling and Common Workflows
 

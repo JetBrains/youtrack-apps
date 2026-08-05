@@ -413,11 +413,11 @@ async function handleRuleCommand(ruleArgs) {
   const result = await runHygen([
     'rule',
     'add',
-    '--ruleType',
+    '--type',
     ruleType,
     '--name',
     name,
-    '--isEnhancedDX',
+    '--enhanced',
     String(isEnhancedDX),
     '--cwd',
     cwd,
@@ -463,7 +463,7 @@ async function handleRuleCommand(ruleArgs) {
   }
 
   try {
-    if (publicRoute.command === 'rule:add' && await handleRuleCommand(['rule', 'add', String(args.type)])) {
+    if (publicRoute.command === 'rule:add' && await handleRuleCommand(['rule', 'add', String(args._[2])])) {
       return;
     }
   } catch (error) {

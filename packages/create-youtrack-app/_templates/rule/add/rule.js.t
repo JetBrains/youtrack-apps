@@ -1,5 +1,5 @@
 ---
-to: "src/workflows/<%= name %>.<%= isEnhancedDX ? 'ts' : 'js' %>"
+to: "<%= isEnhancedDX ? 'src/workflows' : 'src' %>/<%= name %>.<%= isEnhancedDX ? 'ts' : 'js' %>"
 unless_exists: true
 ---
 <%- content %>

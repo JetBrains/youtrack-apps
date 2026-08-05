@@ -12,8 +12,8 @@ module.exports = {
   prompt: async ({ prompter, args }) => {
     const answers = {};
 
-    if (args.ruleType) {
-      answers.ruleType = String(args.ruleType);
+    if (args.type) {
+      answers.ruleType = String(args.type);
     } else {
       const response = await prompter.prompt({
         type: 'select',
@@ -39,7 +39,7 @@ module.exports = {
     validateRuleType(answers.ruleType);
     validateRuleName(answers.name);
 
-    const isEnhancedDX = args.isEnhancedDX === true || args.isEnhancedDX === 'true';
+    const isEnhancedDX = args.enhanced === true || args.enhanced === 'true';
     const targetCwd = path.resolve(process.cwd(), args.cwd || '.');
     const target = resolveRuleTarget(targetCwd, answers.name, isEnhancedDX);
     if (fs.existsSync(target.absolutePath)) {

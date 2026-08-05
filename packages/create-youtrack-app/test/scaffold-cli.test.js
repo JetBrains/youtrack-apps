@@ -129,11 +129,33 @@ describe('Non-interactive scaffold gate (--name)', () => {
       assert.strictEqual(manifest.description, 'A YouTrack app created with JavaScript');
 
       const pkgScripts = readJson(dir, 'package.json').scripts;
-      assert.ok(pkgScripts['copy:dist'].includes('src/workflows/*.js'), 'copy:dist should copy workflow files');
-      assert.ok(pkgScripts['copy:dist'].includes(' dist/'), 'copy:dist should copy workflows to dist root');
+      assert.ok(!('build:workflows' in pkgScripts), 'JavaScript workflows should not need a separate bundler');
+      assert.ok(pkgScripts['copy:dist'].includes('cp src/*.* dist/'));
 
       const viteConfig = readFile(dir, 'vite.config.ts');
-      assert.ok(viteConfig.includes("src: 'workflows/*.js'"), 'vite build should copy workflows from src/workflows');
+      assert.ok(!viteConfig.includes("src: 'workflows/*.js'"), 'JavaScript rules are copied from the src root');
+
+      const ruleOutput = execSync(
+        `node "${CLI_PATH}" rule add --type onChange --name import-helper --cwd "${dir}"`,
+        { encoding: 'utf8', stdio: 'pipe' }
+      );
+      assert.match(ruleOutput, /Workflow rule created/);
+      assert.ok(exists(dir, 'src/import-helper.js'));
+      assert.ok(!exists(dir, 'src/workflows/import-helper.js'));
+      const ruleSource = readFile(dir, 'src/import-helper.js');
+      assert.match(ruleSource, /const entities = require/);
+      assert.match(ruleSource, /exports\.rule/);
+
+      fs.writeFileSync(path.join(dir, 'src', 'helper.js'), "exports.helperValue = 'shared-helper';\n");
+      fs.writeFileSync(
+        path.join(dir, 'src', 'import-helper.js'),
+        "const {helperValue} = require('./helper.js');\nexports.rule = {helperValue};\n"
+      );
+      execSync('npm run copy:dist --silent', { cwd: dir, encoding: 'utf8', stdio: 'pipe' });
+
+      assert.ok(exists(dir, 'dist/import-helper.js'));
+      assert.ok(exists(dir, 'dist/helper.js'));
+      assert.match(readFile(dir, 'dist/import-helper.js'), /require\('\.\/helper\.js'\)/);
 
       try {
         execSync(`node "${CLI_PATH}" endpoint add --cwd "${dir}"`, { encoding: 'utf8', stdio: 'pipe' });

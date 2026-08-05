@@ -68,7 +68,7 @@ ${heading('Backend and Workflows')}
     ${command('--type <type>')}         onChange | onSchedule | action | stateMachine | sla.
     ${command('--name <name>')}         Rule filename stem.
 
-  Output: JS apps write ${code('src/workflows/<name>.js')}; TS apps write ${code('src/workflows/<name>.ts')}.
+  Output: JS apps write ${code('src/<name>.js')}; TS apps write ${code('src/workflows/<name>.ts')}.
 
 
   ${command(`${createApp} http-handler add [options]`)}

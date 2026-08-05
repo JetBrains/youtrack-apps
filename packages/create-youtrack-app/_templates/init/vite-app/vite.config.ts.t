@@ -24,10 +24,6 @@ export default defineConfig({
           dest: '.'
         },
         {
-          src: 'workflows/*.js',
-          dest: '.'
-        },
-        {
           src: '../public/*.*',
           dest: '.'
         }

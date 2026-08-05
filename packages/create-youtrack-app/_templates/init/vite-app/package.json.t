@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "copy:dist": "rm -rf dist && mkdir -p dist && cp src/*.* dist/ && cp manifest.json dist/ && cp public/*.* dist/ && if ls src/workflows/*.js >/dev/null 2>&1; then cp src/workflows/*.js dist/; fi",
+    "copy:dist": "rm -rf dist && mkdir -p dist && cp src/*.* dist/ && cp manifest.json dist/ && cp public/*.* dist/",
     "build": "tsc -p tsconfig.app.json && if ls src/widgets/*/index.html >/dev/null 2>&1; then vite build; else npm run copy:dist; fi && youtrack-app app validate",
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "test": "echo 'no tests'",
