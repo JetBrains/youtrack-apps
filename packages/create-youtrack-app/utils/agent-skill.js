@@ -1,12 +1,11 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { Buffer } = require('node:buffer');
-const { execFileSync, spawnSync } = require('node:child_process');
+const { spawnSync } = require('node:child_process');
 
 const SKILL_NAME = 'youtrack-apps-skill';
-const SKILL_REPOSITORY = 'JetBrains/youtrack-app-agent-kit';
-const SKILL_RELEASES_URL = `https://api.github.com/repos/${SKILL_REPOSITORY}/releases/latest`;
+const PACKAGED_SKILL_SOURCE_DIR = path.resolve(__dirname, '..', 'skills', SKILL_NAME);
+const REPOSITORY_SKILL_SOURCE_DIR = path.resolve(__dirname, '..', '..', '..', 'skills', SKILL_NAME);
 
 const ALL_AGENTS = 'all';
 const ALL_SCOPES = 'all';
@@ -103,103 +102,14 @@ function getAgentSkillsDir(agentId, scope, options = {}) {
   return path.join(rootDir, agent.configDir, 'skills');
 }
 
-function getSkillCacheDir(options = {}) {
-  return options.cacheDir || path.join(getHomeDir(), '.local', 'share', 'youtrack-app', SKILL_NAME);
-}
-
-function findSkillDirectory(rootDir) {
-  if (fs.existsSync(path.join(rootDir, 'SKILL.md'))) {
-    return rootDir;
-  }
-
-  const entries = fs.readdirSync(rootDir, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const entryPath = path.join(rootDir, entry.name);
-    if (entry.isDirectory()) {
-      const nestedSkillDir = findSkillDirectory(entryPath);
-      if (nestedSkillDir) return nestedSkillDir;
+function getSkillSourceDir() {
+  for (const sourceDir of [PACKAGED_SKILL_SOURCE_DIR, REPOSITORY_SKILL_SOURCE_DIR]) {
+    if (fs.existsSync(path.join(sourceDir, 'SKILL.md'))) {
+      return sourceDir;
     }
   }
 
-  return null;
-}
-
-function getGitHubHeaders(accept, options = {}) {
-  const headers = { Accept: accept };
-  const token = options.githubToken ?? process.env.GITHUB_TOKEN;
-
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
-  return headers;
-}
-
-async function downloadSkill(options = {}) {
-  const cacheDir = getSkillCacheDir(options);
-  if (fs.existsSync(path.join(cacheDir, 'SKILL.md'))) {
-    return cacheDir;
-  }
-
-  const downloadDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'youtrack-skill-'));
-  const archivePath = path.join(downloadDir, 'skill.zip');
-  const extractDir = path.join(downloadDir, 'extract');
-  const fetchImpl = options.fetch || globalThis.fetch;
-
-  try {
-    const releaseResponse = await fetchImpl(SKILL_RELEASES_URL, {
-      headers: getGitHubHeaders('application/vnd.github+json', options),
-      signal: globalThis.AbortSignal.timeout(30_000),
-    });
-    if (!releaseResponse.ok) {
-      if (releaseResponse.status === 404) {
-        throw new Error('YouTrack app builder skill release is not available yet.');
-      }
-      throw new Error(`Could not find the latest skill release on GitHub (HTTP ${releaseResponse.status}).`);
-    }
-
-    const release = await releaseResponse.json();
-    const releaseAsset = release.assets?.find(asset => asset.name === 'youtrack-apps-skill.zip');
-    if (!releaseAsset?.url) {
-      throw new Error('The latest skill release does not contain youtrack-apps-skill.zip.');
-    }
-
-    const response = await fetchImpl(releaseAsset.url, {
-      headers: getGitHubHeaders('application/octet-stream', options),
-      signal: globalThis.AbortSignal.timeout(30_000),
-    });
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('YouTrack app builder skill release is not available yet.');
-      }
-      throw new Error(`Could not download the YouTrack app builder skill from GitHub (HTTP ${response.status}).`);
-    }
-
-    fs.writeFileSync(archivePath, Buffer.from(await response.arrayBuffer()));
-    fs.mkdirSync(extractDir, { recursive: true });
-    execFileSync('tar', ['-xf', archivePath, '-C', extractDir], { stdio: 'ignore' });
-
-    const sourceDir = findSkillDirectory(extractDir);
-    if (!sourceDir) {
-      throw new Error(`The YouTrack app builder release does not contain ${SKILL_NAME}/SKILL.md.`);
-    }
-
-    const stagingDir = `${cacheDir}.tmp`;
-    fs.rmSync(stagingDir, { recursive: true, force: true });
-    fs.mkdirSync(path.dirname(cacheDir), { recursive: true });
-    fs.cpSync(sourceDir, stagingDir, { recursive: true });
-    fs.rmSync(cacheDir, { recursive: true, force: true });
-    fs.renameSync(stagingDir, cacheDir);
-    return cacheDir;
-  } catch (error) {
-    if (error?.cause?.code === 'ENOTFOUND') {
-      throw new Error(`Could not reach GitHub while downloading the YouTrack app builder skill: ${error.message}`);
-    }
-    throw error;
-  } finally {
-    fs.rmSync(downloadDir, { recursive: true, force: true });
-  }
+  throw new Error('Could not find the bundled YouTrack Apps skill.');
 }
 
 function createInstallPlan(sourceDir, options = {}) {
@@ -251,7 +161,7 @@ function deploySkill(planItem) {
 }
 
 async function installSkill(options = {}) {
-  const sourceDir = options.sourceDir || await downloadSkill(options);
+  const sourceDir = options.sourceDir || getSkillSourceDir();
   return createInstallPlan(sourceDir, options).map(planItem => {
     deploySkill(planItem);
 
@@ -337,7 +247,7 @@ function formatAgentName(agentId) {
 
 function formatInstallResults(results, action) {
   const verb = action === 'update' ? 'Updated' : 'Installed';
-  const lines = [`${verb} YouTrack app builder skill:`];
+  const lines = [`${verb} YouTrack Apps skill:`];
 
   for (const result of results) {
     lines.push(`- ${formatAgentName(result.agent)} (${result.scope}, ${result.deploymentType}): ${result.targetDir}`);
@@ -347,7 +257,7 @@ function formatInstallResults(results, action) {
 }
 
 function formatStatusResults(statuses) {
-  const lines = ['YouTrack app builder skill status:'];
+  const lines = ['YouTrack Apps skill status:'];
 
   for (const status of statuses) {
     const agentName = formatAgentName(status.agent);
@@ -366,11 +276,9 @@ function formatStatusResults(statuses) {
 }
 
 module.exports = {
-  findSkillDirectory,
   formatInstallResults,
   formatStatusResults,
   getSkillStatus,
   installSkill,
   runSystemAgentScan,
-  downloadSkill,
 };

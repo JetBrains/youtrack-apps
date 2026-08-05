@@ -5,3 +5,4 @@ node_modules
 dist
 *.zip
 .codex
+packages/create-youtrack-app/skills
