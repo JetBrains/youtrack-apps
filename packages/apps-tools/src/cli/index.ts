@@ -164,10 +164,10 @@ export async function run(argv = process.argv) {
     host: args.host || YOUTRACK_HOST || null,
     token: args.token || YOUTRACK_API_TOKEN || null,
     output: args.output || (commandKey === 'app:download' ? process.cwd() : null),
-    overwrite: args.overwrite || null,
+    overwrite: isFlagEnabled(args.overwrite) ? 'true' : null,
     manifest: args.manifest || null,
     schema: args.schema || null,
-    open: args.open || null,
+    open: isFlagEnabled(args.open) ? 'true' : null
     json: isFlagEnabled(args.json),
     yaml: isFlagEnabled(args.yaml) || isFlagEnabled(args.yml),
     yes: isFlagEnabled(args.yes),
