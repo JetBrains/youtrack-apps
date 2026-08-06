@@ -88,7 +88,7 @@ ${heading('Backend and Workflows')}
   ${code('src/backend/router/<scope>/<path>/<METHOD>.ts')}.
 
 
-${heading('App Persistance')}
+${heading('App Persistence')}
 
   ${command(`${createApp} settings init [options]`)}
 
