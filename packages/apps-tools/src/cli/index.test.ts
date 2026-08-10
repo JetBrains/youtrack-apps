@@ -206,7 +206,7 @@ describe('index', function () {
 
     expect(logs).toHaveBeenCalledWith(
       expect.objectContaining({host: 'foo', token: 'bar', skip: '0', limit: '100'}),
-      'my-app action',
+      {app: 'my-app', script: 'action'},
     );
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
@@ -220,7 +220,7 @@ describe('index', function () {
 
     expect(scripts).toHaveBeenCalledWith(
       expect.objectContaining({host: 'foo', token: 'bar'}),
-      'my-app 150-238',
+      {app: 'my-app', fileKey: '150-238'},
     );
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
@@ -269,7 +269,7 @@ describe('index', function () {
     ['app validate', ['app', 'validate', '--directory=dist'], validate, 'dist'],
     ['app list', ['app', 'list'], list, undefined],
     ['app info', ['app', 'info', '--app=my-app'], info, 'my-app'],
-    ['app scripts', ['app', 'scripts', '--app=my-app', '--file-key=manifest'], scripts, 'my-app manifest'],
+    ['app scripts', ['app', 'scripts', '--app=my-app', '--file-key=manifest'], scripts, {app: 'my-app', fileKey: 'manifest'}],
     ['app usages', ['app', 'usages', '--app=my-app'], usages, 'my-app'],
     ['app settings', ['app', 'settings', '--app=my-app'], settings, 'my-app'],
     ['app settings-set', ['app', 'settings-set', '--app=my-app'], settingsSet, 'my-app'],
@@ -278,7 +278,7 @@ describe('index', function () {
     ['app disable', ['app', 'disable', '--app=my-app'], disable, 'my-app'],
     ['app attach', ['app', 'attach', '--app=my-app', '--project=DEMO'], attach, 'my-app'],
     ['app detach', ['app', 'detach', '--app=my-app', '--project=DEMO'], detach, 'my-app'],
-    ['app logs', ['app', 'logs', '--app=my-app', '--script=workflow'], logs, 'my-app workflow'],
+    ['app logs', ['app', 'logs', '--app=my-app', '--script=workflow'], logs, {app: 'my-app', script: 'workflow'}],
     ['app requirement-errors', ['app', 'requirement-errors', '--app=my-app'], requirementErrors, 'my-app'],
     ['app delete', ['app', 'delete', '--app=my-app'], deleteApp, 'my-app'],
     ['project list', ['project', 'list'], projectList, undefined],
@@ -350,8 +350,8 @@ describe('index', function () {
   it('should list paging options on commands instead of common options', async function () {
     await require('./index').run(['', '', '--help']);
 
-    expect(console.log).not.toHaveBeenCalledWith(expect.stringMatching(/^{2}--skip N/));
-    expect(console.log).not.toHaveBeenCalledWith(expect.stringMatching(/^{2}--limit N/));
+    expect(console.log).not.toHaveBeenCalledWith(expect.stringMatching(/^ {2}--skip N/));
+    expect(console.log).not.toHaveBeenCalledWith(expect.stringMatching(/^ {2}--limit N/));
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining('app list [--skip N] [--limit N]'));
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining('app logs --app <app> [--limit N]'));
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining('app logs --app <app> --script <script> [--skip N] [--limit N]'));

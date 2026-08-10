@@ -343,7 +343,7 @@ export async function run(argv = process.argv) {
       ],
     });
     printCommand('project fields --project <project>', {
-      does: 'Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.',
+      does: 'Returns the issue-fields JSON schema for a project, including field definitions and required fields. Allowed-value lists may be capped; use "field values" to find actual custom-field values.',
       args: [
         '<project> is an exact project ID or short name/key.',
       ],
@@ -362,7 +362,7 @@ export async function run(argv = process.argv) {
       ],
     });
     printCommand('field values --project <short-name> --field <field> [--query <query>] [--skip N] [--limit N]', {
-      does: 'Searches values for one project custom field.',
+      does: 'Searches and paginates actual custom-field values for a project. Use it instead of "project fields" when a field has more values than the schema lists.',
       args: [
         '--query <query> is optional value text.',
         '--project <short-name> selects the project.',

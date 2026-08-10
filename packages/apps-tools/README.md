@@ -64,6 +64,10 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 
 Configure these variables once, or pass `--host` and `--token` to each command. If you provide both environment variables and command-line arguments, the command-line arguments take precedence.
 
+### Language Support
+
+The CLI is English-only. It does not provide an internationalization API or translation catalogs for apps.
+
 ### Raw REST API
 
 `youtrack-app rest request --path <path> [--method METHOD] [--body JSON] [--header name:value] --host --token`
@@ -201,7 +205,7 @@ This command searches visible usable tags by query. With `--project`, it returns
 
 `youtrack-app field values --project <project-short-name> --field <field> [--query <query>] --host --token [--skip N] [--limit N]`
 
-This command searches values for one project custom field. The project is resolved by exact ID or short name, and `--field` accepts a project custom field ID, field ID, field name, or localized field name.
+This command searches and paginates actual custom-field values for a project. Use it instead of `project fields` when a field has more values than the schema lists. The project is resolved by exact ID or short name, and `--field` accepts a project custom field ID, field ID, field name, or localized field name.
 
 ### Visibility
 
@@ -258,7 +262,7 @@ This command shows project details. The project is resolved by exact project ID 
 
 `youtrack-app project fields --project <project> --host --token`
 
-This command returns the full issue fields JSON schema for a project. The project is resolved by exact project ID or short name/key, ignoring case.
+This command returns the issue-fields JSON schema for a project, including field definitions and required fields. Allowed-value lists may be capped; use `field values` to find actual custom-field values. The project is resolved by exact project ID or short name/key, ignoring case.
 
 `youtrack-app project apps --project <project> --host --token [--skip N] [--limit N]`
 

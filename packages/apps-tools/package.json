@@ -1,6 +1,6 @@
 {
   "name": "@jetbrains/youtrack-apps-tools",
-  "version": "0.1.3",
+  "version": "1.0.0",
   "type": "module",
   "description": "CLI and Vite plugins for building, validating, and uploading YouTrack apps",
   "repository": {
