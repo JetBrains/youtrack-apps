@@ -108,7 +108,7 @@ describe('index', function () {
       open: null,
       json: false,
       yaml: false,
-      yes: false,
+      confirmDestructiveAction: false,
       project: null,
       skip: null,
       limit: null,
@@ -138,7 +138,7 @@ describe('index', function () {
       open: null,
       json: false,
       yaml: true,
-      yes: false,
+      confirmDestructiveAction: false,
       project: null,
       skip: null,
       limit: null,
@@ -184,7 +184,7 @@ describe('index', function () {
 
     require('./index').run(['', '', 'app', 'delete', '--app=@acme/my-app', '--host=foo', '--token=bar', '--yes']);
 
-    expect(deleteApp).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'bar', yes: true}), '@acme/my-app');
+    expect(deleteApp).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'bar', confirmDestructiveAction: true}), '@acme/my-app');
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
   });
@@ -193,7 +193,7 @@ describe('index', function () {
     await require('./index').run(['', '', 'rest', 'request', '--path=/api/issues/1', '--method=DELETE', '--host=foo', '--token=bar', '--yes']);
 
     expect(restRequest).toHaveBeenCalledWith(
-      expect.objectContaining({host: 'foo', token: 'bar', yes: true}),
+      expect.objectContaining({host: 'foo', token: 'bar', confirmDestructiveAction: true}),
       {path: '/api/issues/1', method: 'DELETE', body: undefined, header: undefined},
     );
   });

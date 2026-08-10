@@ -170,7 +170,7 @@ export async function run(argv = process.argv) {
     open: isFlagEnabled(args.open) ? 'true' : null,
     json: isFlagEnabled(args.json),
     yaml: isFlagEnabled(args.yaml) || isFlagEnabled(args.yml),
-    yes: isFlagEnabled(args.yes),
+    confirmDestructiveAction: isFlagEnabled(args.yes),
     project: args.project || null,
     skip: optionalArgString(args.skip),
     limit: optionalArgString(args.limit),

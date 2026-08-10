@@ -25,7 +25,7 @@ export async function restRequest(config: Config, args: RawRestRequestArgs = {})
     if (!METHODS.has(method)) {
       throw new Error(i18n(`Invalid HTTP method "${args.method}"`));
     }
-    if (method === 'DELETE' && !config.yes) {
+    if (method === 'DELETE' && !config.confirmDestructiveAction) {
       throw new Error(i18n('DELETE requests require --yes'));
     }
 

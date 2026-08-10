@@ -57,7 +57,7 @@ function config(overrides: Partial<Config> = {}): Config {
     open: null,
     json: false,
     yaml: false,
-    yes: false,
+    confirmDestructiveAction: false,
     project: null,
     skip: null,
     limit: null,

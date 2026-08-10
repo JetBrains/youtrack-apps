@@ -10,7 +10,7 @@ export interface Config {
   open: string | null;
   json: boolean;
   yaml: boolean;
-  yes: boolean;
+  confirmDestructiveAction: boolean;
   project: string | null;
   skip: string | null;
   limit: string | null;

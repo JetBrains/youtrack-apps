@@ -57,7 +57,7 @@ async function confirmDelete(config: Config, appName?: string): Promise<boolean>
     throw new Error(i18n('App name should be defined'));
   }
 
-  if (config.yes) {
+  if (config.confirmDestructiveAction) {
     return true;
   }
 
