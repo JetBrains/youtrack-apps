@@ -195,7 +195,7 @@ describe('Non-interactive scaffold gate (--name)', () => {
       // `widget add --key ... --name ...` must scaffold a widget, never trigger the app gate.
       const indexContent = fs.readFileSync(CLI_PATH, 'utf8');
       const gateIdx = indexContent.indexOf('Non-interactive scaffold gate');
-      const widgetIdx = indexContent.indexOf("const widgetIndex = normalizedArgv.findIndex");
+      const widgetIdx = indexContent.indexOf("const widgetIndex = commandArgv.findIndex");
       assert.ok(widgetIdx !== -1 && gateIdx !== -1);
       assert.ok(widgetIdx < gateIdx, 'widget handling must appear before the scaffold gate');
     });

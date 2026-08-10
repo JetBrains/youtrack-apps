@@ -9,16 +9,8 @@ const path = require("node:path");
 const fs = require('node:fs');
 const defaultTemplates = path.join(__dirname, "_templates");
 const publicArgv = process.argv.slice(2);
-const publicRoute = routePublicCommand(publicArgv);
-const argv = publicRoute.argv;
-// Keep positional arguments from routed argv, but restore global options that
-// routing intentionally removes. In particular, --cwd must be read from the
-// original invocation regardless of where it appears.
-const args = require("minimist")(argv);
-const originalArgs = require("minimist")(publicArgv);
-if (originalArgs.cwd !== undefined) {
-  args.cwd = originalArgs.cwd;
-}
+const args = require("minimist")(publicArgv);
+const publicRoute = routePublicCommand(args);
 const cwd = path.resolve(process.cwd(), args.cwd || ".");
 const { trimPathSegments } = require('./utils/sanitize');
 const {
@@ -34,24 +26,23 @@ const {
   validateRuleType,
 } = require('./utils/rule-scaffold');
 
-function routePublicCommand(rawArgv) {
-  const parsed = require('minimist')(rawArgv);
+function routePublicCommand(parsed) {
   if (parsed.help || parsed.h) {
-    return { argv: rawArgv, meta: 'help' };
+    return { meta: 'help' };
   }
   if (parsed.version) {
-    return { argv: rawArgv, meta: 'version' };
+    return { meta: 'version' };
   }
 
   if (parsed._.length === 0) {
     const unknownBareFlag = Object.keys(parsed).find(key => !['_', 'cwd'].includes(key));
     return unknownBareFlag
-      ? { argv: rawArgv, error: 'Expected command syntax: create-youtrack-app <entity> <action> [options]' }
-      : { argv: rawArgv };
+      ? { error: 'Expected command syntax: create-youtrack-app <entity> <action> [options]' }
+      : {};
   }
 
   if (parsed._.length !== 2) {
-    return { argv: rawArgv, error: 'Expected command syntax: create-youtrack-app <entity> <action> [options]' };
+    return { error: 'Expected command syntax: create-youtrack-app <entity> <action> [options]' };
   }
 
   const key = `${parsed._[0]}:${parsed._[1]}`;
@@ -71,28 +62,29 @@ function routePublicCommand(rawArgv) {
   };
   const allowed = commandFlags[key];
   if (!allowed) {
-    return { argv: rawArgv, error: `Unknown command "${parsed._[0]} ${parsed._[1]}"` };
+    return { error: `Unknown command "${parsed._[0]} ${parsed._[1]}"` };
   }
   const withCommand = result => ({ ...result, command: key });
 
   const unknownFlag = Object.keys(parsed).find(flag => !['_', 'cwd', ...allowed].includes(flag));
   if (unknownFlag) {
-    return { argv: rawArgv, error: `Unknown option "--${unknownFlag}"` };
+    return { error: `Unknown option "--${unknownFlag}"` };
   }
 
   const booleanFlags = new Set(['backend-only', 'install', 'required', 'readonly', 'set']);
   const valuelessFlag = Object.keys(parsed).find(flag => flag !== '_' && parsed[flag] === true && !booleanFlags.has(flag));
   if (valuelessFlag) {
-    return { argv: rawArgv, error: `Option "--${valuelessFlag}" requires a value` };
+    return { error: `Option "--${valuelessFlag}" requires a value` };
   }
 
   if (key === 'rule:add') {
     if (!flagValue(parsed.type) || !flagValue(parsed.name)) {
-      return { argv: rawArgv, error: 'Usage: rule add --type <type> --name <name>' };
+      return { error: 'Usage: rule add --type <type> --name <name>' };
     }
-    return withCommand({
-      argv: ['rule', 'add', String(parsed.type), ...removeOptions(buildCommandArgv('rule', 'add', parsed, allowed).slice(2), ['type'])],
-    });
+    return withCommand({ params: {
+      type: String(parsed.type),
+      name: String(parsed.name),
+    } });
   }
 
   if (key === 'http-handler:add') {
@@ -100,11 +92,9 @@ function routePublicCommand(rawArgv) {
     const routePath = flagValue(parsed.path);
     if (scope || routePath) {
       if (!scope) {
-        return { argv: rawArgv, error: 'Option "--scope" is required when --path is provided' };
+        return { error: 'Option "--scope" is required when --path is provided' };
       }
-      return withCommand({
-        argv: ['http-handler', `${scope}/${routePath || ''}`, ...removeOptions(buildCommandArgv('http-handler', 'add', parsed, allowed).slice(2), ['scope', 'path'])],
-      });
+      return withCommand({ params: { scope, routePath: routePath || '' } });
     }
   }
 
@@ -113,62 +103,21 @@ function routePublicCommand(rawArgv) {
     const name = flagValue(parsed.name);
     if (entity || name) {
       if (!entity || !name) {
-        return { argv: rawArgv, error: 'Options "--entity" and "--name" must be provided together' };
+        return { error: 'Options "--entity" and "--name" must be provided together' };
       }
-      return withCommand({
-        argv: ['extension-property', `${entity}.${name}`, ...removeOptions(buildCommandArgv('extension-property', 'add', parsed, allowed).slice(2), ['entity'])],
-      });
+      return withCommand({ params: { entity, name } });
     }
   }
 
   if (key === 'app:init') {
-    return withCommand({ argv: buildCommandArgv('app', 'init', parsed, allowed).slice(2) });
+    return withCommand({});
   }
 
-  return withCommand({ argv: rawArgv });
+  return withCommand({});
 }
 
 function flagValue(value) {
   return value === undefined || value === null || value === false || value === true ? undefined : String(value);
-}
-
-function buildCommandArgv(entity, action, parsed, allowedFlags) {
-  const result = [entity, action];
-
-  for (const flag of allowedFlags) {
-    if (!Object.hasOwn(parsed, flag)) {
-      continue;
-    }
-
-    const values = Array.isArray(parsed[flag]) ? parsed[flag] : [parsed[flag]];
-    for (const value of values) {
-      if (value === false) {
-        result.push(`--no-${flag}`);
-      } else if (value === true) {
-        result.push(`--${flag}`);
-      } else {
-        result.push(`--${flag}`, String(value));
-      }
-    }
-  }
-
-  return result;
-}
-
-function removeOptions(values, optionNames) {
-  const result = [];
-  for (let index = 0; index < values.length; index++) {
-    const value = values[index];
-    const matchingName = optionNames.find(name => value === `--${name}` || value.startsWith(`--${name}=`));
-    if (!matchingName) {
-      result.push(value);
-      continue;
-    }
-    if (value === `--${matchingName}` && values[index + 1] !== undefined && !values[index + 1].startsWith('-')) {
-      index++;
-    }
-  }
-  return result;
 }
 
 function validateEndpointController() {
@@ -216,7 +165,7 @@ process.on('unhandledRejection', (reason) => {
   }
 });
 
-function runHygen(hygenArgs = argv) {
+function runHygen(hygenArgs = publicArgv) {
   return runner(hygenArgs, {
     templates: defaultTemplates,
     cwd,
@@ -378,19 +327,13 @@ async function handleSkillCommand(skillAction) {
   return false;
 }
 
-async function handleRuleCommand(ruleArgs) {
-  if (!ruleArgs) {
+async function handleRuleCommand(params) {
+  if (!params) {
     return false;
   }
 
   const usage = 'Usage: rule add --type <type> --name <name>';
-  if (ruleArgs[1] !== 'add' || ruleArgs.length !== 3) {
-    console.error(styleText("red", usage));
-    process.exit(1);
-  }
-
-  const ruleType = ruleArgs[2];
-  const name = args.name;
+  const { type: ruleType, name } = params;
 
   if (!ruleType || !name) {
     console.error(styleText("red", usage));
@@ -447,7 +390,7 @@ async function handleRuleCommand(ruleArgs) {
     return;
   }
 
-  const normalizedArgv = argv;
+  const commandArgv = publicArgv;
 
   if (publicRoute.command === 'skill:install' || publicRoute.command === 'skill:status') {
     const skillAction = publicRoute.command.split(':')[1];
@@ -463,7 +406,7 @@ async function handleRuleCommand(ruleArgs) {
   }
 
   try {
-    if (publicRoute.command === 'rule:add' && await handleRuleCommand(['rule', 'add', String(args._[2])])) {
+    if (publicRoute.command === 'rule:add' && await handleRuleCommand(publicRoute.params)) {
       return;
     }
   } catch (error) {
@@ -471,14 +414,8 @@ async function handleRuleCommand(ruleArgs) {
     process.exit(1);
   }
 
-  const handlerIndex = normalizedArgv.findIndex(a => a === 'http-handler');
-  if (handlerIndex !== -1 && normalizedArgv[handlerIndex + 1]) {
-    const pathArg = normalizedArgv[handlerIndex + 1];
-
-    if (pathArg.includes('/') && !pathArg.startsWith('--')) {
-      const segments = pathArg.split('/');
-      const scope = segments[0]; // first segment is scope
-      const routePath = segments.slice(1).join('/'); // rest is path
+  if (publicRoute.command === 'http-handler:add' && publicRoute.params?.scope) {
+      const { scope, routePath } = publicRoute.params;
 
 
       const validScopes = ['global', 'project', 'issue', 'article', 'user'];
@@ -560,15 +497,10 @@ async function handleRuleCommand(ruleArgs) {
       runGeneratedFilesLintFix([targetRel]);
       console.log(styleText("green", `\n✓ HTTP handler created successfully!\n`));
       return;
-    }
   }
 
-  const propIndex = normalizedArgv.findIndex(a => a === 'extension-property');
-  if (propIndex !== -1 && normalizedArgv[propIndex + 1]) {
-    const propArg = normalizedArgv[propIndex + 1];
-
-    if (propArg.includes('.') && !propArg.startsWith('--')) {
-      const [target, name] = propArg.split('.');
+  if (publicRoute.command === 'extension-property:add' && publicRoute.params?.entity) {
+      const { entity: target, name } = publicRoute.params;
 
       const validTargets = ['Issue', 'User', 'Project', 'Article'];
       if (!validTargets.includes(target)) {
@@ -628,11 +560,10 @@ async function handleRuleCommand(ruleArgs) {
 
       console.log(styleText("green", `\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
       return;
-    }
   }
 
-  const settingsIndex = normalizedArgv.findIndex(a => a === 'settings');
-  if (settingsIndex !== -1 && normalizedArgv[settingsIndex + 1] === 'init') {
+  const settingsIndex = commandArgv.findIndex(a => a === 'settings');
+  if (settingsIndex !== -1 && commandArgv[settingsIndex + 1] === 'init') {
     const title = args.title;
     const description = args.description;
 
@@ -664,7 +595,7 @@ async function handleRuleCommand(ruleArgs) {
   }
 
   // Pattern 4: Settings add — always non-interactive, never falls through to Hygen
-  if (settingsIndex !== -1 && normalizedArgv[settingsIndex + 1] === 'add') {
+  if (settingsIndex !== -1 && commandArgv[settingsIndex + 1] === 'add') {
     const VALID_TYPES    = ['string', 'integer', 'number', 'boolean', 'object', 'array'];
     const VALID_SCOPES   = ['global', 'project', 'none'];
     const VALID_ENTITIES = ['Issue', 'User', 'Project', 'UserGroup', 'Article'];
@@ -787,7 +718,7 @@ async function handleRuleCommand(ruleArgs) {
     return;
   }
 
-  const widgetIndex = normalizedArgv.findIndex(a => a === 'widget');
+  const widgetIndex = commandArgv.findIndex(a => a === 'widget');
   if (widgetIndex !== -1 && args.key !== undefined) {
     const key = String(args.key);
 
@@ -863,12 +794,12 @@ async function handleRuleCommand(ruleArgs) {
     return;
   }
 
-  const hasHygenParams = ["init", "enhanced-dx", "extension-property", "widget", "settings", "http-handler", "endpoint"].some(
-    (key) => new Set(normalizedArgv).has(key)
+  const hasHygenParams = publicRoute.command !== 'app:init' && ["init", "enhanced-dx", "extension-property", "widget", "settings", "http-handler", "endpoint"].some(
+    (key) => new Set(commandArgv).has(key)
   );
 
   if (hasHygenParams) {
-    const isEndpointCmd = new Set(normalizedArgv).has('endpoint');
+    const isEndpointCmd = new Set(commandArgv).has('endpoint');
     if (isEndpointCmd) {
       const pkgPath = path.join(cwd, 'package.json');
       const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
@@ -891,7 +822,7 @@ async function handleRuleCommand(ruleArgs) {
     }
 
     // Intercept Enhanced DX http-handler flow for richer experience
-    const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler') && (new Set(normalizedArgv).has('add') || !normalizedArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
+    const isHttpHandlerCmd = new Set(commandArgv).has('http-handler') && (new Set(commandArgv).has('add') || !commandArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
     if (isHttpHandlerCmd) {
       try {
         const pkgPath = path.join(cwd, 'package.json');
@@ -1392,7 +1323,7 @@ async function handleRuleCommand(ruleArgs) {
   const templateName = appType === 'js' ? 'vite-app' : 'enhanced-dx';
   // Honor `--backend-only` for ts here too so the `backendOnly` template local is always defined.
   const backendOnly = appType === 'ts' && (args['backend-only'] === true || args['backend-only'] === 'true');
-  const appRes = await runHygen(["init", templateName, "--appName", appName, "--title", title, "--description", description, "--vendor", vendor, "--vendorUrl", vendorUrl, ...argv, "--backendOnly", String(backendOnly)]);
+  const appRes = await runHygen(["init", templateName, "--appName", appName, "--title", title, "--description", description, "--vendor", vendor, "--vendorUrl", vendorUrl, ...publicArgv, "--backendOnly", String(backendOnly)]);
   if (!appRes.success) {
     return;
   }

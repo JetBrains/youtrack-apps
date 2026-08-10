@@ -245,16 +245,15 @@ describe('NestJS-Style Code Generation', () => {
       assert.match(result.output, /Unknown command/);
     });
 
-    test('http-handler interception should use normalized argv', () => {
+    test('http-handler routing should use structured command parameters', () => {
       const indexPath = path.join(PKG_DIR, 'index.js');
       const indexContent = fs.readFileSync(indexPath, 'utf8');
 
-      // Regression guard: public commands translated to Hygen's internal argv
-      // must be detected via normalizedArgv, not raw argv.
       assert.ok(
-        indexContent.includes("const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler')"),
-        'HTTP handler interception should use normalizedArgv'
+        indexContent.includes("if (publicRoute.command === 'http-handler:add' && publicRoute.params?.scope)"),
+        'HTTP handler routing should consume structured route parameters'
       );
+      assert.ok(!indexContent.includes('normalizedArgv'));
     });
 
     test('should handle multiple permissions', () => {
