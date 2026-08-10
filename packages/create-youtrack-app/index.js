@@ -326,7 +326,7 @@ async function promptForSkillInstallOptions() {
 
   const agent = await new Select({
     name: 'agent',
-    message: 'Install the YouTrack app builder skill for:',
+    message: 'Install the YouTrack Apps skill for:',
     initial: agentChoices.findIndex(choice => choice.name === initialAgent),
     choices: agentChoices,
   }).run();
