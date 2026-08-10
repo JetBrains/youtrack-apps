@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {LogEntry, RuleLogEntry} from '../management/types.js';
 import {paginationFromConfig, printPaginationNotice} from '../pagination.js';
@@ -35,7 +34,7 @@ export async function requirementErrors(config: Config, appName?: string): Promi
     }
 
     if (!errors.length) {
-      console.log(i18n('No requirement errors found'));
+      console.log('No requirement errors found');
       return;
     }
 
@@ -57,7 +56,7 @@ async function printAppLogs(config: Config, appName: string | undefined): Promis
   }
 
   if (!entries.length) {
-    console.log(i18n('No log entries found'));
+    console.log('No log entries found');
     return;
   }
 
@@ -75,7 +74,7 @@ async function printScriptLogs(config: Config, appName: string | undefined, scri
   }
 
   if (!result.items.length) {
-    console.log(i18n('No log entries found'));
+    console.log('No log entries found');
     return;
   }
 

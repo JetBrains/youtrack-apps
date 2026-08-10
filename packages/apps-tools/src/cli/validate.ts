@@ -5,7 +5,6 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {exit, ExitCode} from '../../lib/cli/exit.js';
-import {i18n} from '../../lib/i18n/i18n.js';
 import {tmpDir} from '../../lib/fs/tmpdir.js';
 import {printStructured} from './commands/output.js';
 
@@ -15,15 +14,15 @@ const tmpSchemaPath = tmpDir('schema.json');
 export async function validate(config: Config, appDir?: string) {
   try {
     if (!appDir && !config.manifest) {
-      return exit(new Error(i18n('Provide an app directory or a manifest file')), ExitCode.Usage);
+      return exit(new Error('Provide an app directory or a manifest file'), ExitCode.Usage);
     }
 
     if (config.manifest && !config.manifest.endsWith('.json')) {
-      return exit(new Error(i18n('The manifest file must use the .json extension')), ExitCode.Usage);
+      return exit(new Error('The manifest file must use the .json extension'), ExitCode.Usage);
     }
 
     if (config.schema && !config.schema.endsWith('.json')) {
-      return exit(new Error(i18n('The schema file must use the .json extension')), ExitCode.Usage);
+      return exit(new Error('The schema file must use the .json extension'), ExitCode.Usage);
     }
 
     const ajv = new Ajv({strict: false});
@@ -55,7 +54,7 @@ export async function validate(config: Config, appDir?: string) {
       return;
     }
     if (!printStructured(config, {valid: true})) {
-      console.log(i18n('Manifest validation passed'));
+      console.log('Manifest validation passed');
     }
   } catch (error) {
     exit(error);
@@ -74,13 +73,13 @@ function warnIfStaleDefaults(manifest: Record<string, unknown>): void {
   }
 
   for (const msg of stale) {
-    console.warn(i18n(`Warning: ${msg}. Update manifest.json before publishing.`));
+    console.warn(`Warning: ${msg}. Update manifest.json before publishing.`);
   }
 }
 
 async function fetchSchema(url: string, showProgress: boolean): Promise<AnySchemaObject> {
   if (showProgress) {
-    console.log(i18n('Fetching the schema...'));
+    console.log('Fetching the schema...');
   }
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Could not fetch the schema: ${res.statusText}`);
@@ -123,7 +122,7 @@ async function readSchemaFromTmp(): Promise<string> {
 async function fetchSchemaAndWriteToTmp(url: string, showProgress: boolean): Promise<AnySchemaObject> {
   const schema = await fetchSchema(url, showProgress);
   if (showProgress) {
-    console.log(i18n('Caching the schema in the tmp directory...'));
+    console.log('Caching the schema in the tmp directory...');
   }
   await writeSchemaToTmp(schema);
   return schema;

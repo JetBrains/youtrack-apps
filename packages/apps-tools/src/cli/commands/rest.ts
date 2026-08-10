@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {generateRequestParams, prepareErrorMessage} from '../../../lib/net/request.js';
 import {resolve} from '../../../lib/net/resolve.js';
 import {printJson, printYaml} from '../management/types.js';
@@ -18,15 +17,15 @@ export async function restRequest(config: Config, args: RawRestRequestArgs = {})
   try {
     const path = args.path?.trim();
     if (!path) {
-      throw new Error(i18n('Option "--path" is required'));
+      throw new Error('Option "--path" is required');
     }
 
     const method = (args.method ?? 'GET').toUpperCase();
     if (!METHODS.has(method)) {
-      throw new Error(i18n(`Invalid HTTP method "${args.method}"`));
+      throw new Error(`Invalid HTTP method "${args.method}"`);
     }
     if (method === 'DELETE' && !config.confirmDestructiveAction) {
-      throw new Error(i18n('DELETE requests require --yes'));
+      throw new Error('DELETE requests require --yes');
     }
 
     let body: string | undefined;
@@ -34,7 +33,7 @@ export async function restRequest(config: Config, args: RawRestRequestArgs = {})
       try {
         body = JSON.stringify(JSON.parse(args.body));
       } catch {
-        throw new Error(i18n('Invalid JSON request body'));
+        throw new Error('Invalid JSON request body');
       }
     }
 
@@ -45,7 +44,7 @@ export async function restRequest(config: Config, args: RawRestRequestArgs = {})
 
     const url = resolve(config.host, path);
     if (url.origin !== resolve(config.host, '/').origin) {
-      throw new Error(i18n('REST path must be relative to the configured YouTrack host'));
+      throw new Error('REST path must be relative to the configured YouTrack host');
     }
     const response = await fetch(generateRequestParams(config, url.href, {method, headers, body}));
 
@@ -83,13 +82,13 @@ function parseHeaders(value: string | string[] | undefined): Record<string, stri
   for (const header of values) {
     const separator = header.indexOf(':');
     if (separator <= 0) {
-      throw new Error(i18n(`Invalid header "${header}". Use name:value`));
+      throw new Error(`Invalid header "${header}". Use name:value`);
     }
 
     const name = header.slice(0, separator).trim();
     const content = header.slice(separator + 1).trim();
     if (!name || name.toLowerCase() === 'authorization') {
-      throw new Error(i18n('The Authorization header cannot be supplied with --header'));
+      throw new Error('The Authorization header cannot be supplied with --header');
     }
     headers[name] = content;
   }

@@ -4,7 +4,6 @@ import * as zl from 'zip-lib';
 import {Config, ErrorWithStatusCodeAndData} from '../../@types/types.js';
 import {exit} from '../../lib/cli/exit.js';
 import {tmpDir} from '../../lib/fs/tmpdir.js';
-import {i18n} from '../../lib/i18n/i18n.js';
 import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request.js';
 import {resolve} from '../../lib/net/resolve.js';
 import {resolveAppName} from './upload-utils.js';
@@ -14,7 +13,7 @@ export async function upload(config: Config, appDir?: string) {
   const appName = resolveAppName(appDir);
 
   if (!appName || !appDir) {
-    exit(new Error(i18n('Unexpected error')));
+    exit(new Error('Unexpected error'));
     return;
   }
 
@@ -54,7 +53,7 @@ export async function upload(config: Config, appDir?: string) {
       const action = isCreate ? 'created' : 'uploaded';
       const printed = printStructured(config, {action, app: {name: appName, id}});
       if (!printed) {
-        console.log(i18n('App "' + appName + '" ' + action));
+        console.log('App "' + appName + '" ' + action);
       }
 
       if (config.open) {
@@ -62,7 +61,7 @@ export async function upload(config: Config, appDir?: string) {
         const {default: openInBrowser} = await import('open');
         await openInBrowser(appLink);
       } else if (!config.json && !config.yaml) {
-        console.log(i18n(`To configure the app please proceed to: ${appLink}`));
+        console.log(`To configure the app please proceed to: ${appLink}`);
       }
     } catch (error) {
       if (isErrorWithStatusCodeAndData(error) && error.statusCode === 404 && !isCreate) {

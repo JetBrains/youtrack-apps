@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {AppConfiguration, formatBoolean} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
@@ -16,7 +15,7 @@ export async function projectApps(config: Config, projectKey?: string): Promise<
       result,
       pagination,
       resourceName: 'project apps',
-      emptyMessage: i18n('No project apps found'),
+      emptyMessage: 'No project apps found',
       formatItem: formatProjectApp,
     });
   } catch (error) {

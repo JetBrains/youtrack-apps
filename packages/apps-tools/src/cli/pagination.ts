@@ -1,5 +1,4 @@
 import {Config} from '../../@types/types.js';
-import {i18n} from '../../lib/i18n/i18n.js';
 
 export const DEFAULT_PAGE_SIZE = 50;
 
@@ -61,7 +60,7 @@ export function printPaginationNotice(resourceName: string, result: PaginatedRes
 
   const nextSkip = result.pagination.nextSkip ?? 0;
   const limit = result.pagination.limit ?? createPaginationPlan(options).limit;
-  console.log(i18n(`Showing ${result.pagination.returned} ${resourceName}. Use --skip ${nextSkip} --limit ${limit} for more.`));
+  console.log(`Showing ${result.pagination.returned} ${resourceName}. Use --skip ${nextSkip} --limit ${limit} for more.`);
 }
 
 function parsePositiveOption(value: string | null, name: string): number | undefined {
@@ -71,7 +70,7 @@ function parsePositiveOption(value: string | null, name: string): number | undef
 
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed <= 0) {
-    throw new Error(i18n(`Option "--${name}" should be a positive number`));
+    throw new Error(`Option "--${name}" should be a positive number`);
   }
 
   return parsed;
@@ -84,7 +83,7 @@ function parseNonNegativeOption(value: string | null, name: string): number | un
 
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed < 0) {
-    throw new Error(i18n(`Option "--${name}" should be a non-negative number`));
+    throw new Error(`Option "--${name}" should be a non-negative number`);
   }
 
   return parsed;

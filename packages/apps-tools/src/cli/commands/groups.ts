@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {GroupMembersResult, UserGroup} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
@@ -16,7 +15,7 @@ export async function groupList(config: Config, query?: string): Promise<void> {
       result,
       pagination,
       resourceName: 'user groups',
-      emptyMessage: i18n('No user groups found'),
+      emptyMessage: 'No user groups found',
       formatItem: formatGroup,
     });
   } catch (error) {
@@ -34,7 +33,7 @@ export async function groupMembers(config: Config, groupKey?: string): Promise<v
         result,
         pagination,
         resourceName: 'user groups',
-        emptyMessage: i18n('No user groups found'),
+        emptyMessage: 'No user groups found',
         formatItem: formatGroupMembers,
       });
       return;
@@ -47,7 +46,7 @@ export async function groupMembers(config: Config, groupKey?: string): Promise<v
     }
 
     if (!result.members.length) {
-      console.log(i18n(`No members found for user group "${result.group.name}"`));
+      console.log(`No members found for user group "${result.group.name}"`);
       return;
     }
 

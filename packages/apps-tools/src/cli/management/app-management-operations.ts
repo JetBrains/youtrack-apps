@@ -1,4 +1,3 @@
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {Config} from '../../../@types/types.js';
 import {QueryField} from '../../../lib/net/queryfields.js';
 import {createPaginationPlan, PaginatedResult, PaginationOptions} from '../pagination.js';
@@ -54,12 +53,12 @@ export class AppManagementOperations {
 
   async getCatalog(appName?: string): Promise<AppCatalogResult> {
     if (!appName) {
-      throw new Error(i18n('App name should be defined'));
+      throw new Error('App name should be defined');
     }
 
     const app = await this.client.getAppInfo(appName);
     if (!app) {
-      throw new Error(i18n(`App "${appName}" was not found`));
+      throw new Error(`App "${appName}" was not found`);
     }
 
     return {app, files: buildFileCatalog(app), modules: buildModuleCatalog(app)};
@@ -69,7 +68,7 @@ export class AppManagementOperations {
     const resolvedApp = await this.resolveApp(appName);
     const app = await this.client.getAppPackage(resolvedApp.id);
     if (!app) {
-      throw new Error(i18n(`App "${appName}" was not found`));
+      throw new Error(`App "${appName}" was not found`);
     }
 
     return app;
@@ -77,11 +76,11 @@ export class AppManagementOperations {
 
   async getFile(appName: string | undefined, fileKey: string | undefined): Promise<AppFileResult> {
     if (!appName) {
-      throw new Error(i18n('App name should be defined'));
+      throw new Error('App name should be defined');
     }
 
     if (!fileKey) {
-      throw new Error(i18n(`File key is required. Run "youtrack-app app info --app ${appName}" to list file keys.`));
+      throw new Error(`File key is required. Run "youtrack-app app info --app ${appName}" to list file keys.`);
     }
 
     const app = await this.getPackage(appName);
@@ -108,7 +107,7 @@ export class AppManagementOperations {
     const usage = findUsageForProject(app, project);
 
     if (!usage) {
-      throw new Error(i18n(`App "${app.name}" is not attached to project "${projectShortName}"`));
+      throw new Error(`App "${app.name}" is not attached to project "${projectShortName}"`);
     }
 
     await this.client.updateProjectConfiguration(project.id, usage.id, {
@@ -150,11 +149,11 @@ export class AppManagementOperations {
     pagination?: PaginationOptions,
   ): Promise<PaginatedResult<RuleLogEntry>> {
     if (!appName) {
-      throw new Error(i18n('App name should be defined'));
+      throw new Error('App name should be defined');
     }
 
     if (!scriptName) {
-      throw new Error(i18n('Script name should be defined'));
+      throw new Error('Script name should be defined');
     }
 
     const app = await this.requireWorkflowPackage(appName);
@@ -166,7 +165,7 @@ export class AppManagementOperations {
     );
 
     if (!rule.id) {
-      throw new Error(i18n(`Script "${scriptName}" does not have an ID`));
+      throw new Error(`Script "${scriptName}" does not have an ID`);
     }
 
     return await this.client.getRuleLogs(app.id, rule.id, pagination);
@@ -194,11 +193,11 @@ export class AppManagementOperations {
     pagination?: PaginationOptions,
   ): Promise<PaginatedResult<CustomFieldValue>> {
     if (!projectKey) {
-      throw new Error(i18n('Option "--project" is required'));
+      throw new Error('Option "--project" is required');
     }
 
     if (!fieldKey) {
-      throw new Error(i18n('Option "--field" is required'));
+      throw new Error('Option "--field" is required');
     }
 
     const project = await this.requireProjectByKey(projectKey);
@@ -212,7 +211,7 @@ export class AppManagementOperations {
 
     const values = field.bundle?.values;
     if (!values) {
-      throw new Error(i18n(`Field "${fieldKey}" does not expose searchable bundle values`));
+      throw new Error(`Field "${fieldKey}" does not expose searchable bundle values`);
     }
 
     const matchingValues = query ? values.filter(value => matchesValue(value, query)) : values;
@@ -225,7 +224,7 @@ export class AppManagementOperations {
     if (!projectShortName) {
       const config = await this.client.getGlobalConfig(app.id);
       if (!config) {
-        throw new Error(i18n(`Global settings for app "${app.name}" were not found`));
+        throw new Error(`Global settings for app "${app.name}" were not found`);
       }
       return {app, visibilitySettings: config.visibilitySettings};
     }
@@ -233,7 +232,7 @@ export class AppManagementOperations {
     const {project, usage} = await this.requireProjectUsage(app, projectShortName);
     const config = await this.client.getProjectConfiguration(project.id, usage.id);
     if (!config) {
-      throw new Error(i18n(`Project settings for app "${app.name}" and project "${projectShortName}" were not found`));
+      throw new Error(`Project settings for app "${app.name}" and project "${projectShortName}" were not found`);
     }
 
     return {app, project, visibilitySettings: config.visibilitySettings};
@@ -245,7 +244,7 @@ export class AppManagementOperations {
     pagination?: PaginationOptions,
   ): Promise<PaginatedResult<TagDetails>> {
     if (!query) {
-      throw new Error(i18n('Tag query should be defined'));
+      throw new Error('Tag query should be defined');
     }
 
     if (!projectShortName) {
@@ -262,7 +261,7 @@ export class AppManagementOperations {
     if (!projectShortName) {
       const config = await this.client.getGlobalConfig(app.id);
       if (!config) {
-        throw new Error(i18n(`Global settings for app "${app.name}" were not found`));
+        throw new Error(`Global settings for app "${app.name}" were not found`);
       }
       return config;
     }
@@ -270,7 +269,7 @@ export class AppManagementOperations {
     const {project, usage} = await this.requireProjectUsage(app, projectShortName);
     const config = await this.client.getProjectConfiguration(project.id, usage.id);
     if (!config) {
-      throw new Error(i18n(`Project settings for app "${app.name}" and project "${projectShortName}" were not found`));
+      throw new Error(`Project settings for app "${app.name}" and project "${projectShortName}" were not found`);
     }
     return config;
   }
@@ -281,7 +280,7 @@ export class AppManagementOperations {
     projectShortName?: string | null,
   ): Promise<AppConfiguration> {
     if (payload.enabled === undefined && payload.globalSettings === undefined && payload.projectSettings === undefined) {
-      throw new Error(i18n('No settings update was provided'));
+      throw new Error('No settings update was provided');
     }
 
     const app = await this.resolveApp(appName);
@@ -289,7 +288,7 @@ export class AppManagementOperations {
     if (!projectShortName) {
       const config = await this.client.updateGlobalConfig(app.id, payload);
       if (!config) {
-        throw new Error(i18n(`Global settings for app "${app.name}" were not updated`));
+        throw new Error(`Global settings for app "${app.name}" were not updated`);
       }
       return config;
     }
@@ -297,7 +296,7 @@ export class AppManagementOperations {
     const {project, usage} = await this.requireProjectUsage(app, projectShortName);
     const config = await this.client.updateProjectConfiguration(project.id, usage.id, payload);
     if (!config) {
-      throw new Error(i18n(`Project settings for app "${app.name}" and project "${projectShortName}" were not updated`));
+      throw new Error(`Project settings for app "${app.name}" and project "${projectShortName}" were not updated`);
     }
     return config;
   }
@@ -309,12 +308,12 @@ export class AppManagementOperations {
   async getProjectInfo(projectKey?: string, _pagination?: PaginationOptions): Promise<ProjectDetails> {
     const project = await this.requireProjectByKey(projectKey);
     if (!project.shortName) {
-      throw new Error(i18n(`Project "${projectKey}" does not have a short name`));
+      throw new Error(`Project "${projectKey}" does not have a short name`);
     }
 
     const details = await this.client.getProject(project.shortName);
     if (!details) {
-      throw new Error(i18n(`Project "${projectKey}" was not found`));
+      throw new Error(`Project "${projectKey}" was not found`);
     }
 
     return details;
@@ -342,7 +341,7 @@ export class AppManagementOperations {
 
   async getGroupMembers(groupKey?: string, pagination?: PaginationOptions): Promise<GroupMembersResult> {
     if (!groupKey) {
-      throw new Error(i18n('Group key should be defined'));
+      throw new Error('Group key should be defined');
     }
 
     const direct = await this.client.getGroupMembers(groupKey);
@@ -368,7 +367,7 @@ export class AppManagementOperations {
 
   async getUserInfo(userKey?: string, pagination?: PaginationOptions): Promise<UserInfoResult> {
     if (!userKey) {
-      throw new Error(i18n('User key should be defined'));
+      throw new Error('User key should be defined');
     }
 
     const direct = await this.client.getUser(userKey);
@@ -379,7 +378,7 @@ export class AppManagementOperations {
     const user = await this.requireUserByKey(userKey, pagination);
     const details = await this.client.getUser(user.id);
     if (!details) {
-      throw new Error(i18n(`User "${userKey}" was not found`));
+      throw new Error(`User "${userKey}" was not found`);
     }
 
     return {...user, ...details};
@@ -387,12 +386,12 @@ export class AppManagementOperations {
 
   private async requireAppByIdOrPackageName(appName?: string, fields?: QueryField): Promise<AppDetails> {
     if (!appName) {
-      throw new Error(i18n('App name should be defined'));
+      throw new Error('App name should be defined');
     }
 
     const app = await this.client.getApp(appName, fields);
     if (!app) {
-      throw new Error(i18n(`App "${appName}" was not found`));
+      throw new Error(`App "${appName}" was not found`);
     }
 
     return app;
@@ -400,12 +399,12 @@ export class AppManagementOperations {
 
   private async requireProject(projectShortName?: string | null): Promise<ProjectDetails> {
     if (!projectShortName) {
-      throw new Error(i18n('Option "--project" is required'));
+      throw new Error('Option "--project" is required');
     }
 
     const project = await this.client.getProject(projectShortName);
     if (!project) {
-      throw new Error(i18n(`Project "${projectShortName}" was not found`));
+      throw new Error(`Project "${projectShortName}" was not found`);
     }
 
     return project;
@@ -416,7 +415,7 @@ export class AppManagementOperations {
     const usage = findUsageForProject(app, project);
 
     if (!usage) {
-      throw new Error(i18n(`App "${app.name}" is not attached to project "${projectShortName}"`));
+      throw new Error(`App "${app.name}" is not attached to project "${projectShortName}"`);
     }
 
     return {project, usage};
@@ -424,7 +423,7 @@ export class AppManagementOperations {
 
   private async requireProjectByKey(projectKey?: string): Promise<ProjectDetails> {
     if (!projectKey) {
-      throw new Error(i18n('Project key should be defined'));
+      throw new Error('Project key should be defined');
     }
 
     const normalizedProjectKey = normalizeLookupValue(projectKey);
@@ -465,7 +464,7 @@ export class AppManagementOperations {
 
   private async requireGroupByKey(groupKey?: string, pagination?: PaginationOptions): Promise<UserGroup> {
     if (!groupKey) {
-      throw new Error(i18n('Group key should be defined'));
+      throw new Error('Group key should be defined');
     }
 
     return requireExactMatch(
@@ -478,7 +477,7 @@ export class AppManagementOperations {
 
   private async requireUserByKey(userKey?: string, pagination?: PaginationOptions): Promise<UserSummary> {
     if (!userKey) {
-      throw new Error(i18n('User key should be defined'));
+      throw new Error('User key should be defined');
     }
 
     return requireExactMatch(
@@ -492,7 +491,7 @@ export class AppManagementOperations {
   private async requireWorkflowPackage(appQuery: string): Promise<AppDetails & {id: string; rules?: AppRule[]}> {
     const app = await this.client.getWorkflow(appQuery);
     if (!app) {
-      throw new Error(i18n(`App "${appQuery}" was not found`));
+      throw new Error(`App "${appQuery}" was not found`);
     }
 
     return app;
@@ -511,7 +510,7 @@ function validateLogLimit(limit: string | null): string | null {
 
   const parsed = Number(limit);
   if (!Number.isInteger(parsed) || parsed <= 0) {
-    throw new Error(i18n('Option "--limit" should be a positive number'));
+    throw new Error('Option "--limit" should be a positive number');
   }
 
   return limit;
@@ -614,7 +613,7 @@ function requireFile(files: AppFileReference[], fileKey: string): AppFileReferen
   }
 
   const validKeys = files.map(candidate => candidate.key).join(', ') || 'none';
-  throw new Error(i18n(`File key "${fileKey}" was not found. Valid file keys: ${validKeys}`));
+  throw new Error(`File key "${fileKey}" was not found. Valid file keys: ${validKeys}`);
 }
 
 function readFileContent(app: AppDetails, file: AppFileReference): string {
@@ -742,11 +741,11 @@ function requireExactMatch<T>(
   const matches = values.filter(value => selectors(value).some(candidate => normalizeLookupValue(candidate) === normalizedQuery));
 
   if (!matches.length) {
-    throw new Error(i18n(`${label} "${query}" was not found`));
+    throw new Error(`${label} "${query}" was not found`);
   }
 
   if (matches.length > 1) {
-    throw new Error(i18n(`${label} "${query}" is ambiguous`));
+    throw new Error(`${label} "${query}" is ambiguous`);
   }
 
   return matches[0];

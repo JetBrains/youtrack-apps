@@ -1,7 +1,6 @@
 import {createInterface} from 'node:readline/promises';
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {formatProjectLabel} from '../management/types.js';
 import {printStructured} from './output.js';
@@ -13,7 +12,7 @@ export async function deleteApp(config: Config, appName?: string): Promise<void>
       if (printStructured(config, {action: 'cancelled'})) {
         return;
       }
-      console.log(i18n('Delete cancelled'));
+      console.log('Delete cancelled');
       return;
     }
 
@@ -21,7 +20,7 @@ export async function deleteApp(config: Config, appName?: string): Promise<void>
     if (printStructured(config, {action: 'deleted', app})) {
       return;
     }
-    console.log(i18n(`App "${app.name}" deleted`));
+    console.log(`App "${app.name}" deleted`);
   } catch (error) {
     exit(error);
   }
@@ -42,11 +41,11 @@ async function setEnabled(config: Config, appName: string | undefined, enabled: 
       return;
     }
     if (result.project) {
-      console.log(i18n(`App "${result.app.name}" ${enabled ? 'enabled' : 'disabled'} for project "${formatProjectLabel(result.project)}"`));
+      console.log(`App "${result.app.name}" ${enabled ? 'enabled' : 'disabled'} for project "${formatProjectLabel(result.project)}"`);
       return;
     }
 
-    console.log(i18n(`App "${result.app.name}" globally ${enabled ? 'enabled' : 'disabled'}`));
+    console.log(`App "${result.app.name}" globally ${enabled ? 'enabled' : 'disabled'}`);
   } catch (error) {
     exit(error);
   }
@@ -54,7 +53,7 @@ async function setEnabled(config: Config, appName: string | undefined, enabled: 
 
 async function confirmDelete(config: Config, appName?: string): Promise<boolean> {
   if (!appName) {
-    throw new Error(i18n('App name should be defined'));
+    throw new Error('App name should be defined');
   }
 
   if (config.confirmDestructiveAction) {
@@ -62,11 +61,11 @@ async function confirmDelete(config: Config, appName?: string): Promise<boolean>
   }
 
   if (!process.stdin.isTTY) {
-    throw new Error(i18n('Deletion requires confirmation. Re-run with --yes to delete without prompting'));
+    throw new Error('Deletion requires confirmation. Re-run with --yes to delete without prompting');
   }
 
   const prompt = createInterface({input: process.stdin, output: process.stdout});
-  const answer = await prompt.question(i18n(`Permanently delete app "${appName}" and everything app-related? Type "yes" to continue: `));
+  const answer = await prompt.question(`Permanently delete app "${appName}" and everything app-related? Type "yes" to continue: `);
   prompt.close();
   return answer.trim().toLowerCase() === 'yes';
 }

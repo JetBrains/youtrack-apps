@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {formatBoolean, UserSummary} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
@@ -16,7 +15,7 @@ export async function userList(config: Config, query?: string): Promise<void> {
       result,
       pagination,
       resourceName: 'users',
-      emptyMessage: i18n('No users found'),
+      emptyMessage: 'No users found',
       formatItem: formatUser,
     });
   } catch (error) {

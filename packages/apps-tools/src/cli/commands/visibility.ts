@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {formatProjectLabel, VisibilityResult} from '../management/types.js';
 import {printStructured} from './output.js';
@@ -29,6 +28,6 @@ function printVisibility(result: VisibilityResult): void {
 
   const users = result.visibilitySettings?.permittedUsers ?? [];
   const groups = result.visibilitySettings?.permittedGroups ?? [];
-  console.log(`Groups: ${groups.length ? groups.map(group => group.name ?? group.id ?? 'unknown').join(', ') : i18n('none')}`);
-  console.log(`Users: ${users.length ? users.map(user => user.login ?? user.name ?? user.id ?? 'unknown').join(', ') : i18n('none')}`);
+  console.log(`Groups: ${groups.length ? groups.map(group => group.name ?? group.id ?? 'unknown').join(', ') : 'none'}`);
+  console.log(`Users: ${users.length ? users.map(user => user.login ?? user.name ?? user.id ?? 'unknown').join(', ') : 'none'}`);
 }

@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {CustomFieldValue} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
@@ -16,7 +15,7 @@ export async function fieldValues(config: Config, query?: string): Promise<void>
       result,
       pagination,
       resourceName: 'field values',
-      emptyMessage: i18n('No field values found'),
+      emptyMessage: 'No field values found',
       formatItem: formatFieldValue,
     });
   } catch (error) {

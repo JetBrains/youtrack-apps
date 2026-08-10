@@ -16,7 +16,7 @@ export function exit(error: Error | unknown | null, code?: number): boolean {
 }
 
 function classifyError(error: unknown): ExitCode {
-  if (error == null) {
+  if (error === null || error === undefined) {
     return ExitCode.General;
   }
 

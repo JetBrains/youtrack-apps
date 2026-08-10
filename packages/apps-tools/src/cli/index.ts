@@ -1,5 +1,4 @@
 import pkg from '../../package.json' with { type: 'json' };
-import {i18n} from '../../lib/i18n/i18n.js';
 import {exit, ExitCode} from '../../lib/cli/exit.js';
 import {parse} from '../../lib/cli/parseargv.js';
 import {Config, RequiredParams} from '../../@types/types.js';
@@ -109,6 +108,8 @@ const commands = {
   ),
 } satisfies Record<string, Command>;
 
+export const registeredCommandNames = Object.freeze(Object.keys(commands));
+
 function command<TArgument>(execute: Command<TArgument>['execute'], options: Omit<Command<TArgument>, 'execute'> = {}): Command {
   return {
     execute: execute as Command['execute'],
@@ -137,25 +138,25 @@ export async function run(argv = process.argv) {
 
   const legacyCommand = LEGACY[args._[0]];
   if (legacyCommand) {
-    exit(new Error(i18n(`"${args._[0]}" is now "${legacyCommand}"`)), ExitCode.Usage);
+    exit(new Error(`"${args._[0]}" is now "${legacyCommand}"`), ExitCode.Usage);
     return;
   }
 
   if (args._.length !== 2) {
-    exit(new Error(i18n('Expected command syntax: youtrack-app <entity> <action> [options]')), ExitCode.Usage);
+    exit(new Error('Expected command syntax: youtrack-app <entity> <action> [options]'), ExitCode.Usage);
     return;
   }
 
   const commandKey = `${args._[0]}:${args._[1]}`;
   if (!isCommand(commandKey)) {
-    exit(new Error(i18n(`Unknown command "${args._[0]} ${args._[1]}"`)), ExitCode.Usage);
+    exit(new Error(`Unknown command "${args._[0]} ${args._[1]}"`), ExitCode.Usage);
     return;
   }
 
   const selectedCommand = commands[commandKey];
   const validationError = validateCommandArgs(commandKey, selectedCommand, args, getShortFlags(argv));
   if (validationError) {
-    exit(new Error(i18n(validationError)), ExitCode.Usage);
+    exit(new Error(validationError), ExitCode.Usage);
     return;
   }
 
@@ -192,229 +193,229 @@ export async function run(argv = process.argv) {
 
   function printHelp() {
     br();
-    console.log(i18n('youtrack-app <entity> <action> [options]'));
+    console.log('youtrack-app <entity> <action> [options]');
     br();
-    console.log(i18n('Manage, configure, and debug YouTrack apps/workflows from an external development environment.'));
-    console.log(i18n('Configure YOUTRACK_HOST and YOUTRACK_API_TOKEN, or pass --host and --token to each command.'));
-    br();
-
-    printSection(i18n('Common options'));
-    printLine(i18n('--host <url>'), i18n('YouTrack instance URL. Overrides YOUTRACK_HOST.'));
-    printLine(i18n('--token <token>'), i18n('Permanent token. Overrides YOUTRACK_API_TOKEN.'));
-    printLine(i18n('--json'), i18n('Print machine-readable JSON for supported commands.'));
-    printLine(i18n('--yaml, --yml'), i18n('Print machine-readable YAML for supported commands.'));
-    printLine(i18n('--help, -h'), i18n('Show help.'));
-    printLine(i18n('--version'), i18n('Print the CLI version.'));
+    console.log('Manage, configure, and debug YouTrack apps/workflows from an external development environment.');
+    console.log('Configure YOUTRACK_HOST and YOUTRACK_API_TOKEN, or pass --host and --token to each command.');
     br();
 
-    printSection(i18n('App lifecycle'));
-    printCommand(i18n('app upload [--directory DIR] [--open]'), {
-      does: i18n('Uploads a local app package to the YouTrack instance.'),
-      args: [
-        i18n('--directory DIR is a local app directory or built package directory. Defaults to dist.'),
-        i18n('--open opens app settings after upload.'),
-      ],
-    });
-    printCommand(i18n('app download --app <app> [--output DIR] [--overwrite]'), {
-      does: i18n('Downloads an app package from the YouTrack instance and extracts it locally.'),
-      args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('--output DIR selects the local destination. Defaults to the current working directory.'),
-        i18n('--overwrite replaces files in the destination directory.'),
-      ],
-    });
-    printCommand(i18n('app validate [--directory DIR] [--manifest FILE] [--schema FILE]'), {
-      does: i18n('Validates local app manifest files against the YouTrack app JSON schema without connecting to YouTrack.'),
-      args: [
-        i18n('--directory DIR is a local app directory. Defaults to dist.'),
-        i18n('--manifest FILE validates a manifest file directly or overrides the default manifest file.'),
-        i18n('--schema FILE overrides the default schema file.'),
-      ],
-    });
-    printCommand(i18n('app enable --app <app> [--project <short-name>]'), {
-      does: i18n('Enables an installed app globally in the YouTrack instance, or enables its usage for one project.'),
-      args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('--project <short-name> is a project short name such as DEMO or JT.'),
-      ],
-    });
-    printCommand(i18n('app disable --app <app> [--project <short-name>]'), {
-      does: i18n('Disables an installed app globally in the YouTrack instance, or disables its usage for one project.'),
-      args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('--project <short-name> is a project short name such as DEMO or JT.'),
-      ],
-    });
-    printCommand(i18n('app attach --app <app> --project <short-name>'), {
-      does: i18n('Attaches an installed app to a project in the YouTrack instance.'),
-      args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('--project <short-name> is the project key, for example DEMO or JT.'),
-      ],
-    });
-    printCommand(i18n('app detach --app <app> --project <short-name>'), {
-      does: i18n('Detaches an installed app from a project in the YouTrack instance.'),
-      args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('--project <short-name> is the project key to remove from app usages.'),
-      ],
-    });
+    printSection('Common options');
+    printLine('--host <url>', 'YouTrack instance URL. Overrides YOUTRACK_HOST.');
+    printLine('--token <token>', 'Permanent token. Overrides YOUTRACK_API_TOKEN.');
+    printLine('--json', 'Print machine-readable JSON for supported commands.');
+    printLine('--yaml, --yml', 'Print machine-readable YAML for supported commands.');
+    printLine('--help, -h', 'Show help.');
+    printLine('--version', 'Print the CLI version.');
     br();
 
-    printSection(i18n('App details and configuration'));
-    printCommand(i18n('app list [--skip N] [--limit N]'), {
-      does: i18n('Lists installed apps visible to the token.'),
-    });
-    printCommand(i18n('app info --app <app>'), {
-      does: i18n('Shows bounded app metadata and file keys for one installed app in the YouTrack instance.'),
+    printSection('App lifecycle');
+    printCommand('app upload [--directory DIR] [--open]', {
+      does: 'Uploads a local app package to the YouTrack instance.',
       args: [
-        i18n('<app> is an app ID or package name.'),
+        '--directory DIR is a local app directory or built package directory. Defaults to dist.',
+        '--open opens app settings after upload.',
       ],
     });
-    printCommand(i18n('app scripts --app <app> --file-key <file-key>'), {
-      does: i18n('Shows one manifest, settings, entity extension, or script file from an installed app in the YouTrack instance.'),
+    printCommand('app download --app <app> [--output DIR] [--overwrite]', {
+      does: 'Downloads an app package from the YouTrack instance and extracts it locally.',
       args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('<file-key> is listed by info. Use manifest, settings, entityExtensions, or a script ID.'),
+        '<app> is an app ID or package name.',
+        '--output DIR selects the local destination. Defaults to the current working directory.',
+        '--overwrite replaces files in the destination directory.',
       ],
     });
-    printCommand(i18n('app usages --app <app> [--skip N] [--limit N]'), {
-      does: i18n('Lists project usage records for one installed app, including nested requirement problems.'),
+    printCommand('app validate [--directory DIR] [--manifest FILE] [--schema FILE]', {
+      does: 'Validates local app manifest files against the YouTrack app JSON schema without connecting to YouTrack.',
       args: [
-        i18n('<app> is an app ID or package name.'),
+        '--directory DIR is a local app directory. Defaults to dist.',
+        '--manifest FILE validates a manifest file directly or overrides the default manifest file.',
+        '--schema FILE overrides the default schema file.',
       ],
     });
-    printCommand(i18n('app settings --app <app> [--project <short-name>]'), {
-      does: i18n('Reads global app settings or project-scoped settings from the YouTrack instance.'),
+    printCommand('app enable --app <app> [--project <short-name>]', {
+      does: 'Enables an installed app globally in the YouTrack instance, or enables its usage for one project.',
       args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('--project <short-name> is a project short name.'),
+        '<app> is an app ID or package name.',
+        '--project <short-name> is a project short name such as DEMO or JT.',
       ],
     });
-    printCommand(i18n('app settings-set --app <app> [--project <short-name>] [--settings JSON] [--enabled true|false]'), {
-      does: i18n('Updates app settings and/or enabled state in the YouTrack instance.'),
+    printCommand('app disable --app <app> [--project <short-name>]', {
+      does: 'Disables an installed app globally in the YouTrack instance, or disables its usage for one project.',
       args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('--project <short-name> writes project settings instead of global settings.'),
-        i18n('--settings JSON is a JSON object string.'),
-        i18n('--enabled true|false updates the enabled state.'),
+        '<app> is an app ID or package name.',
+        '--project <short-name> is a project short name such as DEMO or JT.',
       ],
     });
-    printCommand(i18n('app logs --app <app> [--limit N]'), {
-      does: i18n('Shows recent app-level log entries.'),
+    printCommand('app attach --app <app> --project <short-name>', {
+      does: 'Attaches an installed app to a project in the YouTrack instance.',
       args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('--limit N limits app log entries.'),
+        '<app> is an app ID or package name.',
+        '--project <short-name> is the project key, for example DEMO or JT.',
       ],
     });
-    printCommand(i18n('app logs --app <app> --script <script> [--skip N] [--limit N]'), {
-      does: i18n('Shows paged log entries for one script, module, or workflow rule.'),
+    printCommand('app detach --app <app> --project <short-name>', {
+      does: 'Detaches an installed app from a project in the YouTrack instance.',
       args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('--script <script> is a script, module, rule ID, rule name, or rule title.'),
-        i18n('--skip N chooses the starting log entry.'),
-        i18n('--limit N chooses the page size.'),
-      ],
-    });
-    printCommand(i18n('app requirement-errors --app <app>'), {
-      does: i18n('Shows broken requirement problems reported by app usages in the YouTrack instance.'),
-      args: [
-        i18n('<app> is an app ID or package name.'),
-      ],
-    });
-    printCommand(i18n('app visibility --app <app> [--project <short-name>]'), {
-      does: i18n('Shows read-only global or project visibility settings for one app.'),
-      args: [
-        i18n('<app> is an app ID or package name.'),
-        i18n('--project <short-name> reads project-scoped app visibility.'),
+        '<app> is an app ID or package name.',
+        '--project <short-name> is the project key to remove from app usages.',
       ],
     });
     br();
 
-    printSection(i18n('Instance exploration'));
-    printCommand(i18n('project list [--skip N] [--limit N]'), {
-      does: i18n('Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.'),
+    printSection('App details and configuration');
+    printCommand('app list [--skip N] [--limit N]', {
+      does: 'Lists installed apps visible to the token.',
     });
-    printCommand(i18n('project info --project <project>'), {
-      does: i18n('Shows identifying details for one project in the YouTrack instance.'),
+    printCommand('app info --app <app>', {
+      does: 'Shows bounded app metadata and file keys for one installed app in the YouTrack instance.',
       args: [
-        i18n('<project> is an exact project ID or short name/key.'),
+        '<app> is an app ID or package name.',
       ],
     });
-    printCommand(i18n('project fields --project <project>'), {
-      does: i18n('Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.'),
+    printCommand('app scripts --app <app> --file-key <file-key>', {
+      does: 'Shows one manifest, settings, entity extension, or script file from an installed app in the YouTrack instance.',
       args: [
-        i18n('<project> is an exact project ID or short name/key.'),
+        '<app> is an app ID or package name.',
+        '<file-key> is listed by info. Use manifest, settings, entityExtensions, or a script ID.',
       ],
     });
-    printCommand(i18n('project apps --project <project> [--skip N] [--limit N]'), {
-      does: i18n('Lists apps attached to one project in the YouTrack instance.'),
+    printCommand('app usages --app <app> [--skip N] [--limit N]', {
+      does: 'Lists project usage records for one installed app, including nested requirement problems.',
       args: [
-        i18n('<project> is an exact project ID or short name/key.'),
+        '<app> is an app ID or package name.',
       ],
     });
-    printCommand(i18n('tag search [--query <query>] [--project <short-name>] [--skip N] [--limit N]'), {
-      does: i18n('Searches visible usable tags in the YouTrack instance, optionally narrowed to tags relevant for one project.'),
+    printCommand('app settings --app <app> [--project <short-name>]', {
+      does: 'Reads global app settings or project-scoped settings from the YouTrack instance.',
       args: [
-        i18n('--query <query> is optional tag name text.'),
-        i18n('--project <short-name> narrows tags to one project.'),
+        '<app> is an app ID or package name.',
+        '--project <short-name> is a project short name.',
       ],
     });
-    printCommand(i18n('field values --project <short-name> --field <field> [--query <query>] [--skip N] [--limit N]'), {
-      does: i18n('Searches values for one project custom field.'),
+    printCommand('app settings-set --app <app> [--project <short-name>] [--settings JSON] [--enabled true|false]', {
+      does: 'Updates app settings and/or enabled state in the YouTrack instance.',
       args: [
-        i18n('--query <query> is optional value text.'),
-        i18n('--project <short-name> selects the project.'),
-        i18n('--field <field> is a field ID or name.'),
+        '<app> is an app ID or package name.',
+        '--project <short-name> writes project settings instead of global settings.',
+        '--settings JSON is a JSON object string.',
+        '--enabled true|false updates the enabled state.',
       ],
     });
-    printCommand(i18n('group list [--query <query>] [--skip N] [--limit N]'), {
-      does: i18n('Searches user groups and project teams in the YouTrack instance with IDs.'),
+    printCommand('app logs --app <app> [--limit N]', {
+      does: 'Shows recent app-level log entries.',
       args: [
-        i18n('--query <query> is an optional group search filter. When omitted, all visible groups are listed.'),
+        '<app> is an app ID or package name.',
+        '--limit N limits app log entries.',
       ],
     });
-    printCommand(i18n('group members [--group <group>] [--skip N] [--limit N]'), {
-      does: i18n('Shows direct members of one user group or project team, or direct members for all paged groups when omitted.'),
+    printCommand('app logs --app <app> --script <script> [--skip N] [--limit N]', {
+      does: 'Shows paged log entries for one script, module, or workflow rule.',
       args: [
-        i18n('--group <group> is an optional exact group ID or name.'),
-        i18n('--skip N and --limit N apply when --group is omitted.'),
+        '<app> is an app ID or package name.',
+        '--script <script> is a script, module, rule ID, rule name, or rule title.',
+        '--skip N chooses the starting log entry.',
+        '--limit N chooses the page size.',
       ],
     });
-    printCommand(i18n('user list [--query <query>] [--skip N] [--limit N]'), {
-      does: i18n('Searches users in the YouTrack instance with login, ID, and display name.'),
+    printCommand('app requirement-errors --app <app>', {
+      does: 'Shows broken requirement problems reported by app usages in the YouTrack instance.',
       args: [
-        i18n('--query <query> is an optional user search filter. When omitted, all visible users are listed.'),
+        '<app> is an app ID or package name.',
       ],
     });
-    printCommand(i18n('user info --user <user>'), {
-      does: i18n('Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.'),
+    printCommand('app visibility --app <app> [--project <short-name>]', {
+      does: 'Shows read-only global or project visibility settings for one app.',
       args: [
-        i18n('<user> is an exact user ID, login, username, or full name.'),
-      ],
-    });
-    br();
-
-    printSection(i18n('Raw REST API'));
-    printCommand(i18n('rest request --path <path> [--method METHOD] [--body JSON] [--header name:value] [--yes]'), {
-      does: i18n('Makes an authenticated request to a relative path on the configured YouTrack host.'),
-      args: [
-        i18n('--path <path> is a relative REST path, including any query string.'),
-        i18n('--method defaults to GET. Supported methods are GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.'),
-        i18n('--yes is required for DELETE requests.'),
-        i18n('--body JSON sends a JSON request body.'),
-        i18n('--header name:value adds a request header and may be repeated.'),
-        i18n('See https://www.jetbrains.com/help/youtrack/devportal/rest-api-reference.html for available paths and payloads.'),
+        '<app> is an app ID or package name.',
+        '--project <short-name> reads project-scoped app visibility.',
       ],
     });
     br();
 
-    printSection(i18n('Dangerous commands'));
-    printCommand(i18n('app delete --app <app> [--yes]'), {
-      does: i18n('Danger: permanently deletes the installed app and everything app-related from the YouTrack instance.'),
+    printSection('Instance exploration');
+    printCommand('project list [--skip N] [--limit N]', {
+      does: 'Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.',
+    });
+    printCommand('project info --project <project>', {
+      does: 'Shows identifying details for one project in the YouTrack instance.',
       args: [
-        i18n('<app> is an app ID or package name. Titles are not accepted.'),
-        i18n('--yes skips the confirmation prompt.'),
+        '<project> is an exact project ID or short name/key.',
+      ],
+    });
+    printCommand('project fields --project <project>', {
+      does: 'Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.',
+      args: [
+        '<project> is an exact project ID or short name/key.',
+      ],
+    });
+    printCommand('project apps --project <project> [--skip N] [--limit N]', {
+      does: 'Lists apps attached to one project in the YouTrack instance.',
+      args: [
+        '<project> is an exact project ID or short name/key.',
+      ],
+    });
+    printCommand('tag search [--query <query>] [--project <short-name>] [--skip N] [--limit N]', {
+      does: 'Searches visible usable tags in the YouTrack instance, optionally narrowed to tags relevant for one project.',
+      args: [
+        '--query <query> is optional tag name text.',
+        '--project <short-name> narrows tags to one project.',
+      ],
+    });
+    printCommand('field values --project <short-name> --field <field> [--query <query>] [--skip N] [--limit N]', {
+      does: 'Searches values for one project custom field.',
+      args: [
+        '--query <query> is optional value text.',
+        '--project <short-name> selects the project.',
+        '--field <field> is a field ID or name.',
+      ],
+    });
+    printCommand('group list [--query <query>] [--skip N] [--limit N]', {
+      does: 'Searches user groups and project teams in the YouTrack instance with IDs.',
+      args: [
+        '--query <query> is an optional group search filter. When omitted, all visible groups are listed.',
+      ],
+    });
+    printCommand('group members [--group <group>] [--skip N] [--limit N]', {
+      does: 'Shows direct members of one user group or project team, or direct members for all paged groups when omitted.',
+      args: [
+        '--group <group> is an optional exact group ID or name.',
+        '--skip N and --limit N apply when --group is omitted.',
+      ],
+    });
+    printCommand('user list [--query <query>] [--skip N] [--limit N]', {
+      does: 'Searches users in the YouTrack instance with login, ID, and display name.',
+      args: [
+        '--query <query> is an optional user search filter. When omitted, all visible users are listed.',
+      ],
+    });
+    printCommand('user info --user <user>', {
+      does: 'Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.',
+      args: [
+        '<user> is an exact user ID, login, username, or full name.',
+      ],
+    });
+    br();
+
+    printSection('Raw REST API');
+    printCommand('rest request --path <path> [--method METHOD] [--body JSON] [--header name:value] [--yes]', {
+      does: 'Makes an authenticated request to a relative path on the configured YouTrack host.',
+      args: [
+        '--path <path> is a relative REST path, including any query string.',
+        '--method defaults to GET. Supported methods are GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.',
+        '--yes is required for DELETE requests.',
+        '--body JSON sends a JSON request body.',
+        '--header name:value adds a request header and may be repeated.',
+        'See https://www.jetbrains.com/help/youtrack/devportal/rest-api-reference.html for available paths and payloads.',
+      ],
+    });
+    br();
+
+    printSection('Dangerous commands');
+    printCommand('app delete --app <app> [--yes]', {
+      does: 'Danger: permanently deletes the installed app and everything app-related from the YouTrack instance.',
+      args: [
+        '<app> is an app ID or package name. Titles are not accepted.',
+        '--yes skips the confirmation prompt.',
       ],
     });
 
@@ -428,9 +429,9 @@ export async function run(argv = process.argv) {
 
     function printCommand(command: string, details: {does: string; args?: string[]}) {
       console.log('  ' + command);
-      printDetail(i18n('Does'), details.does);
+      printDetail('Does', details.does);
       if (details.args?.length) {
-        printDetailLines(i18n('Args'), details.args);
+        printDetailLines('Args', details.args);
       }
     }
 
@@ -458,9 +459,9 @@ export async function run(argv = process.argv) {
         if ((!args.hasOwnProperty(param) || !args[param]) && !config[param]) {
           if (param === 'token') {
             const createTokenUrl = `${resolve(config.host, 'users/me?tab=account-security').href}`;
-            exit(new Error(i18n(`Token is required. Please create one at ${createTokenUrl}`)), ExitCode.Authentication);
+            exit(new Error(`Token is required. Please create one at ${createTokenUrl}`), ExitCode.Authentication);
           } else {
-            exit(new Error(i18n('Option "--' + param + '" is required')), ExitCode.Usage);
+            exit(new Error('Option "--' + param + '" is required'), ExitCode.Usage);
           }
 
           return false;

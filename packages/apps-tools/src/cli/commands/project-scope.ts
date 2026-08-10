@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {formatProjectLabel} from '../management/types.js';
 import {printStructured} from './output.js';
@@ -19,7 +18,7 @@ async function setProjectScope(config: Config, appName: string | undefined, acti
     if (printStructured(config, {...result, action})) {
       return;
     }
-    console.log(i18n(`App "${result.app.name}" ${action === 'attach' ? 'attached to' : 'detached from'} project "${formatProjectLabel(result.project)}"`));
+    console.log(`App "${result.app.name}" ${action === 'attach' ? 'attached to' : 'detached from'} project "${formatProjectLabel(result.project)}"`);
   } catch (error) {
     exit(error);
   }

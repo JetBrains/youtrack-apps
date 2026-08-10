@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {formatProjectLabel, printJson} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
@@ -16,7 +15,7 @@ export async function projectList(config: Config): Promise<void> {
       result,
       pagination,
       resourceName: 'projects',
-      emptyMessage: i18n('No projects found'),
+      emptyMessage: 'No projects found',
       formatItem: formatProject,
     });
   } catch (error) {

@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {TagDetails} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
@@ -16,7 +15,7 @@ export async function tagSearch(config: Config, query?: string): Promise<void> {
       result,
       pagination,
       resourceName: 'tags',
-      emptyMessage: i18n('No tags found'),
+      emptyMessage: 'No tags found',
       formatItem: formatTag,
     });
   } catch (error) {

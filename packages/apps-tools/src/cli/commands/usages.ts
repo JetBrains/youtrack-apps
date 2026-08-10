@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {AppUsageDiagnostics, formatBoolean, formatProjectLabel} from '../management/types.js';
 import {paginationFromConfig} from '../pagination.js';
@@ -16,7 +15,7 @@ export async function usages(config: Config, appName?: string): Promise<void> {
       result,
       pagination,
       resourceName: 'app usages',
-      emptyMessage: i18n('No app usages found'),
+      emptyMessage: 'No app usages found',
       formatItem: formatUsage,
     });
   } catch (error) {

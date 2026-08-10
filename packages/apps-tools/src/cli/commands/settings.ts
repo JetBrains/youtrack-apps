@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {AppConfiguration, AppSettingsUpdate, formatBoolean, formatProjectLabel} from '../management/types.js';
 import {printStructured} from './output.js';
@@ -52,14 +51,14 @@ function parseEnabled(value: string): boolean {
     return false;
   }
 
-  throw new Error(i18n('Option "--enabled" should be true or false'));
+  throw new Error('Option "--enabled" should be true or false');
 }
 
 function stringifySettings(value: string): string {
   try {
     return JSON.stringify(JSON.parse(value));
   } catch {
-    throw new Error(i18n('Option "--settings" should be a valid JSON object'));
+    throw new Error('Option "--settings" should be a valid JSON object');
   }
 }
 

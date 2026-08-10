@@ -1,6 +1,5 @@
 import {Config} from '../../../@types/types.js';
 import {exit} from '../../../lib/cli/exit.js';
-import {i18n} from '../../../lib/i18n/i18n.js';
 import {createAppManagementOperations} from '../management/app-management-operations.js';
 import {
   AppCatalogResult,
@@ -20,7 +19,7 @@ export async function list(config: Config): Promise<void> {
       result,
       pagination,
       resourceName: 'apps',
-      emptyMessage: i18n('No apps found'),
+      emptyMessage: 'No apps found',
       formatItem: app => app.name,
     });
   } catch (error) {
