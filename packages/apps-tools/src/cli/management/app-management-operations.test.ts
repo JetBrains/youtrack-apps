@@ -270,6 +270,31 @@ describe('AppManagementOperations', () => {
     expect(gateway.projectCustomFieldRequests).toEqual(['0-1']);
   });
 
+  it('searchFieldValues returns all project field bundle values without a query', async () => {
+    const operations = new AppManagementOperations(fakeGateway({
+      projectCustomFields: [
+        {
+          id: 'pcf-1',
+          field: {id: 'field-1', name: 'Priority'},
+          bundle: {
+            id: 'bundle-1',
+            values: [
+              {id: 'value-1', name: 'High'},
+              {id: 'value-2', name: 'Low'},
+            ],
+          },
+        },
+      ],
+    }));
+
+    const result = await operations.searchFieldValues(undefined, 'CP', 'Priority');
+
+    expect(result.items).toEqual([
+      {id: 'value-1', name: 'High'},
+      {id: 'value-2', name: 'Low'},
+    ]);
+  });
+
   it('getVisibility reads global app visibility settings', async () => {
     const operations = new AppManagementOperations(fakeGateway({
       globalConfig: {

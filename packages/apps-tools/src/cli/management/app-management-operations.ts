@@ -193,10 +193,6 @@ export class AppManagementOperations {
     fieldKey: string | null,
     pagination?: PaginationOptions,
   ): Promise<PaginatedResult<CustomFieldValue>> {
-    if (!query) {
-      throw new Error(i18n('Field value query should be defined'));
-    }
-
     if (!projectKey) {
       throw new Error(i18n('Option "--project" is required'));
     }
@@ -219,7 +215,8 @@ export class AppManagementOperations {
       throw new Error(i18n(`Field "${fieldKey}" does not expose searchable bundle values`));
     }
 
-    return pageLocal(values.filter(value => matchesValue(value, query)), pagination);
+    const matchingValues = query ? values.filter(value => matchesValue(value, query)) : values;
+    return pageLocal(matchingValues, pagination);
   }
 
   async getVisibility(appName: string | undefined, projectShortName?: string | null): Promise<VisibilityResult> {
