@@ -1,9 +1,11 @@
-export const enum ExitCode {
-  General = 1,
-  Usage = 2,
-  Authentication = 3,
-  NotFound = 4,
-}
+export const ExitCode = {
+  General: 1,
+  Usage: 2,
+  Authentication: 3,
+  NotFound: 4,
+} as const;
+
+export type ExitCode = (typeof ExitCode)[keyof typeof ExitCode];
 
 export function exit(error: Error | unknown | null, code?: number): boolean {
   if (error) {
