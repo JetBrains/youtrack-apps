@@ -221,6 +221,20 @@ describe('YouTrackAppsClient', () => {
     await expect(new YouTrackAppsClient(config()).getWorkflow('missing-app')).resolves.toBeNull();
   });
 
+  it('deleteWorkflow deletes the installed app', async () => {
+    const requests: Request[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      requests.push(request as Request);
+      return new Response(null, {status: 200});
+    });
+
+    await new YouTrackAppsClient(config()).deleteWorkflow('93-1');
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].method).toBe('DELETE');
+    expect(new URL(requests[0].url).pathname).toBe('/api/admin/apps/93-1');
+  });
+
   it('getAppPackage requests package files and scripts', async () => {
     const requests: Request[] = [];
     jest.spyOn(global, 'fetch').mockImplementation(async request => {

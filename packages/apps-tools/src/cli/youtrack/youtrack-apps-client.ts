@@ -208,7 +208,7 @@ export class YouTrackAppsClient implements YouTrackAppsGateway {
   }
 
   async deleteWorkflow(appId: string): Promise<void> {
-    await this.jsonRequest<void>('DELETE', `/api/admin/workflows/${appId}`);
+    await this.jsonRequest<void>('DELETE', `/api/admin/apps/${appId}`);
   }
 
   async getGlobalConfig(appId: string): Promise<AppConfiguration | null> {
