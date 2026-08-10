@@ -3,6 +3,7 @@ export const ExitCode = {
   Usage: 2,
   Authentication: 3,
   NotFound: 4,
+  UnknownError: 5,
 } as const;
 
 export type ExitCode = (typeof ExitCode)[keyof typeof ExitCode];
@@ -15,6 +16,10 @@ export function exit(error: Error | unknown | null, code?: number): boolean {
 }
 
 function classifyError(error: unknown): ExitCode {
+  if (error == null) {
+    return ExitCode.General;
+  }
+
   const message = error instanceof Error ? error.message : String(error ?? '');
 
   if (/\[(401|403)\]|\b(unauthorized|forbidden)\b|token is required/i.test(message)) {
@@ -29,5 +34,5 @@ function classifyError(error: unknown): ExitCode {
     return ExitCode.Usage;
   }
 
-  return ExitCode.General;
+  return ExitCode.UnknownError;
 }
