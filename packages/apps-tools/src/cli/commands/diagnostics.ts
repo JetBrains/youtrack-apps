@@ -16,15 +16,7 @@ export async function logs(config: Config, args?: LogsArgs): Promise<void> {
     const appName = args?.app;
     const scriptName = args?.script;
     if (scriptName) {
-      try {
-        await printScriptLogs(config, appName, scriptName);
-      } catch (error) {
-        if (await tryPrintAppLogs(config, appName)) {
-          return;
-        }
-
-        throw error;
-      }
+      await printScriptLogs(config, appName, scriptName);
       return;
     }
 
@@ -54,15 +46,6 @@ export async function requirementErrors(config: Config, appName?: string): Promi
     }
   } catch (error) {
     exit(error);
-  }
-}
-
-async function tryPrintAppLogs(config: Config, appName: string | undefined): Promise<boolean> {
-  try {
-    await printAppLogs(config, appName);
-    return true;
-  } catch {
-    return false;
   }
 }
 
