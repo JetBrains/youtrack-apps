@@ -183,7 +183,7 @@ export class AppManagementOperations {
   }
 
   async listProjectApps(projectKey: string | undefined, pagination?: PaginationOptions): Promise<PaginatedResult<AppConfiguration>> {
-    const project = await this.requireProjectByKey(projectKey, pagination);
+    const project = await this.requireProjectByKey(projectKey);
     return await this.client.listProjectAppConfigurations(project.id, pagination);
   }
 
@@ -205,7 +205,7 @@ export class AppManagementOperations {
       throw new Error(i18n('Option "--field" is required'));
     }
 
-    const project = await this.requireProjectByKey(projectKey, pagination);
+    const project = await this.requireProjectByKey(projectKey);
     const fields = await this.client.listProjectCustomFields(project.id);
     const field = requireExactMatch(
       fields,
@@ -309,8 +309,8 @@ export class AppManagementOperations {
     return await this.client.listProjects(undefined, pagination);
   }
 
-  async getProjectInfo(projectKey?: string, pagination?: PaginationOptions): Promise<ProjectDetails> {
-    const project = await this.requireProjectByKey(projectKey, pagination);
+  async getProjectInfo(projectKey?: string, _pagination?: PaginationOptions): Promise<ProjectDetails> {
+    const project = await this.requireProjectByKey(projectKey);
     if (!project.shortName) {
       throw new Error(i18n(`Project "${projectKey}" does not have a short name`));
     }
@@ -323,8 +323,8 @@ export class AppManagementOperations {
     return details;
   }
 
-  async getProjectFields(projectKey?: string, pagination?: PaginationOptions): Promise<ProjectFieldsResult> {
-    const project = await this.requireProjectByKey(projectKey, pagination);
+  async getProjectFields(projectKey?: string, _pagination?: PaginationOptions): Promise<ProjectFieldsResult> {
+    const project = await this.requireProjectByKey(projectKey);
     const schema = await this.client.getProjectFields(project.shortName ?? project.id);
     return {project, schema};
   }
@@ -425,13 +425,41 @@ export class AppManagementOperations {
     return {project, usage};
   }
 
-  private async requireProjectByKey(projectKey?: string, pagination?: PaginationOptions): Promise<ProjectDetails> {
+  private async requireProjectByKey(projectKey?: string): Promise<ProjectDetails> {
     if (!projectKey) {
       throw new Error(i18n('Project key should be defined'));
     }
 
+    const normalizedProjectKey = normalizeLookupValue(projectKey);
+    let pagination = resourceResolvePagination();
+
+    while (true) {
+      const page = await this.client.listProjects(PROJECT_RESOLVE_FIELDS, pagination);
+      const matches = page.items.filter(project => {
+        return [project.id, project.shortName].some(candidate => normalizeLookupValue(candidate) === normalizedProjectKey);
+      });
+
+      if (matches.length) {
+        return requireExactMatch(
+          matches,
+          projectKey,
+          project => [project.id, project.shortName],
+          'Project',
+        );
+      }
+
+      if (!page.pagination.hasMore || page.pagination.nextSkip === null) {
+        break;
+      }
+
+      pagination = {
+        ...pagination,
+        skip: page.pagination.nextSkip,
+      };
+    }
+
     return requireExactMatch(
-      (await this.client.listProjects(PROJECT_RESOLVE_FIELDS, resourceResolvePagination(pagination))).items,
+      [],
       projectKey,
       project => [project.id, project.shortName],
       'Project',

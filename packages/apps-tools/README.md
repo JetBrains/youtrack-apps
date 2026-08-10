@@ -79,7 +79,7 @@ Use `--body` for a JSON request body and repeat `--header name:value` to add req
 List-style commands fetch the first 50 results by default. This applies to `app list`, `app usages`, `project apps`, `field values`, `tag search`, `app logs` with `--script`, `project list`, `group list`, `group members` without `--group`, and `user list`.
 
 
-Use these flags to page through list results or choose the resource page used by exact lookup commands:
+Use these flags to page through list results:
 
 | Option | Description |
 | ------ | :---------- |

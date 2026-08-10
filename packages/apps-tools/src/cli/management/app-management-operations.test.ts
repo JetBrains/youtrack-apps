@@ -497,7 +497,38 @@ describe('AppManagementOperations', () => {
     expect(gateway.projectListRequests).toEqual([{limit: 100, skip: undefined}]);
   });
 
-  it('exact resource matching forwards explicit pagination options', async () => {
+  it('project resolution continues to later pages', async () => {
+    const target = {id: '0-101', name: 'Target Project', shortName: 'TARGET'};
+    const gateway = fakeGateway({project: target});
+    gateway.listProjects = async (_fields, pagination = {}) => {
+      gateway.projectListRequests.push(pagination);
+
+      if (pagination.skip === 100) {
+        return {
+          items: [target],
+          pagination: {skip: 100, limit: 100, returned: 1, nextSkip: null, hasMore: false},
+        };
+      }
+
+      return {
+        items: Array.from({length: 100}, (_value, index) => ({
+          id: `0-${index + 1}`,
+          name: `Project ${index + 1}`,
+          shortName: `P${index + 1}`,
+        })),
+        pagination: {skip: 0, limit: 100, returned: 100, nextSkip: 100, hasMore: true},
+      };
+    };
+    const operations = new AppManagementOperations(gateway);
+
+    await expect(operations.getProjectInfo('TARGET')).resolves.toEqual(target);
+    expect(gateway.projectListRequests).toEqual([
+      {limit: 100, skip: undefined},
+      {limit: 100, skip: 100},
+    ]);
+  });
+
+  it('project resolution ignores output pagination options', async () => {
     const gateway = fakeGateway({
       projects: [projectDetails()],
       groups: [{id: 'group-1', name: 'Developers', userCount: 2}],
@@ -511,7 +542,10 @@ describe('AppManagementOperations', () => {
     await operations.getGroupMembers('Developers', pagination);
     await operations.getUserInfo('root', pagination);
 
-    expect(gateway.projectListRequests).toContainEqual(pagination);
+    expect(gateway.projectListRequests).toEqual([
+      {limit: 100, skip: undefined},
+      {limit: 100, skip: undefined},
+    ]);
     expect(gateway.groupListRequests).toContainEqual({query: 'Developers', pagination});
     expect(gateway.userListRequests).toContainEqual({query: 'root', pagination});
   });
