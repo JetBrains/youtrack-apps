@@ -167,7 +167,7 @@ export async function run(argv = process.argv) {
     overwrite: isFlagEnabled(args.overwrite) ? 'true' : null,
     manifest: args.manifest || null,
     schema: args.schema || null,
-    open: isFlagEnabled(args.open) ? 'true' : null
+    open: isFlagEnabled(args.open) ? 'true' : null,
     json: isFlagEnabled(args.json),
     yaml: isFlagEnabled(args.yaml) || isFlagEnabled(args.yml),
     yes: isFlagEnabled(args.yes),

@@ -458,7 +458,7 @@ export class AppManagementOperations {
       };
     }
 
-    return requireExactMatch(
+    return requireExactMatch<ProjectDetails>(
       [],
       projectKey,
       project => [project.id, project.shortName],
