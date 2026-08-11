@@ -340,7 +340,7 @@ export async function run(argv = process.argv) {
       ],
     });
     printCommand('project fields --project <project>', {
-      description: 'Returns the issue-fields JSON schema for a project, including field definitions and required fields. Allowed-value lists may be capped; use "field values" to find actual custom-field values.',
+      description: 'Returns the full issue fields JSON schema for one project in YouTrack, including required fields and allowed values when available.',
       args: [
         '<project> is an exact project ID or short name/key.',
       ],
