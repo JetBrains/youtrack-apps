@@ -65,7 +65,7 @@ Backend and Workflows
   src/backend/router/<scope>/<path>/<METHOD>.ts.
 
 
-App Persistance
+App Persistence
 
   npx @jetbrains/create-youtrack-app settings init [options]
 
