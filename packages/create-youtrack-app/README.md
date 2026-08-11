@@ -1,4 +1,4 @@
-# YouTrack App Generator
+# Create YouTrack App
 
 [![Build Status][ci-img]][ci-project] [![NPM Version][npm-img]][npm-page]
 
@@ -126,7 +126,7 @@ npm run g                                             # Shows a menu for choosin
 
 **App Settings:** `npm run g -- settings init [--title TITLE] [--description DESC]`
 - `init`: Initialize settings schema
-  - With args: `--title` and `--description` create the schema directly (useful for tests)
+  - With arguments, `--title` and `--description` create the schema directly.
   - Without args: interactive prompts for the title and description
 - `add`: Adds a new property to an existing settings schema (interactive only)
 

@@ -2,7 +2,7 @@
 
 **Audience:** App developers who want to build or contribute to YouTrack apps using the TypeScript toolchain.
 
-**TL;DR:** Enhanced DX is an experimental TypeScript scaffolding layer for YouTrack apps. It gives you file-based routing, automatic type generation, a type-safe API client, and a watch+auto-upload workflow — all on top of Vite. You scaffold once, run `npm run watch`, and the tool handles the rest.
+**TL;DR:** Enhanced DX is the TypeScript workflow for YouTrack apps. It gives you file-based routing, automatic type generation, a type-safe API client, and a watch+auto-upload workflow — all on top of Vite. You scaffold once, run `npm run watch`, and the tool handles the rest.
 
 ---
 
@@ -33,10 +33,10 @@ Standard YouTrack app development requires writing backend HTTP handlers in plai
 ### Option A — from npm (standard)
 
 ```bash
-npm init @jetbrains/youtrack-app
+npx @jetbrains/create-youtrack-app app init --type ts
 ```
 
-Follow the prompts. When asked for the template, choose **TypeScript (Enhanced DX, experimental)**.
+Follow the prompts. `--type ts` creates a TypeScript app with Enhanced DX; use `--type js` for a basic JavaScript app.
 
 ### Option B — run the CLI locally without installing
 
@@ -75,7 +75,7 @@ cd ../..
 
 ```bash
 mkdir ~/my-app && cd ~/my-app
-create-youtrack-app
+create-youtrack-app app init --type ts
 ```
 
 > After scaffolding, the CLI automatically runs `npm link @jetbrains/youtrack-apps-tools` in the generated project, wiring up the local build.
@@ -84,7 +84,7 @@ create-youtrack-app
 
 ```bash
 cd ~/my-app
-node /path/to/youtrack-apps/packages/create-youtrack-app/index.js
+node /path/to/youtrack-apps/packages/create-youtrack-app/index.js app init --type ts
 ```
 
 ---
