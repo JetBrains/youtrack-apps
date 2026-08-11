@@ -175,7 +175,7 @@ Agent Skill
   npx @jetbrains/create-youtrack-app skill install [options]
   npx @jetbrains/create-youtrack-app skill status [options]
 
-  Installs or reports the bundled YouTrack app builder skill.
+  Installs or reports the included YouTrack Apps skill.
 
   Options:
     --agent <agent>        claude | codex | junie | all. Default: all.
