@@ -40,6 +40,17 @@ describe('restRequest', () => {
     expect(console.log).toHaveBeenCalledWith('{\n  "id": "1"\n}');
   });
 
+  it('keeps requests within the configured host path', async () => {
+    const host = 'https://youtrack.example.test/youtrack';
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(new Response('{}', {status: 200}));
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+
+    await restRequest({...config, host}, {path: 'api/issues'});
+
+    const request = fetchMock.mock.calls[0][0] as Request;
+    expect(request.url).toBe('https://youtrack.example.test/youtrack/api/issues');
+  });
+
   it('supports JSON bodies, custom headers, and YAML output', async () => {
     const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(new Response('{"ok":true}', {status: 200}));
     jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -79,6 +90,17 @@ describe('restRequest', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
     await restRequest(config, {path});
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(exitMock).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(['../api/issues', '/../../api/issues'])('rejects paths which escape the configured host context: %s', async path => {
+    const fetchMock = jest.spyOn(global, 'fetch');
+    const exitMock = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    await restRequest({...config, host: 'https://youtrack.example.test/youtrack'}, {path});
 
     expect(fetchMock).not.toHaveBeenCalled();
     expect(exitMock).toHaveBeenCalledTimes(1);

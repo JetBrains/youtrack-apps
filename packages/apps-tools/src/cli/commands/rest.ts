@@ -42,8 +42,9 @@ export async function restRequest(config: Config, args: RawRestRequestArgs = {})
       headers['Content-Type'] = 'application/json';
     }
 
+    const hostUrl = resolve(config.host, '/');
     const url = resolve(config.host, path);
-    if (url.origin !== resolve(config.host, '/').origin) {
+    if (url.origin !== hostUrl.origin || !url.pathname.startsWith(hostUrl.pathname)) {
       throw new Error('REST path must be relative to the configured YouTrack host');
     }
     const response = await fetch(generateRequestParams(config, url.href, {method, headers, body}));
