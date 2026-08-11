@@ -110,7 +110,7 @@ Instance exploration:
     Args:
       <project> is an exact project ID or short name/key.
   project fields --project <project>
-    Does: Returns the full issue fields JSON schema for one project in the YouTrack instance, including required fields and allowed values when available.
+    Does: Returns the issue-fields JSON schema for a project, including field definitions and required fields. Allowed-value lists may be capped; use "field values" to find actual custom-field values.
     Args:
       <project> is an exact project ID or short name/key.
   project apps --project <project> [--skip N] [--limit N]
@@ -123,7 +123,7 @@ Instance exploration:
       --query <query> is optional tag name text.
       --project <short-name> narrows tags to one project.
   field values --project <short-name> --field <field> [--query <query>] [--skip N] [--limit N]
-    Does: Searches values for one project custom field.
+    Does: Searches and paginates actual custom-field values for a project. Use it instead of "project fields" when a field has more values than the schema lists.
     Args:
       --query <query> is optional value text.
       --project <short-name> selects the project.
@@ -145,6 +145,17 @@ Instance exploration:
     Does: Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.
     Args:
       <user> is an exact user ID, login, username, or full name.
+
+Raw REST API:
+  rest request --path <path> [--method METHOD] [--body JSON] [--header name:value] [--yes]
+    Does: Makes an authenticated request to a relative path on the configured YouTrack host.
+    Args:
+      --path <path> is a relative REST path, including any query string.
+      --method defaults to GET. Supported methods are GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.
+      --yes is required for DELETE requests.
+      --body JSON sends a JSON request body.
+      --header name:value adds a request header and may be repeated.
+      See https://www.jetbrains.com/help/youtrack/devportal/rest-api-reference.html for available paths and payloads.
 
 Dangerous commands:
   app delete --app <app> [--yes]
