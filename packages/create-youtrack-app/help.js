@@ -34,31 +34,29 @@ Common:
   ${command('--cwd <path>')}        Run from another directory.
   ${command('--help, -h')}          Show help.
   ${command('--version')}           Print the CLI version.
-  Names: app/rule/widget keys use ${code('[a-z][a-z0-9-]*')}; extension
-  properties use ${code('[A-Za-z_][A-Za-z0-9_]*')}; settings keys reject whitespace.
+  Naming patterns: app, rule, and widget keys use ${code('[a-z][a-z0-9-]')}; extension property keys use ${code('[A-Za-z_][A-Za-z0-9_]*')}; keys for app settings cannot contain whitespace.
 
 
 ${heading('App Initialization')}
 
   ${command(`${createApp} app init [options]`)}
 
-  Creates a new app. Missing values are prompted in an interactive terminal.
-  Project type is selected here only; feature commands infer the existing app.
+  Creates a new app. In an interactive terminal, the command prompts you for any missing values. You can select the project type only here during app initialization. Feature commands detect the type from the current app.
 
   Options:
     ${command('--name <name>')}         App package name.
     ${command('--type <type>')}         js | ts. Default: ts.
                           js = basic JavaScript app.
                           ts = TypeScript app with Enhanced DX.
-    ${command('--title <text>')}        Manifest title. Default: title-cased --name.
-    ${command('--description <text>')}  Manifest description. Default: derived from --type.
+    ${command('--title <text>')}        Default: --name in title case.
+    ${command('--description <text>')}  Default: derived from --type.
     ${command('--vendor <text>')}       Manifest vendor name. Default: VendorName.
     ${command('--vendor-url <url>')}    Manifest vendor URL. Default: https://vendor.com.
     ${command('--backend-only')}        For --type ts, omit the sample widget.
-    ${command('--no-install')}          Skip dependency install.
+    ${command('--no-install')}          Skip dependency installation.
 
 
-${heading('Backend and Workflows')}
+${heading('Workflow Rules and HTTP Handlers')}
 
   ${command(`${createApp} rule add --type <type> --name <name>`)}
 
@@ -68,12 +66,12 @@ ${heading('Backend and Workflows')}
     ${command('--type <type>')}         onChange | onSchedule | action | stateMachine | sla.
     ${command('--name <name>')}         Rule filename stem.
 
-  Output: JS apps write ${code('src/<name>.js')}; TS apps write ${code('src/workflows/<name>.ts')}.
+  The command creates the ${code('src/<name>.js')} file for JavaScript apps and the ${code('src/workflows/<name>.ts')} file for TypeScript apps.
 
 
   ${command(`${createApp} http-handler add [options]`)}
 
-  Adds an HTTP handler. Omit --scope and --path to open the interactive flow.
+  Adds an HTTP handler. Run without --scope and --path to configure the handler interactively.
 
   Args:
     ${command('--scope <scope>')}        global | project | issue | article | user.
@@ -82,18 +80,15 @@ ${heading('Backend and Workflows')}
     ${command('--permissions <csv>')}    Permission keys, comma-separated.
     ${command('--handler <name>')}       JS apps only: handler file stem. Default: backend.
 
-  JS usage: ${command('http-handler add --scope <scope> --path <path> --handler <name>')} writes
-  ${code('src/<name>.js')}; omit ${command('--handler')} to update ${code('src/backend.js')}.
-  TS output:
-  ${code('src/backend/router/<scope>/<path>/<METHOD>.ts')}.
+  For JavaScript apps, the command writes the handler to the ${code('src/<name>.js')} file when you provide ${command('--handler <name>')}. Otherwise, it updates the ${code('src/backend.js')} file.
+  For TypeScript apps, the command creates the ${code('src/backend/router/<scope>/<path>/<METHOD>.ts')} file.
 
 
 ${heading('App Persistence')}
 
   ${command(`${createApp} settings init [options]`)}
 
-  Creates ${code('src/settings.json')} when absent. Missing values are prompted
-  interactively.
+  Creates the ${code('src/settings.json')} file if it does not exist. In an interactive terminal, the command prompts you for any missing values.
 
   Options:
     ${command('--title <text>')}         Settings schema title.
@@ -102,7 +97,7 @@ ${heading('App Persistence')}
 
   ${command(`${createApp} settings add --name <name> --type <type> [options]`)}
 
-  Adds one property to ${code('src/settings.json')}.
+  Adds a property to the ${code('src/settings.json')} file.
 
   Options:
     ${command('--name <name>')}          Property key.
@@ -110,14 +105,14 @@ ${heading('App Persistence')}
     ${command('--title <text>')}         Property title.
     ${command('--description <text>')}   Property description.
     ${command('--scope <scope>')}        global | project | none. Default: none.
-    ${command('--entity <entity>')}      Issue | User | Project | UserGroup | Article; only object/array.
-    ${command('--required')}             Add to required[].
-    ${command('--readonly')}             Mark read-only.
+    ${command('--entity <entity>')}      Issue | User | Project | UserGroup | Article. Use only with object and array properties.
+    ${command('--required')}             Adds the property key to the required[] array.
+    ${command('--readonly')}             Marks the property as read-only.
     ${command('--const <value>')}        Constant value for read-only property.
     ${command('--min-length <n>')}       String minimum length.
     ${command('--max-length <n>')}       String maximum length.
     ${command('--format <format>')}      String format, for example secret, date, date-time, email, uri.
-    ${command('--enum <csv>')}           String allowed values.
+    ${command('--enum <csv>')}           Comma-separated list of allowed string values.
     ${command('--min <n>')}              Number/integer inclusive minimum.
     ${command('--max <n>')}              Number/integer inclusive maximum.
     ${command('--exclusive-min <n>')}    Number/integer exclusive minimum.
@@ -127,8 +122,7 @@ ${heading('App Persistence')}
 
   ${command(`${createApp} extension-property add [options]`)}
 
-  Updates ${code('src/entity-extensions.json')}. Omit --entity and --name to open
-  the interactive flow.
+  Updates the ${code('src/entity-extensions.json')} file. Run without --entity and --name to configure the property interactively.
 
   Args:
     ${command('--entity <Entity>')}      Issue | User | Project | Article.
@@ -141,7 +135,7 @@ ${heading('Widgets')}
 
   ${command(`${createApp} widget add --key <key> --extension-point <point> [options]`)}
 
-  Adds a widget and manifest entry. Omit widget flags to open the interactive flow.
+  Adds a widget and a corresponding entry to the manifest.json file. Run without widget options to configure the widget interactively.
 
   Options:
     ${command('--key <key>')}            Widget key.
@@ -152,7 +146,7 @@ ${heading('Widgets')}
     ${command('--width <n>')}            Expected width in pixels.
     ${command('--height <n>')}           Expected height in pixels.
 
-  Output: ${code('src/widgets/<key>/')} plus manifest widget entry.
+  Creates the: ${code('src/widgets/<key>/')} directory and updates the manifest.json file.
 
 
 ${heading('App Lifecycle')}
@@ -165,10 +159,7 @@ ${heading('App Lifecycle')}
 
 ${heading('Enhanced DX')}
 
-  Enhanced DX is available only for TypeScript apps selected with
-  ${command('--type ts')} during app initialization. They add file-based routing,
-  generated API types, typed widget client, dev Zod validation, watch upload,
-  and optional frontend hot reload.
+  Enhanced DX is available only for TypeScript apps initialized with ${command('--type ts')}. It provides file-based routing, generated API types, a typed widget client, development-time Zod validation, automatic rebuild and upload in watch mode, and optional frontend hot reload.
 
   Generated package scripts:
     ${command('npm run dev')}                           Start the Enhanced DX dev workflow.
@@ -176,8 +167,7 @@ ${heading('Enhanced DX')}
 
   ${command(`${createApp} endpoint add`)}
 
-  Interactive typed endpoint generator for TypeScript apps with Enhanced DX.
-  Omit the options to answer prompts interactively, or provide them for non-interactive generation.
+  Adds a typed endpoint to a TypeScript app that uses Enhanced DX. Run without options to configure the endpoint interactively, or provide options for non-interactive generation.
 
   Values:
     ${command('--scope <scope>')}          global | issue | project | custom.
@@ -185,12 +175,12 @@ ${heading('Enhanced DX')}
     ${command('--method <method>')}       GET | POST | PUT | DELETE.
     ${command('--request-type <type>')}   Request type name or never. Default: never.
     ${command('--response-type <type>')}  Response type name or never. Default: never.
-    ${command('--controller <name>')}     Existing exported function in
-                                             src/backend/controllers/<scope>.<path>.controller.ts.
-                                             Omit to generate an inline handler.
+    ${command('--controller <name>')}     Name of an existing function exported from the 
+                                             src/backend/controllers/<scope>.<path>.controller.ts file.
+                                             Omit this option to generate an inline handler.
 
-  Output: ${code('src/backend/router/<path>/<METHOD>.ts')}; backend builds generate
-  ${code('src/api/api.d.ts')} and ${code('src/api/api.zod.ts')}.
+  Creates the ${code('src/backend/router/<path>/<METHOD>.ts')} file. Backend builds also generate the
+  ${code('src/api/api.d.ts')} and ${code('src/api/api.zod.ts')} files.
 
 
 ${heading('Agent Skill')}
@@ -198,7 +188,7 @@ ${heading('Agent Skill')}
   ${command(`${createApp} skill install [options]`)}
   ${command(`${createApp} skill status [options]`)}
 
-  Installs or reports the included YouTrack Apps skill.
+  Installs the bundled YouTrack Apps skill or reports its status.
 
   Options:
     ${command('--agent <agent>')}        claude | codex | junie | all. Default: all.
