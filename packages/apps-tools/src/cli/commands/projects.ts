@@ -23,9 +23,9 @@ export async function projectList(config: Config): Promise<void> {
   }
 }
 
-export async function projectInfo(config: Config, projectKey?: string): Promise<void> {
+export async function projectInfo(config: Config, projectKeyOrID?: string): Promise<void> {
   try {
-    const project = await createAppManagementOperations(config).getProjectInfo(projectKey, paginationFromConfig(config));
+    const project = await createAppManagementOperations(config).getProjectInfo(projectKeyOrID, paginationFromConfig(config));
 
     if (printStructured(config, project)) {
       return;

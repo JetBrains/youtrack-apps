@@ -368,13 +368,25 @@ describe('AppManagementOperations', () => {
     expect(gateway.ruleLogRequests).toEqual([]);
   });
 
-  it('getProjectInfo resolves project IDs and short names and fetches details by short name', async () => {
+  it('getProjectInfo fetches a project by short name without resolving it first', async () => {
     const gateway = fakeGateway({projects: [projectDetails()]});
     const operations = new AppManagementOperations(gateway);
 
     const result = await operations.getProjectInfo('CP');
 
     expect(result.id).toBe('0-1');
+    expect(gateway.projectRequests).toEqual(['CP']);
+    expect(gateway.projectListRequests).toEqual([]);
+  });
+
+  it('getProjectInfo resolves a project ID and fetches details by its short name', async () => {
+    const gateway = fakeGateway({projects: [projectDetails()]});
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.getProjectInfo('0-1');
+
+    expect(result.id).toBe('0-1');
+    expect(gateway.projectListRequests).toEqual([{limit: 100, skip: undefined}]);
     expect(gateway.projectRequests).toEqual(['CP']);
   });
 
@@ -517,7 +529,7 @@ describe('AppManagementOperations', () => {
     const gateway = fakeGateway({projects: [projectDetails()]});
     const operations = new AppManagementOperations(gateway);
 
-    await operations.getProjectInfo('CP');
+    await operations.getProjectInfo('0-1');
 
     expect(gateway.projectListRequests).toEqual([{limit: 100, skip: undefined}]);
   });
@@ -546,7 +558,7 @@ describe('AppManagementOperations', () => {
     };
     const operations = new AppManagementOperations(gateway);
 
-    await expect(operations.getProjectInfo('TARGET')).resolves.toEqual(target);
+    await expect(operations.getProjectInfo('0-101')).resolves.toEqual(target);
     expect(gateway.projectListRequests).toEqual([
       {limit: 100, skip: undefined},
       {limit: 100, skip: 100},
@@ -567,10 +579,7 @@ describe('AppManagementOperations', () => {
     await operations.getGroupMembers('Developers', pagination);
     await operations.getUserInfo('root', pagination);
 
-    expect(gateway.projectListRequests).toEqual([
-      {limit: 100, skip: undefined},
-      {limit: 100, skip: undefined},
-    ]);
+    expect(gateway.projectListRequests).toEqual([{limit: 100, skip: undefined}]);
     expect(gateway.groupListRequests).toContainEqual({query: 'Developers', pagination});
     expect(gateway.userListRequests).toContainEqual({query: 'root', pagination});
   });
@@ -678,7 +687,7 @@ function fakeGateway(overrides: {
     },
     async getProject(projectShortName: string): Promise<ProjectDetails | null> {
       gateway.projectRequests.push(projectShortName);
-      return project;
+      return findProject(overrides.projects ?? [project], projectShortName) ?? null;
     },
     async getProjectFields(projectId: string): Promise<IssueFieldsSchema> {
       gateway.projectFieldsRequests.push(projectId);
@@ -767,6 +776,11 @@ function fakeGateway(overrides: {
 
 function findApp(apps: AppDetails[], appName: string): AppDetails | undefined {
   return apps.find(candidate => candidate.id === appName || candidate.name === appName);
+}
+
+function findProject(projects: ProjectDetails[], projectShortName: string): ProjectDetails | undefined {
+  const normalizedProjectShortName = projectShortName.trim().toLowerCase();
+  return projects.find(candidate => candidate.shortName?.trim().toLowerCase() === normalizedProjectShortName);
 }
 
 function page<T>(items: T[]): PaginatedResult<T> {

@@ -35,6 +35,7 @@ import {
 import {YouTrackAppsClient, YouTrackAppsGateway} from '../youtrack/youtrack-apps-client.js';
 
 const RESOURCE_RESOLVE_LIMIT = 100;
+const PROJECT_ID_PATTERN = /^\d+-\d+$/;
 
 export class AppManagementOperations {
   constructor(private readonly client: YouTrackAppsGateway) {}
@@ -305,15 +306,22 @@ export class AppManagementOperations {
     return await this.client.listProjects(undefined, pagination);
   }
 
-  async getProjectInfo(projectKey?: string, _pagination?: PaginationOptions): Promise<ProjectDetails> {
-    const project = await this.requireProjectByKey(projectKey);
-    if (!project.shortName) {
-      throw new Error(`Project "${projectKey}" does not have a short name`);
+  async getProjectInfo(projectKeyOrID?: string, _pagination?: PaginationOptions): Promise<ProjectDetails> {
+    if (!projectKeyOrID) {
+      throw new Error('Project key or ID should be defined');
     }
 
-    const details = await this.client.getProject(project.shortName);
+    const project = PROJECT_ID_PATTERN.test(projectKeyOrID)
+      ? await this.requireProjectByKey(projectKeyOrID)
+      : undefined;
+    if (project && !project.shortName) {
+      throw new Error(`Project "${projectKeyOrID}" does not have a short name`);
+    }
+
+    const projectShortName = project?.shortName ?? projectKeyOrID;
+    const details = await this.client.getProject(projectShortName);
     if (!details) {
-      throw new Error(`Project "${projectKey}" was not found`);
+      throw new Error(`Project "${projectKeyOrID}" was not found`);
     }
 
     return details;
