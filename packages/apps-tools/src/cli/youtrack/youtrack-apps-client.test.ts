@@ -9,7 +9,11 @@ describe('YouTrackAppsClient', () => {
 
   describe.each([
     ['apps', '/api/admin/apps', (client: YouTrackAppsClient) => client.listApps(['id'], {skip: 100, limit: 25})],
-    ['projects', '/api/admin/projects', (client: YouTrackAppsClient) => client.listProjects(['id'], {skip: 100, limit: 25})],
+    [
+      'projects',
+      '/api/admin/projects',
+      (client: YouTrackAppsClient) => client.listProjects(['id'], {skip: 100, limit: 25}),
+    ],
     ['groups', '/api/groups', (client: YouTrackAppsClient) => client.listGroups('developers', {skip: 100, limit: 25})],
     ['users', '/api/users', (client: YouTrackAppsClient) => client.listUsers('root', {skip: 100, limit: 25})],
   ])('list %s', (_name, path, requestList) => {
@@ -18,7 +22,9 @@ describe('YouTrackAppsClient', () => {
 
       jest.spyOn(global, 'fetch').mockImplementation(async request => {
         requests.push(request as Request);
-        return new Response(JSON.stringify(Array.from({length: 25}, (_value, index) => ({id: `item-${index}`}))), {status: 200});
+        return new Response(JSON.stringify(Array.from({length: 25}, (_value, index) => ({id: `item-${index}`}))), {
+          status: 200,
+        });
       });
 
       const result = await requestList(new YouTrackAppsClient(config()));
@@ -96,7 +102,9 @@ describe('YouTrackAppsClient', () => {
     const requests: Request[] = [];
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
       requests.push(request as Request);
-      return new Response(JSON.stringify(Array.from({length: 50}, (_value, index) => ({id: `item-${index}`}))), {status: 200});
+      return new Response(JSON.stringify(Array.from({length: 50}, (_value, index) => ({id: `item-${index}`}))), {
+        status: 200,
+      });
     });
 
     const result = await new YouTrackAppsClient(config()).listApps(['id']);
@@ -118,7 +126,9 @@ describe('YouTrackAppsClient', () => {
     const requests: Request[] = [];
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
       requests.push(request as Request);
-      return new Response(JSON.stringify(Array.from({length: 25}, (_value, index) => ({id: `item-${index}`}))), {status: 200});
+      return new Response(JSON.stringify(Array.from({length: 25}, (_value, index) => ({id: `item-${index}`}))), {
+        status: 200,
+      });
     });
 
     const result = await new YouTrackAppsClient(config()).listApps(['id'], {
@@ -135,12 +145,12 @@ describe('YouTrackAppsClient', () => {
       hasMore: true,
     });
     expect(requests).toHaveLength(1);
-    expect(requests.map(request => {
-      const url = new URL(request.url);
-      return [url.searchParams.get('$skip'), url.searchParams.get('$top')];
-    })).toEqual([
-      ['100', '25'],
-    ]);
+    expect(
+      requests.map(request => {
+        const url = new URL(request.url);
+        return [url.searchParams.get('$skip'), url.searchParams.get('$top')];
+      }),
+    ).toEqual([['100', '25']]);
   });
 
   it('listApps sends sorting params without a title filter', async () => {
@@ -165,14 +175,17 @@ describe('YouTrackAppsClient', () => {
     const requests: Request[] = [];
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
       requests.push(request as Request);
-      return new Response(JSON.stringify([
-        {
-          id: '93-1',
-          name: 'my-app',
-          title: 'My App',
-          rules: [{id: '93-2', name: 'action', title: 'Action', type: 'action'}],
-        },
-      ]), {status: 200});
+      return new Response(
+        JSON.stringify([
+          {
+            id: '93-1',
+            name: 'my-app',
+            title: 'My App',
+            rules: [{id: '93-2', name: 'action', title: 'Action', type: 'action'}],
+          },
+        ]),
+        {status: 200},
+      );
     });
 
     const result = await new YouTrackAppsClient(config()).searchWorkflows('my-app');
@@ -196,12 +209,15 @@ describe('YouTrackAppsClient', () => {
     const requests: Request[] = [];
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
       requests.push(request as Request);
-      return new Response(JSON.stringify({
-        id: '93-1',
-        name: 'issue-email-bridge',
-        title: 'Issue Email Bridge',
-        rules: [{id: '93-2', name: 'action', title: 'Action', type: 'action'}],
-      }), {status: 200});
+      return new Response(
+        JSON.stringify({
+          id: '93-1',
+          name: 'issue-email-bridge',
+          title: 'Issue Email Bridge',
+          rules: [{id: '93-2', name: 'action', title: 'Action', type: 'action'}],
+        }),
+        {status: 200},
+      );
     });
 
     const result = await new YouTrackAppsClient(config()).getWorkflow('issue-email-bridge');
@@ -239,12 +255,15 @@ describe('YouTrackAppsClient', () => {
     const requests: Request[] = [];
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
       requests.push(request as Request);
-      return new Response(JSON.stringify({
-        id: '93-1',
-        name: 'my-app',
-        manifestFile: {content: '{}'},
-        pluggableObjects: [{id: '93-2', script: {id: '93-2', script: 'exports.httpHandler = {};'}}],
-      }), {status: 200});
+      return new Response(
+        JSON.stringify({
+          id: '93-1',
+          name: 'my-app',
+          manifestFile: {content: '{}'},
+          pluggableObjects: [{id: '93-2', script: {id: '93-2', script: 'exports.httpHandler = {};'}}],
+        }),
+        {status: 200},
+      );
     });
 
     await expect(new YouTrackAppsClient(config()).getAppPackage('my-app')).resolves.toMatchObject({
@@ -303,7 +322,32 @@ describe('YouTrackAppsClient', () => {
     const url = new URL(requests[0].url);
     expect(url.pathname).toBe('/api/admin/projects/0-1/appConfigurations');
     expect(url.searchParams.get('$top')).toBe('25');
-    expect(url.searchParams.get('fields')).toContain('app(id,name,title,globalConfig(enabled,missingRequiredSettings))');
+    expect(url.searchParams.get('fields')).toContain(
+      'app(id,name,title,globalConfig(enabled,missingRequiredSettings))',
+    );
+  });
+
+  it('creates and deletes individual project app configurations', async () => {
+    const requests: Request[] = [];
+    const bodies: unknown[] = [];
+    jest.spyOn(global, 'fetch').mockImplementation(async request => {
+      const req = request as Request;
+      requests.push(req);
+      if (req.method === 'POST') {
+        bodies.push(await req.clone().json());
+      }
+      return new Response(null, {status: 200});
+    });
+
+    const client = new YouTrackAppsClient(config());
+    await client.createProjectAppConfiguration('0-1', '93-1');
+    await client.deleteProjectAppConfiguration('0-1', '184-1');
+
+    expect(requests.map(request => `${request.method} ${new URL(request.url).pathname}`)).toEqual([
+      'POST /api/admin/projects/0-1/appConfigurations',
+      'DELETE /api/admin/projects/0-1/appConfigurations/184-1',
+    ]);
+    expect(bodies).toEqual([{app: {id: '93-1'}}]);
   });
 
   it('listProjectCustomFields requests project fields with bundle values', async () => {
@@ -360,16 +404,19 @@ describe('YouTrackAppsClient', () => {
     const requests: Request[] = [];
     jest.spyOn(global, 'fetch').mockImplementation(async request => {
       requests.push(request as Request);
-      return new Response(JSON.stringify([
-        {
-          id: 'log-1',
-          level: 'WARN',
-          timestamp: '2026-06-26T10:00:00Z',
-          username: 'admin',
-          message: 'Script warning',
-          stacktrace: 'stack',
-        },
-      ]), {status: 200});
+      return new Response(
+        JSON.stringify([
+          {
+            id: 'log-1',
+            level: 'WARN',
+            timestamp: '2026-06-26T10:00:00Z',
+            username: 'admin',
+            message: 'Script warning',
+            stacktrace: 'stack',
+          },
+        ]),
+        {status: 200},
+      );
     });
 
     const result = await new YouTrackAppsClient(config()).getRuleLogs('workflow-id', 'rule-id', {
@@ -411,9 +458,12 @@ describe('YouTrackAppsClient', () => {
       if (req.method === 'POST') {
         bodies.push(await req.clone().json());
       }
-      return new Response(JSON.stringify({id: '94-1', enabled: true, globalSettings: '{"apiUrl":"https://example.test"}'}), {
-        status: 200,
-      });
+      return new Response(
+        JSON.stringify({id: '94-1', enabled: true, globalSettings: '{"apiUrl":"https://example.test"}'}),
+        {
+          status: 200,
+        },
+      );
     });
 
     const client = new YouTrackAppsClient(config());
@@ -451,12 +501,15 @@ describe('YouTrackAppsClient', () => {
       const req = request as Request;
       requests.push(req);
       bodies.push(await req.clone().json());
-      return new Response(JSON.stringify({
-        name: 'get_issue_fields_schema',
-        content: [{text: JSON.stringify(schema), $type: 'ToolTextContent'}],
-        isError: false,
-        $type: 'AiToolCallResponse',
-      }), {status: 200});
+      return new Response(
+        JSON.stringify({
+          name: 'get_issue_fields_schema',
+          content: [{text: JSON.stringify(schema), $type: 'ToolTextContent'}],
+          isError: false,
+          $type: 'AiToolCallResponse',
+        }),
+        {status: 200},
+      );
     });
 
     await expect(new YouTrackAppsClient(config()).getProjectFields('DEMO')).resolves.toEqual(schema);

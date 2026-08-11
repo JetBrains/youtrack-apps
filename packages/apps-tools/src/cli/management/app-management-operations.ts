@@ -96,7 +96,11 @@ export class AppManagementOperations {
     return app;
   }
 
-  async setEnabled(appName: string | undefined, enabled: boolean, projectShortName?: string | null): Promise<EnabledResult> {
+  async setEnabled(
+    appName: string | undefined,
+    enabled: boolean,
+    projectShortName?: string | null,
+  ): Promise<EnabledResult> {
     const app = await this.resolveApp(appName);
 
     if (!projectShortName) {
@@ -127,15 +131,17 @@ export class AppManagementOperations {
     action: 'attach' | 'detach',
   ): Promise<ProjectScopeResult> {
     const project = await this.requireProject(projectShortName);
-    const app = await this.resolveApp(appName);
+    const app = await this.resolveApp(appName, ['id', 'name']);
 
-    const currentProjects = (app.usages ?? []).map(usage => usage.project).filter(isProject);
-    const nextProjects = action === 'attach'
-      ? addProject(currentProjects, project)
-      : currentProjects.filter(candidate => candidate.id !== project.id);
+    const configuration = await this.findProjectAppConfiguration(project.id, app.id);
+    if (action === 'attach' && !configuration) {
+      await this.client.createProjectAppConfiguration(project.id, app.id);
+    }
+    if (action === 'detach' && configuration) {
+      await this.client.deleteProjectAppConfiguration(project.id, configuration.id);
+    }
 
-    await this.client.updateAppUsages(app.id, nextProjects.map(candidate => candidate.id));
-    return {app, project, projectIds: nextProjects.map(candidate => candidate.id)};
+    return {app, project, projectIds: action === 'attach' ? [project.id] : []};
   }
 
   async getLogs(appName: string | undefined, limit: string | null): Promise<LogEntry[]> {
@@ -158,12 +164,7 @@ export class AppManagementOperations {
     }
 
     const app = await this.requireWorkflowPackage(appName);
-    const rule = requireExactMatch(
-      app.rules ?? [],
-      scriptName,
-      rule => [rule.id, rule.name, rule.title],
-      'Script',
-    );
+    const rule = requireExactMatch(app.rules ?? [], scriptName, rule => [rule.id, rule.name, rule.title], 'Script');
 
     if (!rule.id) {
       throw new Error(`Script "${scriptName}" does not have an ID`);
@@ -177,12 +178,18 @@ export class AppManagementOperations {
     return collectProblems(app);
   }
 
-  async listUsages(appName: string | undefined, pagination?: PaginationOptions): Promise<PaginatedResult<AppUsageDiagnostics>> {
+  async listUsages(
+    appName: string | undefined,
+    pagination?: PaginationOptions,
+  ): Promise<PaginatedResult<AppUsageDiagnostics>> {
     const app = await this.resolveApp(appName, APP_PROBLEM_FIELDS);
     return pageLocal(collectUsageDiagnostics(app), pagination);
   }
 
-  async listProjectApps(projectKey: string | undefined, pagination?: PaginationOptions): Promise<PaginatedResult<AppConfiguration>> {
+  async listProjectApps(
+    projectKey: string | undefined,
+    pagination?: PaginationOptions,
+  ): Promise<PaginatedResult<AppConfiguration>> {
     const project = await this.requireProjectByKey(projectKey);
     return await this.client.listProjectAppConfigurations(project.id, pagination);
   }
@@ -280,7 +287,11 @@ export class AppManagementOperations {
     payload: AppSettingsUpdate,
     projectShortName?: string | null,
   ): Promise<AppConfiguration> {
-    if (payload.enabled === undefined && payload.globalSettings === undefined && payload.projectSettings === undefined) {
+    if (
+      payload.enabled === undefined &&
+      payload.globalSettings === undefined &&
+      payload.projectSettings === undefined
+    ) {
       throw new Error('No settings update was provided');
     }
 
@@ -339,10 +350,12 @@ export class AppManagementOperations {
 
   async listGroupMembers(pagination?: PaginationOptions): Promise<PaginatedResult<GroupMembersResult>> {
     const groups = await this.client.listGroups(undefined, pagination);
-    const items = await Promise.all(groups.items.map(async group => {
-      const details = await this.client.getGroupMembers(group.id);
-      return {group, members: details?.ownUsers ?? []};
-    }));
+    const items = await Promise.all(
+      groups.items.map(async group => {
+        const details = await this.client.getGroupMembers(group.id);
+        return {group, members: details?.ownUsers ?? []};
+      }),
+    );
 
     return {...groups, items};
   }
@@ -418,7 +431,10 @@ export class AppManagementOperations {
     return project;
   }
 
-  private async requireProjectUsage(app: AppDetails, projectShortName: string): Promise<{project: ProjectDetails; usage: {id: string}}> {
+  private async requireProjectUsage(
+    app: AppDetails,
+    projectShortName: string,
+  ): Promise<{project: ProjectDetails; usage: {id: string}}> {
     const project = await this.requireProject(projectShortName);
     const usage = findUsageForProject(app, project);
 
@@ -427,6 +443,24 @@ export class AppManagementOperations {
     }
 
     return {project, usage};
+  }
+
+  private async findProjectAppConfiguration(projectId: string, appId: string): Promise<AppConfiguration | undefined> {
+    let pagination = resourceResolvePagination();
+
+    while (true) {
+      const page = await this.client.listProjectAppConfigurations(projectId, pagination);
+      const configuration = page.items.find(candidate => candidate.app?.id === appId);
+      if (configuration) {
+        return configuration;
+      }
+
+      if (!page.pagination.hasMore || page.pagination.nextSkip === null) {
+        return undefined;
+      }
+
+      pagination = {...pagination, skip: page.pagination.nextSkip};
+    }
   }
 
   private async requireProjectByKey(projectKey?: string): Promise<ProjectDetails> {
@@ -440,16 +474,13 @@ export class AppManagementOperations {
     while (true) {
       const page = await this.client.listProjects(PROJECT_RESOLVE_FIELDS, pagination);
       const matches = page.items.filter(project => {
-        return [project.id, project.shortName].some(candidate => normalizeLookupValue(candidate) === normalizedProjectKey);
+        return [project.id, project.shortName].some(
+          candidate => normalizeLookupValue(candidate) === normalizedProjectKey,
+        );
       });
 
       if (matches.length) {
-        return requireExactMatch(
-          matches,
-          projectKey,
-          project => [project.id, project.shortName],
-          'Project',
-        );
+        return requireExactMatch(matches, projectKey, project => [project.id, project.shortName], 'Project');
       }
 
       if (!page.pagination.hasMore || page.pagination.nextSkip === null) {
@@ -462,12 +493,7 @@ export class AppManagementOperations {
       };
     }
 
-    return requireExactMatch<ProjectDetails>(
-      [],
-      projectKey,
-      project => [project.id, project.shortName],
-      'Project',
-    );
+    return requireExactMatch<ProjectDetails>([], projectKey, project => [project.id, project.shortName], 'Project');
   }
 
   private async requireGroupByKey(groupKey?: string, pagination?: PaginationOptions): Promise<UserGroup> {
@@ -504,7 +530,6 @@ export class AppManagementOperations {
 
     return app;
   }
-
 }
 
 export function createAppManagementOperations(config: Config): AppManagementOperations {
@@ -647,14 +672,9 @@ function readFileContent(app: AppDetails, file: AppFileReference): string {
 
 function matchesValue(value: CustomFieldValue, query: string): boolean {
   const normalizedQuery = normalizeLookupValue(query);
-  return [
-    value.id,
-    value.name,
-    value.localizedName,
-    value.login,
-    value.fullName,
-    value.presentation,
-  ].some(candidate => normalizeLookupValue(candidate).includes(normalizedQuery));
+  return [value.id, value.name, value.localizedName, value.login, value.fullName, value.presentation].some(candidate =>
+    normalizeLookupValue(candidate).includes(normalizedQuery),
+  );
 }
 
 function pageLocal<T>(items: T[], pagination: PaginationOptions = {}): PaginatedResult<T> {
@@ -722,21 +742,11 @@ function sameProject(left: AppProject | undefined, right: AppProject | undefined
   }
 
   return Boolean(
-    left.id && right.id && left.id === right.id
-    || left.shortName && right.shortName && normalizeLookupValue(left.shortName) === normalizeLookupValue(right.shortName),
+    (left.id && right.id && left.id === right.id) ||
+      (left.shortName &&
+        right.shortName &&
+        normalizeLookupValue(left.shortName) === normalizeLookupValue(right.shortName)),
   );
-}
-
-function isProject(project: AppProject | undefined): project is AppProject & {id: string} {
-  return typeof project?.id === 'string';
-}
-
-function addProject(projects: (AppProject & {id: string})[], project: ProjectDetails): (AppProject & {id: string})[] {
-  if (projects.some(candidate => candidate.id === project.id)) {
-    return projects;
-  }
-
-  return projects.concat(project);
 }
 
 function requireExactMatch<T>(
@@ -746,7 +756,9 @@ function requireExactMatch<T>(
   label: string,
 ): T {
   const normalizedQuery = normalizeLookupValue(query);
-  const matches = values.filter(value => selectors(value).some(candidate => normalizeLookupValue(candidate) === normalizedQuery));
+  const matches = values.filter(value =>
+    selectors(value).some(candidate => normalizeLookupValue(candidate) === normalizedQuery),
+  );
 
   if (!matches.length) {
     throw new Error(`${label} "${query}" was not found`);
