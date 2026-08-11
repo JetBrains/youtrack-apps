@@ -251,16 +251,14 @@ export class AppManagementOperations {
     projectShortName?: string | null,
     pagination?: PaginationOptions,
   ): Promise<PaginatedResult<TagDetails>> {
-    if (!query) {
-      throw new Error('Tag query should be defined');
-    }
+    const searchQuery = query ?? '';
 
     if (!projectShortName) {
-      return await this.client.searchTags(query, pagination);
+      return await this.client.searchTags(searchQuery, pagination);
     }
 
     const project = await this.requireProject(projectShortName);
-    return await this.client.searchProjectTags(project.id, query, pagination);
+    return await this.client.searchProjectTags(project.id, searchQuery, pagination);
   }
 
   async getSettings(appName: string | undefined, projectShortName?: string | null): Promise<AppConfiguration> {

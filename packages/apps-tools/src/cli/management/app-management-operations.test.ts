@@ -182,6 +182,16 @@ describe('AppManagementOperations', () => {
     expect(gateway.projectTagRequests).toEqual([{projectId: '0-1', query: 'release'}]);
   });
 
+  it('searchTags supports an omitted query', async () => {
+    const gateway = fakeGateway({tags: [{id: '6-4', name: 'release'}]});
+    const operations = new AppManagementOperations(gateway);
+
+    const result = await operations.searchTags(undefined);
+
+    expect(result.items).toEqual([{id: '6-4', name: 'release'}]);
+    expect(gateway.tagRequests).toEqual(['']);
+  });
+
   it('setProjectScope creates only the requested project configuration when attaching', async () => {
     const gateway = fakeGateway({app: appDetails({usages: []})});
     const operations = new AppManagementOperations(gateway);
