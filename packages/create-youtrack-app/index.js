@@ -390,8 +390,6 @@ async function handleRuleCommand(params) {
     return;
   }
 
-  const commandArgv = publicArgv;
-
   if (publicRoute.command === 'skill:install' || publicRoute.command === 'skill:status') {
     const skillAction = publicRoute.command.split(':')[1];
 
@@ -562,8 +560,8 @@ async function handleRuleCommand(params) {
       return;
   }
 
-  const settingsIndex = commandArgv.findIndex(a => a === 'settings');
-  if (settingsIndex !== -1 && commandArgv[settingsIndex + 1] === 'init') {
+  const settingsIndex = publicArgv.findIndex(a => a === 'settings');
+  if (settingsIndex !== -1 && publicArgv[settingsIndex + 1] === 'init') {
     const title = args.title;
     const description = args.description;
 
@@ -595,7 +593,7 @@ async function handleRuleCommand(params) {
   }
 
   // Pattern 4: Settings add — always non-interactive, never falls through to Hygen
-  if (settingsIndex !== -1 && commandArgv[settingsIndex + 1] === 'add') {
+  if (settingsIndex !== -1 && publicArgv[settingsIndex + 1] === 'add') {
     const VALID_TYPES    = ['string', 'integer', 'number', 'boolean', 'object', 'array'];
     const VALID_SCOPES   = ['global', 'project', 'none'];
     const VALID_ENTITIES = ['Issue', 'User', 'Project', 'UserGroup', 'Article'];
@@ -718,7 +716,7 @@ async function handleRuleCommand(params) {
     return;
   }
 
-  const widgetIndex = commandArgv.findIndex(a => a === 'widget');
+  const widgetIndex = publicArgv.findIndex(a => a === 'widget');
   if (widgetIndex !== -1 && args.key !== undefined) {
     const key = String(args.key);
 
@@ -795,11 +793,11 @@ async function handleRuleCommand(params) {
   }
 
   const hasHygenParams = publicRoute.command !== 'app:init' && ["init", "enhanced-dx", "extension-property", "widget", "settings", "http-handler", "endpoint"].some(
-    (key) => new Set(commandArgv).has(key)
+    (key) => new Set(publicArgv).has(key)
   );
 
   if (hasHygenParams) {
-    const isEndpointCmd = new Set(commandArgv).has('endpoint');
+    const isEndpointCmd = new Set(publicArgv).has('endpoint');
     if (isEndpointCmd) {
       const pkgPath = path.join(cwd, 'package.json');
       const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
@@ -822,7 +820,7 @@ async function handleRuleCommand(params) {
     }
 
     // Intercept Enhanced DX http-handler flow for richer experience
-    const isHttpHandlerCmd = new Set(commandArgv).has('http-handler') && (new Set(commandArgv).has('add') || !commandArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
+    const isHttpHandlerCmd = new Set(publicArgv).has('http-handler') && (new Set(publicArgv).has('add') || !publicArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
     if (isHttpHandlerCmd) {
       try {
         const pkgPath = path.join(cwd, 'package.json');

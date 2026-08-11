@@ -319,11 +319,11 @@ describe('Widget Generator', () => {
   // ── Regression guards ──────────────────────────────────────────────────────
 
   describe('Regression Guards', () => {
-    test('widget interception should use normalizedArgv', () => {
+    test('widget interception should use publicArgv', () => {
       const indexContent = fs.readFileSync(path.join(PKG_DIR, 'index.js'), 'utf8');
       assert.ok(
-        indexContent.includes("normalizedArgv.findIndex(a => a === 'widget')"),
-        'Widget interception should search normalizedArgv'
+        indexContent.includes("publicArgv.findIndex(a => a === 'widget')"),
+        'Widget interception should search publicArgv'
       );
     });
   });
