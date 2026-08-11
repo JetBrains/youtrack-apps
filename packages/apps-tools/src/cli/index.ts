@@ -10,20 +10,17 @@ import {info, list} from './commands/discovery.js';
 import {deleteApp, disable, enable} from './commands/lifecycle.js';
 import {attach, detach} from './commands/project-scope.js';
 import {logs, requirementErrors} from './commands/diagnostics.js';
-import type {LogsArgs} from './commands/diagnostics.js';
 import {projectFields, projectInfo, projectList} from './commands/projects.js';
 import {projectApps} from './commands/project-apps.js';
 import {groupList, groupMembers} from './commands/groups.js';
 import {userInfo, userList} from './commands/users.js';
 import {scripts} from './commands/scripts.js';
-import type {ScriptsArgs} from './commands/scripts.js';
 import {settings, settingsSet} from './commands/settings.js';
 import {tagSearch} from './commands/tags.js';
 import {usages} from './commands/usages.js';
 import {fieldValues} from './commands/field-values.js';
 import {visibility} from './commands/visibility.js';
 import {restRequest} from './commands/rest.js';
-import type {RawRestRequestArgs} from './commands/rest.js';
 
 type Command<TArgument = unknown> = {
   execute: (config: Config, argument?: TArgument) => Promise<unknown>;
@@ -75,7 +72,7 @@ const commands = {
   'app:list': command(list, {flags: ['skip', 'limit']}),
   'app:info': command(info, {argument: stringArg('app'), flags: ['app'], required: ['app']}),
   'app:scripts': command(
-    (config, argument) => scripts(config, argument as ScriptsArgs),
+    (config, argument) => scripts(config, argument as Parameters<typeof scripts>[1]),
     {argument: args => ({app: optionalArgString(args.app) ?? undefined, fileKey: optionalArgString(args['file-key']) ?? undefined}), flags: ['app', 'file-key'], required: ['app', 'file-key'], supportsStructuredOutput: false}
   ),
   'app:usages': command(usages, {argument: stringArg('app'), flags: ['app', 'skip', 'limit'], required: ['app']}),
@@ -87,7 +84,7 @@ const commands = {
   'app:attach': command(attach, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app', 'project'], supportsStructuredOutput: false}),
   'app:detach': command(detach, {argument: stringArg('app'), flags: ['app', 'project'], required: ['app', 'project'], supportsStructuredOutput: false}),
   'app:logs': command(
-    (config, argument) => logs(config, argument as LogsArgs),
+    (config, argument) => logs(config, argument as Parameters<typeof logs>[1]),
     {argument: args => ({app: optionalArgString(args.app) ?? undefined, script: optionalArgString(args.script) ?? undefined}), flags: ['app', 'script', 'skip', 'limit'], required: ['app']}
   ),
   'app:requirement-errors': command(requirementErrors, {argument: stringArg('app'), flags: ['app'], required: ['app']}),
@@ -103,7 +100,7 @@ const commands = {
   'user:list': command(userList, {argument: stringArg('query'), flags: ['query', 'skip', 'limit']}),
   'user:info': command(userInfo, {argument: stringArg('user'), flags: ['user'], required: ['user']}),
   'rest:request': command(
-    (config, argument) => restRequest(config, argument as RawRestRequestArgs),
+    (config, argument) => restRequest(config, argument as Parameters<typeof restRequest>[1]),
     {argument: args => ({path: optionalArgString(args.path) ?? undefined, method: optionalArgString(args.method) ?? undefined, body: optionalArgString(args.body) ?? undefined, header: args.header as string | string[] | undefined}), flags: ['path', 'method', 'body', 'header', 'yes'], required: ['path']},
   ),
 } satisfies Record<string, Command>;
@@ -154,7 +151,7 @@ export async function run(argv = process.argv) {
   }
 
   const selectedCommand = commands[commandKey];
-  const validationError = validateCommandArgs(commandKey, selectedCommand, args, getShortFlags(argv));
+  const validationError = validateCommandOptions(commandKey, selectedCommand, args, getShortFlags(argv));
   if (validationError) {
     exit(new Error(validationError), ExitCode.Usage);
     return;
@@ -195,29 +192,29 @@ export async function run(argv = process.argv) {
     br();
     console.log('youtrack-app <entity> <action> [options]');
     br();
-    console.log('Manage, configure, and debug YouTrack apps/workflows from an external development environment.');
-    console.log('Configure YOUTRACK_HOST and YOUTRACK_API_TOKEN, or pass --host and --token to each command.');
+    console.log('Manage, configure, and debug YouTrack apps and workflows from an external development environment.');
+    console.log('Set YOUTRACK_HOST and YOUTRACK_API_TOKEN, or provide --host and --token with each command.');
     br();
 
     printSection('Common options');
-    printLine('--host <url>', 'YouTrack instance URL. Overrides YOUTRACK_HOST.');
+    printLine('--host <url>', 'YouTrack URL. Overrides YOUTRACK_HOST.');
     printLine('--token <token>', 'Permanent token. Overrides YOUTRACK_API_TOKEN.');
-    printLine('--json', 'Print machine-readable JSON for supported commands.');
-    printLine('--yaml, --yml', 'Print machine-readable YAML for supported commands.');
-    printLine('--help, -h', 'Show help.');
-    printLine('--version', 'Print the CLI version.');
+    printLine('--json', 'Output results as machine-readable JSON, when supported.');
+    printLine('--yaml, --yml', 'Output results as machine-readable YAML, when supported.');
+    printLine('--help, -h', 'Show help information.');
+    printLine('--version', 'Show the CLI version.');
     br();
 
     printSection('App lifecycle');
     printCommand('app upload [--directory DIR] [--open]', {
-      does: 'Uploads a local app package to the YouTrack instance.',
+      description: 'Uploads an app package from the local filesystem to YouTrack.',
       args: [
         '--directory DIR is a local app directory or built package directory. Defaults to dist.',
         '--open opens app settings after upload.',
       ],
     });
     printCommand('app download --app <app> [--output DIR] [--overwrite]', {
-      does: 'Downloads an app package from the YouTrack instance and extracts it locally.',
+      description: 'Downloads an app package from YouTrack and extracts it locally.',
       args: [
         '<app> is an app ID or package name.',
         '--output DIR selects the local destination. Defaults to the current working directory.',
@@ -225,171 +222,171 @@ export async function run(argv = process.argv) {
       ],
     });
     printCommand('app validate [--directory DIR] [--manifest FILE] [--schema FILE]', {
-      does: 'Validates local app manifest files against the YouTrack app JSON schema without connecting to YouTrack.',
+      description: 'Validates local app manifest files against the YouTrack app JSON schema without connecting to YouTrack.',
       args: [
         '--directory DIR is a local app directory. Defaults to dist.',
         '--manifest FILE validates a manifest file directly or overrides the default manifest file.',
         '--schema FILE overrides the default schema file.',
       ],
     });
-    printCommand('app enable --app <app> [--project <short-name>]', {
-      does: 'Enables an installed app globally in the YouTrack instance, or enables its usage for one project.',
+    printCommand('app enable --app <app> [--project <key>]', {
+      description: 'Enables an installed app globally or for a specific project.',
       args: [
         '<app> is an app ID or package name.',
-        '--project <short-name> is a project short name such as DEMO or JT.',
+        '--project <key> is a project short name such as DEMO or JT.',
       ],
     });
-    printCommand('app disable --app <app> [--project <short-name>]', {
-      does: 'Disables an installed app globally in the YouTrack instance, or disables its usage for one project.',
+    printCommand('app disable --app <app> [--project <key>]', {
+      description: 'Disables an installed app globally in YouTrack, or disables its usage for one project.',
       args: [
         '<app> is an app ID or package name.',
-        '--project <short-name> is a project short name such as DEMO or JT.',
+        '--project <key> is a project short name such as DEMO or JT.',
       ],
     });
-    printCommand('app attach --app <app> --project <short-name>', {
-      does: 'Attaches an installed app to a project in the YouTrack instance.',
+    printCommand('app attach --app <app> --project <key>', {
+      description: 'Attaches an installed app to a project in YouTrack.',
       args: [
         '<app> is an app ID or package name.',
-        '--project <short-name> is the project key, for example DEMO or JT.',
+        '--project <key> is the project key, for example DEMO or JT.',
       ],
     });
-    printCommand('app detach --app <app> --project <short-name>', {
-      does: 'Detaches an installed app from a project in the YouTrack instance.',
+    printCommand('app detach --app <app> --project <key>', {
+      description: 'Detaches an installed app from a project in YouTrack.',
       args: [
         '<app> is an app ID or package name.',
-        '--project <short-name> is the project key to remove from app usages.',
+        '--project <key> is the project key to remove from app usages.',
       ],
     });
     br();
 
     printSection('App details and configuration');
     printCommand('app list [--skip N] [--limit N]', {
-      does: 'Lists installed apps visible to the token.',
+      description: 'Lists installed apps visible to the token.',
     });
     printCommand('app info --app <app>', {
-      does: 'Shows bounded app metadata and file keys for one installed app in the YouTrack instance.',
+      description: 'Shows app metadata and file keys for an installed app.',
       args: [
         '<app> is an app ID or package name.',
       ],
     });
     printCommand('app scripts --app <app> --file-key <file-key>', {
-      does: 'Shows one manifest, settings, entity extension, or script file from an installed app in the YouTrack instance.',
+      description: 'Shows one manifest, settings, entity extension, or script file from an installed app in YouTrack.',
       args: [
         '<app> is an app ID or package name.',
         '<file-key> is listed by info. Use manifest, settings, entityExtensions, or a script ID.',
       ],
     });
     printCommand('app usages --app <app> [--skip N] [--limit N]', {
-      does: 'Lists project usage records for one installed app, including nested requirement problems.',
+      description: 'Lists the projects that use the app and shows any requirement problems nested under each project.',
       args: [
         '<app> is an app ID or package name.',
       ],
     });
-    printCommand('app settings --app <app> [--project <short-name>]', {
-      does: 'Reads global app settings or project-scoped settings from the YouTrack instance.',
+    printCommand('app settings --app <app> [--project <key>]', {
+      description: 'Reads global app settings or project-scoped settings from YouTrack.',
       args: [
         '<app> is an app ID or package name.',
-        '--project <short-name> is a project short name.',
+        '--project <key> is a project short name.',
       ],
     });
-    printCommand('app settings-set --app <app> [--project <short-name>] [--settings JSON] [--enabled true|false]', {
-      does: 'Updates app settings and/or enabled state in the YouTrack instance.',
+    printCommand('app settings-set --app <app> [--project <key>] [--settings JSON] [--enabled true|false]', {
+      description: 'Updates app settings, changes whether the app is enabled, or both.',
       args: [
         '<app> is an app ID or package name.',
-        '--project <short-name> writes project settings instead of global settings.',
+        '--project <key> writes project settings instead of global settings.',
         '--settings JSON is a JSON object string.',
         '--enabled true|false updates the enabled state.',
       ],
     });
     printCommand('app logs --app <app> [--limit N]', {
-      does: 'Shows recent app-level log entries.',
+      description: 'Shows recent app-level log entries.',
       args: [
         '<app> is an app ID or package name.',
         '--limit N limits app log entries.',
       ],
     });
     printCommand('app logs --app <app> --script <script> [--skip N] [--limit N]', {
-      does: 'Shows paged log entries for one script, module, or workflow rule.',
+      description: 'Shows paged log entries for one script, module, or workflow rule.',
       args: [
         '<app> is an app ID or package name.',
         '--script <script> is a script, module, rule ID, rule name, or rule title.',
-        '--skip N chooses the starting log entry.',
+        '--skip N specifies the number of entries to skip.',
         '--limit N chooses the page size.',
       ],
     });
     printCommand('app requirement-errors --app <app>', {
-      does: 'Shows broken requirement problems reported by app usages in the YouTrack instance.',
+      description: 'Shows requirement errors reported by app usages in YouTrack.',
       args: [
         '<app> is an app ID or package name.',
       ],
     });
-    printCommand('app visibility --app <app> [--project <short-name>]', {
-      does: 'Shows read-only global or project visibility settings for one app.',
+    printCommand('app visibility --app <app> [--project <key>]', {
+      description: 'Shows global or project visibility settings for an app.',
       args: [
         '<app> is an app ID or package name.',
-        '--project <short-name> reads project-scoped app visibility.',
+        '--project <key> reads project-scoped app visibility.',
       ],
     });
     br();
 
-    printSection('Instance exploration');
+    printSection('YouTrack Exploration');
     printCommand('project list [--skip N] [--limit N]', {
-      does: 'Lists projects in the YouTrack instance with short names and IDs for later project-scoped commands.',
+      description: 'Lists projects in YouTrack with short names and IDs for later project-scoped commands.',
     });
     printCommand('project info --project <project>', {
-      does: 'Shows identifying details for one project in the YouTrack instance.',
+      description: 'Shows details for one project in YouTrack.',
       args: [
         '<project> is an exact project ID or short name/key.',
       ],
     });
     printCommand('project fields --project <project>', {
-      does: 'Returns the issue-fields JSON schema for a project, including field definitions and required fields. Allowed-value lists may be capped; use "field values" to find actual custom-field values.',
+      description: 'Returns the issue-fields JSON schema for a project, including field definitions and required fields. Allowed-value lists may be capped; use "field values" to find actual custom-field values.',
       args: [
         '<project> is an exact project ID or short name/key.',
       ],
     });
     printCommand('project apps --project <project> [--skip N] [--limit N]', {
-      does: 'Lists apps attached to one project in the YouTrack instance.',
+      description: 'Lists apps attached to one project in YouTrack.',
       args: [
         '<project> is an exact project ID or short name/key.',
       ],
     });
-    printCommand('tag search [--query <query>] [--project <short-name>] [--skip N] [--limit N]', {
-      does: 'Searches visible usable tags in the YouTrack instance, optionally narrowed to tags relevant for one project.',
+    printCommand('tag search [--query <query>] [--project <key>] [--skip N] [--limit N]', {
+      description: 'Searches available tags in YouTrack, optionally narrowed to tags relevant for one project.',
       args: [
         '--query <query> is optional tag name text.',
-        '--project <short-name> narrows tags to one project.',
+        '--project <key> narrows tags to one project.',
       ],
     });
-    printCommand('field values --project <short-name> --field <field> [--query <query>] [--skip N] [--limit N]', {
-      does: 'Searches and paginates actual custom-field values for a project. Use it instead of "project fields" when a field has more values than the schema lists.',
+    printCommand('field values --project <key> --field <field> [--query <query>] [--skip N] [--limit N]', {
+      description: 'Searches and paginates actual custom-field values for a project. Use it instead of "project fields" when a field has more values than the schema lists.',
       args: [
         '--query <query> is optional value text.',
-        '--project <short-name> selects the project.',
+        '--project <key> selects the project.',
         '--field <field> is a field ID or name.',
       ],
     });
     printCommand('group list [--query <query>] [--skip N] [--limit N]', {
-      does: 'Searches user groups and project teams in the YouTrack instance with IDs.',
+      description: 'Searches user groups and project teams in YouTrack with IDs.',
       args: [
         '--query <query> is an optional group search filter. When omitted, all visible groups are listed.',
       ],
     });
     printCommand('group members [--group <group>] [--skip N] [--limit N]', {
-      does: 'Shows direct members of one user group or project team, or direct members for all paged groups when omitted.',
+      description: 'Lists the direct members of a user group or project team. If you omit --group, the command lists members for all groups in the requested page.',
       args: [
         '--group <group> is an optional exact group ID or name.',
         '--skip N and --limit N apply when --group is omitted.',
       ],
     });
     printCommand('user list [--query <query>] [--skip N] [--limit N]', {
-      does: 'Searches users in the YouTrack instance with login, ID, and display name.',
+      description: 'Searches users in YouTrack with login, ID, and display name.',
       args: [
         '--query <query> is an optional user search filter. When omitted, all visible users are listed.',
       ],
     });
     printCommand('user info --user <user>', {
-      does: 'Shows profile details for one user in the YouTrack instance, including email, guest state, and user type when visible.',
+      description: 'Shows profile details for one user in YouTrack, including email, guest status, and user type when visible.',
       args: [
         '<user> is an exact user ID, login, username, or full name.',
       ],
@@ -398,7 +395,7 @@ export async function run(argv = process.argv) {
 
     printSection('Raw REST API');
     printCommand('rest request --path <path> [--method METHOD] [--body JSON] [--header name:value] [--yes]', {
-      does: 'Makes an authenticated request to a relative path on the configured YouTrack host.',
+      description: 'Makes an authenticated request to a relative path on the configured YouTrack host.',
       args: [
         '--path <path> is a relative REST path, including any query string.',
         '--method defaults to GET. Supported methods are GET, POST, PUT, PATCH, DELETE, HEAD, and OPTIONS.',
@@ -412,7 +409,7 @@ export async function run(argv = process.argv) {
 
     printSection('Dangerous commands');
     printCommand('app delete --app <app> [--yes]', {
-      does: 'Danger: permanently deletes the installed app and everything app-related from the YouTrack instance.',
+      description: 'Danger: Permanently deletes the installed app and all associated data from YouTrack.',
       args: [
         '<app> is an app ID or package name. Titles are not accepted.',
         '--yes skips the confirmation prompt.',
@@ -427,11 +424,11 @@ export async function run(argv = process.argv) {
       console.log(title + ':');
     }
 
-    function printCommand(command: string, details: {does: string; args?: string[]}) {
+    function printCommand(command: string, details: {description: string; args?: string[]}) {
       console.log('  ' + command);
-      printDetail('Does', details.does);
+      console.log('    ' + details.description);
       if (details.args?.length) {
-        printDetailLines('Args', details.args);
+        printDetailLines('Options', details.args);
       }
     }
 
@@ -487,7 +484,7 @@ function getShortFlags(argv: string[]): Set<string> {
   return new Set(argv.slice(2).filter(argument => /^-[^-]/.test(argument)).flatMap(argument => argument.slice(1).split('')));
 }
 
-function validateCommandArgs(commandKey: string, selectedCommand: Command, args: Record<string, unknown>, shortFlags: Set<string> = new Set()): string | null {
+function validateCommandOptions(commandKey: string, selectedCommand: Command, args: Record<string, unknown>, shortFlags: Set<string> = new Set()): string | null {
   const commonFlags = ['host', 'token', 'json', 'yaml', 'yml', 'help', 'h', 'version'];
   const booleanFlags = new Set(['json', 'yaml', 'yml', 'help', 'h', 'version', 'open', 'overwrite', 'yes']);
   const allowedFlags = new Set([...commonFlags, ...(selectedCommand.flags ?? [])]);
