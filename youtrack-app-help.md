@@ -110,7 +110,7 @@ YouTrack Exploration:
     Options:
       <project> is an exact project ID or short name/key.
   project fields --project <project>
-    Returns the issue-fields JSON schema for a project, including field definitions and required fields. Allowed-value lists may be capped; use "field values" to find actual custom-field values.
+    Returns the full issue fields JSON schema for one project in YouTrack, including required fields and allowed values when available.
     Options:
       <project> is an exact project ID or short name/key.
   project apps --project <project> [--skip N] [--limit N]
