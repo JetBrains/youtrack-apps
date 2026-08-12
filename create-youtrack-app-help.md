@@ -25,8 +25,8 @@ App Initialization
     --type <type>         js | ts. Default: ts.
                           js = basic JavaScript app.
                           ts = TypeScript app with Enhanced DX.
-    --title <text>        Default: --name in title case.
-    --description <text>  Default: derived from --type.
+    --title <text>        Manifest title. Default: --name in title case.
+    --description <text>  Manifest description. Default: derived from --type.
     --vendor <text>       Manifest vendor name. Default: VendorName.
     --vendor-url <url>    Manifest vendor URL. Default: https://vendor.com.
     --backend-only        For --type ts, omit the sample widget.
@@ -146,7 +146,7 @@ Enhanced DX
 
   Adds a typed endpoint to a TypeScript app that uses Enhanced DX. Run without options to configure the endpoint interactively, or provide options for non-interactive generation.
 
-  Values:
+  Options:
     --scope <scope>          global | issue | project | custom.
     --path <path>           Path below the selected scope.
     --method <method>       GET | POST | PUT | DELETE.
