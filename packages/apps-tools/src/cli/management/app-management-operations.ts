@@ -315,7 +315,8 @@ export class AppManagementOperations {
     return await this.client.listProjects(undefined, pagination);
   }
 
-  async getProjectInfo(projectKeyOrID?: string, _pagination?: PaginationOptions): Promise<ProjectDetails> {
+  async getProjectInfo(projectKeyOrID?: string, pagination?: PaginationOptions): Promise<ProjectDetails> {
+    void pagination;
     if (!projectKeyOrID) {
       throw new Error('Project key or ID should be defined');
     }
@@ -336,7 +337,8 @@ export class AppManagementOperations {
     return details;
   }
 
-  async getProjectFields(projectKey?: string, _pagination?: PaginationOptions): Promise<ProjectFieldsResult> {
+  async getProjectFields(projectKey?: string, pagination?: PaginationOptions): Promise<ProjectFieldsResult> {
+    void pagination;
     const project = await this.requireProjectByKey(projectKey);
     const schema = await this.client.getProjectFields(project.shortName ?? project.id);
     return {project, schema};

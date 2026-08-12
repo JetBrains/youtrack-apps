@@ -432,10 +432,6 @@ export async function run(argv = process.argv) {
       }
     }
 
-    function printDetail(label: string, value: string) {
-      console.log('    ' + label + ': ' + value);
-    }
-
     function printDetailLines(label: string, values: string[]) {
       console.log('    ' + label + ':');
       values.forEach(value => console.log('      ' + value));
