@@ -6,27 +6,28 @@ import * as zl from 'zip-lib';
 import {Config} from '../../@types/types.js';
 import {exit} from '../../lib/cli/exit.js';
 import {tmpDir} from '../../lib/fs/tmpdir.js';
-import {i18n} from '../../lib/i18n/i18n.js';
 import {generateRequestParams, prepareErrorMessage} from '../../lib/net/request.js';
 import {resolve} from '../../lib/net/resolve.js';
+import {createAppManagementOperations} from './management/app-management-operations.js';
+import {printStructured} from './commands/output.js';
 
 export async function download(config: Config, appName?: string) {
   if (!appName) {
-    exit(new Error(i18n('App name should be defined')));
+    exit(new Error('App name should be defined'));
     return;
   }
   appName = appName.toString();
 
-  const url = resolve(config.host, `/api/admin/apps/${appName.replace(/^@/, '')}`);
-  const options = {
-    headers: {
-      Accept: 'application/zip',
-      'Content-Type': 'application/json',
-    },
-  };
-  const requestParams = generateRequestParams(config, url.href, options);
-
   try {
+    const app = await createAppManagementOperations(config).resolveApp(appName, ['id']);
+    const url = resolve(config.host, `/api/admin/apps/${app.id}`);
+    const options = {
+      headers: {
+        Accept: 'application/zip',
+        'Content-Type': 'application/json',
+      },
+    };
+    const requestParams = generateRequestParams(config, url.href, options);
     const res = await fetch(requestParams);
     if (!res.ok || !res.body) {
       const errorMessage = await prepareErrorMessage(res);
@@ -54,10 +55,18 @@ export async function download(config: Config, appName?: string) {
     }
 
     await zl.extract(tempZipPath, path.resolve(output, appName));
-    if (!shouldOverwrite) {
-      console.log(i18n(`File extracted into '${output}'`));
-    } else {
-      console.log(i18n(`File extracted into '${output}' and existing files are overwritten`));
+    const result = {
+      action: 'downloaded',
+      app: appName,
+      output: path.resolve(output, appName),
+      overwritten: shouldOverwrite,
+    };
+    if (printStructured(config, result)) {
+      return;
     }
+
+    console.log(shouldOverwrite
+      ? `File extracted into '${output}' and existing files are overwritten`
+      : `File extracted into '${output}'`);
   }
 }

@@ -4,9 +4,9 @@ import {Config} from '../../@types/types.js';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import {existsSync} from 'node:fs';
-import {exit} from '../../lib/cli/exit.js';
-import {i18n} from '../../lib/i18n/i18n.js';
+import {exit, ExitCode} from '../../lib/cli/exit.js';
 import {tmpDir} from '../../lib/fs/tmpdir.js';
+import {printStructured} from './commands/output.js';
 
 export const DEFAULT_SCHEMA_URL = 'https://json.schemastore.org/youtrack-app.json';
 const tmpSchemaPath = tmpDir('schema.json');
@@ -14,15 +14,15 @@ const tmpSchemaPath = tmpDir('schema.json');
 export async function validate(config: Config, appDir?: string) {
   try {
     if (!appDir && !config.manifest) {
-      return exit(new Error(i18n('Provide an app directory or a manifest file')));
+      return exit(new Error('Provide an app directory or a manifest file'), ExitCode.Usage);
     }
 
     if (config.manifest && !config.manifest.endsWith('.json')) {
-      return exit(new Error(i18n('The manifest file must use the .json extension')));
+      return exit(new Error('The manifest file must use the .json extension'), ExitCode.Usage);
     }
 
     if (config.schema && !config.schema.endsWith('.json')) {
-      return exit(new Error(i18n('The schema file must use the .json extension')));
+      return exit(new Error('The schema file must use the .json extension'), ExitCode.Usage);
     }
 
     const ajv = new Ajv({strict: false});
@@ -34,12 +34,12 @@ export async function validate(config: Config, appDir?: string) {
 
     if (config.schema) {
       schema = isValidUrl(config.schema)
-        ? await fetchSchema(config.schema)
+        ? await fetchSchema(config.schema, !config.json && !config.yaml)
         : await parseFile<AnySchemaObject>(config.schema);
     } else {
       schema = existsSync(tmpSchemaPath)
         ? JSON.parse(await readSchemaFromTmp())
-        : await fetchSchemaAndWriteToTmp(DEFAULT_SCHEMA_URL);
+        : await fetchSchemaAndWriteToTmp(DEFAULT_SCHEMA_URL, !config.json && !config.yaml);
     }
 
     warnIfStaleDefaults(manifest as Record<string, unknown>);
@@ -48,10 +48,14 @@ export async function validate(config: Config, appDir?: string) {
     const valid = validateFn(manifest);
 
     if (!valid) {
-      exit(new Error(validateFn.errors?.map(prepareError).join('\n')));
+      const errors = validateFn.errors?.map(prepareError) ?? ['Manifest is invalid'];
+      printStructured(config, {valid: false, errors});
+      exit(new Error(errors.join('\n')), ExitCode.Usage);
       return;
     }
-    console.log(i18n('Manifest validation passed'));
+    if (!printStructured(config, {valid: true})) {
+      console.log('Manifest validation passed');
+    }
   } catch (error) {
     exit(error);
   }
@@ -69,12 +73,14 @@ function warnIfStaleDefaults(manifest: Record<string, unknown>): void {
   }
 
   for (const msg of stale) {
-    console.warn(i18n(`Warning: ${msg}. Update manifest.json before publishing.`));
+    console.warn(`Warning: ${msg}. Update manifest.json before publishing.`);
   }
 }
 
-async function fetchSchema(url: string): Promise<AnySchemaObject> {
-  console.log(i18n('Fetching the schema...'));
+async function fetchSchema(url: string, showProgress: boolean): Promise<AnySchemaObject> {
+  if (showProgress) {
+    console.log('Fetching the schema...');
+  }
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Could not fetch the schema: ${res.statusText}`);
   return (await res.json()) as AnySchemaObject;
@@ -113,9 +119,11 @@ async function readSchemaFromTmp(): Promise<string> {
   return await fs.readFile(tmpSchemaPath, {encoding: 'utf8'});
 }
 
-async function fetchSchemaAndWriteToTmp(url: string): Promise<AnySchemaObject> {
-  const schema = await fetchSchema(url);
-  console.log(i18n('Caching the schema in the tmp directory...'));
+async function fetchSchemaAndWriteToTmp(url: string, showProgress: boolean): Promise<AnySchemaObject> {
+  const schema = await fetchSchema(url, showProgress);
+  if (showProgress) {
+    console.log('Caching the schema in the tmp directory...');
+  }
   await writeSchemaToTmp(schema);
   return schema;
 }

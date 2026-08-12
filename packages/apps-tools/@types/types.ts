@@ -8,6 +8,15 @@ export interface Config {
   manifest: string | null;
   schema: string | null;
   open: string | null;
+  json: boolean;
+  yaml: boolean;
+  confirmDestructiveAction: boolean;
+  project: string | null;
+  skip: string | null;
+  limit: string | null;
+  settings: string | null;
+  enabled: string | null;
+  field: string | null;
   cwd: string;
 }
 

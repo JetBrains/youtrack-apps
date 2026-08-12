@@ -4,7 +4,7 @@ import {Config} from '../../@types/types.js';
 export function generateRequestParams(
   config: Config,
   url: string,
-  options?: {method?: string; headers?: Record<string, string>; body?: FormData},
+  options?: {method?: string; headers?: Record<string, string>; body?: FormData | string},
 ): Request {
   return new Request(url, {
     method: options?.method ?? 'GET',
@@ -21,10 +21,17 @@ export function generateRequestParams(
 }
 
 export async function prepareErrorMessage(res: Response) {
-  const data = (await res.json()) as Record<string, string>;
   let errorDescription = res.statusText;
-  if ('error_description' in data) {
-    errorDescription = data.error_description;
+  const text = await res.text();
+
+  if (text) {
+    try {
+      const data = JSON.parse(text) as Record<string, string>;
+      errorDescription = data.error_description ?? data.message ?? data.error ?? errorDescription;
+    } catch {
+      errorDescription = text;
+    }
   }
+
   return `[${res.status}] ${errorDescription}`;
 }

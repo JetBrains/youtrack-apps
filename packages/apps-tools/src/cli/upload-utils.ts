@@ -1,18 +1,17 @@
 import fs from 'fs';
 import path from 'path';
-import {i18n} from '../../lib/i18n/i18n.js';
-import {exit} from '../../lib/cli/exit.js';
+import {exit, ExitCode} from '../../lib/cli/exit.js';
 
 export function resolveAppName(appDir?: string): undefined | string {
   if (!appDir) {
-    exit(new Error(i18n('App directory should be defined')));
+    exit(new Error('App directory should be defined'), ExitCode.Usage);
     return;
   }
 
   const appPath = path.resolve(appDir);
 
   if (!fs.existsSync(appPath)) {
-    exit(new Error(i18n("App directory doesn't exist")));
+    exit(new Error("App directory doesn't exist"), ExitCode.Usage);
     return;
   }
 
@@ -29,7 +28,7 @@ export function resolveAppName(appDir?: string): undefined | string {
   }
 
   if (!appName) {
-    exit(new Error(i18n("App doesn't contain manifest.json file")));
+    exit(new Error("App doesn't contain manifest.json file"), ExitCode.Usage);
   }
 
   return appName;

@@ -4,6 +4,7 @@ module.exports = {
   verbose: true,
   testMatch: ['**/?(*.)+(spec|test).ts'],
   testPathIgnorePatterns: ['/node_modules/', '/src/dx/', '/dist/'],
+  modulePathIgnorePatterns: ['<rootDir>/dist/'],
   transform: {
     '^.+\\.ts$': [
       'ts-jest',
