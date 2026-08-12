@@ -61,7 +61,7 @@ to: package.json
   },
   "dependencies": {
     "@jetbrains/ring-ui-built": "^7.0.8",
-    "@jetbrains/youtrack-apps-tools": "^0.1.0",
+    "@jetbrains/youtrack-apps-tools": "^1.0.0",
     "@jetbrains/youtrack-workflow-types": "~2026.1.0",
     "core-js": "3.38.0",
     "loglevel": "^1.9.2",
