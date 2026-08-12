@@ -48,8 +48,8 @@ ${heading('App Initialization')}
     ${command('--type <type>')}         js | ts. Default: ts.
                           js = basic JavaScript app.
                           ts = TypeScript app with Enhanced DX.
-    ${command('--title <text>')}        Default: --name in title case.
-    ${command('--description <text>')}  Default: derived from --type.
+    ${command('--title <text>')}        Manifest title. Default: --name in title case.
+    ${command('--description <text>')}  Manifest description. Default: derived from --type.
     ${command('--vendor <text>')}       Manifest vendor name. Default: VendorName.
     ${command('--vendor-url <url>')}    Manifest vendor URL. Default: https://vendor.com.
     ${command('--backend-only')}        For --type ts, omit the sample widget.
@@ -169,7 +169,7 @@ ${heading('Enhanced DX')}
 
   Adds a typed endpoint to a TypeScript app that uses Enhanced DX. Run without options to configure the endpoint interactively, or provide options for non-interactive generation.
 
-  Values:
+  Options:
     ${command('--scope <scope>')}          global | issue | project | custom.
     ${command('--path <path>')}           Path below the selected scope.
     ${command('--method <method>')}       GET | POST | PUT | DELETE.
