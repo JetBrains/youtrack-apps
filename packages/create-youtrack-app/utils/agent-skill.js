@@ -178,8 +178,8 @@ function getSkillCacheDir(version, options = {}) {
   return path.join(getHomeDir(options), '.youtrack', 'skills', SKILL_NAME, version);
 }
 
-function getZipExtractionCommand(archivePath, destinationDir) {
-  if (process.platform === 'win32') {
+function getZipExtractionCommand(archivePath, destinationDir, platform = process.platform) {
+  if (platform === 'win32') {
     return {
       command: 'powershell.exe',
       args: [
@@ -194,7 +194,7 @@ function getZipExtractionCommand(archivePath, destinationDir) {
     };
   }
 
-  if (['aix', 'darwin', 'freebsd', 'linux', 'openbsd', 'sunos'].includes(process.platform)) {
+  if (['aix', 'darwin', 'freebsd', 'linux', 'openbsd', 'sunos'].includes(platform)) {
     return {
       command: 'unzip',
       args: ['-q', archivePath, '-d', destinationDir],
@@ -202,12 +202,13 @@ function getZipExtractionCommand(archivePath, destinationDir) {
     };
   }
 
-  throw new Error(`Unsupported platform for YouTrack Apps skill extraction: ${process.platform}`);
+  throw new Error(`Unsupported platform for YouTrack Apps skill extraction: ${platform}`);
 }
 
-function extractZipArchive(archivePath, destinationDir) {
-  const extraction = getZipExtractionCommand(archivePath, destinationDir);
-  const result = spawnSync(extraction.command, extraction.args, {
+function extractZipArchive(archivePath, destinationDir, options = {}) {
+  const extraction = getZipExtractionCommand(archivePath, destinationDir, options.platform);
+  const runCommand = options.spawnSync || spawnSync;
+  const result = runCommand(extraction.command, extraction.args, {
     encoding: 'utf8',
     shell: false,
     stdio: ['ignore', 'ignore', 'pipe'],
@@ -244,7 +245,7 @@ async function downloadSkillRelease(options = {}) {
 
     const archivePath = path.join(stagingDir, details.asset.name);
     fs.writeFileSync(archivePath, Buffer.from(await response.arrayBuffer()));
-    extractZipArchive(archivePath, stagingDir);
+    extractZipArchive(archivePath, stagingDir, options);
 
     const extractedSkillDir = path.join(stagingDir, SKILL_NAME);
     if (!fs.existsSync(path.join(extractedSkillDir, 'SKILL.md'))) {
