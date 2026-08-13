@@ -1,0 +1,118 @@
+name: Tag YouTrack Apps skill archive
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  tag:
+    name: Create downloadable skill tag
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out merge commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+
+      - name: Read skill metadata
+        id: metadata
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+
+          skill_path="skills/youtrack-apps-skill/SKILL.md"
+
+          extract_metadata_key() {
+            local key="$1"
+            local file="$2"
+
+            awk -v key="$key" '
+              /^---[[:space:]]*$/ {
+                if (!frontmatter) {
+                  frontmatter = 1
+                  next
+                }
+                exit
+              }
+              frontmatter && /^metadata:[[:space:]]*$/ {
+                metadata = 1
+                next
+              }
+              frontmatter && metadata && /^[^[:space:]]/ {
+                metadata = 0
+              }
+              frontmatter && metadata {
+                line = $0
+                sub(/^[[:space:]]+/, "", line)
+                if (line ~ "^" key ":[[:space:]]*") {
+                  sub("^" key ":[[:space:]]*", "", line)
+                  sub(/[[:space:]]*$/, "", line)
+                  print line
+                  exit
+                }
+              }
+            ' "$file"
+          }
+
+          skill_version="$(extract_metadata_key version "$skill_path")"
+          if [[ ! "$skill_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid skill metadata.version: $skill_version" >&2
+            exit 1
+          fi
+
+          old_skill_file="$(mktemp)"
+          old_skill_version=""
+          old_skill_path="$skill_path"
+          if ! git cat-file -e "$BASE_SHA:$old_skill_path" 2>/dev/null; then
+            old_skill_path="$(git diff --find-renames --name-status "$BASE_SHA" "$MERGE_SHA" -- skills | awk -v current="$skill_path" '$1 ~ /^R/ && $3 == current { print $2; exit }')"
+          fi
+
+          if [[ -n "$old_skill_path" ]] && git cat-file -e "$BASE_SHA:$old_skill_path" 2>/dev/null; then
+            git show "$BASE_SHA:$old_skill_path" > "$old_skill_file"
+            old_skill_version="$(extract_metadata_key version "$old_skill_file")"
+          fi
+
+          tag="skill/youtrack-apps-skill/v$skill_version"
+          if [[ "$old_skill_version" == "$skill_version" ]]; then
+            echo "Skill version did not change; skipping tag creation."
+            echo "should_tag=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
+            echo "Skill tag already exists: $tag" >&2
+            exit 1
+          fi
+
+          {
+            echo "should_tag=true"
+            echo "tag=$tag"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create skill-only tag
+        if: steps.metadata.outputs.should_tag == 'true'
+        env:
+          TAG: ${{ steps.metadata.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          # The split commit has skills/youtrack-apps-skill as its repository root.
+          # GitHub's automatic ZIP/TAR archive for this tag therefore contains only
+          # the skill files, with no surrounding application repository files.
+          skill_commit="$(git subtree split --prefix=skills/youtrack-apps-skill)"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" "$skill_commit" -m "YouTrack Apps skill ${TAG##*/}"
+          git push origin "$TAG"
