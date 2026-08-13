@@ -188,7 +188,7 @@ ${heading('Agent Skill')}
   ${command(`${createApp} skill install [options]`)}
   ${command(`${createApp} skill status [options]`)}
 
-  Installs the bundled YouTrack Apps skill or reports its status.
+  Downloads and installs the latest published YouTrack Apps skill, or reports its status.
 
   Options:
     ${command('--agent <agent>')}        claude | codex | junie | all. Default: all.

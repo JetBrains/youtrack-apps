@@ -7,6 +7,7 @@ const { execFileSync } = require('node:child_process');
 const {
   installSkill,
   getSkillStatus,
+  getLatestSkillRelease,
   runSystemAgentScan,
 } = require('../utils/agent-skill');
 
@@ -74,15 +75,34 @@ describe('Agent skill CLI', () => {
     fs.rmSync(TEST_SOURCE, { recursive: true, force: true });
   });
 
-  test('skill install defaults to global symlinks for all supported agents', async () => {
-    await installSkill({ homeDir: TEST_HOME });
+  test('skill install uses global symlinks for all supported agents', async () => {
+    await installSkill({ homeDir: TEST_HOME, sourceDir: TEST_SOURCE });
     assert.strictEqual(fs.existsSync(path.join(targetDir('codex'), 'SKILL.md')), true);
     assert.strictEqual(fs.existsSync(path.join(targetDir('claude'), 'SKILL.md')), true);
     assert.strictEqual(fs.existsSync(path.join(targetDir('junie'), 'SKILL.md')), true);
     assert.strictEqual(fs.lstatSync(targetDir('codex')).isSymbolicLink(), true);
     assert.strictEqual(fs.lstatSync(targetDir('claude')).isSymbolicLink(), true);
     assert.strictEqual(fs.lstatSync(targetDir('junie')).isSymbolicLink(), true);
-    assert.match(fs.readFileSync(path.join(targetDir('codex'), 'SKILL.md'), 'utf8'), /YouTrack App Builder/);
+    assert.match(fs.readFileSync(path.join(targetDir('codex'), 'SKILL.md'), 'utf8'), /Test skill/);
+  });
+
+  test('selects the newest published skill release that has the expected ZIP asset', async () => {
+    const createRelease = (version, publishedAt) => ({
+      tag_name: `skill/youtrack-apps-skill/v${version}`,
+      published_at: publishedAt,
+      assets: [{
+        name: `youtrack-apps-skill-v${version}.zip`,
+        browser_download_url: `https://example.test/${version}.zip`,
+      }],
+    });
+    const latestRelease = await getLatestSkillRelease({
+      fetch: async () => ({
+        ok: true,
+        json: async () => [createRelease('1.0.0', '2026-08-13T10:00:00Z'), createRelease('1.1.0', '2026-08-13T11:00:00Z')],
+      }),
+    });
+
+    assert.strictEqual(latestRelease.details.version, '1.1.0');
   });
 
   test('--version prints the package version', () => {

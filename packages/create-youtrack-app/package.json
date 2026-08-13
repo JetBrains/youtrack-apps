@@ -13,8 +13,7 @@
     "index.js",
     "help.js",
     "README.md",
-    "CHANGELOG.md",
-    "skills"
+    "CHANGELOG.md"
   ],
   "scripts": {
     "start": "node index.js app init --cwd ./tmp",
@@ -33,8 +32,6 @@
     "test:widget": "node --test test/widget.test.js",
     "test:widget:watch": "node --test --watch test/widget.test.js",
     "build": "echo 'no build required'",
-    "prepack": "node scripts/package-skill.js",
-    "postpack": "node scripts/package-skill.js --clean",
     "release:ci": "bash scripts/release-ci.sh"
   },
   "author": "Andrey Skladchikov",

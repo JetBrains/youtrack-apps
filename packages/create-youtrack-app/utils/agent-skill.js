@@ -1,11 +1,12 @@
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { Buffer } = require('node:buffer');
 const { spawnSync } = require('node:child_process');
 
 const SKILL_NAME = 'youtrack-apps-skill';
-const PACKAGED_SKILL_SOURCE_DIR = path.resolve(__dirname, '..', 'skills', SKILL_NAME);
-const REPOSITORY_SKILL_SOURCE_DIR = path.resolve(__dirname, '..', '..', '..', 'skills', SKILL_NAME);
+const SKILL_RELEASE_TAG_PREFIX = `skill/${SKILL_NAME}/v`;
+const SKILL_RELEASES_URL = 'https://api.github.com/repos/JetBrains/youtrack-apps/releases?per_page=100';
 
 const ALL_AGENTS = 'all';
 const ALL_SCOPES = 'all';
@@ -47,8 +48,8 @@ const DEPLOYMENT_BY_SCOPE = {
   [PROJECT_SCOPE]: 'copy',
 };
 
-function getHomeDir() {
-  return process.env.YOUTRACK_SKILL_HOME || os.homedir();
+function getHomeDir(options = {}) {
+  return options.homeDir || process.env.YOUTRACK_SKILL_HOME || os.homedir();
 }
 
 function assertSupportedAgent(agentId) {
@@ -96,20 +97,166 @@ function getAgentSkillsDir(agentId, scope, options = {}) {
 
   const agent = SUPPORTED_AGENT_BY_ID[agentId];
   const rootDir = scope === GLOBAL_SCOPE
-    ? (options.homeDir || getHomeDir())
+    ? getHomeDir(options)
     : resolveProjectRoot(options);
 
   return path.join(rootDir, agent.configDir, 'skills');
 }
 
-function getSkillSourceDir() {
-  for (const sourceDir of [PACKAGED_SKILL_SOURCE_DIR, REPOSITORY_SKILL_SOURCE_DIR]) {
-    if (fs.existsSync(path.join(sourceDir, 'SKILL.md'))) {
-      return sourceDir;
-    }
+function getGitHubHeaders() {
+  return {
+    Accept: 'application/vnd.github+json',
+    'User-Agent': '@jetbrains/create-youtrack-app',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+}
+
+function getSkillReleaseDetails(release) {
+  if (!release || typeof release.tag_name !== 'string' || !release.tag_name.startsWith(SKILL_RELEASE_TAG_PREFIX)) {
+    return null;
   }
 
-  throw new Error('Could not find the bundled YouTrack Apps skill.');
+  const version = release.tag_name.slice(SKILL_RELEASE_TAG_PREFIX.length);
+  if (!version || !/^[0-9A-Za-z._-]+$/.test(version)) {
+    return null;
+  }
+
+  const archiveName = `${SKILL_NAME}-v${version}.zip`;
+  const asset = Array.isArray(release.assets)
+    ? release.assets.find(candidate => candidate && candidate.name === archiveName && candidate.browser_download_url)
+    : null;
+
+  return asset ? { asset, version } : null;
+}
+
+function getFetch(options = {}) {
+  const fetchFn = options.fetch || globalThis.fetch;
+  if (typeof fetchFn !== 'function') {
+    throw new Error('Downloading the YouTrack Apps skill requires Node.js 18 or later.');
+  }
+
+  return fetchFn;
+}
+
+async function getLatestSkillRelease(options = {}) {
+  const fetchFn = getFetch(options);
+  let response;
+
+  try {
+    response = await fetchFn(SKILL_RELEASES_URL, { headers: getGitHubHeaders() });
+  } catch (error) {
+    throw new Error(`Could not reach GitHub to download the YouTrack Apps skill: ${error.message}`);
+  }
+
+  if (!response.ok) {
+    throw new Error(`Could not list YouTrack Apps skill releases from GitHub (HTTP ${response.status}).`);
+  }
+
+  const releases = await response.json();
+  if (!Array.isArray(releases)) {
+    throw new Error('GitHub returned an invalid skill release response.');
+  }
+
+  const matchingReleases = releases
+    .filter(release => !release.draft && !release.prerelease)
+    .map(release => ({ release, details: getSkillReleaseDetails(release) }))
+    .filter(candidate => candidate.details)
+    .sort((left, right) => {
+      const leftDate = Date.parse(left.release.published_at || left.release.created_at || 0);
+      const rightDate = Date.parse(right.release.published_at || right.release.created_at || 0);
+      return rightDate - leftDate;
+    });
+
+  if (matchingReleases.length === 0) {
+    throw new Error('Could not find a published YouTrack Apps skill release with its ZIP archive.');
+  }
+
+  return matchingReleases[0];
+}
+
+function getSkillCacheDir(version, options = {}) {
+  return path.join(getHomeDir(options), '.youtrack', 'skills', SKILL_NAME, version);
+}
+
+function getZipExtractionCommand(archivePath, destinationDir) {
+  if (process.platform === 'win32') {
+    return {
+      command: 'powershell.exe',
+      args: [
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        '$ErrorActionPreference = "Stop"; Expand-Archive -LiteralPath $args[0] -DestinationPath $args[1] -Force',
+        archivePath,
+        destinationDir,
+      ],
+      unavailableMessage: 'PowerShell with Expand-Archive is required to extract the YouTrack Apps skill on Windows.',
+    };
+  }
+
+  if (['aix', 'darwin', 'freebsd', 'linux', 'openbsd', 'sunos'].includes(process.platform)) {
+    return {
+      command: 'unzip',
+      args: ['-q', archivePath, '-d', destinationDir],
+      unavailableMessage: 'The unzip command is required to extract the YouTrack Apps skill on Unix-like systems.',
+    };
+  }
+
+  throw new Error(`Unsupported platform for YouTrack Apps skill extraction: ${process.platform}`);
+}
+
+function extractZipArchive(archivePath, destinationDir) {
+  const extraction = getZipExtractionCommand(archivePath, destinationDir);
+  const result = spawnSync(extraction.command, extraction.args, {
+    encoding: 'utf8',
+    shell: false,
+    stdio: ['ignore', 'ignore', 'pipe'],
+  });
+
+  if (result.error || result.status !== 0) {
+    const detail = String(result.stderr || result.error?.message || '').trim();
+    throw new Error(`${extraction.unavailableMessage}${detail ? ` ${detail}` : ''}`);
+  }
+}
+
+async function downloadSkillRelease(options = {}) {
+  const { release, details } = await getLatestSkillRelease(options);
+  const cacheDir = getSkillCacheDir(details.version, options);
+
+  if (fs.existsSync(path.join(cacheDir, 'SKILL.md'))) {
+    return cacheDir;
+  }
+
+  const cacheParentDir = path.dirname(cacheDir);
+  fs.mkdirSync(cacheParentDir, { recursive: true });
+  const stagingDir = fs.mkdtempSync(path.join(cacheParentDir, `.${SKILL_NAME}-`));
+
+  try {
+    const fetchFn = getFetch(options);
+    const response = await fetchFn(details.asset.browser_download_url, {
+      headers: getGitHubHeaders(),
+      redirect: 'follow',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Could not download YouTrack Apps skill ${release.tag_name} (HTTP ${response.status}).`);
+    }
+
+    const archivePath = path.join(stagingDir, details.asset.name);
+    fs.writeFileSync(archivePath, Buffer.from(await response.arrayBuffer()));
+    extractZipArchive(archivePath, stagingDir);
+
+    const extractedSkillDir = path.join(stagingDir, SKILL_NAME);
+    if (!fs.existsSync(path.join(extractedSkillDir, 'SKILL.md'))) {
+      throw new Error(`The YouTrack Apps skill archive for ${release.tag_name} does not contain ${SKILL_NAME}/SKILL.md.`);
+    }
+
+    fs.rmSync(cacheDir, { recursive: true, force: true });
+    fs.renameSync(extractedSkillDir, cacheDir);
+    return cacheDir;
+  } finally {
+    fs.rmSync(stagingDir, { recursive: true, force: true });
+  }
 }
 
 function createInstallPlan(sourceDir, options = {}) {
@@ -161,7 +308,7 @@ function deploySkill(planItem) {
 }
 
 async function installSkill(options = {}) {
-  const sourceDir = options.sourceDir || getSkillSourceDir();
+  const sourceDir = options.sourceDir || await downloadSkillRelease(options);
   return createInstallPlan(sourceDir, options).map(planItem => {
     deploySkill(planItem);
 
@@ -214,7 +361,7 @@ function findBinary(binary, options = {}) {
 }
 
 function getAgentDiscovery(agent, options = {}) {
-  const homeDir = options.homeDir || getHomeDir();
+  const homeDir = getHomeDir(options);
   const projectRoot = resolveProjectRoot(options);
   const globalBaseDir = path.join(homeDir, agent.configDir);
   const binaryPath = findBinary(agent.binary, options);
@@ -276,8 +423,10 @@ function formatStatusResults(statuses) {
 }
 
 module.exports = {
+  downloadSkillRelease,
   formatInstallResults,
   formatStatusResults,
+  getLatestSkillRelease,
   getSkillStatus,
   installSkill,
   runSystemAgentScan,
