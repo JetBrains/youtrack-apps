@@ -5,7 +5,7 @@
 Go to non-project folder.
 
 ```bash
-git clone https://github.com/zoranrepic/youtrack-apps.git
+git clone https://github.com/JetBrains/youtrack-apps.git
 cd youtrack-apps
 ```
 ## Step 2. Build the tool package (required — the scaffolded app links against it)
