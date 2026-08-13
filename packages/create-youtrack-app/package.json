@@ -2,6 +2,9 @@
   "name": "@jetbrains/create-youtrack-app",
   "version": "0.0.12",
   "description": "A scaffolding utility that generates a YouTrack app",
+  "engines": {
+    "node": ">=18"
+  },
   "main": "index.js",
   "bin": {
     "create-youtrack-app": "index.js"

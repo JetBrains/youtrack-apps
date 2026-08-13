@@ -57,6 +57,8 @@ It is downloaded from the latest published YouTrack Apps skill release when inst
 
 Supported agents are Claude Code, Codex CLI and Junie. Global installs use symlinks to the downloaded skill cache in the agent home config. Project installs use hard copies under the current directory. If the release cannot be downloaded, installation fails with an explicit error.
 
+Skill installation requires Node.js 18 or later. On Unix-like systems, it also requires the `unzip` command to be available on your `PATH`. Windows uses PowerShell's built-in `Expand-Archive` instead.
+
 ## Classic Workflow Rules
 
 **Syntax:** `npx @jetbrains/create-youtrack-app rule add --type <type> --name <name>`

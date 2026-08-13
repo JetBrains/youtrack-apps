@@ -112,6 +112,10 @@ describe('Agent skill CLI', () => {
     assert.strictEqual(result.output.trim(), require('../package.json').version);
   });
 
+  test('package declares the Node.js version required for skill downloads', () => {
+    assert.strictEqual(require('../package.json').engines.node, '>=18');
+  });
+
   test('project-level install uses hard copies', async () => {
     const results = await installSkill({
       sourceDir: TEST_SOURCE,
