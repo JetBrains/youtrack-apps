@@ -1,8 +1,8 @@
 ---
-to: src/backend/workflows/apply-template.ts
+to: src/workflows/apply-template.ts
 ---
 import { Issue } from '@jetbrains/youtrack-scripting-api/entities';
-import { requirements } from '../requirements';
+import { requirements } from '../backend/requirements';
 
 export const rule = Issue.action({
   title: 'Apply template',

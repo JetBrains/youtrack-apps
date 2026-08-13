@@ -1,8 +1,8 @@
 ---
-to: src/backend/workflows/notify-on-change.ts
+to: src/workflows/notify-on-change.ts
 ---
 import { Issue } from '@jetbrains/youtrack-scripting-api/entities';
-import { requirements } from '../requirements';
+import { requirements } from '../backend/requirements';
 
 export const rule = Issue.onChange({
   title: 'Notify on change',

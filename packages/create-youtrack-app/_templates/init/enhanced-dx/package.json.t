@@ -8,19 +8,40 @@ to: package.json
   "type": "module",
   "enhancedDX": "true",
   "scripts": {
+<% if (backendOnly === 'true') { -%>
+    "build:backend": "vite -c vite.config.backend.ts build",
+    "copy:static": "cp manifest.json dist/manifest.json && cp -R public/. dist/",
+    "build": "npm run clean && npm run build:backend && npm run lint && npm run copy:static && youtrack-app app validate",
+    "build:nolint": "npm run clean && npm run build:backend && npm run copy:static && youtrack-app app validate",
+    "clean": "rm -f src/api/api.d.ts src/api/api.zod.ts",
+    "lint": "eslint --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint --fix",
+    "test": "echo 'no tests'",
+    "pack": "rm -rf <%= appName %>.zip && npx --yes bestzip <%= appName %>.zip dist/*",
+    "upload": "youtrack-app app upload",
+    "upload-local": "set -a && source .env && set +a && youtrack-app app upload --host $YOUTRACK_HOST --token $YOUTRACK_TOKEN",
+    "update": "npm run build && npm run upload-local",
+    "prepare:watch": "npm run clean && vite -c vite.config.backend.ts build --mode development && npm run copy:static",
+    "watch:backend": "vite -c vite.config.backend.ts build --watch --mode development",
+    "watch:coordinator": "youtrack-upload-coordinator --watch .build-state.json",
+    "watch": "npm run prepare:watch && rm -f .backend-changed .build-state.json && (AUTOUPLOAD=true npm run watch:backend & npm run watch:coordinator)",
+    "dev": "npm run watch",
+    "generate": "npx @jetbrains/create-youtrack-app",
+    "g": "npm run generate --"
+<% } else { -%>
     "build:frontend": "vite build",
     "build:backend": "vite -c vite.config.backend.ts build",
-    "build": "npm run clean && npm run build:backend && npm run lint && npm run build:frontend && youtrack-app validate dist",
-    "build:nolint": "npm run clean && npm run build:backend && npm run build:frontend && youtrack-app validate dist",
+    "build": "npm run clean && npm run build:backend && npm run lint && npm run build:frontend && youtrack-app app validate",
+    "build:nolint": "npm run clean && npm run build:backend && npm run build:frontend && youtrack-app app validate",
     "clean": "rm -f src/api/api.d.ts src/api/api.zod.ts",
     "preview": "vite preview",
     "lint": "eslint --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint --fix",
     "test": "echo 'no tests'",
     "pack": "rm -rf <%= appName %>.zip && npx --yes bestzip <%= appName %>.zip dist/*",
-    "upload": "youtrack-app upload dist",
+    "upload": "youtrack-app app upload",
 
-    "upload-local": "set -a && source .env && set +a && youtrack-app upload dist --host $YOUTRACK_HOST --token $YOUTRACK_TOKEN",
+    "upload-local": "set -a && source .env && set +a && youtrack-app app upload --host $YOUTRACK_HOST --token $YOUTRACK_TOKEN",
     "update": "npm run build && npm run upload-local",
     "prepare:watch": "npm run clean && rm -rf dist/widgets/assets && vite -c vite.config.backend.ts build --mode development",
     "watch:backend": "vite -c vite.config.backend.ts build --watch --mode development",
@@ -36,10 +57,11 @@ to: package.json
 
     "generate": "npx @jetbrains/create-youtrack-app",
     "g": "npm run generate --"
+<% } -%>
   },
   "dependencies": {
     "@jetbrains/ring-ui-built": "^7.0.8",
-    "@jetbrains/youtrack-apps-tools": "^0.1.0",
+    "@jetbrains/youtrack-apps-tools": "^1.0.0",
     "@jetbrains/youtrack-workflow-types": "~2026.1.0",
     "core-js": "3.38.0",
     "loglevel": "^1.9.2",

@@ -8,10 +8,143 @@ const Logger = require("hygen/dist/logger");
 const path = require("node:path");
 const fs = require('node:fs');
 const defaultTemplates = path.join(__dirname, "_templates");
-const argv = process.argv.slice(2);
-const args = require("minimist")(argv);
+const publicArgv = process.argv.slice(2);
+const args = require("minimist")(publicArgv);
+const publicRoute = routePublicCommand(args);
 const cwd = path.resolve(process.cwd(), args.cwd || ".");
 const { trimPathSegments } = require('./utils/sanitize');
+const {
+  formatInstallResults,
+  formatStatusResults,
+  getSkillStatus,
+  installSkill,
+  runSystemAgentScan,
+} = require('./utils/agent-skill');
+const {
+  resolveRuleTarget,
+  validateRuleName,
+  validateRuleType,
+} = require('./utils/rule-scaffold');
+
+function routePublicCommand(parsed) {
+  if (parsed.help || parsed.h) {
+    return { meta: 'help' };
+  }
+  if (parsed.version) {
+    return { meta: 'version' };
+  }
+
+  if (parsed._.length === 0) {
+    const unknownBareFlag = Object.keys(parsed).find(key => !['_', 'cwd'].includes(key));
+    return unknownBareFlag
+      ? { error: 'Expected command syntax: create-youtrack-app <entity> <action> [options]' }
+      : {};
+  }
+
+  if (parsed._.length !== 2) {
+    return { error: 'Expected command syntax: create-youtrack-app <entity> <action> [options]' };
+  }
+
+  const key = `${parsed._[0]}:${parsed._[1]}`;
+  const commandFlags = {
+    'app:init': ['name', 'type', 'title', 'description', 'vendor', 'vendor-url', 'backend-only', 'install'],
+    'rule:add': ['type', 'name'],
+    'http-handler:add': ['scope', 'path', 'method', 'permissions', 'handler'],
+    'settings:init': ['title', 'description'],
+    'settings:add': ['name', 'type', 'title', 'description', 'scope', 'entity', 'required', 'readonly', 'const', 'min-length', 'max-length', 'format', 'enum', 'min', 'max', 'exclusive-min', 'exclusive-max', 'multiple-of'],
+    'extension-property:add': ['entity', 'name', 'type', 'set'],
+    'widget:add': ['key', 'extension-point', 'name', 'description', 'permissions', 'width', 'height'],
+    // TypeScript Enhanced DX command. With no flags it remains interactive;
+    // endpoint flags are forwarded when an agent wants non-interactive output.
+    'endpoint:add': ['scope', 'path', 'method', 'request-type', 'response-type', 'controller'],
+    'skill:install': ['agent', 'scope'],
+    'skill:status': ['agent', 'scope'],
+  };
+  const allowed = commandFlags[key];
+  if (!allowed) {
+    return { error: `Unknown command "${parsed._[0]} ${parsed._[1]}"` };
+  }
+  const withCommand = result => ({ ...result, command: key });
+
+  const unknownFlag = Object.keys(parsed).find(flag => !['_', 'cwd', ...allowed].includes(flag));
+  if (unknownFlag) {
+    return { error: `Unknown option "--${unknownFlag}"` };
+  }
+
+  const booleanFlags = new Set(['backend-only', 'install', 'required', 'readonly', 'set']);
+  const valuelessFlag = Object.keys(parsed).find(flag => flag !== '_' && parsed[flag] === true && !booleanFlags.has(flag));
+  if (valuelessFlag) {
+    return { error: `Option "--${valuelessFlag}" requires a value` };
+  }
+
+  if (key === 'rule:add') {
+    if (!flagValue(parsed.type) || !flagValue(parsed.name)) {
+      return { error: 'Usage: rule add --type <type> --name <name>' };
+    }
+    return withCommand({ params: {
+      type: String(parsed.type),
+      name: String(parsed.name),
+    } });
+  }
+
+  if (key === 'http-handler:add') {
+    const scope = flagValue(parsed.scope);
+    const routePath = flagValue(parsed.path);
+    if (scope || routePath) {
+      if (!scope) {
+        return { error: 'Option "--scope" is required when --path is provided' };
+      }
+      return withCommand({ params: { scope, routePath: routePath || '' } });
+    }
+  }
+
+  if (key === 'extension-property:add') {
+    const entity = flagValue(parsed.entity);
+    const name = flagValue(parsed.name);
+    if (entity || name) {
+      if (!entity || !name) {
+        return { error: 'Options "--entity" and "--name" must be provided together' };
+      }
+      return withCommand({ params: { entity, name } });
+    }
+  }
+
+  if (key === 'app:init') {
+    return withCommand({});
+  }
+
+  return withCommand({});
+}
+
+function flagValue(value) {
+  return value === undefined || value === null || value === false || value === true ? undefined : String(value);
+}
+
+function validateEndpointController() {
+  if (args.controller === undefined || args.controller === '') {
+    return;
+  }
+
+  const scope = String(args.scope || '');
+  const routePath = String(args.path || '').replace(/^\/+|\/+$/g, '');
+  const endpointPath = scope === 'custom' ? routePath : `${scope}/${routePath}`;
+  const controllerModule = endpointPath.replace(/\//g, '.');
+  const controllerCandidates = ['.ts', '.tsx', '.js'].map(extension => path.join(
+    cwd,
+    'src',
+    'backend',
+    'controllers',
+    `${controllerModule}.controller${extension}`
+  ));
+
+  if (!controllerCandidates.some(candidate => fs.existsSync(candidate))) {
+    const expectedPath = path.relative(cwd, controllerCandidates[0]);
+    throw new Error(
+      `Controller module not found for --controller ${args.controller}: ${expectedPath}. ` +
+      'Create this module and export the controller function, or omit --controller to generate an inline handler.'
+    );
+  }
+}
 
 function isCancelled(e) {
   return e === '' || (e && e.code === 'ERR_USE_AFTER_CLOSE');
@@ -32,7 +165,7 @@ process.on('unhandledRejection', (reason) => {
   }
 });
 
-function runHygen(hygenArgs = argv) {
+function runHygen(hygenArgs = publicArgv) {
   return runner(hygenArgs, {
     templates: defaultTemplates,
     cwd,
@@ -80,34 +213,207 @@ function runGeneratedFilesLintFix(files) {
   }
 }
 
+function isInteractive() {
+  return Boolean(process.stdin.isTTY && process.stdout.isTTY);
+}
+
+function getDefaultSkillInstallOptions() {
+  return {
+    agent: args.agent || 'all',
+    scope: args.scope || 'global',
+  };
+}
+
+function getDetectedAgentIds(agentDiscoveries) {
+  return agentDiscoveries
+    .filter(result => result.detected)
+    .map(result => result.agent);
+}
+
+function buildAgentChoices(agentDiscoveries) {
+  return [
+    {
+      name: 'all',
+      message: 'All supported agents',
+    },
+    ...agentDiscoveries.map(result => ({
+      name: result.agent,
+      message: `${result.displayName} (${result.detected ? 'detected' : 'not detected'})`,
+    })),
+  ];
+}
+
+function buildScopeChoices(projectAvailable) {
+  const choices = [
+    {
+      name: 'global',
+      message: 'Global - symlink into the home agent config',
+    },
+  ];
+
+  if (projectAvailable) {
+    choices.push(
+      {
+        name: 'project',
+        message: 'Project - copy into the current directory',
+      },
+      {
+        name: 'all',
+        message: 'Global and project',
+      }
+    );
+  }
+
+  return choices;
+}
+
+async function promptForSkillInstallOptions() {
+  const agentDiscoveries = runSystemAgentScan({ cwd });
+  const detectedAgents = getDetectedAgentIds(agentDiscoveries);
+  const initialAgent = detectedAgents.length === 1 ? detectedAgents[0] : 'all';
+  const agentChoices = buildAgentChoices(agentDiscoveries);
+
+  const agent = await new Select({
+    name: 'agent',
+    message: 'Install the YouTrack Apps skill for:',
+    initial: agentChoices.findIndex(choice => choice.name === initialAgent),
+    choices: agentChoices,
+  }).run();
+
+  const projectAvailable = agentDiscoveries.some(result => result.projectAvailable);
+
+  const scope = await new Select({
+    name: 'scope',
+    message: 'Choose installation scope:',
+    choices: buildScopeChoices(projectAvailable),
+  }).run();
+
+  return {
+    agent,
+    scope,
+  };
+}
+
+async function resolveSkillInstallOptions() {
+  if (!isInteractive() || args.agent || args.scope) {
+    return getDefaultSkillInstallOptions();
+  }
+
+  return promptForSkillInstallOptions();
+}
+
+function getSkillStatusOptions() {
+  const agent = args.agent || 'all';
+  const projectAvailable = runSystemAgentScan({ cwd }).some(result => result.projectAvailable);
+  const scope = args.scope || (projectAvailable ? 'all' : 'global');
+
+  return { agent, scope, cwd };
+}
+
+async function handleSkillCommand(skillAction) {
+  if (skillAction === 'install') {
+    const installOptions = await resolveSkillInstallOptions();
+    const results = await installSkill({ ...installOptions, cwd });
+    console.log(styleText("green", formatInstallResults(results, skillAction)));
+    return true;
+  }
+
+  if (skillAction === 'status') {
+    const statuses = getSkillStatus(getSkillStatusOptions());
+    console.log(formatStatusResults(statuses));
+    return true;
+  }
+
+  return false;
+}
+
+async function handleRuleCommand(params) {
+  if (!params) {
+    return false;
+  }
+
+  const usage = 'Usage: rule add --type <type> --name <name>';
+  const { type: ruleType, name } = params;
+
+  if (!ruleType || !name) {
+    console.error(styleText("red", usage));
+    process.exit(1);
+  }
+
+  validateRuleType(ruleType);
+  validateRuleName(name);
+
+  const pkgPath = path.join(cwd, 'package.json');
+  const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
+  const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+
+  const { relativePath, absolutePath } = resolveRuleTarget(cwd, name, isEnhancedDX);
+
+  if (fs.existsSync(absolutePath)) {
+    throw new Error(`Workflow rule already exists at ${relativePath}`);
+  }
+
+  const result = await runHygen([
+    'rule',
+    'add',
+    '--type',
+    ruleType,
+    '--name',
+    name,
+    '--enhanced',
+    String(isEnhancedDX),
+    '--cwd',
+    cwd,
+  ]);
+
+  if (!result.success) {
+    process.exit(1);
+  }
+
+  console.log(styleText("green", `\n✓ Workflow rule created at ${relativePath}\n`));
+  return true;
+}
+
 (async function run() {
+  if (publicRoute.error) {
+    console.error(styleText("red", `Error: ${publicRoute.error}`));
+    process.exit(1);
+  }
+
+  if (publicRoute.meta === 'version') {
+    console.log(require('./package.json').version);
+    return;
+  }
+
   if ('help' in args || 'h' in args) {
     require('./help');
     return;
   }
 
-  // Map short aliases to full commands for NestJS-style simplicity
-  const aliasMap = {
-    'handler': 'http-handler',
-    'h': 'http-handler',
-    'property': 'extension-property',
-    'prop': 'extension-property',
-    'p': 'extension-property',
-    'setting': 'settings',
-    's': 'settings'
-  };
+  if (publicRoute.command === 'skill:install' || publicRoute.command === 'skill:status') {
+    const skillAction = publicRoute.command.split(':')[1];
 
-  // Replace aliases in argv (create new array to avoid mutation issues)
-  const normalizedArgv = argv.map(arg => aliasMap[arg] || arg);
+    try {
+      if (await handleSkillCommand(skillAction)) {
+        return;
+      }
+    } catch (error) {
+      console.error(styleText("red", `Error: ${(error && error.message) || String(error)}`));
+      process.exit(1);
+    }
+  }
 
-  const handlerIndex = normalizedArgv.findIndex(a => a === 'http-handler');
-  if (handlerIndex !== -1 && normalizedArgv[handlerIndex + 1]) {
-    const pathArg = normalizedArgv[handlerIndex + 1];
+  try {
+    if (publicRoute.command === 'rule:add' && await handleRuleCommand(publicRoute.params)) {
+      return;
+    }
+  } catch (error) {
+    console.error(styleText("red", `Error: ${(error && error.message) || String(error)}`));
+    process.exit(1);
+  }
 
-    if (pathArg.includes('/') && !pathArg.startsWith('--')) {
-      const segments = pathArg.split('/');
-      const scope = segments[0]; // first segment is scope
-      const routePath = segments.slice(1).join('/'); // rest is path
+  if (publicRoute.command === 'http-handler:add' && publicRoute.params?.scope) {
+      const { scope, routePath } = publicRoute.params;
 
 
       const validScopes = ['global', 'project', 'issue', 'article', 'user'];
@@ -116,7 +422,12 @@ function runGeneratedFilesLintFix(files) {
         process.exit(1);
       }
 
-      const method = args.method || 'GET'; // Default to GET
+      const method = String(args.method || 'GET').toUpperCase(); // Default to GET
+      const validMethods = ['GET', 'POST', 'PUT', 'DELETE'];
+      if (!validMethods.includes(method)) {
+        console.error(styleText("red", `Invalid method: ${method}. Must be one of: ${validMethods.join(', ')}`));
+        process.exit(1);
+      }
       const permissions = args.permissions || '';
 
       const pkgPath = path.join(cwd, 'package.json');
@@ -124,8 +435,35 @@ function runGeneratedFilesLintFix(files) {
       const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
 
       if (!isEnhancedDX) {
-        console.error(styleText("red", 'This command requires an Enhanced DX project.'));
-        process.exit(1);
+        const handlerName = args.handler != null ? String(args.handler) : 'backend';
+        if (!/^[a-z][a-z0-9-]*$/.test(handlerName)) {
+          console.error(styleText("red", `Invalid handler name: "${handlerName}". Must start with a lowercase letter and contain only lowercase letters, numbers, and hyphens.`));
+          process.exit(1);
+        }
+
+        const handlerRel = path.join('src', `${handlerName}.js`);
+        const hygenArgs = [
+          'http-handler',
+          'add',
+          '--handlerName',
+          handlerName,
+          '--path',
+          routePath,
+          '--method',
+          method,
+          '--handlerScope',
+          scope,
+          '--permissions',
+          permissions,
+          '--cwd',
+          cwd
+        ];
+
+        console.log(styleText("cyan", `\nAdding ${method} handler to ${handlerRel}...\n`));
+        await runHygen(hygenArgs);
+        runGeneratedFilesLintFix([handlerRel]);
+        console.log(styleText("green", `\n✓ HTTP handler created successfully!\n`));
+        return;
       }
 
       const targetRel = path.join('src', 'backend', 'router', scope, routePath || '', `${method}.ts`);
@@ -157,15 +495,10 @@ function runGeneratedFilesLintFix(files) {
       runGeneratedFilesLintFix([targetRel]);
       console.log(styleText("green", `\n✓ HTTP handler created successfully!\n`));
       return;
-    }
   }
 
-  const propIndex = normalizedArgv.findIndex(a => a === 'extension-property');
-  if (propIndex !== -1 && normalizedArgv[propIndex + 1]) {
-    const propArg = normalizedArgv[propIndex + 1];
-
-    if (propArg.includes('.') && !propArg.startsWith('--')) {
-      const [target, name] = propArg.split('.');
+  if (publicRoute.command === 'extension-property:add' && publicRoute.params?.entity) {
+      const { entity: target, name } = publicRoute.params;
 
       const validTargets = ['Issue', 'User', 'Project', 'Article'];
       if (!validTargets.includes(target)) {
@@ -185,7 +518,7 @@ function runGeneratedFilesLintFix(files) {
         process.exit(1);
       }
 
-      const isSet = args.set === true || args.set === 'true' || args.multi === true || args.multi === 'true';
+      const isSet = args.set === true || args.set === 'true';
 
       const entityExtensionsPath = path.join(cwd, 'src', 'entity-extensions.json');
       let entityExtensions;
@@ -225,11 +558,10 @@ function runGeneratedFilesLintFix(files) {
 
       console.log(styleText("green", `\n✓ Extension property created: ${target}.${name} (${type}${isSet ? '[]' : ''})\n`));
       return;
-    }
   }
 
-  const settingsIndex = normalizedArgv.findIndex(a => a === 'settings');
-  if (settingsIndex !== -1 && normalizedArgv[settingsIndex + 1] === 'init') {
+  const settingsIndex = publicArgv.findIndex(a => a === 'settings');
+  if (settingsIndex !== -1 && publicArgv[settingsIndex + 1] === 'init') {
     const title = args.title;
     const description = args.description;
 
@@ -261,7 +593,7 @@ function runGeneratedFilesLintFix(files) {
   }
 
   // Pattern 4: Settings add — always non-interactive, never falls through to Hygen
-  if (settingsIndex !== -1 && normalizedArgv[settingsIndex + 1] === 'add') {
+  if (settingsIndex !== -1 && publicArgv[settingsIndex + 1] === 'add') {
     const VALID_TYPES    = ['string', 'integer', 'number', 'boolean', 'object', 'array'];
     const VALID_SCOPES   = ['global', 'project', 'none'];
     const VALID_ENTITIES = ['Issue', 'User', 'Project', 'UserGroup', 'Article'];
@@ -384,7 +716,7 @@ function runGeneratedFilesLintFix(files) {
     return;
   }
 
-  const widgetIndex = normalizedArgv.findIndex(a => a === 'widget');
+  const widgetIndex = publicArgv.findIndex(a => a === 'widget');
   if (widgetIndex !== -1 && args.key !== undefined) {
     const key = String(args.key);
 
@@ -460,13 +792,35 @@ function runGeneratedFilesLintFix(files) {
     return;
   }
 
-  const hasHygenParams = ["init", "enhanced-dx", "extension-property", "widget", "settings", "http-handler", "endpoint"].some(
-    (key) => new Set(normalizedArgv).has(key)
+  const hasHygenParams = publicRoute.command !== 'app:init' && ["init", "enhanced-dx", "extension-property", "widget", "settings", "http-handler", "endpoint"].some(
+    (key) => new Set(publicArgv).has(key)
   );
 
   if (hasHygenParams) {
+    const isEndpointCmd = new Set(publicArgv).has('endpoint');
+    if (isEndpointCmd) {
+      const pkgPath = path.join(cwd, 'package.json');
+      const pkg = fs.existsSync(pkgPath) ? JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) : {};
+      const isEnhancedDX = pkg.enhancedDX === true || pkg.enhancedDX === 'true';
+
+      if (!isEnhancedDX) {
+        console.error(styleText("red", 'This command requires a TypeScript Enhanced DX project.'));
+        process.exit(1);
+        return;
+      }
+
+      try {
+        validateEndpointController();
+      } catch (error) {
+        console.error(styleText("red", `Error: ${error.message}`));
+        process.exit(1);
+      }
+
+      return runHygen();
+    }
+
     // Intercept Enhanced DX http-handler flow for richer experience
-    const isHttpHandlerCmd = new Set(normalizedArgv).has('http-handler') && (new Set(normalizedArgv).has('add') || !normalizedArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
+    const isHttpHandlerCmd = new Set(publicArgv).has('http-handler') && (new Set(publicArgv).has('add') || !publicArgv.find(a => a === 'init' || a === 'enhanced-dx' || a === 'settings' || a === 'widget' || a === 'extension-property' || a === 'endpoint'));
     if (isHttpHandlerCmd) {
       try {
         const pkgPath = path.join(cwd, 'package.json');
@@ -679,6 +1033,72 @@ function runGeneratedFilesLintFix(files) {
       }
     }
     return runHygen();
+  }
+
+  // Non-interactive scaffold gate: `--name` with no subcommand bypasses every prompt
+  // and runs `init` directly. Mirrors the widget/handler flag-form pattern — the bare
+  // invocation (no --name) stays fully interactive for humans (backward-compatible).
+  if (args.name !== undefined) {
+    const appName = String(args.name);
+
+    // Reuse the exact widget-key validation style for the app name.
+    if (!/^[a-z][a-z0-9-]*$/.test(appName)) {
+      console.error(styleText("red", `Invalid app name: "${appName}". Must start with a lowercase letter and contain only lowercase letters, numbers, and hyphens.`));
+      process.exit(1);
+    }
+
+    const appType = args.type != null ? String(args.type) : 'ts';
+    if (!['js', 'ts'].includes(appType)) {
+      console.error(styleText("red", `Invalid type: "${appType}". Must be one of: js, ts`));
+      process.exit(1);
+    }
+
+    const title = args.title != null
+      ? String(args.title)
+      : appName.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    const description = args.description != null
+      ? String(args.description)
+      : `A YouTrack app created with ${appType === 'ts' ? 'TypeScript' : 'JavaScript'}`;
+    const vendor = args.vendor != null ? String(args.vendor) : 'VendorName';
+    const vendorUrl = args['vendor-url'] != null ? String(args['vendor-url']) : 'https://vendor.com';
+
+    const templateName = appType === 'js' ? 'vite-app' : 'enhanced-dx';
+
+    // `--backend-only` scaffolds a widget-less Enhanced DX app (no src/widgets/, no
+    // manifest widgets key, frontend-free build scripts). Only meaningful for --type ts;
+    // the js/vite-app scaffold is already widget-less, so the flag is a silent no-op there.
+    const backendOnly = appType === 'ts' && (args['backend-only'] === true || args['backend-only'] === 'true');
+
+    console.log(styleText("cyan", `\nScaffolding ${appType === 'ts' ? 'Enhanced DX' : 'JavaScript'} app "${appName}"${backendOnly ? ' (backend-only)' : ''}...\n`));
+    const appRes = await runHygen(["init", templateName, "--appName", appName, "--title", title, "--description", description, "--vendor", vendor, "--vendorUrl", vendorUrl, "--backendOnly", String(backendOnly)]);
+    if (!appRes.success) {
+      process.exitCode = 1;
+      return;
+    }
+
+    // `--no-install` → minimist sets args.install === false
+    if (args.install === false) {
+      console.log(styleText("green", `\n✓ App "${appName}" scaffolded. Dependencies not installed (--no-install). Run "npm install" in the app directory.\n`));
+      return;
+    }
+
+    const toolsPackageDir = path.join(__dirname, '..', 'apps-tools');
+    const isLocalWorkspace = fs.existsSync(toolsPackageDir);
+
+    console.log(styleText("bold", '\nInstalling dependencies...\n'));
+    if (isLocalWorkspace) {
+      // Local monorepo clone — link local builds instead of pulling from npm.
+      const installProcess = execa("npm", ["link", "@jetbrains/youtrack-apps-tools", "@jetbrains/youtrack-workflow-types"], {cwd});
+      installProcess.stdout.pipe(process.stdout);
+      await installProcess;
+    } else {
+      const installProcess = execa("npm", ["install"], {cwd});
+      installProcess.stdout.pipe(process.stdout);
+      await installProcess;
+    }
+
+    console.log(styleText("green", `\n✓ App "${appName}" created and dependencies installed.\n`));
+    return;
   }
 
   const pkgPath = path.join(cwd, 'package.json');
@@ -899,7 +1319,9 @@ function runGeneratedFilesLintFix(files) {
   const vendorUrl = 'https://vendor.com';
 
   const templateName = appType === 'js' ? 'vite-app' : 'enhanced-dx';
-  const appRes = await runHygen(["init", templateName, "--appName", appName, "--title", title, "--description", description, "--vendor", vendor, "--vendorUrl", vendorUrl, ...argv]);
+  // Honor `--backend-only` for ts here too so the `backendOnly` template local is always defined.
+  const backendOnly = appType === 'ts' && (args['backend-only'] === true || args['backend-only'] === 'true');
+  const appRes = await runHygen(["init", templateName, "--appName", appName, "--title", title, "--description", description, "--vendor", vendor, "--vendorUrl", vendorUrl, ...publicArgv, "--backendOnly", String(backendOnly)]);
   if (!appRes.success) {
     return;
   }

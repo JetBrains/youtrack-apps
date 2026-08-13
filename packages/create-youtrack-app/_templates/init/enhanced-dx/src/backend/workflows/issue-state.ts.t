@@ -1,8 +1,8 @@
 ---
-to: src/backend/workflows/issue-state.ts
+to: src/workflows/issue-state.ts
 ---
 import { Issue } from '@jetbrains/youtrack-scripting-api/entities';
-import { requirements } from '../requirements';
+import { requirements } from '../backend/requirements';
 
 export const rule = Issue.stateMachine({
   title: 'Issue state machine',

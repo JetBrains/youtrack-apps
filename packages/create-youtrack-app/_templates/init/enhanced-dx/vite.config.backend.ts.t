@@ -21,7 +21,7 @@ export default defineConfig({
         youtrackRouter(),
         youtrackExtensionProperties(),
         youtrackBackendBundles([
-            { src: 'src/backend/workflows' },
+            { src: 'src/workflows' },
             { src: 'src/backend/ai-tools' },
             { src: 'src/backend/sla' },
         ]),

@@ -93,8 +93,8 @@ src/
 
 ### Scaffolding
 
-- `npm run g -- handler <scope>/<path>` - Generate a new HTTP handler (e.g. `npm run g -- handler project/settings`)
-- `npm run g -- property <Entity.field>` - Generate a new entity extension property (e.g. `npm run g -- property Issue.myField`)
+- `npm run g -- http-handler add --scope <scope> --path <path>` - Generate a new HTTP handler (e.g. `npm run g -- http-handler add --scope project --path settings`)
+- `npm run g -- extension-property add --entity <Entity> --name <field>` - Generate a new entity extension property (e.g. `npm run g -- extension-property add --entity Issue --name myField`)
 - `npm run g -- settings add --name <key> --type <type>` - Add an app settings field
 
 ### Maintenance

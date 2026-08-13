@@ -1,5 +1,5 @@
 ---
-to: src/widgets/enhanced-dx/index.tsx
+to: "<%= backendOnly === 'true' ? '' : 'src/widgets/enhanced-dx/index.tsx' %>"
 ---
 import React from 'react';
 import ReactDOM from 'react-dom/client';

@@ -10,7 +10,5 @@
     "name": "<%= vendor %>",
     "url": "<%= vendorUrl %>"
   },
-  "icon": "icon.svg",
-  "widgets": [
-  ]
+  "icon": "icon.svg"
 }

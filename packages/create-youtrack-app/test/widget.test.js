@@ -148,7 +148,7 @@ describe('Widget Generator', () => {
 
   describe('Basic Widget Creation', () => {
     test('should create all expected widget files', () => {
-      const result = runCLI('widget --key basic-widget --extension-point DASHBOARD_WIDGET', { silent: true });
+      const result = runCLI('widget add --key basic-widget --extension-point DASHBOARD_WIDGET', { silent: true });
 
       assert.strictEqual(result.success, true, `Command should succeed. Output: ${result.output}`);
       assert.strictEqual(fileExists('src/widgets/basic-widget/index.html'), true, 'index.html should be created');
@@ -179,7 +179,7 @@ describe('Widget Generator', () => {
       const cleanupLintFixScript = createLintFixScript(argsPath);
 
       try {
-        const result = runCLI('widget --key lint-widget --extension-point DASHBOARD_WIDGET', { silent: true });
+        const result = runCLI('widget add --key lint-widget --extension-point DASHBOARD_WIDGET', { silent: true });
 
         assert.strictEqual(result.success, true, result.output);
         assert.deepStrictEqual(JSON.parse(fs.readFileSync(argsPath, 'utf8')), [
@@ -196,7 +196,7 @@ describe('Widget Generator', () => {
 
   describe('Widget Naming', () => {
     test('should default name to titleized key when --name is omitted', () => {
-      const result = runCLI('widget --key auto-named-widget --extension-point MAIN_MENU_ITEM', { silent: true });
+      const result = runCLI('widget add --key auto-named-widget --extension-point MAIN_MENU_ITEM', { silent: true });
       assert.strictEqual(result.success, true, result.output);
 
       const widget = readManifest().widgets.find(w => w.key === 'auto-named-widget');
@@ -205,7 +205,7 @@ describe('Widget Generator', () => {
     });
 
     test('should use explicit --name when provided', () => {
-      const result = runCLI('widget --key named-widget --name "My Custom Name" --extension-point DASHBOARD_WIDGET', { silent: true });
+      const result = runCLI('widget add --key named-widget --name "My Custom Name" --extension-point DASHBOARD_WIDGET', { silent: true });
       assert.strictEqual(result.success, true, result.output);
 
       const widget = readManifest().widgets.find(w => w.key === 'named-widget');
@@ -219,7 +219,7 @@ describe('Widget Generator', () => {
   describe('Widget Description', () => {
     test('should set description in manifest when --description is provided', () => {
       const result = runCLI(
-        'widget --key described-widget --extension-point ISSUE_BELOW_SUMMARY --description "Shows issue metrics"',
+        'widget add --key described-widget --extension-point ISSUE_BELOW_SUMMARY --description "Shows issue metrics"',
         { silent: true }
       );
       assert.strictEqual(result.success, true, result.output);
@@ -235,7 +235,7 @@ describe('Widget Generator', () => {
   describe('Widget Permissions', () => {
     test('should set permissions array in manifest when --permissions is provided', () => {
       const result = runCLI(
-        'widget --key perms-widget --extension-point DASHBOARD_WIDGET --permissions READ_ISSUE,UPDATE_ISSUE',
+        'widget add --key perms-widget --extension-point DASHBOARD_WIDGET --permissions READ_ISSUE,UPDATE_ISSUE',
         { silent: true }
       );
       assert.strictEqual(result.success, true, result.output);
@@ -260,7 +260,7 @@ describe('Widget Generator', () => {
   describe('Widget Dimensions', () => {
     test('should set expectedDimensions in manifest when --width and --height are provided', () => {
       const result = runCLI(
-        'widget --key dims-widget --extension-point DASHBOARD_WIDGET --width 800 --height 600',
+        'widget add --key dims-widget --extension-point DASHBOARD_WIDGET --width 800 --height 600',
         { silent: true }
       );
       assert.strictEqual(result.success, true, result.output);
@@ -283,7 +283,7 @@ describe('Widget Generator', () => {
 
   describe('Error Handling', () => {
     test('should fail when --extension-point is missing', () => {
-      const result = runCLI('widget --key no-ep-widget', { silent: true });
+      const result = runCLI('widget add --key no-ep-widget', { silent: true });
       assert.strictEqual(result.success, false, 'Command should fail without --extension-point');
       assert.ok(
         result.output.includes('extension-point') || result.output.includes('extensionPoint'),
@@ -292,7 +292,7 @@ describe('Widget Generator', () => {
     });
 
     test('should fail with invalid extension point', () => {
-      const result = runCLI('widget --key invalid-ep-widget --extension-point INVALID_POINT', { silent: true });
+      const result = runCLI('widget add --key invalid-ep-widget --extension-point INVALID_POINT', { silent: true });
       assert.strictEqual(result.success, false, 'Command should fail with invalid extension point');
       assert.ok(
         result.output.includes('Invalid extension point') || result.output.includes('INVALID_POINT'),
@@ -301,17 +301,17 @@ describe('Widget Generator', () => {
     });
 
     test('should fail with invalid key format (contains spaces)', () => {
-      const result = runCLI('widget --key "bad key" --extension-point DASHBOARD_WIDGET', { silent: true });
+      const result = runCLI('widget add --key "bad key" --extension-point DASHBOARD_WIDGET', { silent: true });
       assert.strictEqual(result.success, false, 'Command should fail with key containing spaces');
     });
 
     test('should fail with key starting with a digit', () => {
-      const result = runCLI('widget --key 1bad-key --extension-point DASHBOARD_WIDGET', { silent: true });
+      const result = runCLI('widget add --key 1bad-key --extension-point DASHBOARD_WIDGET', { silent: true });
       assert.strictEqual(result.success, false, 'Command should fail with key starting with a digit');
     });
 
     test('should fail with key containing uppercase letters', () => {
-      const result = runCLI('widget --key MyWidget --extension-point DASHBOARD_WIDGET', { silent: true });
+      const result = runCLI('widget add --key MyWidget --extension-point DASHBOARD_WIDGET', { silent: true });
       assert.strictEqual(result.success, false, 'Command should fail with key containing uppercase');
     });
   });
@@ -319,11 +319,11 @@ describe('Widget Generator', () => {
   // ── Regression guards ──────────────────────────────────────────────────────
 
   describe('Regression Guards', () => {
-    test('widget interception should use normalizedArgv', () => {
+    test('widget interception should use publicArgv', () => {
       const indexContent = fs.readFileSync(path.join(PKG_DIR, 'index.js'), 'utf8');
       assert.ok(
-        indexContent.includes("normalizedArgv.findIndex(a => a === 'widget')"),
-        'Widget interception should search normalizedArgv for alias-safety'
+        indexContent.includes("publicArgv.findIndex(a => a === 'widget')"),
+        'Widget interception should search publicArgv'
       );
     });
   });
@@ -334,7 +334,7 @@ describe('Widget Generator', () => {
     EXTENSION_POINTS.forEach((ep, i) => {
       test(`should accept extension point ${ep}`, () => {
         const key = `ep-test-${i}`;
-        const result = runCLI(`widget --key ${key} --extension-point ${ep}`, { silent: true });
+        const result = runCLI(`widget add --key ${key} --extension-point ${ep}`, { silent: true });
 
         assert.strictEqual(result.success, true, `Should succeed for ${ep}. Output: ${result.output}`);
 

@@ -1,6 +1,10 @@
 ---
-to: src/widgets/enhanced-dx/app.tsx
+to: "<%= backendOnly === 'true' ? '' : 'src/widgets/enhanced-dx/app.tsx' %>"
 ---
+// Sample widget shipped with the scaffold. If this app is backend-only (workflows,
+// HTTP handlers, rules — no UI), delete the whole src/widgets/enhanced-dx/ folder and
+// its manifest.json "widgets[]" entry, or re-scaffold with `--backend-only`. Leave this
+// untouched if the app is meant to render a UI in YouTrack.
 import React, {memo, useCallback, useState, useEffect} from 'react';
 import Button from '@jetbrains/ring-ui-built/components/button/button';
 import {Input, Size} from '@jetbrains/ring-ui-built/components/input/input';

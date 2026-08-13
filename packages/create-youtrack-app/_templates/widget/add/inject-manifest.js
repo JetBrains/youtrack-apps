@@ -1,8 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-console.log('inject manifest')
-
 
 function injectWidget(newWidget, cwd) {
   const fileName = "manifest.json";
@@ -11,7 +9,11 @@ function injectWidget(newWidget, cwd) {
 
   const manifest = JSON.parse(fs.readFileSync(filePath));
 
-  if (manifest.widgets && manifest.widgets.some(w => w.key === newWidget.key)) {
+  if (!Array.isArray(manifest.widgets)) {
+    manifest.widgets = [];
+  }
+
+  if (manifest.widgets.some(w => w.key === newWidget.key)) {
     throw new Error(`Widget with key "${newWidget.key}" already exists in manifest.json`);
   }
 
