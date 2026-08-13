@@ -14,7 +14,7 @@ Verify these requirements once near the start of the session before using this s
 
 | Requirement | How to verify |
 | --- | --- |
-| Node.js `>= 24` | Run `node --version`. Node is required because both scaffolding and app management run through Node-based CLIs and npm scripts. |
+| Node.js `== 20.18.0` | Run `node --version`. Node is required because both scaffolding and app management run through Node-based CLIs and npm scripts. |
 | npm | Run `npm --version`. Use the version bundled with Node.js `>= 24`, unless the app project declares a stricter version. |
 | npx | Run `npx --version`. Use the version bundled with npm, unless the app project declares a stricter version. |
 | `create-youtrack-app` CLI | Run `create-youtrack-app --help`. If missing, read [references/cli-setup.md](references/cli-setup.md). |
