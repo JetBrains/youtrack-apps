@@ -2,7 +2,7 @@
 
 **Audience:** App developers who want to build or contribute to YouTrack apps using the TypeScript toolchain.
 
-**TL;DR:** Enhanced DX is an experimental TypeScript scaffolding layer for YouTrack apps. It gives you file-based routing, automatic type generation, a type-safe API client, and a watch+auto-upload workflow — all on top of Vite. You scaffold once, run `npm run watch`, and the tool handles the rest.
+**TL;DR:** Enhanced DX is the TypeScript workflow for YouTrack apps. It gives you file-based routing, automatic type generation, a type-safe API client, and a watch+auto-upload workflow — all on top of Vite. You scaffold once, run `npm run watch`, and the tool handles the rest.
 
 ---
 
@@ -33,10 +33,10 @@ Standard YouTrack app development requires writing backend HTTP handlers in plai
 ### Option A — from npm (standard)
 
 ```bash
-npm init @jetbrains/youtrack-app
+npx @jetbrains/create-youtrack-app app init --type ts
 ```
 
-Follow the prompts. When asked for the template, choose **TypeScript (Enhanced DX, experimental)**.
+Follow the prompts. `--type ts` creates a TypeScript app with Enhanced DX; use `--type js` for a basic JavaScript app.
 
 ### Option B — run the CLI locally without installing
 
@@ -75,7 +75,7 @@ cd ../..
 
 ```bash
 mkdir ~/my-app && cd ~/my-app
-create-youtrack-app
+create-youtrack-app app init --type ts
 ```
 
 > After scaffolding, the CLI automatically runs `npm link @jetbrains/youtrack-apps-tools` in the generated project, wiring up the local build.
@@ -84,7 +84,7 @@ create-youtrack-app
 
 ```bash
 cd ~/my-app
-node /path/to/youtrack-apps/packages/create-youtrack-app/index.js
+node /path/to/youtrack-apps/packages/create-youtrack-app/index.js app init --type ts
 ```
 
 ---
@@ -217,9 +217,9 @@ Inside an Enhanced DX project, `npm run g` is a shorthand for the scaffolding CL
 ### Generate a widget
 
 ```bash
-npm run g -- widget --key my-panel --extension-point ISSUE_BELOW_SUMMARY
-npm run g -- widget --key admin-page --extension-point MAIN_MENU_ITEM --name "Admin Page"
-npm run g -- widget --key project-tab --extension-point PROJECT_SETTINGS --permissions read-project
+npm run g -- widget add --key my-panel --extension-point ISSUE_BELOW_SUMMARY
+npm run g -- widget add --key admin-page --extension-point MAIN_MENU_ITEM --name "Admin Page"
+npm run g -- widget add --key project-tab --extension-point PROJECT_SETTINGS --permissions read-project
 ```
 
 This creates `src/widgets/<key>/` (React component, HTML, CSS, Vite config) and injects the entry into `manifest.json` automatically. No manual manifest editing needed.
@@ -231,9 +231,9 @@ Optional flags: `--name`, `--description`, `--permissions <PERM1,PERM2>`, `--wid
 ### Generate a handler
 
 ```bash
-npm run g -- handler global/health                                   # GET (default)
-npm run g -- handler project/users --method POST
-npm run g -- h issue/comments --method POST --permissions read-issue,update-issue
+npm run g -- http-handler add --scope global --path health                                   # GET (default)
+npm run g -- http-handler add --scope project --path users --method POST
+npm run g -- http-handler add --scope issue --path comments --method POST --permissions read-issue,update-issue
 ```
 
 This creates the file at the correct path with the right types, `@zod-to-schema` annotations, and `Handle` export already in place.
@@ -246,9 +246,9 @@ Valid target entities: `Issue`, `User`, `Project`, `Article`.
 Valid types: `string` (default), `integer`, `float`, `boolean`, `Issue`, `User`, `Project`, `Article`.
 
 ```bash
-npm run g -- property Issue.customStatus           # string, single-value
-npm run g -- property Issue.tags --type string --set   # multi-value
-npm run g -- p Article.rating --type integer
+npm run g -- extension-property add --entity Issue --name customStatus           # string, single-value
+npm run g -- extension-property add --entity Issue --name tags --type string --set   # multi-value
+npm run g -- extension-property add --entity Article --name rating --type integer
 ```
 
 Access in handlers after rebuilding:

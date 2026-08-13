@@ -20,7 +20,7 @@ If you prefer to install it as a dependency in your development environment, run
 
 `npm install --save-dev @jetbrains/youtrack-apps-tools`
 
-## Utility Scripts
+## CLI commands
 
 The package includes scripts for synchronizing local changes with your YouTrack. The following commands are available:
 
@@ -117,10 +117,7 @@ Skip and limit pagination is intended for browsing. For synchronization against 
 
 This command lists apps available in your YouTrack. To use it, specify the following parameters:
 
-| Parameter | Description                                                                                                                                                                               |
-| --------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| host      | The base URL of your YouTrack. For YouTrack Cloud, include the trailing `/youtrack`.                                                                                    |
-| token     | A permanent token that grants access to YouTrack. You can create one in your YouTrack profile, on the **Account Security** tab. |
+The `--host` option is the base URL of your YouTrack. For YouTrack Cloud, include the trailing `/youtrack`. `--token` is a permanent token that grants access to YouTrack; create one in your YouTrack profile on the **Account Security** tab.
 
 ### Download
 
@@ -128,12 +125,11 @@ This command lists apps available in your YouTrack. To use it, specify the follo
 
 This command downloads the referenced app from your YouTrack.
 
-If you do not specify a directory with the `output` parameter, a directory named `<appName>` is created in the current working directory,
-and the app files are extracted there. Otherwise, the app is downloaded into the directory specified by the `output` parameter.
+`--app` accepts an app ID or package name. If you omit `--output`, the app is extracted into the current working directory. Otherwise, it is downloaded into the specified directory.
 
 You also need to provide `--host` and `--token` to authenticate with YouTrack.
 
-Use `--overwrite` to replace an existing directory with the same name.
+Use `--overwrite` to replace existing files in the destination directory.
 
 ### Upload
 
