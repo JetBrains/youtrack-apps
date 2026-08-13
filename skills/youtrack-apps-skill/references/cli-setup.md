@@ -1,35 +1,17 @@
 # Set up the CLI (youtrack-apps)
 
-## Step 1. Clone the repos:
+Install the published npm packages.
 
-Go to non-project folder.
-
-```bash
-git clone https://github.com/JetBrains/youtrack-apps.git
-cd youtrack-apps
-```
-## Step 2. Build the tool package (required — the scaffolded app links against it)
+From the directory where you want the generator package installed, run:
 
 ```bash
-cd packages/apps-tools
-npm install 
-npm run build
+npm i @jetbrains/create-youtrack-app
 ```
 
-## Step 3. Link both packages globally so they can be resolved:
-Register the tool package in your local npm registry
+Then install the YouTrack app tools CLI:
 
 ```bash
-npm link
-cd ../..
+npm install -g @jetbrains/youtrack-apps-tools
 ```
 
-Register the CLI
-
-```bash
-cd packages/create-youtrack-app
-npm install
-npm link
-```
-
-CLI is ready to use
+The CLIs are ready to use.
