@@ -9,6 +9,7 @@ permissions:
 jobs:
   release:
     name: Package and publish skill release
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:

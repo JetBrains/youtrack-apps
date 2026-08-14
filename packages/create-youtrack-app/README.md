@@ -48,14 +48,16 @@ After you have generated an app, you may want to add more features. Add new feat
 ## App Skill Commands
 
 The skill gives supported AI coding agents YouTrack app development guidance.
-It is installed from the copy included with the CLI package.
+It is downloaded from the latest published YouTrack Apps skill release when installed.
 
 | Command | Description |
 | --- | --- |
 | `npx @jetbrains/create-youtrack-app skill install` | Detects supported agents and lets you choose agents plus global or project installation. |
 | `npx @jetbrains/create-youtrack-app skill status` | Shows global and project installation status. |
 
-Supported agents are Claude Code, Codex CLI and Junie. Global installs use symlinks in the agent home config. Project installs use hard copies under the current directory. If the included skill is unavailable, installation fails with an explicit error.
+Supported agents are Claude Code, Codex CLI and Junie. Global installs use symlinks to the downloaded skill cache in the agent home config. Project installs use hard copies under the current directory. If the release cannot be downloaded, installation fails with an explicit error.
+
+Skill installation requires Node.js 18 or later. On Unix-like systems, it also requires the `unzip` command to be available on your `PATH`. Windows uses PowerShell's built-in `Expand-Archive` instead.
 
 ## Classic Workflow Rules
 
