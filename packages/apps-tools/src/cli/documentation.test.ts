@@ -6,13 +6,13 @@ import {registeredCommandNames} from './index.js';
 describe('README command list', () => {
   it('documents exactly the commands registered by the CLI', () => {
     const readme = readReadme();
-    const utilityScripts = readme.match(/^## Utility Scripts\n([\s\S]*?)(?=^### )/m)?.[1];
+    const cliCommands = readme.match(/^## CLI commands\n([\s\S]*?)(?=^### )/m)?.[1];
 
-    expect(utilityScripts).toBeDefined();
+    expect(cliCommands).toBeDefined();
 
     const documentedCommandNames = [
       ...new Set(
-        [...utilityScripts!.matchAll(/^- `youtrack-app ([\w-]+) ([\w-]+)/gm)].map(
+        [...cliCommands!.matchAll(/^- `youtrack-app ([\w-]+) ([\w-]+)/gm)].map(
           ([, entity, action]) => `${entity}:${action}`,
         ),
       ),
