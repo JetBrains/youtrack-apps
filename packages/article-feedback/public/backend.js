@@ -1,13 +1,16 @@
+// An extension property that was never written reads as undefined, and
+// JSON.parse(undefined) parses the string "undefined" and throws, so the
+// nullish fallbacks below are only reachable if the parse gets valid JSON.
 function getFeedback(ctx) {
-  return JSON.parse(ctx.article.extensionProperties.feedback) ?? [];
+  return JSON.parse(ctx.article.extensionProperties.feedback || 'null') ?? [];
 }
 
 function getGuestFeedback(ctx) {
-  return JSON.parse(ctx.article.extensionProperties.guestFeedback) ?? [];
+  return JSON.parse(ctx.article.extensionProperties.guestFeedback || 'null') ?? [];
 }
 
 function getGuestLikes(ctx) {
-  return Number(JSON.parse(ctx.article.extensionProperties.guestLikes) ?? 0);
+  return Number(JSON.parse(ctx.article.extensionProperties.guestLikes || 'null') ?? 0);
 }
 
 function isGuest(ctx) {
@@ -52,19 +55,6 @@ function response(ctx, data) {
 
 exports.httpHandler = {
   endpoints: [
-    {
-      scope: 'article',
-      method: 'GET',
-      path: 'debug',
-      handle: function handleDebug(ctx) {
-        response(ctx, {
-          feedback: getFeedback(ctx),
-          guestFeedback: getGuestFeedback(ctx),
-          guestLikes: getGuestLikes(ctx)
-        });
-      }
-    },
-
     {
       scope: 'article',
       method: 'GET',
@@ -153,6 +143,9 @@ exports.httpHandler = {
       scope: 'article',
       method: 'GET',
       path: 'stat',
+      // Article scope only gates readability, so the endpoint must declare the
+      // same permission as the feedback-statistics widget in manifest.json.
+      permissions: ['UPDATE_ARTICLE'],
       handle: function handleStat(ctx) {
         const feedback = getFeedback(ctx);
         const guestFeedback = getGuestFeedback(ctx);
@@ -169,8 +162,15 @@ exports.httpHandler = {
         const likes = [...lastFeedbackOfEachUser, ...lastFeedbackOfEachGuest].filter(it => it.liked).length;
         const dislikes = [...lastFeedbackOfEachUser, ...lastFeedbackOfEachGuest].filter(it => !it.liked).length;
 
-        const messages = feedback.filter(it => it.message);
-        const guestMessages = guestFeedback.filter(it => it.message);
+        // ponytail: explicit field projection, so a field added to the stored
+        // records later is not served here until someone adds it on purpose.
+        const messages = feedback.
+          filter(it => it.message).
+          map(({userId, message, timestamp}) => ({userId, message, timestamp}));
+
+        const guestMessages = guestFeedback.
+          filter(it => it.message).
+          map(({name, email, message, timestamp}) => ({name, email, message, timestamp}));
 
         response(ctx, {likes, guestLikes, dislikes, messages, guestMessages});
       }
