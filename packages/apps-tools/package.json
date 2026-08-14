@@ -149,7 +149,7 @@
     "test:type": "tsc --noEmit",
     "typecheck:types": "tsc --noEmit -p src/dx/test/types-strict-tsconfig.json",
     "typecheck:regression": "tsc --noEmit -p src/dx/test/regression/regression-tsconfig.json",
-    "save-version": "echo '{ \"version\": \"'$npm_package_version'\" }' > dist/package.json",
+    "save-version": "echo '{ \"type\": \"module\", \"version\": \"'$npm_package_version'\" }' > dist/package.json",
     "release:ci": "commit-and-tag-version && git push --follow-tags origin main && npm run save-version && npm publish"
   },
   "commit-and-tag-version": {
