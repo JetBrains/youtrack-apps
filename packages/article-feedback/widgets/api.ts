@@ -91,10 +91,6 @@ export default class API {
     return this.hasPermission(READ_USER_PERMISSION);
   }
 
-  getDebug() {
-    return this.host.fetchApp('backend/debug', {scope: true});
-  }
-
   getUser() {
     return this.host.fetchApp('backend/user', {scope: true}) as Promise<User>;
   }
