@@ -6,7 +6,7 @@ import {registeredCommandNames} from './index.js';
 describe('README command list', () => {
   it('documents exactly the commands registered by the CLI', () => {
     const readme = readReadme();
-    const utilityScripts = readme.match(/^## Utility Scripts\n([\s\S]*?)(?=^### )/m)?.[1];
+    const utilityScripts = readme.match(/^## CLI commands\n([\s\S]*?)(?=^### )/m)?.[1];
 
     expect(utilityScripts).toBeDefined();
 
