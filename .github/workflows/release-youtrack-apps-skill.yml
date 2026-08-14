@@ -1,0 +1,90 @@
+name: Release YouTrack Apps skill
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Package and publish skill release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out selected revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Read skill version
+        id: metadata
+        run: |
+          set -euo pipefail
+
+          skill_path="skills/youtrack-apps-skill/SKILL.md"
+          skill_version="$(awk '
+            /^---[[:space:]]*$/ {
+              if (!frontmatter) {
+                frontmatter = 1
+                next
+              }
+              exit
+            }
+            frontmatter && /^metadata:[[:space:]]*$/ {
+              metadata = 1
+              next
+            }
+            frontmatter && metadata && /^[^[:space:]]/ {
+              metadata = 0
+            }
+            frontmatter && metadata {
+              line = $0
+              sub(/^[[:space:]]+/, "", line)
+              if (line ~ /^version:[[:space:]]*/) {
+                sub(/^version:[[:space:]]*/, "", line)
+                sub(/[[:space:]]*$/, "", line)
+                print line
+                exit
+              }
+            }
+          ' "$skill_path")"
+
+          if [[ -z "$skill_version" ]]; then
+            echo "Missing metadata.version in $skill_path" >&2
+            exit 1
+          fi
+
+          {
+            echo "skill_version=$skill_version"
+            echo "tag=skill/youtrack-apps-skill/v$skill_version"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Package skill
+        id: package
+        env:
+          SKILL_VERSION: ${{ steps.metadata.outputs.skill_version }}
+        run: |
+          set -euo pipefail
+
+          archive_name="youtrack-apps-skill-v$SKILL_VERSION.zip"
+          (
+            cd skills
+            zip --quiet --recurse-paths "$GITHUB_WORKSPACE/$archive_name" youtrack-apps-skill
+          )
+
+          echo "archive_name=$archive_name" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.metadata.outputs.tag }}
+          SKILL_VERSION: ${{ steps.metadata.outputs.skill_version }}
+          ARCHIVE_NAME: ${{ steps.package.outputs.archive_name }}
+        run: |
+          set -euo pipefail
+
+          gh release create "$TAG" "$ARCHIVE_NAME" \
+            --target "$GITHUB_SHA" \
+            --title "YouTrack Apps skill v$SKILL_VERSION" \
+            --generate-notes
