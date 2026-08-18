@@ -1,8 +1,8 @@
 ---
 name: youtrack-apps-skill
-description: Guides building, debugging, extending, and managing JetBrains YouTrack apps and workflows. Used when scaffolding, modifying, validating, uploading, downloading, enabling, disabling, or inspecting a YouTrack app, workflow rule, app endpoint, or manifest.
+description: Guides building, debugging, extending, and managing JetBrains YouTrack apps and workflows. Used when scaffolding, modifying, validating, uploading, downloading, enabling, disabling, or inspecting a YouTrack app, workflow rule, app endpoint, or manifest. Also use when creating GitHub release automation or publishing a YouTrack app to JetBrains Marketplace.
 metadata:
-  version: 1.0.0
+  version: 1.0.1
   YouTrackVersion: 2026.2.18243
 ---
 
@@ -114,6 +114,11 @@ After deployment, you can verify the installed app via `youtrack-app` CLI:
 - Check `info` and `requirement-errors`.
 - Configure settings or project attachment/enabled state when needed.
 - Check app logs or script logs while testing behavior.
+
+## Releasing and Publishing App
+Release is a complete step on its own; Marketplace publication is an optional, later step that uses an existing release. For a finished app, check `origin`: if it is GitHub (or missing) and `.github/workflows/release.yml` is absent, offer release automation. Consider the Marketplace workflow only when Marketplace distribution is in scope. Do not create workflows, remotes, secrets, listings, releases, or uploads unless requested.
+
+Load [references/release-and-publish.md](references/release-and-publish.md) before assessing release readiness, setting up automation, or publishing. It contains the workflows, manual first-listing steps, and Marketplace-specific safeguards.
 
 # Manifest
 Use for app identity which is `name` and package metadata like  `title`, `description`, `vendor`, `version`. Also use it
