@@ -54,7 +54,7 @@ The project needs a `pack` script that produces `app.zip`, for example:
 Check the package before any upload:
 
 ```bash
-unzip -l app.zip | grep ' manifest.json$'
+unzip -Z1 app.zip | grep -Fxq 'manifest.json'
 ```
 
 ## Add the release workflow
@@ -101,10 +101,10 @@ jobs:
         run: |
           set -e
           if [ -n "$INPUT_VERSION" ]; then
-            case "$INPUT_VERSION" in
-              [0-9]*.[0-9]*.[0-9]*) ;;
-              *) echo "Version must be major.minor.patch, got '$INPUT_VERSION'" >&2; exit 1 ;;
-            esac
+            if ! [[ "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Version must be major.minor.patch, got '$INPUT_VERSION'" >&2
+              exit 1
+            fi
             npm version "$INPUT_VERSION" --no-git-tag-version --allow-same-version >/dev/null
           else
             npm version patch --no-git-tag-version >/dev/null
@@ -128,7 +128,7 @@ jobs:
         run: |
           npm run pack
           mv app.zip "app-$VERSION.zip"
-          unzip -l "app-$VERSION.zip" | grep -q ' manifest.json$'
+          unzip -Z1 "app-$VERSION.zip" | grep -Fxq 'manifest.json'
 
       - name: Commit and tag
         env:
@@ -155,7 +155,8 @@ jobs:
 ```
 
 `permissions: contents: write` is necessary for the workflow token to push and create a release.
-Attach only the app zip; an explicit `gh release create` file list prevents unwanted source archives.
+Attach only the app zip explicitly. GitHub still provides its default source archives for the tag, but
+the explicit `gh release create` file list prevents accidental local build artifacts from being attached.
 
 ## Optional Marketplace publication: first version is manual
 
@@ -216,7 +217,7 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           gh release download "v$VERSION" --pattern "app-$VERSION.zip"
-          unzip -l "app-$VERSION.zip" | grep -q ' manifest.json$'
+          unzip -Z1 "app-$VERSION.zip" | grep -Fxq 'manifest.json'
 
       - name: Upload to Marketplace
         env:
@@ -275,7 +276,7 @@ app's actions → **Check for updates**.
 | `MARKETPLACE_TOKEN secret is not set` but `gh secret list` shows it | The secret was set empty. Pipe the real value in and reset it. |
 | `401 Unauthorized` | A YouTrack token was used, or the Marketplace token was rotated. Replace the repository secret. |
 | Marketplace rejects the version | That version was already uploaded. Bump and release a new version; Marketplace versions are single-use. |
-| Package rejected | `manifest.json` is not at the zip root. Fix the pack script and verify with `unzip -l`. |
+| Package rejected | `manifest.json` is not at the zip root. Fix the pack script and verify the exact `manifest.json` entry with `unzip -Z1`. |
 | Manual trigger absent | Commit the workflow to the default branch first. |
 | `gh release download` finds nothing | The release asset name and workflow pattern disagree. Keep `app-$VERSION.zip` consistent. |
 | Upload workflow is green but the listing does not show the update | The version is in moderation; normal review is 2–5 business days. |
