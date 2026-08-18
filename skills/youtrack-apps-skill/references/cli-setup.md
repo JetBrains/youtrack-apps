@@ -1,17 +1,31 @@
-# Set up the CLI (youtrack-apps)
+# Set up the YouTrack Apps CLIs
 
-Install the published npm packages.
-
-From the directory where you want the generator package installed, run:
+Use Node.js `>= 20.18.0`. Check it before installation:
 
 ```bash
-npm i @jetbrains/create-youtrack-app
+node --version
+npm --version
 ```
 
-Then install the YouTrack app tools CLI:
+Install the published CLIs globally so the agent can call them from any app directory:
 
 ```bash
-npm install -g @jetbrains/youtrack-apps-tools
+npm install --global @jetbrains/create-youtrack-app@^1.0.2
+npm install --global @jetbrains/youtrack-apps-tools@^1.0.2
 ```
 
-The CLIs are ready to use.
+Verify both commands are available:
+
+```bash
+create-youtrack-app --help
+youtrack-app --help
+```
+
+Commands that contact YouTrack need an instance URL and a permanent token with app-upload permissions. Obtain the token in **YouTrack → Profile → Account Security → New token**, then set it without displaying or committing its value:
+
+```bash
+export YOUTRACK_HOST=https://youtrack.example.com
+export YOUTRACK_API_TOKEN=<your-permanent-token>
+```
+
+`youtrack-app` also accepts `--host` and `--token` for a one-off command. Generated Enhanced DX projects commonly store `YOUTRACK_HOST` and `YOUTRACK_TOKEN` in a local, uncommitted `.env` file; their upload script passes those values to the CLI explicitly.
