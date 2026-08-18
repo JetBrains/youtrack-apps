@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version as major.minor.patch. Leave empty to bump the patch.'
+        required: false
+        type: string
+      notes:
+        description: "What's new in this release"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # Install from the lockfile: plain install can lose Rollup's platform binary.
+      - run: npm ci --no-audit --no-fund
+
+      - name: Set the version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -e
+          if [ -n "$INPUT_VERSION" ]; then
+            if ! [[ "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "Version must be major.minor.patch, got '$INPUT_VERSION'" >&2
+              exit 1
+            fi
+            npm version "$INPUT_VERSION" --no-git-tag-version --allow-same-version >/dev/null
+          else
+            npm version patch --no-git-tag-version >/dev/null
+          fi
+          VERSION=$(node -p "require('./package.json').version")
+          # Marketplace displays manifest.json's version, so synchronize it.
+          node -e "
+            const fs = require('fs');
+            const m = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+            m.version = process.argv[1];
+            fs.writeFileSync('manifest.json', JSON.stringify(m, null, 2) + '\\n');
+          " "$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - run: npm test
+      - run: npm run build
+
+      - name: Pack
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          npm run pack
+          mv app.zip "app-$VERSION.zip"
+          unzip -Z1 "app-$VERSION.zip" | grep -Fxq 'manifest.json'
+
+      - name: Commit and tag
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -am "Release $VERSION" || echo 'Version unchanged, tagging the current commit'
+          git tag "v$VERSION"
+          # --follow-tags skips lightweight tags, so push this tag explicitly.
+          git push origin HEAD "v$VERSION"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+          NOTES: ${{ inputs.notes }}
+        run: |
+          if [ -n "$NOTES" ]; then
+            gh release create "v$VERSION" "app-$VERSION.zip" --title "$VERSION" --notes "$NOTES"
+          else
+            gh release create "v$VERSION" "app-$VERSION.zip" --title "$VERSION" --generate-notes
+          fi

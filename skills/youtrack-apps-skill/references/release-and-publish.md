@@ -5,7 +5,7 @@ Three separate things, often confused:
 | Action | What it changes | How |
 | --- | --- | --- |
 | **Deploy** | One YouTrack instance | `youtrack-app app upload --host … --token …` |
-| **Release** | A GitHub tag and downloadable app zip | the manual `release.yml` workflow below |
+| **Release** | A GitHub tag and downloadable app zip | the manual `release.yml` template in `assets/` |
 | **Publish** | The [JetBrains Marketplace](https://plugins.jetbrains.com/youtrack_app) listing, so any instance can install and update it | First version through the UI; later versions through manual `publish-marketplace.yml` |
 
 Release and publish are two distinct, manually triggered steps. **Release is independently useful and
@@ -59,100 +59,12 @@ unzip -Z1 app.zip | grep -Fxq 'manifest.json'
 
 ## Add the release workflow
 
-Create `.github/workflows/release.yml`. It is manual, accepts an explicit version or bumps the
-patch, tests and packs the app, commits the synchronized `package.json` and `manifest.json`, tags
-the commit, and attaches exactly that zip to a GitHub release.
+Copy [assets/release.yml](../assets/release.yml) to `.github/workflows/release.yml`. It is manual,
+accepts an explicit version or bumps the patch, tests and packs the app, commits the synchronized
+`package.json` and `manifest.json`, tags the commit, and attaches that zip to a GitHub release.
 
-```yaml
-name: Release
-
-on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version as major.minor.patch. Leave empty to bump the patch.'
-        required: false
-        type: string
-      notes:
-        description: "What's new in this release"
-        required: false
-        type: string
-
-permissions:
-  contents: write
-
-jobs:
-  release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      # Install from the lockfile: plain install can lose Rollup's platform binary.
-      - run: npm ci --no-audit --no-fund
-
-      - name: Set the version
-        id: version
-        env:
-          INPUT_VERSION: ${{ inputs.version }}
-        run: |
-          set -e
-          if [ -n "$INPUT_VERSION" ]; then
-            if ! [[ "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-              echo "Version must be major.minor.patch, got '$INPUT_VERSION'" >&2
-              exit 1
-            fi
-            npm version "$INPUT_VERSION" --no-git-tag-version --allow-same-version >/dev/null
-          else
-            npm version patch --no-git-tag-version >/dev/null
-          fi
-          VERSION=$(node -p "require('./package.json').version")
-          # Marketplace displays manifest.json's version, so synchronize it.
-          node -e "
-            const fs = require('fs');
-            const m = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
-            m.version = process.argv[1];
-            fs.writeFileSync('manifest.json', JSON.stringify(m, null, 2) + '\\n');
-          " "$VERSION"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - run: npm test
-      - run: npm run build
-
-      - name: Pack
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          npm run pack
-          mv app.zip "app-$VERSION.zip"
-          unzip -Z1 "app-$VERSION.zip" | grep -Fxq 'manifest.json'
-
-      - name: Commit and tag
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git commit -am "Release $VERSION" || echo 'Version unchanged, tagging the current commit'
-          git tag "v$VERSION"
-          # --follow-tags skips lightweight tags, so push this tag explicitly.
-          git push origin HEAD "v$VERSION"
-
-      - name: Publish the release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.version.outputs.version }}
-          NOTES: ${{ inputs.notes }}
-        run: |
-          if [ -n "$NOTES" ]; then
-            gh release create "v$VERSION" "app-$VERSION.zip" --title "$VERSION" --notes "$NOTES"
-          else
-            gh release create "v$VERSION" "app-$VERSION.zip" --title "$VERSION" --generate-notes
-          fi
-```
+Adapt the Node version and the `npm test`, `npm run build`, and `npm run pack` commands to the
+project. Keep the version synchronization, exact zip-root check, and explicit tag push.
 
 `permissions: contents: write` is necessary for the workflow token to push and create a release.
 Attach only the app zip explicitly. GitHub still provides its default source archives for the tag, but
@@ -182,63 +94,9 @@ The plugin id is public and belongs in the workflow. The token is secret and mus
 
 ## Add the optional Marketplace publishing workflow
 
-Once the listing and its numeric id exist, create
+Copy [assets/publish-marketplace.yml](../assets/publish-marketplace.yml) to
 `.github/workflows/publish-marketplace.yml`. It downloads the exact release asset rather than
 building a fresh zip, then submits it to Marketplace.
-
-```yaml
-name: Publish to Marketplace
-
-# Manual only: publish an already-released zip to JetBrains Marketplace.
-on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Released version to publish, e.g. 1.0.0'
-        required: true
-        type: string
-      channel:
-        description: 'Marketplace channel. Stable if empty.'
-        required: false
-        type: string
-
-env:
-  # Public id from https://plugins.jetbrains.com/plugin/<pluginId>-<slug>.
-  PLUGIN_ID: '00000'
-
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download the release asset
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          VERSION: ${{ inputs.version }}
-        run: |
-          gh release download "v$VERSION" --pattern "app-$VERSION.zip"
-          unzip -Z1 "app-$VERSION.zip" | grep -Fxq 'manifest.json'
-
-      - name: Upload to Marketplace
-        env:
-          TOKEN: ${{ secrets.MARKETPLACE_TOKEN }}
-          VERSION: ${{ inputs.version }}
-          CHANNEL: ${{ inputs.channel }}
-        run: |
-          if [ -z "$TOKEN" ]; then
-            echo 'MARKETPLACE_TOKEN secret is not set' >&2
-            exit 1
-          fi
-          # Without --fail-with-body, curl treats an HTTP error as a successful job.
-          curl -sS --fail-with-body \
-            -H "Authorization: Bearer $TOKEN" \
-            -F "pluginId=$PLUGIN_ID" \
-            -F "file=@app-$VERSION.zip" \
-            -F "channel=$CHANNEL" \
-            https://plugins.jetbrains.com/api/updates/upload
-          echo
-          echo "Submitted $VERSION for moderation: https://plugins.jetbrains.com/plugin/$PLUGIN_ID"
-```
 
 Replace `00000` only with the listing's numeric id. An empty channel means Stable; another name
 such as `eap` creates an opt-in pre-release channel. The upload API also accepts
