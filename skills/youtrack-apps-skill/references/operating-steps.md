@@ -18,6 +18,7 @@ Classify the request as one of the common task types:
 - `manage-existing-app`: deploy, list, search, download, upload, enable, disable, attach, detach, validate, or inspect an app
 - `scaffold-new-app`: create a new app or add a new app module
 - `modify-existing-app`: change code, manifest, settings, workflows, endpoints, UI, or API usage
+- `release-or-publish-app`: prepare GitHub release automation, create a release, or submit a released app to JetBrains Marketplace
 
 ## Step 2: Extract user-provided data
 
@@ -28,6 +29,8 @@ Extract and remember all user-provided data, including:
 - project short name, if project-specific
 - desired app script types: workflow rule, HTTP handler, MCP tool, manifest, settings, entity extension, UI, or unknown
 - requested output format: explanation, plan, files - modified, sources, suggested actions.
+- source repository remote and whether it is GitHub, when release readiness matters
+- Marketplace listing/plugin id and intended channel, when publishing is requested
 
 ## Step 3: Check Required-input
 
@@ -38,6 +41,7 @@ Required inputs by task type:
 - `manage-existing-app`: target app and desired action
 - `scaffold-new-app`: app name, title, description, and app type for brand-new apps
 - `modify-existing-app`: the requested change
+- `release-or-publish-app`: target app/repository and requested release or publishing action; publishing additionally needs a released version and Marketplace listing identity
 
 If required input is missing, ask the user one concise grouped question and stop.
 Do not assume missing app names, project short names, or destructive confirmations.
@@ -104,6 +108,8 @@ For code changes, final answer must include:
 - Any unresolved assumptions or required user actions
 
 Every reference must be verified.
+
+For a newly finished app or an app the user wants to distribute, also perform the release-readiness check from [Releasing and Publishing App](../SKILL.md#releasing-and-publishing-app): inspect `origin` and the release workflow without changing them. If `origin` is GitHub or missing and the release workflow is absent, recommend it and offer to set it up. Consider the Marketplace workflow only if Marketplace distribution is in scope; it is optional and depends on a prior release. State the first-listing and secret setup actions only for Marketplace work. Do not turn a recommendation into an unrequested write or publication.
 
 
 ## Step 9: Deployment and runtime validation
