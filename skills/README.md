@@ -44,7 +44,7 @@ You need Node.js 20.18.0 or later. To use `youtrack-app` directly, install it an
 
 ```bash
 export YOUTRACK_HOST=https://your-instance.youtrack.cloud
-export YOUTRACK_API_TOKEN=<your-permanent-token>
+export YOUTRACK_TOKEN=<your-permanent-token>
 ```
 
 Create the permanent token in **YouTrack → Profile → Account Security → New token**. Never commit it in Git.

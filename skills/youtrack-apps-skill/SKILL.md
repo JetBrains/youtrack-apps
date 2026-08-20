@@ -18,7 +18,7 @@ Verify these requirements once near the start of the session before using this s
 | npm | Run `npm --version`. Use the version bundled with Node.js `>= 24`, unless the app project declares a stricter version. |
 | npx | Run `npx --version`. Use the version bundled with npm, unless the app project declares a stricter version. |
 | `create-youtrack-app` CLI | Run `npx @jetbrains/create-youtrack-app@latest --help`. If it cannot run, read [references/cli-setup.md](references/cli-setup.md). |
-| `youtrack-app` CLI | Run `youtrack-app --help`. If missing, read [references/cli-setup.md](references/cli-setup.md). Commands that contact YouTrack also require a target host (`YOUTRACK_HOST`) and API token (`YOUTRACK_API_TOKEN`). If token variables are not in environment then read the article on how to obtain the token and instruct the user: [Manage Permanent Tokens](https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html#obtain-permanent-token). Never print token values. |
+| `youtrack-app` CLI | Run `youtrack-app --help`. If missing, read [references/cli-setup.md](references/cli-setup.md). Commands that contact YouTrack also require a target host (`YOUTRACK_HOST`) and token (`YOUTRACK_TOKEN`; `YOUTRACK_API_TOKEN` is also supported). If token variables are not in environment then read the article on how to obtain the token and instruct the user: [Manage Permanent Tokens](https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html#obtain-permanent-token). Never print token values. |
 
 If required tooling is missing and cannot be installed in the current environment, ask the
 user before continuing with a reduced local-only workflow.

@@ -60,9 +60,10 @@ The package includes scripts for synchronizing local changes with your YouTrack.
 `youtrack-app` also reads the following environment variables:
 
 - `YOUTRACK_HOST` - Your YouTrack instance URL.
-- `YOUTRACK_API_TOKEN` - Your permanent token for accessing the YouTrack API.
+- `YOUTRACK_TOKEN` - Your permanent token for accessing the YouTrack API.
+- `YOUTRACK_API_TOKEN` - Legacy alias for `YOUTRACK_TOKEN`.
 
-Configure these variables once, or pass `--host` and `--token` to each command. If you provide both environment variables and command-line arguments, the command-line arguments take precedence.
+Configure these variables once, or pass `--host` and `--token` to each command. `YOUTRACK_TOKEN` takes precedence over `YOUTRACK_API_TOKEN`; command-line arguments take precedence over both.
 
 ### Language Support
 

@@ -32,7 +32,7 @@ Commands that contact YouTrack need an instance URL and a permanent token with a
 
 ```bash
 export YOUTRACK_HOST=https://youtrack.example.com
-export YOUTRACK_API_TOKEN=<your-permanent-token>
+export YOUTRACK_TOKEN=<your-permanent-token>
 ```
 
-`youtrack-app` also accepts `--host` and `--token` for a one-off command. Generated Enhanced DX projects commonly store `YOUTRACK_HOST` and `YOUTRACK_TOKEN` in a local, uncommitted `.env` file; their upload script passes those values to the CLI explicitly.
+`youtrack-app` also accepts `--host` and `--token` for a one-off command. `YOUTRACK_API_TOKEN` remains supported as a fallback. Generated Enhanced DX projects commonly store `YOUTRACK_HOST` and `YOUTRACK_TOKEN` in a local, uncommitted `.env` file; their upload script passes those values to the CLI explicitly.
