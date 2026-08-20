@@ -7,17 +7,24 @@ node --version
 npm --version
 ```
 
-Install the published CLIs globally so the agent can call them from any app directory:
+Run the generator with `npx`; it is downloaded to npm's cache when needed and is not added to the current project's dependencies. For example, install the agent skill with:
 
 ```bash
-npm install --global @jetbrains/create-youtrack-app@^1.0.2
+npx @jetbrains/create-youtrack-app@latest skill install
+```
+
+The skill installer remains interactive and lets you choose the agent and installation scope.
+
+Install the separate app management CLI globally only when you need its `youtrack-app` commands:
+
+```bash
 npm install --global @jetbrains/youtrack-apps-tools@^1.0.2
 ```
 
-Verify both commands are available:
+Verify both CLIs:
 
 ```bash
-create-youtrack-app --help
+npx @jetbrains/create-youtrack-app@latest --help
 youtrack-app --help
 ```
 

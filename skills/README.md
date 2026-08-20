@@ -4,7 +4,7 @@ This skill helps an AI coding agent build, validate, deploy, and manage [YouTrac
 
 ## Install the Skill
 
-Choose GitHub CLI for the latest released skill and broad agent support. Use Skills CLI when you need the current default-branch version. Use the YouTrack Apps CLIs only when they are already installed; this route supports fewer agents.
+Choose GitHub CLI for the latest released skill and broad agent support. Use Skills CLI when you need the current default-branch version. The `create-youtrack-app` CLI supports Codex CLI, Claude Code, and Junie.
 
 ### Recommended: GitHub CLI
 
@@ -22,14 +22,10 @@ npx skills add JetBrains/youtrack-apps --skill youtrack-apps-skill
 
 Follow the CLI prompts to choose the target agent and installation scope. Skills CLI installs from the repository's default branch.
 
-### Alternative: install the YouTrack CLIs first
-
-This route has more manual setup and supports only Codex CLI, Claude Code, and Junie:
+### Alternative: `create-youtrack-app` CLI
 
 ```bash
-npm install --global @jetbrains/create-youtrack-app@^1.0.2 @jetbrains/youtrack-apps-tools@^1.0.2
-
-create-youtrack-app skill install
+npx @jetbrains/create-youtrack-app@latest skill install
 ```
 
 Follow the CLI prompts to choose the target agent and installation scope.
@@ -38,13 +34,13 @@ Follow the CLI prompts to choose the target agent and installation scope.
 
 - GitHub CLI: `gh skill update youtrack-apps-skill`
 - Skills CLI: `npx skills update youtrack-apps-skill`
-- YouTrack Apps CLI: rerun `create-youtrack-app skill install`
+- `create-youtrack-app` CLI: rerun `npx @jetbrains/create-youtrack-app@latest skill install`
 
 ## First YouTrack App Task
 
 Start a new agent session in the app directory and describe the task. In agents with slash commands, run `/youtrack-apps-skill` to start initialization explicitly. The skill checks that the required tools and connection are available, then explains how to set up anything missing.
 
-You need Node.js 20.18.0 or later, `create-youtrack-app`, `youtrack-app`, a YouTrack instance, and a permanent token with app-upload permission. For direct `youtrack-app` commands:
+You need Node.js 20.18.0 or later. To use `youtrack-app` directly, install it and configure a YouTrack instance with a permanent token that has app-upload permission:
 
 ```bash
 export YOUTRACK_HOST=https://your-instance.youtrack.cloud

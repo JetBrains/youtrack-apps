@@ -17,7 +17,7 @@ Verify these requirements once near the start of the session before using this s
 | Node.js `>= 20.18.0` | Run `node --version`. Node is required because both scaffolding and app management run through Node-based CLIs and npm scripts. |
 | npm | Run `npm --version`. Use the version bundled with Node.js `>= 24`, unless the app project declares a stricter version. |
 | npx | Run `npx --version`. Use the version bundled with npm, unless the app project declares a stricter version. |
-| `create-youtrack-app` CLI | Run `create-youtrack-app --help`. If missing, read [references/cli-setup.md](references/cli-setup.md). |
+| `create-youtrack-app` CLI | Run `npx @jetbrains/create-youtrack-app@latest --help`. If it cannot run, read [references/cli-setup.md](references/cli-setup.md). |
 | `youtrack-app` CLI | Run `youtrack-app --help`. If missing, read [references/cli-setup.md](references/cli-setup.md). Commands that contact YouTrack also require a target host (`YOUTRACK_HOST`) and API token (`YOUTRACK_API_TOKEN`). If token variables are not in environment then read the article on how to obtain the token and instruct the user: [Manage Permanent Tokens](https://www.jetbrains.com/help/youtrack/server/manage-permanent-token.html#obtain-permanent-token). Never print token values. |
 
 If required tooling is missing and cannot be installed in the current environment, ask the
@@ -97,9 +97,9 @@ youtrack-app rest request --path "/api/commands" --method POST \
 
 ## Create YouTrack App CLI
 
-Use `create-youtrack-app --help` for current generator commands and options.
+Use `npx @jetbrains/create-youtrack-app@latest --help` for current generator commands and options.
 
-Use `create-youtrack-app` to create a new app project or add local modules: workflow rules, HTTP handlers, settings,
+Use `npx @jetbrains/create-youtrack-app@latest` to create a new app project or add local modules: workflow rules, HTTP handlers, settings,
 extension properties and widgets.
 After scaffolding, review generated files, manifest wiring, requirements, and the relevant script type reference before
 editing or deploying.

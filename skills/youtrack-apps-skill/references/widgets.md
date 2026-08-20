@@ -81,7 +81,7 @@ A widget is shown to everyone by default. Two manifest-level mechanisms restrict
 s
 ## Generating a widget
 
-See `create-youtrack-app --help` for widget generation commands.
+See `npx @jetbrains/create-youtrack-app@latest --help` for widget generation commands.
 
 Creates `src/widgets/<key>/` and injects the entry into `manifest.json`. `--permissions` sets conditional visibility; `--width`/`--height` set `expectedDimensions`. Command is identical for both app types; the emitted component differs by app type.
 
