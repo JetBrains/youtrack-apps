@@ -1,21 +1,15 @@
 /**
- * Webhook delivery via async function chain.
+ * Webhook delivery via async function chain: the sync action dispatches URL #1
+ * via postAsync, whose response handler `logAndPostNext` dispatches the next
+ * URL, and so on — one async hop per URL, capped by MAX_WEBHOOK_URLS_PER_EVENT
+ * (the server's async chain limit).
  *
- * Sync action dispatches URL 1 via postAsync; the response handler
- * `logAndPostNext` logs the result and dispatches URL 2 via another postAsync,
- * and so on. Each URL costs one async hop. Server `maxChainLength = 10` by
- * default, giving the practical cap in {@link MAX_WEBHOOK_URLS_PER_EVENT}.
- *
- * Settings model (arrays): `ctx.settings.triggers` is an array of
- * `{event, url, secret}` rows. Each row is one endpoint with its own token;
- * `ctx.settings.headerName` is the shared header the token is sent in.
- *
- * Secret handling: a `format: 'secret'` value must be passed as the live
- * setting object to the http.js connection (`addHeader`) — the JVM substitutes
- * the real value at send time. It must NEVER be stringified (that yields the
- * mask `<***>`) or round-tripped through `ctx.store` (that loses the live
- * binding). So we store only the URL queue across async hops and re-resolve
- * each URL's live secret from `ctx.settings.triggers` at dispatch time.
+ * `ctx.settings.triggers` is an array of `{event, endpoints}` rows, each
+ * `endpoints` an array of `{url, secret}`. `secret` is a live `format: 'secret'`
+ * object that must reach http.js unmodified — the JVM substitutes the real
+ * value at send time. Stringifying it yields the mask `<***>`, and it can't be
+ * round-tripped through ctx.store. So only the URL queue crosses async hops;
+ * each URL's secret is re-resolved from ctx.settings.triggers at dispatch time.
  */
 
 const http = require('@jetbrains/youtrack-scripting-api/http');
@@ -32,13 +26,11 @@ const STORE_EVENT = 'webhookEvent';
 const STORE_CURRENT_URL = 'webhookCurrentUrl';
 
 /**
- * Normalizes a settings array value into a plain JS array of rows.
- *
- * The shape depends on the runtime context:
- * - HTTP handlers and (since JT-97417) workflow rules get a real JS Array.
- * - Older/other runtimes may hand back an iterable host wrapper. Handle both;
- *   every access is guarded so a rule NEVER throws (which would block issue
- *   creation) — worst case is an empty list.
+ * Normalizes a settings array into a plain JS array. Real arrays are returned
+ * as-is; other runtimes may hand back a host wrapper instead, so each shape is
+ * tried in turn. Every probe — including the property read itself, which can
+ * throw for a non-whitelisted host getter — is guarded so this never throws
+ * (which would block issue creation); worst case is an empty list.
  */
 function toRows(value) {
   if (value == null) {
@@ -48,8 +40,6 @@ function toRows(value) {
     return value;
   }
   const out = [];
-  // Documented multi-value idiom. The property probe itself can throw when the
-  // member is a non-whitelisted host getter, so it lives inside the try too.
   try {
     if (typeof value.forEach === 'function') {
       value.forEach(function (row) { out.push(row); });
@@ -58,7 +48,6 @@ function toRows(value) {
   } catch (e) {
     out.length = 0;
   }
-  // Iterable host object.
   try {
     for (const row of value) {
       out.push(row);
@@ -69,7 +58,6 @@ function toRows(value) {
   } catch (e) {
     out.length = 0;
   }
-  // ScriptingSequence-style size()/get().
   try {
     if (typeof value.size === 'function' && typeof value.get === 'function') {
       const n = value.size();
@@ -81,7 +69,6 @@ function toRows(value) {
   } catch (e) {
     out.length = 0;
   }
-  // Array-like.
   try {
     if (typeof value.length === 'number') {
       for (let i = 0; i < value.length; i++) {
@@ -97,27 +84,35 @@ function toRows(value) {
 }
 
 /**
- * Reads one field from a row that may be a plain JS object or a host Map
- * (`.get(key)`), returning undefined when absent. Returns the value as-is —
- * for a `secret` field this is the live setting object, not a string.
+ * Reads one field from a row that may be a plain object or a host Map-like
+ * object (`.get(key)`). Guarded like toRows so a hostile row can't throw.
+ * For `secret` this returns the live setting object, never a string.
  */
 function rowField(row, key) {
   if (row == null) {
     return undefined;
   }
-  const direct = row[key];
-  if (direct !== undefined) {
-    return direct;
-  }
-  if (typeof row.get === 'function') {
-    return row.get(key);
+  try {
+    const direct = row[key];
+    if (direct !== undefined) {
+      return direct;
+    }
+    if (typeof row.get === 'function') {
+      return row.get(key);
+    }
+  } catch (e) {
+    return undefined;
   }
   return undefined;
 }
 
-function normalizeUrl(row) {
-  const raw = rowField(row, 'url');
-  return raw != null ? String(raw).trim() : '';
+function normalizeUrl(endpoint) {
+  try {
+    const raw = rowField(endpoint, 'url');
+    return raw != null ? String(raw).trim() : '';
+  } catch (e) {
+    return '';
+  }
 }
 
 function rowMatchesEvent(row, eventType) {
@@ -125,10 +120,14 @@ function rowMatchesEvent(row, eventType) {
   return event === eventType || event === ALL_EVENTS_TYPE;
 }
 
+function endpointsOf(row) {
+  return toRows(rowField(row, 'endpoints'));
+}
+
 /**
- * Ordered, de-duplicated list of URLs configured for an event (event-specific
- * rows + "All events" rows). URLs only — secrets are resolved live at dispatch.
- * @returns {Array<string>}
+ * Ordered, de-duplicated URLs configured for an event, across every matching
+ * row (event-specific + "All events") and each row's endpoints. URLs only —
+ * secrets are resolved separately, live, at dispatch time.
  */
 function getWebhookTargets(ctx, eventType) {
   const rows = toRows(ctx.settings.triggers);
@@ -140,22 +139,24 @@ function getWebhookTargets(ctx, eventType) {
     if (!row || typeof row !== 'object' || !rowMatchesEvent(row, eventType)) {
       continue;
     }
-    const url = normalizeUrl(row);
-    if (!url || seen[url]) {
-      continue;
+    const endpoints = endpointsOf(row);
+    for (let j = 0; j < endpoints.length; j++) {
+      const url = normalizeUrl(endpoints[j]);
+      if (!url || seen[url]) {
+        continue;
+      }
+      seen[url] = true;
+      urls.push(url);
     }
-    seen[url] = true;
-    urls.push(url);
   }
   return urls;
 }
 
 /**
- * Resolves the LIVE secret object for a given event+URL from the current
- * settings, matching getWebhookTargets' precedence (first matching row wins,
- * so an event-specific row beats an "All events" row). Returns the live
- * `format: 'secret'` object (for http.js JVM substitution) — never a string —
- * or null when the row has no token.
+ * Resolves the live secret object for a given event+URL, matching
+ * getWebhookTargets' precedence: the first matching endpoint of the first
+ * matching row wins, so a URL listed twice is called once with the token of
+ * the row that declared it first. Returns null when the endpoint has no token.
  */
 function resolveTriggerSecret(ctx, eventType, url) {
   const rows = toRows(ctx.settings.triggers);
@@ -164,18 +165,18 @@ function resolveTriggerSecret(ctx, eventType, url) {
     if (!row || typeof row !== 'object' || !rowMatchesEvent(row, eventType)) {
       continue;
     }
-    if (normalizeUrl(row) !== url) {
-      continue;
+    const endpoints = endpointsOf(row);
+    for (let j = 0; j < endpoints.length; j++) {
+      if (normalizeUrl(endpoints[j]) !== url) {
+        continue;
+      }
+      const secret = rowField(endpoints[j], 'secret');
+      return secret ? secret : null;
     }
-    const secret = rowField(row, 'secret');
-    return secret != null ? secret : null;
   }
   return null;
 }
 
-/**
- * Logs the outcome of a single webhook delivery.
- */
 function logWebhookResponse(response, url) {
   if (!response) {
     console.warn('[webhooks] No response object received for ' + url);
@@ -192,7 +193,7 @@ function logWebhookResponse(response, url) {
 
   console.log('[webhooks] Webhook sent successfully to ' + url);
   console.log('[webhooks] Response code: ' + response.code);
-  // Response body not logged — SSRF: receivers may reflect internal data.
+  // Response body not logged - SSRF: receivers may reflect internal data.
 }
 
 /**
@@ -208,11 +209,9 @@ function tryPostWebhook(ctx, url, remainingUrls, eventType, headerName, payloadJ
     return false;
   }
 
-  // Live secret object — passed straight to http.js so the JVM substitutes the
-  // real token at send time. Fail closed if a matching row has no token, rather
-  // than send an unauthenticated request.
+  // Fail closed: no token means skip rather than send an unauthenticated request.
   const secret = resolveTriggerSecret(ctx, eventType, url);
-  if (secret == null) {
+  if (!secret) {
     console.warn('[webhooks] Trigger for ' + url + ' has no token configured; skipping to avoid an unauthenticated request');
     return false;
   }
@@ -268,10 +267,6 @@ function postNextValid(ctx) {
   return false;
 }
 
-/**
- * Response handler for each postAsync. Logs the previous response and
- * dispatches the next URL.
- */
 function logAndPostNext(ctx) {
   const url = ctx.load(STORE_CURRENT_URL);
   logWebhookResponse(ctx.response, url);

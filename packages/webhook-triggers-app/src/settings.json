@@ -2,8 +2,10 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "title": "Webhook Triggers Settings",
-  "description": "Trigger external webhooks from YouTrack events. Each trigger is one endpoint: pick the event, enter the URL, and set the token sent with that endpoint's requests. Add a trigger with event \"All events\" to fan out to every event type.",
-  "required": ["headerName"],
+  "description": "Trigger external webhooks from YouTrack events. Add one row per event, then list the endpoints it is delivered to — each endpoint carries its own token. A row with event \"All Events\" fans out to every event type.",
+  "required": [
+    "headerName"
+  ],
   "properties": {
     "headerName": {
       "title": "Header name",
@@ -15,12 +17,15 @@
     },
     "triggers": {
       "title": "Triggers",
-      "description": "One row per webhook endpoint. Each row has its own token, so a compromised endpoint never exposes the others. At most 10 endpoints are called for any single event; beyond that the extra rows for that event are skipped and a warning is logged.",
+      "description": "One row per event. Each row holds the endpoints that event is delivered to, and each endpoint carries its own token.",
       "type": "array",
       "x-scope": "PROJECT",
       "items": {
         "type": "object",
-        "required": ["event", "url", "secret"],
+        "required": [
+          "event",
+          "endpoints"
+        ],
         "properties": {
           "event": {
             "title": "Event",
@@ -55,18 +60,33 @@
               "All Events"
             ]
           },
-          "url": {
-            "title": "URL",
-            "description": "The webhook endpoint. HTTPS strongly recommended — the token is sent with every request.",
-            "type": "string",
-            "format": "uri"
-          },
-          "secret": {
-            "title": "Token",
-            "description": "Shared secret sent to this endpoint in the configured header. Must be at least 32 characters long. Rotate immediately if the endpoint is decommissioned or a compromise is suspected.",
-            "type": "string",
-            "format": "secret",
-            "minLength": 32
+          "endpoints": {
+            "title": "Endpoints",
+            "description": "Every endpoint of this trigger is called with its own token, so one compromised receiver never exposes the others.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "url",
+                "secret"
+              ],
+              "properties": {
+                "url": {
+                  "title": "URL",
+                  "description": "The webhook endpoint. HTTPS strongly recommended — the token is sent with every request.",
+                  "type": "string",
+                  "format": "uri"
+                },
+                "secret": {
+                  "title": "Token",
+                  "description": "Shared secret sent to this endpoint in the configured header. Must be at least 32 characters long. Rotate immediately if the endpoint is decommissioned or a compromise is suspected.",
+                  "type": "string",
+                  "format": "secret",
+                  "minLength": 32
+                }
+              }
+            }
           }
         }
       }

@@ -20,8 +20,18 @@ const HEADER = 'X-Token';
 const PAYLOAD = { event: 'test' };
 
 // Build a triggers row. secret defaults to TOKEN. Pass secret:null to omit.
+/** One row holding one endpoint — the shape most of these tests care about. */
 function trigger(url, event = 'issueCreated', secret = TOKEN) {
-  const row = { event, url };
+  return { event, endpoints: [endpoint(url, secret)] };
+}
+
+/** One row holding several endpoints, each with its own token. */
+function triggerWith(event, endpoints) {
+  return { event, endpoints };
+}
+
+function endpoint(url, secret = TOKEN) {
+  const row = { url };
   if (secret !== null) {
     row.secret = secret;
   }
@@ -51,6 +61,31 @@ describe('getWebhookTargets', () => {
       settings: { triggers: [trigger('https://a.com/', 'issueCreated'), trigger('https://all.com/', 'allEvents')] },
     });
     expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/', 'https://all.com/']);
+  });
+
+  it('returns every endpoint of a matching row, in order', () => {
+    const ctx = createCtx({
+      settings: {
+        triggers: [
+          triggerWith('issueCreated', [endpoint('https://a.com/'), endpoint('https://b.com/')]),
+          trigger('https://c.com/', 'issueUpdated'),
+        ],
+      },
+    });
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/', 'https://b.com/']);
+  });
+
+  it('skips a row whose endpoints are missing or malformed', () => {
+    const ctx = createCtx({
+      settings: {
+        triggers: [
+          { event: 'issueCreated' },
+          { event: 'issueCreated', endpoints: 'nope' },
+          triggerWith('issueCreated', [null, {}, endpoint('https://a.com/')]),
+        ],
+      },
+    });
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/']);
   });
 
   it('deduplicates by URL', () => {
@@ -98,6 +133,23 @@ describe('getWebhookTargets', () => {
     expect(() => getWebhookTargets(ctx, 'issueCreated')).not.toThrow();
     expect(getWebhookTargets(ctx, 'issueCreated')).toEqual([]);
   });
+
+  it('never throws when a row or endpoint property getter is inaccessible (fail closed, skips it)', () => {
+    const hostileRow = {
+      get event() { throw new Error('Unknown identifier: event'); },
+      endpoints: [endpoint('https://unreachable.com/')],
+    };
+    const hostileEndpoint = {
+      get url() { throw new Error('Unknown identifier: url'); },
+    };
+    const ctx = createCtx({
+      settings: {
+        triggers: [hostileRow, triggerWith('issueCreated', [hostileEndpoint, endpoint('https://b.com/')])],
+      },
+    });
+    expect(() => getWebhookTargets(ctx, 'issueCreated')).not.toThrow();
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://b.com/']);
+  });
 });
 
 // ── resolveTriggerSecret (live secret object) ─────────────────────────────────
@@ -106,7 +158,7 @@ describe('resolveTriggerSecret', () => {
   it('returns the live secret value for a matching event + url (never stringified)', () => {
     const secretObj = { isSecret: true, toString: () => '<***>' };
     const ctx = createCtx({
-      settings: { triggers: [{ event: 'issueCreated', url: 'https://a.com/', secret: secretObj }] },
+      settings: { triggers: [triggerWith('issueCreated', [endpoint('https://a.com/', secretObj)])] },
     });
     // Returns the SAME object reference — http.js gets the live secret, not a string.
     expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBe(secretObj);
@@ -126,6 +178,22 @@ describe('resolveTriggerSecret', () => {
     expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBe('specific');
   });
 
+  it('resolves each endpoint of a row to its own token', () => {
+    const ctx = createCtx({
+      settings: {
+        triggers: [
+          triggerWith('issueCreated', [
+            endpoint('https://a.com/', 'token-a'),
+            endpoint('https://b.com/', 'token-b'),
+          ]),
+        ],
+      },
+    });
+
+    expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBe('token-a');
+    expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://b.com/')).toBe('token-b');
+  });
+
   it('matches "allEvents" rows', () => {
     const ctx = createCtx({ settings: { triggers: [trigger('https://a.com/', 'allEvents', 'catchall')] } });
     expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBe('catchall');
@@ -133,6 +201,21 @@ describe('resolveTriggerSecret', () => {
 
   it('returns null when the matching row has no secret', () => {
     const ctx = createCtx({ settings: { triggers: [trigger('https://a.com/', 'issueCreated', null)] } });
+    expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBeNull();
+  });
+
+  it('returns null when the matching endpoint has an empty-string secret (treated as no token)', () => {
+    const ctx = createCtx({ settings: { triggers: [trigger('https://a.com/', 'issueCreated', '')] } });
+    expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBeNull();
+  });
+
+  it('never throws when the secret property getter is inaccessible (fail closed to null)', () => {
+    const hostileEndpoint = {
+      url: 'https://a.com/',
+      get secret() { throw new Error('Unknown identifier: secret'); },
+    };
+    const ctx = createCtx({ settings: { triggers: [triggerWith('issueCreated', [hostileEndpoint])] } });
+    expect(() => resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).not.toThrow();
     expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBeNull();
   });
 
@@ -205,6 +288,21 @@ describe('sendWebhooks scheduling', () => {
       settings: {
         headerName: HEADER,
         triggers: [trigger('https://a.com/', 'issueCreated', null), trigger('https://b.com/')],
+      },
+      asyncFunctions,
+    });
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
+
+    expect(httpInstances).toHaveLength(1);
+    expect(httpInstances[0].url).toBe('https://b.com/');
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('has no token configured'));
+  });
+
+  it('skips a matching trigger with an empty-string token (fail closed) and dispatches the next', () => {
+    const ctx = createCtx({
+      settings: {
+        headerName: HEADER,
+        triggers: [trigger('https://a.com/', 'issueCreated', ''), trigger('https://b.com/')],
       },
       asyncFunctions,
     });

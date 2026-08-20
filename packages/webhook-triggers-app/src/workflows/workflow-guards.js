@@ -19,7 +19,6 @@ function createGuard(eventType, customCheck) {
             return false;
         }
 
-        // Any trigger for this event (event-specific + "All events", deduplicated)
         const targets = httpModule.getWebhookTargets(ctx, eventType);
 
         if (targets.length === 0) {
