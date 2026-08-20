@@ -157,10 +157,10 @@ export async function run(argv = process.argv) {
     return;
   }
 
-  const {YOUTRACK_HOST, YOUTRACK_API_TOKEN} = process.env;
+  const {YOUTRACK_HOST, YOUTRACK_TOKEN, YOUTRACK_API_TOKEN} = process.env;
   const config: Config = {
     host: args.host || YOUTRACK_HOST || null,
-    token: args.token || YOUTRACK_API_TOKEN || null,
+    token: args.token || YOUTRACK_TOKEN || YOUTRACK_API_TOKEN || null,
     output: args.output || (commandKey === 'app:download' ? process.cwd() : null),
     overwrite: isFlagEnabled(args.overwrite) ? 'true' : null,
     manifest: args.manifest || null,
@@ -193,12 +193,12 @@ export async function run(argv = process.argv) {
     console.log('youtrack-app <entity> <action> [options]');
     br();
     console.log('Manage, configure, and debug YouTrack apps and workflows from an external development environment.');
-    console.log('Set YOUTRACK_HOST and YOUTRACK_API_TOKEN, or provide --host and --token with each command.');
+    console.log('Set YOUTRACK_HOST and YOUTRACK_TOKEN (or YOUTRACK_API_TOKEN), or provide --host and --token with each command.');
     br();
 
     printSection('Common options');
     printLine('--host <url>', 'YouTrack URL. Overrides YOUTRACK_HOST.');
-    printLine('--token <token>', 'Permanent token. Overrides YOUTRACK_API_TOKEN.');
+    printLine('--token <token>', 'Permanent token. Overrides YOUTRACK_TOKEN and YOUTRACK_API_TOKEN.');
     printLine('--json', 'Output results as machine-readable JSON, when supported.');
     printLine('--yaml, --yml', 'Output results as machine-readable YAML, when supported.');
     printLine('--help, -h', 'Show help information.');

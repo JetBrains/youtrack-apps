@@ -211,11 +211,11 @@ export class UploadCoordinator {
 
     const env = await loadDotEnv(path.resolve(this.cwd, '.env'));
     const host = env.YOUTRACK_HOST || process.env.YOUTRACK_HOST;
-    const token = env.YOUTRACK_TOKEN || process.env.YOUTRACK_API_TOKEN || process.env.YOUTRACK_TOKEN;
+    const token = env.YOUTRACK_TOKEN || process.env.YOUTRACK_TOKEN || process.env.YOUTRACK_API_TOKEN;
 
     if (!host || !token) {
       throw new Error(
-        'YOUTRACK_HOST and YOUTRACK_TOKEN must be defined either in .env (in the working directory) or in the process environment.'
+        'Define YOUTRACK_HOST and YOUTRACK_TOKEN in .env or the process environment. YOUTRACK_API_TOKEN is also supported in the process environment.'
       );
     }
 

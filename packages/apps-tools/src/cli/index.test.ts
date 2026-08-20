@@ -44,6 +44,7 @@ describe('index', function () {
     nock.disableNetConnect();
     jest.spyOn(console, 'log').mockImplementation(() => {});
     process.env.YOUTRACK_HOST = '';
+    process.env.YOUTRACK_TOKEN = '';
     process.env.YOUTRACK_API_TOKEN = '';
   });
 
@@ -55,6 +56,14 @@ describe('index', function () {
   it('should print version', function () {
     require('./index').run(['', '', '--version']);
     expect(console.log).toHaveBeenCalledWith(require('../../package.json').version);
+  });
+
+  it('should mention the legacy token fallback in help', function () {
+    require('./index').run(['', '', '--help']);
+
+    expect(console.log).toHaveBeenCalledWith(
+      'Set YOUTRACK_HOST and YOUTRACK_TOKEN (or YOUTRACK_API_TOKEN), or provide --host and --token with each command.',
+    );
   });
 
   it('should show error message if required parameter doesn`t have value', function () {
@@ -124,6 +133,25 @@ describe('index', function () {
     expect(list).toHaveBeenCalledWith(expectedCallArgs, undefined);
     expect(console.error).not.toHaveBeenCalled();
     expect(process.exit).not.toHaveBeenCalled();
+  });
+
+  it('should use YOUTRACK_TOKEN before the legacy YOUTRACK_API_TOKEN', function () {
+    process.env.YOUTRACK_HOST = 'foo';
+    process.env.YOUTRACK_TOKEN = 'preferred-token';
+    process.env.YOUTRACK_API_TOKEN = 'legacy-token';
+
+    require('./index').run(['', '', 'app', 'list']);
+
+    expect(list).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'preferred-token'}), undefined);
+  });
+
+  it('should use YOUTRACK_API_TOKEN when YOUTRACK_TOKEN is not set', function () {
+    process.env.YOUTRACK_HOST = 'foo';
+    process.env.YOUTRACK_API_TOKEN = 'legacy-token';
+
+    require('./index').run(['', '', 'app', 'list']);
+
+    expect(list).toHaveBeenCalledWith(expect.objectContaining({host: 'foo', token: 'legacy-token'}), undefined);
   });
 
   it('should pass yaml flag to commands', function () {
