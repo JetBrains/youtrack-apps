@@ -76,8 +76,8 @@ After printing the PLAN:
 ## Step 6: Select app script type and load references
 
 Before code generation, select primary app script type:
-- [rules](#rules)
-- [Custom API Endpoints](#custom-api-endpoints)
+- [Rules](../SKILL.md#rules)
+- [Custom API Endpoints](../SKILL.md#custom-api-endpoints)
 
 Load the linked app script type reference before codegen.
 For every entity, property, method, constructor, and module function used in generated code, verify it against the selected reference source before final output.
