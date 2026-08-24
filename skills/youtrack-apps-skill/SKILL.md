@@ -136,7 +136,7 @@ A widget is a custom object that you can embed in one of the dedicated extension
 Load for widget configuration: [references/widgets.md](references/widgets.md)
 
 ## Host API
-Use for information on how to wire widgets to backend, or how to wire widgets with YouTrack. Load [references/host-api.md](./references/host-api.md )
+Use for information on how to wire widgets to backend, or how to wire widgets with YouTrack. Load [references/host-api.md](./references/host-api.md)
 
 # Rules
 Use rules for YouTrack automation that runs from issue/article changes, explicit user commands, schedules, or
