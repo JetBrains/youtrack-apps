@@ -24,11 +24,13 @@ Suggested design princinples when designing widgets.
 
 - Widgets run in a **sandboxed iframe**. YouTrack's own frontend CSS does
   **not** leak into widget content — nothing is inherited for free.
-- The house style is achieved by **importing Ring UI's built stylesheet and
-  components directly**, not by approximating YouTrack's look with custom CSS.
-  Standard include:
-  ```html
-  <link rel="stylesheet" href="https://unpkg.com/@jetbrains/ring-ui-built@6/components/style.css">
+- The house style is achieved by **installing `@jetbrains/ring-ui-built` in the
+  app and importing its built stylesheet and components**, not by approximating
+  YouTrack's look with custom CSS. Ensure it is listed in the app's
+  `package.json` (add it with `npm install @jetbrains/ring-ui-built` when
+  absent); do not load it from a CDN at runtime. Standard stylesheet import:
+  ```ts
+  import '@jetbrains/ring-ui-built/components/style.css';
   ```
 - Widget size is dictated by its **extension point**, not by the widget's own
   CSS — some are small embedded panels, some fill the page. Design for the
@@ -157,11 +159,6 @@ than guessing, and record them here once confirmed.
 | Secondary navigation area | `Sidebar` pattern | custom nav rail |
 | Tabular data | `Data Table` pattern | HTML `<table>` with hand-rolled styling |
 | Modal confirmation/input | `Dialog` pattern | custom overlay `div` |
-
-(Pull the exact import path for each from the current Ring UI Storybook
-example for that component before wiring it in — paths above are illustrative
-of the pattern, confirm against `@jetbrains/ring-ui-built` for the version
-you're pinned to.)
 
 ---
 
