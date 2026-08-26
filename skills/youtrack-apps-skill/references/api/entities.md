@@ -127,9 +127,12 @@ Since: `2021.4.23500`
 ##### Properties
 - [`attachments`](#attachments)
 - [`author`](#author)
+- [`comments`](#comments)
 - [`content`](#content)
 - [`isStarred`](#isstarred)
+- [`mentionedUsers`](#mentionedusers)
 - [`originalArticle`](#originalarticle)
+- [`pinnedComments`](#pinnedcomments)
 - [`summary`](#summary)
 - [`tags`](#tags)
 
@@ -156,6 +159,14 @@ Readonly
 
 Return type: `User`  
 
+##### comments
+
+A list of comments for the article.
+
+Readonly  
+
+Return type: `Set.<ArticleComment>`  
+
 ##### content
 
 The text that is entered as the article content.
@@ -171,6 +182,15 @@ Since: `2023.1`
 
 Return type: `Boolean`  
 
+##### mentionedUsers
+
+The set of users that are mentioned in the article content.
+
+Readonly  
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 ##### originalArticle
 
 The article from which the current article draft was created, or `null` if the current article is not a draft.
@@ -179,6 +199,15 @@ Readonly
 Since: `2026.1`  
 
 Return type: `Article`  
+
+##### pinnedComments
+
+The set of comments that are pinned in the article or draft.
+
+Readonly  
+Since: `2024.1`  
+
+Return type: `Set.<ArticleComment>`  
 
 ##### summary
 
@@ -382,6 +411,7 @@ The base class for issue comment.
 - [`attachments`](#attachments)
 - [`created`](#created)
 - [`isPinned`](#ispinned)
+- [`mentionedUsers`](#mentionedusers)
 - [`text`](#text)
 - [`updated`](#updated)
 
@@ -412,6 +442,15 @@ Since: `2024.1`
 
 Return type: `Boolean`  
 
+##### mentionedUsers
+
+The set of users that are mentioned in the comment.
+
+Readonly  
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 ##### text
 
 The text of the comment.
@@ -439,14 +478,10 @@ The common ancestor for all entity types.
 - [`isNew`](#isnew)
 
 ##### Methods
-- [`becomes`](#becomes)
 - [`canBeReadBy`](#canbereadby)
 - [`canBeWrittenBy`](#canbewrittenby)
-- [`isChanged`](#ischanged)
 - [`is`](#is)
-- [`oldValue`](#oldvalue)
 - [`required`](#required)
-- [`was`](#was)
 
 #### Properties
 
@@ -508,23 +543,6 @@ Return type: `Boolean`
 
 #### Methods
 
-##### becomes
-
-Checks whether a field is set to an expected value in the current transaction.
-
-###### Parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `fieldName` | `string` | The name of the field to check. |
-| `expected` | `string` | The expected value. |
-
-###### Returns
-
-Return type: `boolean`.
-
-If the field is set to the expected value, returns `true`.
-
 ##### canBeReadBy
 
 Checks whether a user has permission to read the field.
@@ -559,22 +577,6 @@ Return type: `boolean`.
 
 If the user can update the field, returns `true`.
 
-##### isChanged
-
-Checks whether the value of a field is changed in the current transaction.
-
-###### Parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `fieldName` | `string` | The name of the field to check. |
-
-###### Returns
-
-Return type: `boolean`.
-
-If the value of the field is changed in the current transaction, returns `true`.
-
 ##### is
 
 Checks whether a field is equal to an expected value.
@@ -594,24 +596,6 @@ Return type: `boolean`.
 
 If the field is equal to the expected value, returns `true`.
 
-##### oldValue
-
-Returns the previous value of a single-value field before an update was applied. If the field is not changed
-in the transaction, returns null.
-
-###### Parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `fieldName` | `string` | The name of the field. |
-
-###### Returns
-
-Return type: `Object`.
-
-If the field is changed in the current transaction, the previous value of the field.
-Otherwise, null.
-
 ##### required
 
 Asserts that a value is set for a field.
@@ -623,25 +607,6 @@ If a value for the required field is not set, the specified message is displayed
 | --- | --- | --- |
 | `fieldName` | `string` | The name of the field to check. |
 | `message` | `string` | The message that is displayed to the user that describes the field requirement. |
-
-##### was
-
-Checks whether a field was equal to an expected value prior to the current transaction.
-
-Since: `2019.2.55603`  
-
-###### Parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `fieldName` | `string` | The name of the field to check. |
-| `expected` | `string` | The expected value. |
-
-###### Returns
-
-Return type: `boolean`.
-
-If the field was equal to the expected value, returns `true`.
 
 <a id="type-baseworkitem"></a>
 ### BaseWorkItem
@@ -1101,6 +1066,7 @@ Since: `2021.4.23500`
 - [`editedComments`](#editedcomments)
 - [`id`](#id)
 - [`isStarred`](#isstarred)
+- [`mentionedUsers`](#mentionedusers)
 - [`numberInProject`](#numberinproject)
 - [`originalArticle`](#originalarticle)
 - [`parentArticle`](#parentarticle)
@@ -1117,9 +1083,13 @@ Since: `2021.4.23500`
 ##### Methods
 - [`addAttachment`](#addattachment)
 - [`addComment`](#addcomment)
+- [`becomes`](#becomes)
 - [`createDraft`](#createdraft)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findById`](#findbyid)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Constructors
 
@@ -1208,6 +1178,15 @@ Since: `2023.1`
 
 Return type: `Boolean`  
 
+##### mentionedUsers
+
+The set of users that are mentioned in the article content.
+
+Readonly  
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 ##### numberInProject
 
 The article number in the project.
@@ -1251,7 +1230,7 @@ Return type: `Set.<User>`
 
 ##### pinnedComments
 
-The set of comments that are pinned in the article.
+The set of comments that are pinned in the article or draft.
 
 Readonly  
 Since: `2024.1`  
@@ -1344,6 +1323,23 @@ Return type: `ArticleComment`.
 
 A newly created comment.
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### createDraft
 
 Creates a new article draft.
@@ -1404,6 +1400,59 @@ Return type: `Article`.
 
 The article that is assigned the specified ID.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the previous value of a single-value field before an update was applied. If the field is not changed
+in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+If the field is changed in the current transaction, the previous value of the field.
+Otherwise, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-articleattachment"></a>
 ### ArticleAttachment
 
@@ -1413,9 +1462,15 @@ Represents a file that is attached to an article.
 
 ##### Properties
 - [`created`](#created)
+- [`permittedGroups`](#permittedgroups)
+- [`permittedUsers`](#permittedusers)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -1428,7 +1483,40 @@ Since: `2026.1`
 
 Return type: `Number`  
 
+##### permittedGroups
+
+The groups for which the attachment is visible when the visibility is restricted to multiple groups.
+
+Since: `2026.3`  
+
+Return type: `Set.<UserGroup>`  
+
+##### permittedUsers
+
+The list of users for whom the attachment is visible.
+
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -1457,10 +1545,63 @@ The set of ArticleAttachment entities that contain the specified extension prope
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the previous value of a single-value field before an update was applied. If the field is not changed
+in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+If the field is changed in the current transaction, the previous value of the field.
+Otherwise, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-articlecomment"></a>
 ### ArticleComment
 
-Represents a comment that is added to an article.
+Represents a comment that is added to an article or an article draft.
 
 Since: `2021.4.23500`  
 
@@ -1469,19 +1610,24 @@ Since: `2021.4.23500`
 ##### Properties
 - [`article`](#article)
 - [`author`](#author)
+- [`mentionedUsers`](#mentionedusers)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
 ##### article
 
-The article the comment belongs to.
+The article or draft the comment belongs to.
 
 Readonly  
 
-Return type: `Article`  
+Return type: `BaseArticle`  
 
 ##### author
 
@@ -1491,7 +1637,33 @@ Readonly
 
 Return type: `User`  
 
+##### mentionedUsers
+
+The set of users that are mentioned in the comment.
+
+Readonly  
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -1519,6 +1691,59 @@ The set of ArticleComment entities that contain the specified extension properti
    property2: "value2"
 }
 ```
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the previous value of a single-value field before an update was applied. If the field is not changed
+in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+If the field is changed in the current transaction, the previous value of the field.
+Otherwise, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
 
 <a id="type-build"></a>
 ### Build
@@ -1868,7 +2093,7 @@ Return type: `VcsServer`
 
 ##### url
 
-The URL of the change processor. Integrations with TeamCity, Jenkins, GitLab CI/CD, and Upsource return the web address of the build configuration or project page.
+The URL of the change processor. Integrations with TeamCity, Jenkins, and GitLab CI/CD return the web address of the build configuration or project page.
 
 Readonly  
 Since: `2021.2`  
@@ -2463,6 +2688,7 @@ Represents an issue in YouTrack.
 - [`links`](#links)
 - [`mentionedInIssueComments`](#mentionedinissuecomments)
 - [`mentionedInIssues`](#mentionedinissues)
+- [`mentionedUsers`](#mentionedusers)
 - [`numberInProject`](#numberinproject)
 - [`permittedGroup`](#permittedgroup)
 - [`permittedGroups`](#permittedgroups)
@@ -2491,6 +2717,7 @@ Represents an issue in YouTrack.
 - [`addWorkItem`](#addworkitem)
 - [`afterMinutes`](#afterminutes)
 - [`applyCommand`](#applycommand)
+- [`becomes`](#becomes)
 - [`clearAttachments`](#clearattachments)
 - [`copy`](#copy)
 - [`createDraft`](#createdraft)
@@ -2498,7 +2725,9 @@ Represents an issue in YouTrack.
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findById`](#findbyid)
 - [`hasTag`](#hastag)
+- [`isChanged`](#ischanged)
 - [`isVisibleTo`](#isvisibleto)
+- [`oldValue`](#oldvalue)
 - [`pauseSLA`](#pausesla)
 - [`removeTag`](#removetag)
 - [`renderMarkup`](#rendermarkup)
@@ -2506,6 +2735,7 @@ Represents an issue in YouTrack.
 - [`setDefaultFieldValues`](#setdefaultfieldvalues)
 - [`tag`](#tag)
 - [`untag`](#untag)
+- [`was`](#was)
 
 #### Constructors
 
@@ -2815,6 +3045,15 @@ Readonly
 
 Return type: `Set.<Issue>`  
 
+##### mentionedUsers
+
+The set of users that are mentioned in the issue description.
+
+Readonly  
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 ##### numberInProject
 
 The issue number in the project.
@@ -3091,6 +3330,23 @@ Applies a command to the issue.
 | `command` | `String` | The command that is applied to the issue. |
 | `runAs` | `User` | Specifies the user by which the command is applied. If this parameter is not set, the command is applied on behalf of the current user. |
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### clearAttachments
 
 Removes all of the attachments from the issue.
@@ -3214,6 +3470,22 @@ Return type: `Boolean`.
 
 If the specified tag is attached to the issue, returns `true`.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### isVisibleTo
 
 Checks whether the issue is accessible by specified user.
@@ -3229,6 +3501,24 @@ Checks whether the issue is accessible by specified user.
 Return type: `Boolean`.
 
 If the issue is accessible for the user, returns 'true'.
+
+##### oldValue
+
+Returns the previous value of a single-value field before an update was applied. If the field is not changed
+in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+If the field is changed in the current transaction, the previous value of the field.
+Otherwise, null.
 
 ##### pauseSLA
 
@@ -3311,6 +3601,25 @@ Since: `2025.3`
 | --- | --- | --- |
 | `tag` | `Tag` | The tag object. |
 
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-issueattachment"></a>
 ### IssueAttachment
 
@@ -3333,8 +3642,12 @@ Represents a file that is attached to an issue.
 - [`updated`](#updated)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`delete`](#delete)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -3433,6 +3746,23 @@ Return type: `Number`
 
 #### Methods
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### delete
 
 Permanently deletes the attachment.
@@ -3466,6 +3796,59 @@ The set of IssueAttachment entities that contain the specified extension propert
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the previous value of a single-value field before an update was applied. If the field is not changed
+in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+If the field is changed in the current transaction, the previous value of the field.
+Otherwise, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-issuecomment"></a>
 ### IssueComment
 
@@ -3485,9 +3868,13 @@ Represents a comment that is added to an issue.
 
 ##### Methods
 - [`addAttachment`](#addattachment)
+- [`becomes`](#becomes)
 - [`delete`](#delete)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
 - [`isVisibleTo`](#isvisibleto)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -3580,6 +3967,23 @@ Return type: `IssueAttachment`.
 
 The attachment that is added to the issue comment.
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### delete
 
 Logically deletes the comment. This means that the comment is marked as deleted, but remains in the database.
@@ -3615,6 +4019,22 @@ The set of IssueComment entities that contain the specified extension properties
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### isVisibleTo
 
 Checks whether the specified user has access to view the comment.
@@ -3632,6 +4052,43 @@ Since: `2021.1.2300`
 Return type: `Boolean`.
 
 When 'true', the specified user has access to view the comment. Otherwise, 'false'.
+
+##### oldValue
+
+Returns the previous value of a single-value field before an update was applied. If the field is not changed
+in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+If the field is changed in the current transaction, the previous value of the field.
+Otherwise, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
 
 <a id="type-issuelinkprototype"></a>
 ### IssueLinkPrototype
@@ -3769,8 +4226,12 @@ Represents a work item that has been added to an issue.
 - [`duration`](#duration)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`delete`](#delete)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -3799,6 +4260,23 @@ Writable since 2018.1.40800
 Return type: `Number`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### delete
 
@@ -3832,6 +4310,59 @@ The set of IssueWorkItem entities that contain the specified extension propertie
    property2: "value2"
 }
 ```
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the previous value of a single-value field before an update was applied. If the field is not changed
+in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+If the field is changed in the current transaction, the previous value of the field.
+Otherwise, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
 
 <a id="type-mailboxchannel"></a>
 ### MailboxChannel
@@ -3952,11 +4483,14 @@ primitive types like String and int.
 
 ```javascript
 // to convert period to minutes (or other units) use get* methods:
+// This example assumes a five-day work week and an eight-hour work day.
+// Adjust the conversion if your YouTrack instance uses different time tracking settings.
 var period = issue.fields.Estimation;
 var minutes = !period ? 0 : (period.getMinutes() +
                              60 * (period.getHours() +
-                                   8 * period.getDays()));
-// to create Period instance, use toPeriod function from date-time module:
+                                   8 * (period.getDays() +
+                                        5 * period.getWeeks())));
+// To create a Period instance, use the toPeriod function from the date-time module:
 issue.fields.Estimation = dateTime.toPeriod(3 * 3600 * 1000); // 3h in ms
 issue.fields.Estimation = dateTime.toPeriod('3h'); // short form
 issue.fields.Estimation = dateTime.toPeriod('2w4d3h15m'); // full form
@@ -4488,7 +5022,7 @@ Return type: `String`
 
 ##### typeName
 
-The data type assigned to values stored in the custom field.
+The data type assigned to values stored in the custom field. Field types that include a cardinality suffix use `[*]` for multiple values and `[1]` for a single value, for example, `version[*]` or `user[1]`.
 
 Readonly  
 
@@ -5751,6 +6285,7 @@ Represents a user account in YouTrack.
 - [`getSharedTag`](#getsharedtag)
 - [`getTag`](#gettag)
 - [`hasPermission`](#haspermission)
+- [`hasRoleGlobally`](#hasroleglobally)
 - [`hasRole`](#hasrole)
 - [`isInGroup`](#isingroup)
 - [`isVotedForIssue`](#isvotedforissue)
@@ -6129,9 +6664,27 @@ Return type: `Boolean`.
 
 If the user has the permission, returns `true`.
 
+##### hasRoleGlobally
+
+Checks whether the user is granted the specified role at the global scope.
+
+Since: `2026.3`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `roleName` | `String` | The name of the role to check for. |
+
+###### Returns
+
+Return type: `Boolean`.
+
+If the user is granted the specified role globally, returns `true`.
+
 ##### hasRole
 
-Checks whether the user is granted the specified role in the specified project. When the project parameter is not specified, checks whether the user has the specified role in any project.
+Checks whether the user is granted the specified role in the specified project. This is also `true` when the role is granted at the global scope. When the project parameter is not specified, checks whether the user has the specified role in any project.
 
 ###### Parameters
 
@@ -6144,7 +6697,7 @@ Checks whether the user is granted the specified role in the specified project. 
 
 Return type: `Boolean`.
 
-If the user is granted the specified role, returns `true`.
+If the user is granted the specified role in the given scope, returns `true`.
 
 ##### isInGroup
 
