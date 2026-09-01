@@ -7,7 +7,6 @@
     "node": ">=24.12.0"
   },
   "scripts": {
-    "select-target-branch": "node src/checkoutYouTrackAppsPullRequestTargetBranch.ts",
     "generate": "node src/generateWorkflowApiMarkdown.ts",
     "test": "node --test test/*.test.ts"
   },
