@@ -1,0 +1,8 @@
+
+<% if (it.section.anchor) { %><a id="<%= it.section.anchor %>"></a>
+<% } %><%= "#".repeat(it.section.headingLevel) %> <%= it.section.name %>
+<% if (it.section.doc) { %>
+<%~ include("doc-intro.md.eta", { doc: it.section.doc }) %>
+<%~ include("type-metadata.md.eta", { doc: it.section.doc }) %>
+<% } %>
+<%~ include("type-members.md.eta", { members: it.section.members }) %>

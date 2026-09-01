@@ -1,0 +1,16 @@
+## Reading the API modules
+
+The files in `references/api/` are the ground truth for module imports, top-level functions, and type details. Start with the module file, then follow its `Types` links for detail pages that list constructors, properties, methods, parameters, return values, and examples when available.
+
+- Constructors: use entries under `## Constructors` as `new TypeName(args)` when the API explicitly documents a constructor.
+- Properties: use entries under `## Properties` as `object.property`; check the listed type and whether the description says the value is readonly or optional.
+- Methods: use entries under `## Methods` as `object.method(args)`; follow the parameter list and return text on that method.
+- Functions: use entries under module `## Functions` after importing the module, for example `const workflow = require('@jetbrains/youtrack-scripting-api/workflow'); workflow.functionName(args);`.
+- Types: use module `## Types` links to open the detailed page for entity objects, helper objects, and schemas.
+
+### API Modules
+
+| API area | Ground-truth file | Runtime import in app code |
+| --- | --- | --- |
+<% it.modules.forEach(function(module) { %>| `<%= module.key %>` | [<%= module.link %>](<%= module.link %>) | `require('<%= module.importName %>')` |
+<% }) %>

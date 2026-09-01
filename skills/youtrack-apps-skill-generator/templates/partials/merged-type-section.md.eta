@@ -1,0 +1,24 @@
+
+## <%= it.section.name %>
+<% if (it.section.doc) { %>
+<%~ include("doc-intro.md.eta", { doc: it.section.doc }) %>
+<%~ include("type-metadata.md.eta", { doc: it.section.doc }) %>
+<% } %>
+<% if (it.section.typeProperties.length || it.section.properties.length) { %>
+
+### Properties
+<%~ include("properties-table.md.eta", { properties: it.section.typeProperties }) %>
+<% it.section.properties.forEach(function(doc) { %>
+<%~ include("doc-block.md.eta", { doc: doc, heading: doc.name || "Property", headingLevel: 4 }) %>
+<% }) %>
+<% } %>
+<% if (it.section.methods.length) { %>
+
+### Methods
+<% it.section.methods.forEach(function(doc) { %>
+<%~ include("doc-block.md.eta", { doc: doc, heading: doc.name || "Method", headingLevel: 4 }) %>
+<% }) %>
+<% } %>
+<% if (it.section.doc && it.section.doc.examples) { %>
+<%~ include("examples.md.eta", { examples: it.section.doc.examples, headingLevel: 3 }) %>
+<% } %>

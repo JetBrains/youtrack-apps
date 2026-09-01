@@ -1,0 +1,34 @@
+<% if (it.members.parentTypes.length) { %>
+
+Parent types: <% it.members.parentTypes.forEach(function(parent, index) { %>`<%= parent %>`<%= index === it.members.parentTypes.length - 1 ? "." : ", " %><% }) %>  
+<% } %>
+<%~ include("contents.md.eta", { contents: it.members.contents }) %>
+<%~ include("examples.md.eta", { examples: it.members.examples, headingLevel: it.members.headingLevel }) %>
+<%~ include("constructors.md.eta", { constructors: it.members.constructors, headingLevel: it.members.headingLevel }) %>
+<% if (it.members.typeProperties.length || it.members.properties.length) { %>
+
+<%= "#".repeat(it.members.headingLevel) %> Properties
+<%~ include("properties-table.md.eta", { properties: it.members.typeProperties }) %>
+<% it.members.properties.forEach(function(doc) { %>
+<%~ include("doc-block.md.eta", { doc: doc, heading: doc.name || "Property", headingLevel: it.members.headingLevel + 1 }) %>
+<% }) %>
+<% } %>
+<% if (it.members.methodGroups.length) { %>
+<% it.members.methodGroups.forEach(function(group) { %>
+
+<%= "#".repeat(it.members.headingLevel) %> <%= group.heading %>
+<% if (group.injection) { %>
+
+<%~ group.injection %>
+<% } %>
+<% group.methods.forEach(function(doc) { %>
+<%~ include("doc-block.md.eta", { doc: doc, heading: doc.name || "Method", headingLevel: it.members.headingLevel + 1 }) %>
+<% }) %>
+<% }) %>
+<% } else if (it.members.methods.length) { %>
+
+<%= "#".repeat(it.members.headingLevel) %> Methods
+<% it.members.methods.forEach(function(doc) { %>
+<%~ include("doc-block.md.eta", { doc: doc, heading: doc.name || "Method", headingLevel: it.members.headingLevel + 1 }) %>
+<% }) %>
+<% } %>

@@ -1,0 +1,6 @@
+<% if (it.see && it.see.length) { %>
+
+<%= "#".repeat(it.headingLevel) %> See Also
+<% it.see.forEach(function(item) { %>- <%~ it.helpers.text(item) %>
+<% }) %>
+<% } %>
