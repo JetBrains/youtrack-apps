@@ -96,7 +96,6 @@ export interface TypePageModel {
 export interface MethodGroup {
   heading: string;
   methods: DocBlock[];
-  injection?: string;
 }
 
 export type ApiObjectKind =
@@ -122,6 +121,5 @@ export interface ApiObject {
 
 export interface GeneratorOptions {
   outputDir: string;
-  injectionsDir: string;
   youtrackVersion?: string;
 }

@@ -37,10 +37,6 @@ export interface ObjectRule {
   split?: {
     methods?: MethodSplitRule[];
   };
-  inject?: Array<{
-    into: string;
-    file: string;
-  }>;
   members?: {
     includeInherited?: boolean;
   };

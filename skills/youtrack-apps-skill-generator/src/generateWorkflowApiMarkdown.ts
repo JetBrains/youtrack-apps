@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // CLI wrapper. API-specific behavior lives under workflow-api-markdown/.
-import { DEFAULT_INJECTIONS_DIR, DEFAULT_OUTPUT_DIR, DEFAULT_SKILL_PATH } from "./workflow-api-markdown/config.ts";
+import { DEFAULT_OUTPUT_DIR, DEFAULT_SKILL_PATH } from "./workflow-api-markdown/config.ts";
 import { generateWorkflowApiMarkdown } from "./workflow-api-markdown/runner.ts";
 import type { GeneratorOptions } from "./workflow-api-markdown/types.ts";
 
@@ -16,7 +16,6 @@ function usage(exitCode = 1): never {
   console.error("");
   console.error("Options:");
   console.error("  --output-dir <dir>       API docs output directory.");
-  console.error("  --injections-dir <dir>   Directory with Markdown injection snippets.");
   console.error("  --youtrack-version <version>");
   console.error("                          Update skill metadata with this YouTrack build version and bump patch version.");
   console.error("");
@@ -44,7 +43,6 @@ function parseCliArgs(argv: string[]): CliArgs {
   // CLI defaults stay in the wrapper; generation behavior stays in config.ts.
   const options: GeneratorOptions = {
     outputDir: DEFAULT_OUTPUT_DIR,
-    injectionsDir: DEFAULT_INJECTIONS_DIR,
   };
 
   for (let index = 0; index < rest.length; index += 2) {
@@ -56,8 +54,6 @@ function parseCliArgs(argv: string[]): CliArgs {
 
     if (flag === "--output-dir") {
       options.outputDir = value;
-    } else if (flag === "--injections-dir") {
-      options.injectionsDir = value;
     } else if (flag === "--youtrack-version") {
       options.youtrackVersion = value;
     } else {

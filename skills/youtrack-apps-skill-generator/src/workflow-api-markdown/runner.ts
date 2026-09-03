@@ -3,7 +3,6 @@
 import { groupDocsByModule, parseKnownDocs } from "./parse/docs.ts";
 import { formatUpdatedApiReferenceFile } from "./render/api-reference.ts";
 import { renderApiDocFiles } from "./render/api-doc-files.ts";
-import { setInjectionsDir } from "./render/page-renderer.ts";
 import type { GeneratedFile, GeneratorOptions } from "./types.ts";
 import { writeAllFiles } from "./write/files.ts";
 
@@ -75,8 +74,6 @@ function updateApiReferenceMetadata(file: GeneratedFile, youtrackVersion: string
 }
 
 export function generateWorkflowApiMarkdown(workflowApiPath: string, apiReferencePath: string, options: GeneratorOptions): void {
-  setInjectionsDir(options.injectionsDir);
-
   const docs = parseKnownDocs(workflowApiPath);
   const modules = groupDocsByModule(docs);
 

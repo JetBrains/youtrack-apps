@@ -22,7 +22,6 @@ owned output folders but keeps hand-written API pages such as `async-functions.m
 Optional flags:
 
 - `--output-dir <dir>` changes where API Markdown files are overwritten.
-- `--injections-dir <dir>` changes where injection Markdown files are read from.
 - `--youtrack-version <version>` updates the skill metadata for a release build. The generator reads
   `metadata.version` from `SKILL.md`, increments its patch version, and writes `<version>` to
   `metadata.YouTrackVersion`.
@@ -42,7 +41,6 @@ The generator checks rules from top to bottom. Each rule matches a generated API
 - `position`: where to write the object and whether to link to it from the module page.
 - `merge`: which objects to combine into one page.
 - `split`: how to split a section into groups.
-- `inject`: which Markdown file to insert into a section.
 - `members`: whether to include inherited members.
 - `referencedOn`: how to link references to an object.
 
@@ -74,7 +72,6 @@ Example:
       { title: "Sync Methods", nameSuffix: "Sync" },
     ],
   },
-  inject: [{ into: "Async Methods", file: "inject-async-http.md" }],
 }
 ```
 
@@ -89,16 +86,5 @@ Eta templates in `templates/` control the generated Markdown layout:
   examples, and related links.
 
 The generator passes structured API models to these templates. Parsing, configuration rules, filenames, anchors,
-escaping, metadata updates, and file cleanup remain in TypeScript.
-
-## 5. Add injections
-
-Add hand-written Markdown snippets to `resources/injections/`.
-
-Then reference the file from a rule:
-
-```ts
-inject: [{ into: "Async Methods", file: "inject-async-http.md" }]
-```
-
-The `into` value must match the generated section title.
+escaping, metadata updates, and file cleanup remain in TypeScript. Keep hand-written guidance in the skill's own
+references; generated API pages are overwritten on every run.

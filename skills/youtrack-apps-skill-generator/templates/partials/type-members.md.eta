@@ -17,10 +17,6 @@ Parent types: <% it.members.parentTypes.forEach(function(parent, index) { %>`<%=
 <% it.members.methodGroups.forEach(function(group) { %>
 
 <%= "#".repeat(it.members.headingLevel) %> <%= group.heading %>
-<% if (group.injection) { %>
-
-<%~ group.injection %>
-<% } %>
 <% group.methods.forEach(function(doc) { %>
 <%~ include("doc-block.md.eta", { doc: doc, heading: doc.name || "Method", headingLevel: it.members.headingLevel + 1 }) %>
 <% }) %>

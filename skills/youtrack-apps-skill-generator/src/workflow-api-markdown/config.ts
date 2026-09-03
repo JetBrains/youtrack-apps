@@ -8,12 +8,10 @@ import type { EngineConfig } from "./engine/config-types.ts";
 const PACKAGE_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 const ENTITIES_MODULE = "entities";
-const ASYNC_HTTP_INJECTION_FILE = "inject-async-http.md";
 
 export const DEFAULT_MODULE_LONGNAME = "module:@jetbrains/youtrack-scripting-api/entities";
 export const MODULE_PREFIX = "module:@jetbrains/youtrack-scripting-api/";
 export const DEFAULT_OUTPUT_DIR = path.resolve(PACKAGE_DIR, "../youtrack-apps-skill/references/api");
-export const DEFAULT_INJECTIONS_DIR = path.join(PACKAGE_DIR, "resources/injections");
 export const DEFAULT_SKILL_PATH = path.resolve(PACKAGE_DIR, "../youtrack-apps-skill/SKILL.md");
 
 export const ENGINE_CONFIG: EngineConfig = {
@@ -52,7 +50,6 @@ export const ENGINE_CONFIG: EngineConfig = {
    * position: where the object is written and whether the module links to it.
    * merge:    write several objects into one file.
    * split:    split one type page section into groups by a simple method rule.
-   * inject:   add Markdown text from injections/ at a named place.
    * members:  member rendering behavior, currently inherited members.
    * referencedOn: rewrite type mentions to point at a generated reference file.
    */
@@ -96,7 +93,6 @@ export const ENGINE_CONFIG: EngineConfig = {
           { title: "Sync Methods", nameSuffix: "Sync" },
         ],
       },
-      inject: [{ into: "Async Methods", file: ASYNC_HTTP_INJECTION_FILE }],
     },
   ],
 

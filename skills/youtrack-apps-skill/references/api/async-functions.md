@@ -8,6 +8,7 @@ Async functions let scripts schedule work that should run after the current scri
 - [Structure](#structure)
 - [Entry Points](#entry-points)
   - [`ctx.invokeAsync`](#ctxinvokeasync)
+  - [Async HTTP Methods](#async-http-methods)
 - [`ctx` In Async Functions](#ctx-in-async-functions)
 - [Chaining and Constraints](#chaining-and-constraints)
 - [Prerequisites](#prerequisites)
@@ -34,6 +35,7 @@ Use async functions when a script needs to:
 - debounce repeated changes
 - split a longer workflow into multiple small transactions
 - retry or continue processing in a later step
+- make an outbound HTTP request and handle its response after the current transaction commits
 
 ## Structure
 
@@ -76,6 +78,42 @@ ctx.store('issue', ctx.issue);
 ctx.invokeAsync('recalculate', 30000, 'recalculate-' + ctx.issue.id);
 ```
 If the same issue schedules `recalculate` several times with the same key before the delay expires, only the latest pending call should run.
+
+### Async HTTP Methods
+
+Use `Connection` async methods when a script needs to make an outbound HTTP request and handle the response later without keeping the current transaction open. These methods mirror their synchronous counterparts and take a final `handlerName` parameter that names a function in the same `asyncFunctions` object.
+
+```javascript
+const http = require('@jetbrains/youtrack-scripting-api/http');
+const connection = new http.Connection('https://api.example.com');
+connection.bearerAuth(ctx.settings.secretSetting);
+
+ctx.store('issue', ctx.issue);
+connection.postAsync('/events', null, {
+  issue: ctx.issue.id
+}, 'afterNotify');
+```
+
+The named handler receives the HTTP response as `ctx.response`. Do not assume that `ctx.response` exists in async functions scheduled with `ctx.invokeAsync()` or outside an async HTTP response handler.
+
+```javascript
+asyncFunctions: {
+  afterNotify: (ctx) => {
+    const issue = ctx.load('issue');
+    const response = ctx.response;
+
+    if (!issue || !response || !response.isSuccess) {
+      console.error('Request failed', response && response.code, response && response.exception);
+      return;
+    }
+
+    const data = response.json();
+    issue.addComment('External service returned ' + data.id + '.');
+  }
+}
+```
+
+See the generated [`http` API reference](http.md#async-methods) for the available methods and their parameter signatures.
 
 ## `ctx` In Async Functions
 

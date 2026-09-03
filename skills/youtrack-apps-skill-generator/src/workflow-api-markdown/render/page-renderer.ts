@@ -1,4 +1,3 @@
-import * as fs from "node:fs";
 import * as path from "node:path";
 
 // Builds structured page models. Eta templates own the Markdown layout.
@@ -25,28 +24,6 @@ interface TypeListGroup {
 
 const UNGROUPED_TYPE_KEY = "__ungrouped__";
 
-class InjectionSnippets {
-  private directory = path.join(path.dirname(path.resolve(process.argv[1] || ".")), "injections");
-
-  setDirectory(dir: string): void {
-    this.directory = path.resolve(dir);
-  }
-
-  read(filename: string): string {
-    const filePath = path.join(this.directory, filename);
-    if (!fs.existsSync(filePath)) {
-      return "";
-    }
-    return fs.readFileSync(filePath, "utf8").trim();
-  }
-}
-
-const injectionSnippets = new InjectionSnippets();
-
-export function setInjectionsDir(dir: string): void {
-  injectionSnippets.setDirectory(dir);
-}
-
 export function uniqueTypePageFilename(name: string, used: Set<string>): string {
   let filename = markdownFilename(name);
   while (used.has(filename)) {
@@ -57,7 +34,7 @@ export function uniqueTypePageFilename(name: string, used: Set<string>): string 
 }
 
 function configuredMethodGroups(moduleKey: string | undefined, typeName: string, methods: DocBlock[]): MethodGroup[] {
-  return moduleKey ? methodGroupsForTypePage(moduleKey, typeName, methods, (filename) => injectionSnippets.read(filename)) : [];
+  return moduleKey ? methodGroupsForTypePage(moduleKey, typeName, methods) : [];
 }
 
 function namedProperties(typeProperties: NamedBlock[] | undefined, propertyDocs: TypePageModel["properties"]): string[] {

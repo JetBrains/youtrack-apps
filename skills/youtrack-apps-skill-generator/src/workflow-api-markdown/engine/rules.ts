@@ -180,7 +180,6 @@ export function methodGroupsForTypePage(
   moduleKey: string | undefined,
   typeName: string,
   methods: DocBlock[],
-  readInjection: (filename: string) => string,
 ): MethodGroup[] {
   if (!moduleKey) {
     return [];
@@ -192,14 +191,11 @@ export function methodGroupsForTypePage(
     return [];
   }
 
-  // Split rules create titled method sections; injections attach by title.
   return splits
     .map((split) => ({
       heading: split.title,
       methods: methods.filter((method) => methodMatchesSplit(method, split)),
-      injection: rule.inject?.find((item) => item.into === split.title)?.file,
     }))
-    .map((group) => ({ ...group, injection: group.injection ? readInjection(group.injection) : undefined }))
     .filter((group) => group.methods.length > 0);
 }
 
