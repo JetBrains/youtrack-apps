@@ -1,0 +1,14 @@
+<% if (it.returns && it.returns.length) { %>
+
+<%= "#".repeat(it.headingLevel) %> Returns
+<% it.returns.forEach(function(item) { const typeInfo = it.helpers.type(item.type); const description = item.description ? it.helpers.text(item.description) : ""; %>
+<% if (typeInfo) { %>
+
+Return type: <%~ typeInfo %>.
+<% } %>
+<% if (description) { %>
+
+<%~ description %>
+<% } %>
+<% }) %>
+<% } %>
