@@ -88,3 +88,21 @@ Eta templates in `templates/` control the generated Markdown layout:
 The generator passes structured API models to these templates. Parsing, configuration rules, filenames, anchors,
 escaping, metadata updates, and file cleanup remain in TypeScript. Keep hand-written guidance in the skill's own
 references; generated API pages are overwritten on every run.
+
+## 5. Contributing
+
+Do not edit generated parts of `skills/youtrack-apps-skill/` manually: the next generator run will overwrite or delete
+those changes. Change the generator and regenerate the skill instead.
+
+Within `skills/youtrack-apps-skill/`, the generator owns:
+
+- Module pages directly under `references/api/`, except `async-functions.md` and `ctx.md`.
+- All Markdown files under `references/api/entities/`, `references/api/abstract-entities/`, and
+  `references/api/additional-entities/`.
+- In `SKILL.md`, everything from `## Reading the API modules` to the end of the final `# API Reference` section.
+
+The exceptions `references/api/async-functions.md` and `references/api/ctx.md` are hand-written. Everything else in
+the skill is also hand-written unless listed above.
+
+For generated changes, edit the generator's `src/` or `templates/`, update tests, run the generator, and commit the
+source and generated output together.
