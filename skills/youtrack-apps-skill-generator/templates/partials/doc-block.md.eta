@@ -1,0 +1,13 @@
+
+<%= "#".repeat(it.headingLevel) %> <%= it.heading %>
+<%~ include("doc-intro.md.eta", { doc: it.doc }) %>
+<% const typeInfo = it.helpers.type(it.doc.type); %>
+<% if (typeInfo) { %>
+
+<%= it.doc.kind === "member" ? "Return type" : "Type" %>: <%~ typeInfo %>  
+<% } %>
+<%~ include("parameters.md.eta", { params: it.doc.params, headingLevel: it.headingLevel + 1 }) %>
+<%~ include("returns.md.eta", { returns: it.doc.returns, headingLevel: it.headingLevel + 1 }) %>
+<%~ include("property-schema.md.eta", { properties: it.doc.properties, headingLevel: it.headingLevel + 1 }) %>
+<%~ include("examples.md.eta", { examples: it.doc.examples, headingLevel: it.headingLevel + 1 }) %>
+<%~ include("see-also.md.eta", { see: it.doc.see, headingLevel: it.headingLevel + 1 }) %>

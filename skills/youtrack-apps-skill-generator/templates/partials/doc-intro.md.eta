@@ -1,0 +1,11 @@
+<% const description = it.helpers.text(it.doc.description || it.doc.classdesc || ""); %>
+<% if (description) { %>
+
+<%~ description %>
+<% } %>
+<% const metadata = []; if (it.doc.readonly) metadata.push("Readonly"); if (it.doc.since) metadata.push(`Since: \`${it.doc.since}\``); if (it.doc.deprecated) metadata.push(`Deprecated: ${it.helpers.text(String(it.doc.deprecated))}`); %>
+<% if (metadata.length) { %>
+
+<% metadata.forEach(function(item) { %><%~ item %>  
+<% }) %>
+<% } %>

@@ -1,0 +1,11 @@
+<% if (it.constructors.length) { %>
+
+<%= "#".repeat(it.headingLevel) %> Constructors
+<% it.constructors.forEach(function(constructor) { %>
+
+<%= "#".repeat(it.headingLevel + 1) %> new <%= constructor.name %>
+<%~ include("parameters.md.eta", { params: constructor.doc.params, headingLevel: it.headingLevel + 2 }) %>
+<%~ include("examples.md.eta", { examples: constructor.doc.examples, headingLevel: it.headingLevel + 2 }) %>
+<%~ include("see-also.md.eta", { see: constructor.doc.see, headingLevel: it.headingLevel + 2 }) %>
+<% }) %>
+<% } %>

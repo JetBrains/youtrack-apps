@@ -1,0 +1,10 @@
+<% if (it.examples && it.examples.length) { %>
+
+<%= "#".repeat(it.headingLevel) %> Examples
+<% it.examples.forEach(function(example) { %>
+
+```javascript
+<%~ example.trimEnd() %>
+```
+<% }) %>
+<% } %>

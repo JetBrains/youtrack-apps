@@ -1,0 +1,7 @@
+<% if (it.properties && it.properties.length) { %>
+
+| Name | Type | Description |
+| --- | --- | --- |
+<% it.properties.forEach(function(property) { %>| `<%~ it.helpers.cell(property.name || "") %>` | <%~ it.helpers.type(property.type) %> | <%~ it.helpers.cell(property.description) %> |
+<% }) %>
+<% } %>

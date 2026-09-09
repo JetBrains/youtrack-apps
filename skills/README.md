@@ -57,3 +57,7 @@ Create a permanent token in YouTrack under **Profile → Account Security → To
 - Troubleshoot requirement errors and configuration issues.
 - Inspect app logs.
 - Add custom HTTP handlers and MCP tools, or migrate legacy workflows.
+
+## Contributing
+
+To update the workflow API reference, see the [generator README](./youtrack-apps-skill-generator/README.md).

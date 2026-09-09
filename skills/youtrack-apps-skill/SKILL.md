@@ -2,7 +2,7 @@
 name: youtrack-apps-skill
 description: Guides building, debugging, extending, and managing JetBrains YouTrack apps and workflows. Used when scaffolding, modifying, validating, uploading, downloading, enabling, disabling, or inspecting a YouTrack app, workflow rule, app endpoint, or manifest. Also use when creating GitHub release automation or publishing a YouTrack app to JetBrains Marketplace.
 metadata:
-  version: 1.0.3
+  version: 1.0.4
   YouTrackVersion: 2026.2.18243
 ---
 
@@ -236,7 +236,8 @@ rg -n "functionName|methodName|propertyName" references/api
 
 ## Important concepts
 - Async functions: [references/api/async-functions.md](references/api/async-functions.md). Load when working with
-  deferred work. Contains the mental model, usage points, structure, constraints, prerequisites, and examples.
+  deferred work or async HTTP response callbacks. Contains the mental model, usage points, structure, constraints,
+  prerequisites, and examples.
 - [Set](references/api/entities.md#set): Load when working with iteration over entities. YouTrack uses custom sets (not js sets)
   for multi-value collections. Contains properties, methods, and explanations.
 - Requirements: [requirements](references/api/entities.md#requirements). Load when you need to make sure

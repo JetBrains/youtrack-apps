@@ -1,0 +1,5 @@
+<% const typeInfo = it.helpers.type(it.doc.type); %>
+<% if (typeInfo) { %>
+
+Type: <%~ typeInfo %>  
+<% } %>

@@ -1,0 +1,9 @@
+<% if (it.params && it.params.length) { %>
+
+<%= "#".repeat(it.headingLevel) %> Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+<% it.params.forEach(function(param) { const name = param.defaultvalue === undefined ? (param.name || "") : `${param.name || ""} = \`${param.defaultvalue}\``; %>| `<%~ it.helpers.cell(name) %>` | <%~ it.helpers.type(param.type) %> | <%~ it.helpers.cell(param.description) %> |
+<% }) %>
+<% } %>

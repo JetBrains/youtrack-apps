@@ -1,0 +1,22 @@
+# <%= it.name %>
+<% if (it.doc) { %>
+<%~ include("partials/doc-intro.md.eta", { doc: it.doc }) %>
+<%~ include("partials/type-metadata.md.eta", { doc: it.doc }) %>
+<% } %>
+<% if (it.members) { %>
+<%~ include("partials/type-members.md.eta", { members: it.members }) %>
+<% } %>
+<% if (it.contents.length) { %>
+
+## Contents
+
+<% it.contents.forEach(function(entry) { %>
+- [<%= entry.label %>](<%= entry.href %>)
+<% }) %>
+<% } %>
+<% if (it.doc && it.doc.examples && it.doc.examples.length) { %>
+<%~ include("partials/examples.md.eta", { examples: it.doc.examples, headingLevel: 3 }) %>
+<% } %>
+<% it.sections.forEach(function(section) { %>
+<%~ include("partials/merged-type-section.md.eta", { section: section }) %>
+<% }) %>

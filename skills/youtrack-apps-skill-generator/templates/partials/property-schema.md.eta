@@ -1,0 +1,5 @@
+<% if (it.properties && it.properties.length) { %>
+
+<%= "#".repeat(it.headingLevel) %> Object Properties
+<%~ include("properties-table.md.eta", { properties: it.properties }) %>
+<% } %>

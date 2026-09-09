@@ -1,0 +1,33 @@
+# <%= it.name %>
+<% if (it.doc) { %>
+<%~ include("partials/doc-intro.md.eta", { doc: it.doc }) %>
+<% } %>
+<% if (it.types.length) { %>
+
+## Types
+
+<% it.types.forEach(function(entry) { %>
+- [<% if (entry.code) { %>`<% } %><%= entry.label %><% if (entry.code) { %>`<% } %>](<%= entry.href %>)
+<% }) %>
+<% } %>
+<% if (it.functions.length) { %>
+
+## Functions
+<% it.functions.forEach(function(doc) { %>
+<%~ include("partials/doc-block.md.eta", { doc: doc, heading: doc.name || "Function", headingLevel: 3 }) %>
+<% }) %>
+<% } %>
+<% it.inlineGroups.forEach(function(group) { %>
+
+<a id="<%= group.anchor %>"></a>
+## <%= group.title %>
+<% group.types.forEach(function(section) { %>
+- [`<%= section.name %>`](#<%= section.anchor %>)
+<% }) %>
+<% group.types.forEach(function(section) { %>
+<%~ include("partials/type-section.md.eta", { section: section }) %>
+<% }) %>
+<% }) %>
+<% it.inlineTypes.forEach(function(section) { %>
+<%~ include("partials/type-section.md.eta", { section: section }) %>
+<% }) %>

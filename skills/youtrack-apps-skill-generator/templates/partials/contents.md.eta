@@ -1,0 +1,29 @@
+<% if (it.contents) { %>
+
+<%= "#".repeat(it.contents.headingLevel) %> Contents
+<% if (it.contents.constructors.length) { %>
+
+<%= "#".repeat(it.contents.headingLevel + 1) %> Constructors
+<% it.contents.constructors.forEach(function(entry) { %>- [`<%= entry.label %>`](<%= entry.href %>)
+<% }) %>
+<% } %>
+<% if (it.contents.properties.length) { %>
+
+<%= "#".repeat(it.contents.headingLevel + 1) %> Properties
+<% it.contents.properties.forEach(function(entry) { %>- <% if (entry.href) { %>[`<%= entry.label %>`](<%= entry.href %>)<% } else { %>`<%= entry.label %>`<% } %>
+<% }) %>
+<% } %>
+<% if (it.contents.methodGroups.length) { %>
+
+<%= "#".repeat(it.contents.headingLevel + 1) %> Method Groups
+<% it.contents.methodGroups.forEach(function(group) { %>- [<%= group.heading %>](<%= group.href %>)
+<% group.methods.forEach(function(entry) { %>  - [`<%= entry.label %>`](<%= entry.href %>)
+<% }) %>
+<% }) %>
+<% } else if (it.contents.methods.length) { %>
+
+<%= "#".repeat(it.contents.headingLevel + 1) %> Methods
+<% it.contents.methods.forEach(function(entry) { %>- [`<%= entry.label %>`](<%= entry.href %>)
+<% }) %>
+<% } %>
+<% } %>
