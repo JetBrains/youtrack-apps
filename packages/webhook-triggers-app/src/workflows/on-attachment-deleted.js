@@ -12,7 +12,7 @@ exports.rule = {
     ruleType: 'onChange',
     onChange: true,
 
-    guard: core.createGuard(EVENTS.ATTACHMENT_DELETED.key, function (ctx) {
+    guard: core.createGuard(EVENTS.ATTACHMENT_DELETED.type, function (ctx) {
         const issue = ctx.issue;
 
         if (core.shouldSkipIssue(issue)) {
@@ -49,7 +49,7 @@ exports.rule = {
         const payload = core.createBasePayload(EVENTS.ATTACHMENT_DELETED.type, issue, project);
         payload.attachments = removedAttachments;
 
-        core.sendWebhooks(ctx, EVENTS.ATTACHMENT_DELETED.key, payload, EVENTS.ATTACHMENT_DELETED.name);
+        core.sendWebhooks(ctx, EVENTS.ATTACHMENT_DELETED.type, payload, EVENTS.ATTACHMENT_DELETED.name);
     },
 
     asyncFunctions: core.asyncFunctions,

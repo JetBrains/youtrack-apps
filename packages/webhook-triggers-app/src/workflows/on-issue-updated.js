@@ -14,7 +14,7 @@ exports.rule = {
     ruleType: 'onChange',
     onChange: true,
 
-    guard: core.createGuard(EVENTS.ISSUE_UPDATED.key, function (ctx) {
+    guard: core.createGuard(EVENTS.ISSUE_UPDATED.type, function (ctx) {
         var issue = ctx.issue;
 
         if (core.shouldSkipIssue(issue)) {
@@ -62,7 +62,7 @@ exports.rule = {
         payload.changedFields = changedFields;
 
         // Send webhooks
-        core.sendWebhooks(ctx, EVENTS.ISSUE_UPDATED.key, payload, EVENTS.ISSUE_UPDATED.name);
+        core.sendWebhooks(ctx, EVENTS.ISSUE_UPDATED.type, payload, EVENTS.ISSUE_UPDATED.name);
     },
 
     asyncFunctions: core.asyncFunctions,
