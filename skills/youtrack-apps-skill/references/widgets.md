@@ -2,6 +2,14 @@
 
 This file covers widget declaration, extension points, visibility, dimensions, and generator options.
 
+## Contents
+
+- [Manifest entry](#manifest-entry)
+- [Extension points](#extension-points-the-catalog)
+- [Scope and extension point correlation](#scope-and-extension-point-corellation)
+- [Conditional visibility](#conditional-visibility-permission-gated)
+- [Generating a widget](#generating-a-widget)
+
 ## Manifest entry
 
 The top-level `widgets` array is **optional** — omit it entirely for a backend-only app (an empty `[]` fails validation: *"widgets must NOT have fewer than 1 items"*). Each widget is one object in `manifest.json` `widgets[]`:
@@ -63,6 +71,20 @@ Source of truth for valid extension points and permissions is https://www.schema
 
 The `widget` generator validates a **15-value subset** — it rejects `ARTICLE_BELOW_SUMMARY` and `PROJECT_TAB`. For those two, add the widget entry to `manifest.json` by hand (shape above).
 
+## Scope and extension point corellation
+
+The extension point determines whether a widget runs in a project context. This
+is separate from its visibility and permissions.
+
+| Widget location | Scope | What it means |
+|---|---|---|
+| Issue, article, and project extension points (`ISSUE_*`, `ARTICLE_*`, `PROJECT_SETTINGS`, `PROJECT_TAB`) | Project | The widget is available only in projects where the app is attached and enabled. It can call project/entity-scoped handlers with `scope: true`. |
+| Helpdesk channel | Project | The app must be attached and enabled for the Helpdesk project. |
+
+An issue widget therefore belongs to the issue's project. If an issue widget is missing, check that
+the app is attached to that issue's project, enabled there, and visible to the
+current user before changing the widget code.
+
 ## Conditional visibility (permission-gated)
 
 A widget is shown to everyone by default. Two manifest-level mechanisms restrict it:
@@ -78,7 +100,7 @@ A widget is shown to everyone by default. Two manifest-level mechanisms restrict
 - Omit `permissions` (or empty array) → visible to everyone.
 - The strings are YouTrack permission keys. A few common ones are `READ_ISSUE`, `UPDATE_ISSUE`, `READ_ARTICLE`, and `READ_USER`.
 - All supported extension points and permissions are listed in the SchemaStore YouTrack app schema: https://www.schemastore.org/youtrack-app.json. Check that schema when you need the complete current set.
-s
+
 ## Generating a widget
 
 See `npx @jetbrains/create-youtrack-app@latest --help` for widget generation commands.

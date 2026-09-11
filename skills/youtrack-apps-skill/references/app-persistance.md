@@ -90,6 +90,37 @@ Project-level modules, such as workflow rules, require the app to be attached to
 
 Project context inherits from global context. If a setting has a project-specific value, `ctx.settings.<settingName>` returns that value. If the project does not override the setting, `ctx.settings.<settingName>` falls back to the global value.
 
+### Updating Settings
+
+Use `youtrack-app app settings` to read the current configuration and
+`youtrack-app app settings-set` to write it. Without `--project`, these commands
+read and write the global configuration. With `--project <key>`, they read and
+write that project's configuration. A project update requires the app to be
+attached to that project.
+
+`--settings` is a JSON object for the selected configuration level. It replaces
+the stored `globalSettings` or `projectSettings` object; it does not patch a
+single key. To change one setting without clearing other values:
+
+1. Read the settings at the intended level.
+2. Keep every existing key, including any masked secret value.
+3. Change only the requested key.
+4. Send the full resulting object with `settings-set`.
+5. Read the same level again and confirm the requested change.
+
+For example, if the global settings are `{"url":"https://api.example.test","token":"<***>"}` and the user changes only `url`, send both keys. Send `token` back as `<***>` to keep the stored secret:
+
+```bash
+youtrack-app app settings-set --app my-app \
+  --settings '{"url":"https://new-api.example.test","token":"<***>"}'
+```
+
+If a project has no value for a setting whose `x-scope` was omitted, it inherits
+the global value. Writing that key at the project level creates or changes only
+the project's override. It does not change the global value or any other
+project's override. A `GLOBAL` setting belongs only in the global object; a
+`PROJECT` setting belongs only in the relevant project's object.
+
 ### Required Settings
 
 The root `required` array lists settings that must have values before the app can become active in a context.
