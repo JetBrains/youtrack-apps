@@ -38,28 +38,7 @@ when runtime state, entities, requirements, settings, attachment, or deployment
 feasibility matters. Do not inspect it by default or because the skill is
 loaded.
 
-## Step 4: Communicate without ceremony
-
-Do not print a `PLAN` or checklist for ordinary tasks. Start the requested work.
-Before using tools, a short natural-language update is enough when one is
-useful. Mention assumptions only when they affect the result.
-
-Proceed directly with read-only work and requested file changes. Ask for confirmation
-only before destructive or irreversible work, or an
-ambiguous target.
-
-## Step 5: Load targeted references
-
-For source changes, identify the affected app area, then load only the relevant
-reference:
-
-- [Rules](../SKILL.md#rules)
-- [Custom API Endpoints](../SKILL.md#custom-api-endpoints)
-
-Load the selected rule or handler type, frontend/widget guidance for UI work,
-persistence guidance for storage or settings work.
-
-## Step 6: Generate or modify code
+## Step 4: Generate or modify code
 
 When writing code:
 
@@ -73,7 +52,7 @@ When writing code:
 - Use `npm run build` before deployment.
 - Deploy only `dist`.
 
-## Step 7: Validate in proportion to risk
+## Step 5: Validate in proportion to risk
 
 Use the smallest validation set that provides meaningful confidence:
 
@@ -87,7 +66,7 @@ Run the release-readiness check only when release, distribution, or Marketplace
 publication is in scope. Do not add release work to an ordinary code or deploy
 task.
 
-## Step 9: Deployment and runtime validation
+## Step 6: Deployment and runtime validation
 
 Deploy, attach, enable, disable, or publish only when the user requests it. A
 direct request or affirmative answer in the current conversation is enough; do
