@@ -2,7 +2,7 @@
 name: youtrack-apps-skill
 description: Guides building, debugging, extending, and managing JetBrains YouTrack apps and workflows. Used when scaffolding, modifying, validating, uploading, downloading, enabling, disabling, or inspecting a YouTrack app, workflow rule, app endpoint, or manifest. Also use when creating GitHub release automation or publishing a YouTrack app to JetBrains Marketplace.
 metadata:
-  version: 1.0.4
+  version: 1.0.5
   YouTrackVersion: 2026.2.18243
 ---
 
@@ -235,6 +235,9 @@ rg -n "functionName|methodName|propertyName" references/api
 ```
 
 ## Important concepts
+- Global and Project app scopes: [references/scope.md](references/scope.md). Load when deciding where a widget appears, whether an app is
+  global or attached to a project, which HTTP-handler scope to use, or how app persistence maps to settings and entity
+  extensions.
 - Async functions: [references/api/async-functions.md](references/api/async-functions.md). Load when working with
   deferred work or async HTTP response callbacks. Contains the mental model, usage points, structure, constraints,
   prerequisites, and examples.
@@ -246,10 +249,10 @@ rg -n "functionName|methodName|propertyName" references/api
   and what it consist of.
 
 ## App persistence and settings
-- App Settings: [references/app-persistance.md#app-settings](references/app-persistance.md#app-settings). Expose user-facing settings in the YouTrack admin UI
+- App Settings: [references/app-persistence.md#app-settings](references/app-persistence.md#app-settings). Expose user-facing settings in the YouTrack admin UI
   for system and project administrators to configure the app. These settings are accessible from app code through
   `ctx.settings`. Load for information on required variables, scopes, lifecycle and structure.
-- Extension Properties: [references/app-persistance.md#extension-properties](references/app-persistance.md#extension-properties). Load when the app
+- Extension Properties: [references/app-persistence.md#extension-properties](references/app-persistence.md#extension-properties). Load when the app
   needs app-owned persistent state, `entity-extensions.json`, `extensionProperties`, or `ctx.globalStorage`.
 
 ## Reading the API modules

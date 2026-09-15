@@ -1,18 +1,12 @@
-## Table of contents
+## Purpose
 
-- [Step 1: Classify the request](#step-1-classify-the-request)
-- [Step 2: Extract user-provided data](#step-2-extract-user-provided-data)
-- [Step 3: Check Required-input](#step-3-check-required-input)
-- [Step 4: Explore YouTrack](#step-4-explore-youtrack)
-- [Step 5: Print PLAN before action](#step-5-print-plan-before-action)
-- [Step 6: Select app script type and load references](#step-6-select-app-script-type-and-load-references)
-- [Step 7: Generate or modify code](#step-7-generate-or-modify-code)
-- [Step 8: Validate before final answer](#step-8-validate-before-final-answer)
-- [Step 9: Deployment and runtime validation](#step-9-deployment-and-runtime-validation)
+This protocol is a guide. Routine requests should not follow the protocol.
+Keep the checklist internal and share only what helps the user understand, verify, or unblock the work.
 
-## Step 1: Classify the request
+## Step 1: Understand the request
 
-Classify the request as one of the common task types:
+Classify the task internally only when the distinction changes the tools or
+safeguards you need:
 
 - `answer-only`: explain concepts or answer questions without commands or code changes
 - `manage-existing-app`: deploy, list, search, download, upload, enable, disable, attach, detach, validate, or inspect an app
@@ -20,114 +14,74 @@ Classify the request as one of the common task types:
 - `modify-existing-app`: change code, manifest, settings, workflows, endpoints, UI, or API usage
 - `release-or-publish-app`: prepare GitHub release automation, create a release, or submit a released app to JetBrains Marketplace
 
-## Step 2: Extract user-provided data
+Do not print the classification.
 
-Extract and remember all user-provided data, including:
+## Step 2: Resolve inputs from context
+
+Use the request and any already-known context. Inspect the repository, manifest,
+or environment only when they answer a question that matters to the action:
 
 - target app name or app id
 - app type for brand-new app scaffolding: TypeScript app with Enhanced DX (`--type ts`) or basic JavaScript app (`--type js`)
 - project short name, if project-specific
-- desired app script types: workflow rule, HTTP handler, MCP tool, manifest, settings, entity extension, UI, or unknown
-- requested output format: explanation, plan, files - modified, sources, suggested actions.
+- requested output: explanation, implementation, validation, deployment, or release
 - source repository remote and whether it is GitHub, when release readiness matters
 - Marketplace listing/plugin id and intended channel, when publishing is requested
 
-## Step 3: Check Required-input
+Ask concise question only if missing information blocks work. Do not ask for information already established
+in the current task.
 
-Before running commands, modifying files, or generating final code, check whether the selected task type has all required inputs.
+## Step 3: Inspect only what informs the task
 
-Required inputs by task type:
+For source changes, inspect local files first. Access the YouTrack instance
+when runtime state, entities, requirements, settings, attachment, or deployment
+feasibility matters. Do not inspect it by default or because the skill is
+loaded.
 
-- `manage-existing-app`: target app and desired action
-- `scaffold-new-app`: app name, title, description, and app type for brand-new apps
-- `modify-existing-app`: the requested change
-- `release-or-publish-app`: target app/repository and requested release or publishing action; publishing additionally needs a released version and Marketplace listing identity
-
-If required input is missing, ask the user one concise grouped question and stop.
-Do not assume missing app names, project short names, or destructive confirmations.
-
-## Step 4: Explore YouTrack
-
-Use YouTrack exploration commands to verify existance of required data in the running instance.
-
-Use exploration to verify feasibility - [YouTrack App CLI](#youtrack-app-cli)
-
-If exploration reveals ambiguity or infeasibility, ask the user before proceeding.
-
-This is valuable when you set requirements, you need to validate wether the required entity exists.
-
-## Step 5: Print PLAN before action
-
-Before writing code, modifying files, or running any command that changes files or the YouTrack instance, print:
-
-PLAN:
-1. Task type 
-2. Known inputs
-3. Missing assumptions, if any
-4. Files or references to read
-5. Commands to run, if any
-6. Expected outputs
-
-After printing the PLAN:
-- For read-only work, proceed.
-- For write operations, proceed only if the user requested code/file changes.
-- For destructive operations, ask for explicit confirmation and stop.
-
-## Step 6: Select app script type and load references
-
-Before code generation, select primary app script type:
-- [Rules](../SKILL.md#rules)
-- [Custom API Endpoints](../SKILL.md#custom-api-endpoints)
-
-Load the linked app script type reference before codegen.
-For every entity, property, method, constructor, and module function used in generated code, verify it against the selected reference source before final output.
-
-## Step 7: Generate or modify code
+## Step 4: Generate or modify code
 
 When writing code:
 
-- Follow the selected script type reference.
+- Follow the reference for the selected script type.
 - For widget declaration, extension point, visibility, dimensions, or widget generator work, follow [`Widgets`](../references/widgets.md).
 - For frontend/UI implementation work, follow [`Frontend`](../references/frontend.md).
-- Never put issue link types into workflow requirements.
-- Never perform rule -> http handler calls in the same app. Only frontend widgets call HTTP handlers, following [`Frontend`](../references/frontend.md).
-- Never compare whole objects; compare by name, login, key, id, or similar stable scalar value.
+- Do not put issue link types in workflow requirements.
+- Do not make rule -> HTTP handler calls within the same app. Only frontend widgets call HTTP handlers; follow [`Frontend`](../references/frontend.md).
+- Do not compare whole objects. Compare a stable scalar value such as name, login, key, or id.
+- For a widget, determine whether its extension point has a project context before choosing an endpoint or settings scope. Follow [`Widgets`](../references/widgets.md#scope-and-project-context).
 - Use `npm run build` before deployment.
 - Deploy only `dist`.
 
-## Step 8: Validate before final answer
+## Step 5: Validate in proportion to risk
 
-For code changes, final answer must include:
+Use the smallest validation set that provides meaningful confidence:
 
-- Generated or modified files
-- Build/validation commands run or recommended
-- For every used entity property or method:
-  `Does entity x have property/method y: Yes/No (reference)`
-- For every used JS API function:
-  `Does function x exist in JS API: Yes/No (reference)`
-- Any unresolved assumptions or required user actions
+- documentation or metadata only: formatting, links, schema, or focused checks;
+- backend logic: focused tests plus lint/type/build checks appropriate to risk;
+- frontend behavior: focused tests, lint/build, and visual or live smoke testing
+  when layout or host integration matters;
+- app package or manifest: build and `youtrack-app app validate`;
 
-Every reference must be verified.
+Run the release-readiness check only when release, distribution, or Marketplace
+publication is in scope. Do not add release work to an ordinary code or deploy
+task.
 
-For a newly finished app or an app the user wants to distribute, also perform the release-readiness check from [Releasing and Publishing App](../SKILL.md#releasing-and-publishing-app): inspect `origin` and the release workflow without changing them. If `origin` is GitHub or missing and the release workflow is absent, recommend it and offer to set it up. Consider the Marketplace workflow only if Marketplace distribution is in scope; it is optional and depends on a prior release. State the first-listing and secret setup actions only for Marketplace work. Do not turn a recommendation into an unrequested write or publication.
+## Step 6: Deployment and runtime validation
 
+Deploy, attach, enable, disable, or publish only when the user requests it. A
+direct request or affirmative answer in the current conversation is enough; do
+not ask for the same approval again.
 
-## Step 9: Deployment and runtime validation
+After a deployment, upload, enablement, or attachment, check:
+- requirement errors
+- recent logs
 
-After code validation, deploy or attach the app only with explicit user approval.
-Before deployment, ask:
-`Do you want the app deployed now?`
-If yes, and the app needs project-level activation, ask:
-`Do you want the app attached or enabled for a project? If yes, which project short name?`
-Do not assume the target project.
-After any deployment, upload, enablement, or attachment:
-- Check requirement errors
-- Check recent logs
-
-Final response must report:
+Report only what is relevant:
 - deployment result
 - attachment or enablement target, if any
 - requirement error status
 - log status
 - smoke-test result, if performed
-- unresolved errors or follow-up actions
+- unresolved errors or required follow-up actions.
+
+Keep the final response concise.
