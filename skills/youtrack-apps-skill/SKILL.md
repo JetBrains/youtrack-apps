@@ -235,7 +235,7 @@ rg -n "functionName|methodName|propertyName" references/api
 ```
 
 ## Important concepts
-- Scope: [references/scope.md](references/scope.md). Load when deciding where a widget appears, whether an app is
+- Global and Project app scopes: [references/scope.md](references/scope.md). Load when deciding where a widget appears, whether an app is
   global or attached to a project, which HTTP-handler scope to use, or how app persistence maps to settings and entity
   extensions.
 - Async functions: [references/api/async-functions.md](references/api/async-functions.md). Load when working with

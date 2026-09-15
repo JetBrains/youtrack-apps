@@ -1,44 +1,36 @@
 # Project and Global scopes in YouTrack App
 
-## Table of contents
+## What is scoped
 
-1. [App availability](#1-app-availability)
-2. [Widget scope](#2-widget-scope)
-3. [HTTP endpoint scope](#3-http-endpoint-scope)
-4. [App settings scope](#4-app-settings-scope)
-5. [Entity extensions](#5-entity-extensions)
-6. [Where scopes meet](#6-where-scopes-meet)
-   - [Widget, app availability, and endpoint](#widget-app-availability-and-endpoint)
-   - [Endpoint and settings](#endpoint-and-settings)
-   - [Endpoint and entity extensions](#endpoint-and-entity-extensions)
-7. [References](#7-references)
+- Backend modules (scripts): workflow rules, HTTP handlers, and MCP tools (AI tools)
+- Widgets
+- Settings
+- Permissions
 
-In a YouTrack app, scope is the context in which a feature appears, runs, reads configuration, or stores data. Each of these is configured separately, so a single feature will often have several related scopes. App persistence spans two of these surfaces: app settings hold administrator configuration, while entity extensions hold data managed by the app.
+Scope is declared in the app sources. Changing it requires updating and uploading the app.
+
+This document is about general **app scope**, which has two levels: project and global. Do not confuse it with the HTTP endpoint `scope` property. That property has five values: `ISSUE`, `ARTICLE`, and `PROJECT` belong to project app scope; `USER` and `GLOBAL` belong to global app scope.
 
 ## 1. App availability
 
-### Where it is configured
-
-App availability is configured in YouTrack after installation. Project-level modules are attached to and enabled for individual projects. Global modules are enabled for the whole YouTrack installation.
-
-### Options
+After installation, project-level modules can be attached to and enabled for individual projects. Global modules are available across the YouTrack installation. This controls where the uploaded app is enabled; it does not change the scope declared by the app sources.
 
 | Availability | Meaning |
 | --- | --- |
 | Global | The module works across the YouTrack installation and is not attached to individual projects. |
 | Project | The module works only in projects where the app is attached and enabled. |
 
-Workflow rules and `ISSUE`, `ARTICLE`, and `PROJECT` HTTP endpoints are project-level. `GLOBAL` and `USER` HTTP endpoints are global-level.
-
 Availability determines where a module can run.
 
-See [HTTP handler scope](script-types.md#scope-semantics).
+## 2. Workflow rule scope
 
-## 2. Widget scope
+Workflow rules are project-level. They run only in projects where the app is attached and enabled.
 
-### Where it is configured
+See [Rules](script-types.md#rules).
 
-Set the widget's `extensionPoint` in `manifest.json`.
+## 3. Widget scope
+
+The widget's `extensionPoint` in `manifest.json` determines its context. Changing it requires updating and uploading the app.
 
 ```json
 {
@@ -49,8 +41,6 @@ Set the widget's `extensionPoint` in `manifest.json`.
   }]
 }
 ```
-
-### Options
 
 | Context | Extension-point examples | Meaning |
 | --- | --- | --- |
@@ -67,11 +57,11 @@ Backend scope is configured on the endpoint, not inferred from the widget's loca
 
 See [Widget configuration and extension points](widgets.md).
 
-## 3. HTTP endpoint scope
+## 4. HTTP endpoint scope
 
-### Where it is configured
+Set `scope` on each endpoint in the HTTP handler source. Changing it requires updating and uploading the app.
 
-Set `scope` on each endpoint in an HTTP handler.
+The table below maps the HTTP endpoint `scope` property to app scope.
 
 ```javascript
 exports.httpHandler = {
@@ -86,27 +76,31 @@ exports.httpHandler = {
 };
 ```
 
-### Options
-
-| Scope | Meaning | Context property |
-| --- | --- | --- |
-| `ISSUE` | The request belongs to one issue. | `ctx.issue` |
-| `ARTICLE` | The request belongs to one article. | `ctx.article` |
-| `PROJECT` | The request belongs to one project. | `ctx.project` |
-| `USER` | The request belongs to one user outside project scope. | `ctx.user` |
-| `GLOBAL` | The request covers installation-wide behavior and has no scoped entity. | None |
+| Scope | App scope | Meaning | Context property |
+| --- | --- | --- | --- |
+| `ISSUE` | Project | The request belongs to one issue. | `ctx.issue` |
+| `ARTICLE` | Project | The request belongs to one article. | `ctx.article` |
+| `PROJECT` | Project | The request belongs to one project. | `ctx.project` |
+| `USER` | Global | The request belongs to one user outside project scope. | `ctx.user` |
+| `GLOBAL` | Global | The request covers installation-wide behavior and has no scoped entity. | None |
 
 An endpoint without `scope` is `GLOBAL`.
 
 For a scoped endpoint, YouTrack resolves the entity and checks whether the caller can reach that context before the handler runs. Choose the narrowest scope that fits the operation. Reserve `GLOBAL` for operations with no issue, article, project, or user context, such as an external webhook.
 
+All endpoints in one HTTP handler must have the same app scope. A handler may combine `ISSUE`, `ARTICLE`, and `PROJECT` endpoints because they are all project-level. It may combine `USER` and `GLOBAL` endpoints because both are global-level. It cannot combine the two groups; for example, one handler cannot contain both `ISSUE` and `USER` endpoints.
+
 See [HTTP handler scope](script-types.md#scope-semantics).
 
-## 4. App settings scope
+## 5. MCP tool (AI tool) scope
 
-### Where it is configured
+MCP tools are global-level backend modules. They are available at the installation level rather than being attached to individual projects.
 
-Set `x-scope` on each property in `settings.json`.
+See [MCP tool](script-types.md#mcp-tool).
+
+## 6. App settings scope
+
+Set `x-scope` on each property in `settings.json`. Administrators configure the setting's value after installation, but they cannot change its declared scope without an updated app version.
 
 ```json
 {
@@ -122,8 +116,6 @@ Set `x-scope` on each property in `settings.json`.
 }
 ```
 
-### Options
-
 | `x-scope` | Where it is configured | Runtime meaning |
 | --- | --- | --- |
 | `GLOBAL` | Once, by a system administrator | Global modules read the installation-level value. |
@@ -134,41 +126,30 @@ The setting scope controls who configures the value and what `ctx.settings` retu
 
 See [App settings scope](app-persistance.md#choosing-scope).
 
-## 5. Entity extensions
+## 7. Permissions
 
-### Where it is configured
+System administrators can manage all apps and app scopes.
 
-Set `entityType` in `entity-extensions.json`. Code reads and writes the declared property through that entity's `extensionProperties`.
+Project administrators can:
 
-```json
-{
-  "entityTypeExtensions": [{
-    "entityType": "Issue",
-    "properties": {
-      "externalId": { "type": "string" }
-    }
-  }]
-}
-```
+- configure project-level app parts and attach apps to projects where they are project administrators;
+- update an app's source only when it is attached exclusively to projects they administer;
+- upload a new app that contains global-level modules, but the app is disabled automatically and can be enabled only by a system administrator.
 
-### Options
+If an app is attached to any project they do not administer, a project administrator cannot update its source.
 
-| Storage owner | Access | Meaning |
+## 8. Administration UIs
+
+| Location | Purpose | Access |
 | --- | --- | --- |
-| `Issue` | `issue.extensionProperties` | One value per issue. |
-| `Article` | `article.extensionProperties` | One value per article. |
-| `Project` | `project.extensionProperties` | One value per project. |
-| `User` | `user.extensionProperties` | One value per user. |
-| Other supported entity | `entity.extensionProperties` | One value per entity instance. |
-| `AppGlobalStorage` | `ctx.globalStorage.extensionProperties` | One value for the app installation. |
+| **Administration → Apps** | Manages all apps globally. Global app settings, visibility, and enable/disable controls are available only here. Workflow apps are included. | Visible to system and project administrators; editable only by system administrators. |
+| **Administration → Workflows** | Manages workflow apps globally. It shows apps with the **Workflow** tag, meaning apps that contain at least one workflow rule. This UI remains for backward compatibility; the same apps also appear under **Administration → Apps**. | Visible to system and project administrators; editable only by system administrators. |
+| **Projects → _Project_ → Settings → Apps** | Manages project-level app setup for one project. | Editable by system administrators and administrators of that project. |
+| **Projects → _Project_ → Settings → Workflows** | Manages workflow rules for one project. It shows only workflow rules provided by apps. | Editable by system administrators and administrators of that project. |
 
-The `entityType` selects the owner of the stored state. Endpoint scope does not change that ownership. For example, an `ISSUE` endpoint may update issue state, project state, or app-global state when the app declares those properties.
+## 9. Where scopes meet
 
-Use extension properties for state maintained by the app. Use app settings for values supplied by an administrator.
-
-See [Entity extensions](app-persistance.md#extension-properties).
-
-## 6. Where scopes meet
+One app feature can involve several independently scoped parts. Their scopes determine where the feature is available, which settings it reads, and which permissions YouTrack checks.
 
 ### Widget, app availability, and endpoint
 
@@ -191,19 +172,8 @@ The endpoint's execution context determines which settings it can read.
 
 A global endpoint cannot use a project-only setting because it has no project context from which to select a value.
 
-### Endpoint and entity extensions
-
-Endpoint scope provides the primary entity for a request. The entity extension target identifies the owner of stored data.
-
-- An `ISSUE` endpoint commonly stores issue state on `ctx.issue.extensionProperties`.
-- A `PROJECT` endpoint commonly stores project state on `ctx.project.extensionProperties`.
-- A `GLOBAL` endpoint commonly stores shared state on `ctx.globalStorage.extensionProperties`.
-
-These combinations are conventions, not restrictions. When an endpoint loads another entity, check that the current user can access it before returning its data.
-
-## 7. References
+## 10. References
 
 - [Widget configuration and extension points](widgets.md)
 - [HTTP handler scope](script-types.md#scope-semantics)
 - [App settings scope](app-persistance.md#choosing-scope)
-- [Entity extensions](app-persistance.md#extension-properties)
