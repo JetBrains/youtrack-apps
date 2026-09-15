@@ -1,4 +1,4 @@
-# Project and Global scopes in YouTrack App
+# Project and global scope in YouTrack apps
 
 ## What is scoped
 
@@ -7,20 +7,17 @@
 - Settings
 - Permissions
 
-Scope is declared in the app sources. Changing it requires updating and uploading the app.
+App scope is set in the source and fixed for each uploaded version. To change it, update the source and upload a new version.
 
-This document is about general **app scope**, which has two levels: project and global. Do not confuse it with the HTTP endpoint `scope` property. That property has five values: `ISSUE`, `ARTICLE`, and `PROJECT` belong to project app scope; `USER` and `GLOBAL` belong to global app scope.
-
+Here, **app scope** has two levels: project and global.
 ## 1. App availability
 
-After installation, project-level modules can be attached to and enabled for individual projects. Global modules are available across the YouTrack installation. This controls where the uploaded app is enabled; it does not change the scope declared by the app sources.
+Project-level modules become available when the app is attached to and enabled for a project. Global modules work across the YouTrack installation. Attaching an app to a project does not change its declared scope.
 
 | Availability | Meaning |
 | --- | --- |
 | Global | The module works across the YouTrack installation and is not attached to individual projects. |
 | Project | The module works only in projects where the app is attached and enabled. |
-
-Availability determines where a module can run.
 
 ## 2. Workflow rule scope
 
@@ -30,7 +27,7 @@ See [Rules](script-types.md#rules).
 
 ## 3. Widget scope
 
-The widget's `extensionPoint` in `manifest.json` determines its context. Changing it requires updating and uploading the app.
+The widget's `extensionPoint` in `manifest.json` sets its context.
 
 ```json
 {
@@ -51,15 +48,15 @@ The widget's `extensionPoint` in `manifest.json` determines its context. Changin
 | Global UI | `MAIN_MENU_ITEM`, `ADMINISTRATION_MENU_ITEM`, `DASHBOARD_WIDGET` | The location is not tied to a project entity. |
 | Other host context | `HELPDESK_CHANNEL`, `MARKDOWN` | YouTrack supplies the relevant Helpdesk or content context. |
 
-The extension point controls where YouTrack mounts the widget and which host context it receives. A widget in a project context also requires the app to be attached to and enabled for that project.
+The extension point controls where YouTrack mounts the widget and which host context it receives. Widgets with a project context appear only in projects where the app is attached and enabled.
 
-Backend scope is configured on the endpoint, not inferred from the widget's location.
+Endpoints declare their backend scope independently of the widget's location.
 
 See [Widget configuration and extension points](widgets.md).
 
 ## 4. HTTP endpoint scope
 
-Set `scope` on each endpoint in the HTTP handler source. Changing it requires updating and uploading the app.
+Each endpoint declares `scope` in the HTTP handler source. The value is fixed until the app is updated and uploaded again.
 
 The table below maps the HTTP endpoint `scope` property to app scope.
 
@@ -84,23 +81,23 @@ exports.httpHandler = {
 | `USER` | Global | The request belongs to one user outside project scope. | `ctx.user` |
 | `GLOBAL` | Global | The request covers installation-wide behavior and has no scoped entity. | None |
 
-An endpoint without `scope` is `GLOBAL`.
+If `scope` is omitted, the endpoint is `GLOBAL`.
 
-For a scoped endpoint, YouTrack resolves the entity and checks whether the caller can reach that context before the handler runs. Choose the narrowest scope that fits the operation. Reserve `GLOBAL` for operations with no issue, article, project, or user context, such as an external webhook.
+For endpoints tied to an issue, article, project, or user, YouTrack resolves the entity and checks whether the caller can access it before the handler runs. Use the narrowest scope that fits the operation. Use `GLOBAL` for operations with no issue, article, project, or user context, such as an external webhook.
 
-All endpoints in one HTTP handler must have the same app scope. A handler may combine `ISSUE`, `ARTICLE`, and `PROJECT` endpoints because they are all project-level. It may combine `USER` and `GLOBAL` endpoints because both are global-level. It cannot combine the two groups; for example, one handler cannot contain both `ISSUE` and `USER` endpoints.
+Every endpoint in an HTTP handler must belong to the same app scope. A project-level handler can combine `ISSUE`, `ARTICLE`, and `PROJECT` endpoints. A global-level handler can combine `USER` and `GLOBAL` endpoints. One handler cannot combine the two groups, such as `ISSUE` and `USER`.
 
 See [HTTP handler scope](script-types.md#scope-semantics).
 
 ## 5. MCP tool (AI tool) scope
 
-MCP tools are global-level backend modules. They are available at the installation level rather than being attached to individual projects.
+MCP tools are global-level backend modules. They run across the installation and are not attached to individual projects.
 
 See [MCP tool](script-types.md#mcp-tool).
 
 ## 6. App settings scope
 
-Set `x-scope` on each property in `settings.json`. Administrators configure the setting's value after installation, but they cannot change its declared scope without an updated app version.
+Each property in `settings.json` declares its scope with `x-scope`. Administrators can edit the value after installation. Changing `x-scope` requires a new app version.
 
 ```json
 {
@@ -122,38 +119,36 @@ Set `x-scope` on each property in `settings.json`. Administrators configure the 
 | `PROJECT` | Separately for each project | Project-level modules read the value for their project. |
 | Omitted | Globally, with optional project overrides | A project uses its override when present and otherwise inherits the global value. |
 
-The setting scope controls who configures the value and what `ctx.settings` returns at runtime. Global modules cannot read project values, so `PROJECT` works only for features that run in a project context. Leave out `x-scope` when the setting should support both a global default and project overrides.
+Setting scope controls who can configure the value and what `ctx.settings` returns. Global modules read only global values. Project-level modules can read values for their project. Omit `x-scope` when a setting needs a global default with project overrides.
 
 See [App settings scope](app-persistance.md#choosing-scope).
 
 ## 7. Permissions
 
-System administrators can manage all apps and app scopes.
+System administrators can manage every app and app scope.
 
 Project administrators can:
 
-- configure project-level app parts and attach apps to projects where they are project administrators;
-- update an app's source only when it is attached exclusively to projects they administer;
-- upload a new app that contains global-level modules, but the app is disabled automatically and can be enabled only by a system administrator.
-
-If an app is attached to any project they do not administer, a project administrator cannot update its source.
+- configure project-level app parts and attach apps to projects they administer;
+- update an app's source only when the app is attached exclusively to projects they administer;
+- upload a new app with global-level modules. YouTrack disables the app automatically, and only a system administrator can enable it.
 
 ## 8. Administration UIs
 
 | Location | Purpose | Access |
 | --- | --- | --- |
-| **Administration → Apps** | Manages all apps globally. Global app settings, visibility, and enable/disable controls are available only here. Workflow apps are included. | Visible to system and project administrators; editable only by system administrators. |
-| **Administration → Workflows** | Manages workflow apps globally. It shows apps with the **Workflow** tag, meaning apps that contain at least one workflow rule. This UI remains for backward compatibility; the same apps also appear under **Administration → Apps**. | Visible to system and project administrators; editable only by system administrators. |
-| **Projects → _Project_ → Settings → Apps** | Manages project-level app setup for one project. | Editable by system administrators and administrators of that project. |
-| **Projects → _Project_ → Settings → Workflows** | Manages workflow rules for one project. It shows only workflow rules provided by apps. | Editable by system administrators and administrators of that project. |
+| Administration → Apps | Manages all apps globally. Global app settings, visibility, and enable/disable controls are available only here. It also lists workflow apps. | Visible to system and project administrators; editable only by system administrators. |
+| Administration → Workflows | Manages workflow apps globally. It shows apps with the Workflow tag, which means they contain at least one workflow rule. This UI remains for backward compatibility; the same apps also appear under Administration → Apps. | Visible to system and project administrators; editable only by system administrators. |
+| Projects → _Project_ → Settings → Apps | Manages app setup for one project. | Editable by system administrators and administrators of that project. |
+| Projects → _Project_ → Settings → Workflows | Manages workflow rules for one project and shows only rules provided by apps. | Editable by system administrators and administrators of that project. |
 
 ## 9. Where scopes meet
 
-One app feature can involve several independently scoped parts. Their scopes determine where the feature is available, which settings it reads, and which permissions YouTrack checks.
+One feature may involve several scoped parts. Together, their scopes determine where the feature is available, which settings it reads, and which permissions YouTrack checks.
 
 ### Widget, app availability, and endpoint
 
-These scopes form the path from the UI to the backend:
+A widget calling its backend follows this path:
 
 ```text
 widget extension point -> app available in that context -> endpoint scope
