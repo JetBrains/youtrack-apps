@@ -1,4 +1,4 @@
-# Scope in YouTrack Apps
+# Project and Global scopes in YouTrack App
 
 ## Table of contents
 
