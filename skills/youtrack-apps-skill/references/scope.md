@@ -44,16 +44,16 @@ The widget's `extensionPoint` in `manifest.json` sets its context and scope.
 }
 ```
 
-| Context | Extension-point examples | Scope and meaning |
+| Context | Extension-point examples | Meaning |
 | --- | --- | --- |
-| Issue | `ISSUE_BELOW_SUMMARY`, `ISSUE_OPTIONS_MENU_ITEM` | Project. The widget runs for one issue and its project. |
-| Article | `ARTICLE_BELOW_SUMMARY`, `ARTICLE_OPTIONS_MENU_ITEM` | Project. The widget runs for one article and its project. |
-| Project | `PROJECT_SETTINGS`, `PROJECT_TAB` | Project. The widget runs for one project. |
-| Helpdesk | `HELPDESK_CHANNEL` | Project. The widget runs for one Helpdesk project. |
-| User | `USER_CARD`, `USER_PROFILE_SETTINGS` | Global. The widget runs for one user. |
-| Global UI and content | `MAIN_MENU_ITEM`, `ADMINISTRATION_MENU_ITEM`, `DASHBOARD_WIDGET`, `MARKDOWN` | Global. The location is not tied to one project. |
+| Issue | `ISSUE_BELOW_SUMMARY`, `ISSUE_OPTIONS_MENU_ITEM` | The widget runs for one issue and its project. |
+| Article | `ARTICLE_BELOW_SUMMARY`, `ARTICLE_OPTIONS_MENU_ITEM` | The widget runs for one article and its project. |
+| Project | `PROJECT_SETTINGS`, `PROJECT_TAB` | The widget runs for one project. |
+| User | `USER_CARD`, `USER_PROFILE_SETTINGS` | The widget runs for one user. |
+| Global UI | `MAIN_MENU_ITEM`, `ADMINISTRATION_MENU_ITEM`, `DASHBOARD_WIDGET` | The location is not tied to a project entity. |
+| Other host context | `HELPDESK_CHANNEL`, `MARKDOWN` | YouTrack supplies the relevant Helpdesk or content context. |
 
-The extension point controls where YouTrack mounts the widget and which host context it receives. Project-level widgets appear only in projects where the app is attached and enabled.
+The extension point controls where YouTrack mounts the widget and which host context it receives. Widgets with a project context appear only in projects where the app is attached and enabled.
 
 Endpoints declare their backend scope independently of the widget's location.
 
@@ -61,9 +61,9 @@ See [Widget configuration and extension points](widgets.md).
 
 ## 4. HTTP endpoint scope
 
-Each endpoint declares `scope` in the HTTP handler source. The value is fixed until the app is updated and uploaded again.
+Each endpoint declares `scope` in the HTTP handler source. The value is fixed until the app is updated and uploaded again. `scope` is case insensitive.
 
-The table below maps the HTTP endpoint `scope` property to component scope.
+The table below maps the HTTP endpoint `scope` property to component scope. 
 
 ```javascript
 exports.httpHandler = {
@@ -80,8 +80,8 @@ exports.httpHandler = {
 
 | Scope | Component scope | Meaning | Context properties |
 | --- | --- | --- | --- |
-| `ISSUE` | Project | The request belongs to one issue. | `ctx.issue`, `ctx.project` |
-| `ARTICLE` | Project | The request belongs to one article. | `ctx.article`, `ctx.project` |
+| `ISSUE` | Project | The request belongs to one issue. | `ctx.issue` |
+| `ARTICLE` | Project | The request belongs to one article. | `ctx.article` |
 | `PROJECT` | Project | The request belongs to one project. | `ctx.project` |
 | `USER` | Global | The request belongs to one user outside project scope. | `ctx.user` |
 | `GLOBAL` | Global | The request has no scoped entity. | None |
@@ -130,7 +130,7 @@ Setting scope controls who can configure the value and what `ctx.settings` retur
 
 Setting scope does not change the scope of a widget or backend module.
 
-See [App settings scope](app-persistance.md#choosing-scope).
+See [App settings scope](app-persistence.md#choosing-scope).
 
 ## 7. Permissions
 
@@ -151,7 +151,7 @@ Project administrators can:
 | Projects → _Project_ → Settings → Apps | Manages app setup for one project. | Editable by system administrators and administrators of that project. |
 | Projects → _Project_ → Settings → Workflows | Manages workflow rules for one project and shows only rules provided by apps. | Editable by system administrators and administrators of that project. |
 
-Prefer the CLI when reading or changing app settings. Use `youtrack-app app settings` to read values and `youtrack-app app settings-set` to update them. Both commands support global and project settings. See [Updating app settings](app-persistance.md#updating-settings).
+Prefer the CLI when reading or changing app settings. Use `youtrack-app app settings` to read values and `youtrack-app app settings-set` to update them. Both commands support global and project settings. See [Updating app settings](app-persistence.md#updating-settings).
 
 ## 9. Where scopes meet
 
@@ -182,4 +182,4 @@ A global endpoint cannot use a project-only setting because it has no project co
 
 - [Widget configuration and extension points](widgets.md)
 - [HTTP handler scope](script-types.md#scope-semantics)
-- [App settings scope](app-persistance.md#choosing-scope)
+- [App settings scope](app-persistence.md#choosing-scope)
