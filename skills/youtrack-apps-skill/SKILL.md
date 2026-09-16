@@ -26,9 +26,6 @@ user before continuing with a reduced local-only workflow.
 # Mandatory Operating Steps
 
 When this skill is loaded, always follow this [PROTOCOL](./references/operating-steps.md) in order for every YouTrack app task.
-Do not skip, reorder, or silently complete steps.
-
-For any task that involves code generation, file modification, app management commands, validation, deployment, or YouTrack instance inspection, maintain this checklist internally and expose the PLAN before acting. 
 
 # App Type Selection
 Use this distinction when initializing a new app, adding generated modules, or deciding which file layout and build
