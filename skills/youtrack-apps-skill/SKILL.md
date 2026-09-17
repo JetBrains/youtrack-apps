@@ -2,7 +2,7 @@
 name: youtrack-apps-skill
 description: Guides building, debugging, extending, and managing JetBrains YouTrack apps and workflows. Used when scaffolding, modifying, validating, uploading, downloading, enabling, disabling, or inspecting a YouTrack app, workflow rule, app endpoint, or manifest. Also use when creating GitHub release automation or publishing a YouTrack app to JetBrains Marketplace.
 metadata:
-  version: 1.0.5
+  version: 1.0.6
   YouTrackVersion: 2026.2.18243
 ---
 
@@ -26,9 +26,6 @@ user before continuing with a reduced local-only workflow.
 # Mandatory Operating Steps
 
 When this skill is loaded, always follow this [PROTOCOL](./references/operating-steps.md) in order for every YouTrack app task.
-Do not skip, reorder, or silently complete steps.
-
-For any task that involves code generation, file modification, app management commands, validation, deployment, or YouTrack instance inspection, maintain this checklist internally and expose the PLAN before acting. 
 
 # App Type Selection
 Use this distinction when initializing a new app, adding generated modules, or deciding which file layout and build
