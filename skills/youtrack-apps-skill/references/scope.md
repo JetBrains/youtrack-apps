@@ -32,7 +32,7 @@ See [Rules](script-types.md#rules).
 
 ## 3. Widget scope
 
-The widget's `extensionPoint` in `manifest.json` sets its context and scope.
+The widget's `extensionPoint` in `manifest.json` determines the HTTP handler scope available to scoped `fetchApp` calls and the widget's app scope.
 
 ```json
 {
@@ -44,18 +44,18 @@ The widget's `extensionPoint` in `manifest.json` sets its context and scope.
 }
 ```
 
-| Context | Extension-point examples | Meaning |
-| --- | --- | --- |
-| Issue | `ISSUE_BELOW_SUMMARY`, `ISSUE_OPTIONS_MENU_ITEM` | The widget runs for one issue and its project. |
-| Article | `ARTICLE_BELOW_SUMMARY`, `ARTICLE_OPTIONS_MENU_ITEM` | The widget runs for one article and its project. |
-| Project | `PROJECT_SETTINGS`, `PROJECT_TAB` | The widget runs for one project. |
-| User | `USER_CARD`, `USER_PROFILE_SETTINGS` | The widget runs for one user. |
-| Global UI | `MAIN_MENU_ITEM`, `ADMINISTRATION_MENU_ITEM`, `DASHBOARD_WIDGET` | The location is not tied to a project entity. |
-| Other host context | `HELPDESK_CHANNEL`, `MARKDOWN` | YouTrack supplies the relevant Helpdesk or content context. |
+| Context | Extension-point examples | HTTP handler scope | App scope |
+| --- | --- | --- | --- |
+| Issue | `ISSUE_BELOW_SUMMARY`, `ISSUE_OPTIONS_MENU_ITEM` | `ISSUE` | Project |
+| Article | `ARTICLE_BELOW_SUMMARY`, `ARTICLE_OPTIONS_MENU_ITEM` | `ARTICLE` | Project |
+| Project | `PROJECT_SETTINGS`, `PROJECT_TAB` | `PROJECT` | Project |
+| Helpdesk | `HELPDESK_CHANNEL` | `PROJECT` | Project |
+| User | `USER_CARD`, `USER_PROFILE_SETTINGS` | `USER` | Global |
+| Global UI and content | `MAIN_MENU_ITEM`, `ADMINISTRATION_MENU_ITEM`, `DASHBOARD_WIDGET`, `MARKDOWN` | `GLOBAL` | Global |
 
-The extension point controls where YouTrack mounts the widget and which host context it receives. Widgets with a project context appear only in projects where the app is attached and enabled.
+The HTTP handler scope controls which scoped endpoint the widget can call with `host.fetchApp(..., {scope: true})`. The endpoint must declare the scope associated with the widget's extension point. Call a `GLOBAL` endpoint without `scope: true`.
 
-Endpoints declare their backend scope independently of the widget's location.
+App scope controls availability. A widget with project app scope appears only when the app is attached to and enabled for that project. A widget with global app scope becomes available in its UI location as soon as the app is enabled and visible to the current user.
 
 See [Widget configuration and extension points](widgets.md).
 
@@ -159,13 +159,14 @@ One feature may involve several scoped parts. Together, their scopes determine w
 
 ### Widget, app availability, and endpoint
 
-A widget calling its backend follows this path:
+A widget's extension point determines both paths:
 
 ```text
-widget extension point -> app available in that context -> endpoint scope
+widget extension point -> HTTP handler scope -> scoped fetchApp endpoint
+                       -> app scope          -> widget availability
 ```
 
-An issue widget uses an `ISSUE_*` extension point. The app must be attached to and enabled for the issue's project. An `ISSUE` endpoint then gives the backend access to that issue through `ctx.issue`.
+An issue widget uses an `ISSUE_*` extension point, so `host.fetchApp(..., {scope: true})` calls an `ISSUE` endpoint and the backend receives the issue through `ctx.issue`. Its app scope is project, so the widget appears only when the app is attached to and enabled for the issue's project.
 
 ### Endpoint and settings
 

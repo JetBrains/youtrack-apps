@@ -93,6 +93,8 @@ A widget is shown to everyone by default. Two manifest-level mechanisms restrict
 - **`guard`** — a JS predicate that must return `true` for the widget to show. Finer-grained than permissions, but the generator does **not** emit it — add it to `manifest.json` by hand.
 *Note*: App visibility settings can restrict the widget visibility too.
 
+For `USER_CARD`, visibility restrictions apply to the user viewing the card. They do not restrict which users' cards show the widget.
+
 ```json
 "permissions": ["READ_ISSUE", "UPDATE_ISSUE"]
 ```
