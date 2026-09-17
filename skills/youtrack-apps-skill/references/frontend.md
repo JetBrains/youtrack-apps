@@ -138,6 +138,8 @@ const proj   = await api.project.demo.GET({ projectId: "DEMO", message: "hi" });
 ```
 
 - Request/response are typed from the handler's `*Req` / `*Res` types.
+- Export `type Handle = typeof handle` from each route. Annotate request/response contract types with
+  `/** @zod-to-schema */`; only annotated types participate in generated schemas and development-time validation.
 - In development builds, Zod validates payloads at runtime - invalid data throws.
 - Always import via the **`@/api` alias**, never a relative path into `src/api/`.
 
@@ -166,6 +168,9 @@ A widget cannot read extension properties or `ctx.settings` directly - both are 
 - `npm run dev` — Vite dev server on `:9000` with HMR; use when iterating on UI.
 - `npm run watch` — auto-uploads on rebuild, but **no** hot reload; refresh the YouTrack page.
 - `npm run build && npm run upload-local` — manual production build + upload (`npm run update` does both).  
+- `npm run g -- ...` (alias of `npm run generate -- ...`) — add handlers, widgets, settings, or extension properties
+  using the project-local Enhanced DX generator. Run the script's `--help` before composing an unfamiliar generation
+  command, then rebuild the backend so types and declarations stay synchronized.
 - If an existing app's `package.json` declares extra scripts such as `watch`, `upload-local`, or `update`, follow the
   local script definitions.
 

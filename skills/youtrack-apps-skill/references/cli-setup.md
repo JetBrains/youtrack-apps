@@ -28,11 +28,16 @@ npx @jetbrains/create-youtrack-app@latest --help
 youtrack-app --help
 ```
 
-Commands that contact YouTrack need an instance URL and a permanent token with app-upload permissions. Obtain the token in **YouTrack → Profile → Account Security → New token**, then set it without displaying or committing its value:
+Commands that contact YouTrack need an instance URL and a permanent token. Uploading a custom app requires global
+`Update Project` or system `Low-level Admin Write`; attaching project-level modules requires `Update Project` in each
+target project. Obtain the token outside the agent workflow, then set it without displaying or committing its value:
 
 ```bash
 export YOUTRACK_HOST=https://youtrack.example.com
 export YOUTRACK_TOKEN=<your-permanent-token>
 ```
+
+Permanent tokens normally start with `perm:`. For a `401` upload failure, verify that the host includes `https://` and
+that the token is complete; never print it while diagnosing.
 
 `youtrack-app` also accepts `--host` and `--token` for a one-off command. `YOUTRACK_API_TOKEN` remains supported as a fallback. Generated Enhanced DX projects commonly store `YOUTRACK_HOST` and `YOUTRACK_TOKEN` in a local, uncommitted `.env` file; their upload script passes those values to the CLI explicitly.

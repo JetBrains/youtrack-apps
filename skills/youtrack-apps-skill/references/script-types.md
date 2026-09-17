@@ -54,6 +54,16 @@ Required authoring shape:
 
 #### Generation rules
 
+##### Transaction behavior
+
+- Treat the initiating request, all matching on-change rules, and their changes as one atomic transaction. An error or
+  failed check rolls the whole transaction back.
+- Workflow changes can satisfy guards of other attached rules, so YouTrack keeps checking until no further guard is
+  satisfied. Make interacting rules idempotent and terminating.
+- Do not rely on the execution order of rules triggered by the same transaction; design each rule to work regardless
+  of which equal-priority rule runs first.
+- When an issue moves projects, only workflows attached to the target project are evaluated for that transaction.
+
 Prefer requirement field handles for custom field delta checks and value checks.
 
 ```js
@@ -606,6 +616,22 @@ Response functions:
 | `addHeader(header, value)` | `Response object` | Adds an HTTP header to the response. Passing `null` as the value removes the corresponding header. If more than one header with the same name is passed, only the last one persists. |
 
 #### Generation rules
+
+##### Enhanced DX TypeScript handlers
+
+For an existing `--type ts` app, follow its file-based router instead of emitting `exports.httpHandler`:
+
+- Put routes at `src/backend/router/{scope}/{path}/{METHOD}.ts`; supported scopes are `global`, `project`, `issue`,
+  `article`, and `user`, and supported method file names are `GET`, `POST`, `PUT`, and `DELETE`.
+- Export a default handler and `export type Handle = typeof handle`. Use the generated `CtxGet`, `CtxPost`, `CtxPut`,
+  or `CtxDelete` type whose scope generic matches the route directory.
+- Annotate only request/response contract types that should be converted to schemas with `/** @zod-to-schema */`.
+- Wrap the default export with `withPermissions(handler, [...])` from
+  `@jetbrains/youtrack-enhanced-dx-tools/runtime` when the route needs additional permission checks.
+- Persist mutations only from `POST` or `PUT` routes. Directly assign declared extension properties; update regular
+  entity fields with the runtime `set(entity, fieldName, value)` helper. Mutations from `GET` or `DELETE` can fail.
+- After adding or changing a route, run `npm run build:backend` (or keep the project's dev/watch script running) to
+  regenerate the frontend API contract. Never edit generated files under `src/api/`.
 
 ##### Scope semantics
 
