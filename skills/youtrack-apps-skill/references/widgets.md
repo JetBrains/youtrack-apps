@@ -93,6 +93,12 @@ A widget is shown to everyone by default. Two manifest-level mechanisms restrict
 - **`guard`** — a JS predicate that must return `true` for the widget to show. Finer-grained than permissions, but the generator does **not** emit it — add it to `manifest.json` by hand.
 *Note*: App visibility settings can restrict the widget visibility too.
 
+Guards run synchronously in an isolated sandbox. They cannot use promises, `async`/`await`, imports, globals, or other
+resources outside their argument. A thrown error or non-boolean result hides the widget. The argument always contains
+`me` for the current user. Entity extension points also provide `entity`; global menu extension points do not, so their
+guards must use `me`. For `MARKDOWN`, check `entity?.type` before reading type-specific properties because the entity can
+be an issue, ticket, or article.
+
 For `USER_CARD`, visibility restrictions apply to the user viewing the card. They do not restrict which users' cards show the widget.
 
 ```json

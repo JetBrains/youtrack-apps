@@ -9,15 +9,15 @@
 5. [Widget anatomy](#widget-anatomy)
 6. [The host handshake](#the-host-handshake)
 7. [Calling the backend](#calling-the-backend)
-8. [Apps with Enhanced DX](#apps-with-enhanced-dx)
-9. [Apps without Enhanced DX](#apps-without-enhanced-dx)
+8. [TypeScript backend apps](#typescript-backend-apps)
+9. [JavaScript backend apps](#javascript-backend-apps)
 
 ## Mental model
 
 - **Widget** - self-contained React app under `src/widgets/<key>/`; one Vite entry each.
 - **Frontend language** - widgets are always written in TypeScript/TSX. App type does not select a JavaScript frontend.
-- **App type** - `--type ts` means TypeScript backend plus enhanced DX; `--type js` means JavaScript backend plus
-  basic tooling. Enhanced DX adds generated API types, validation, watch/upload features, and frontend HMR, but built
+- **App type** - `--type ts` means a TypeScript backend with generated API types, validation, watch/upload features,
+  and frontend HMR; `--type js` means a JavaScript backend with basic tooling. TypeScript app backend
   scripts can appear as one-line output in the YouTrack editor. JavaScript backend apps have fewer tooling features, but
   backend scripts remain easy to read in the YouTrack editor.
 - **Host** - bridge to YouTrack, from `await YTApp.register()`. All backend/YouTrack calls go through it. How widgets talk to backend and YouTrack.
@@ -30,7 +30,7 @@
   that open the issue in a new tab. Do not show raw REST IDs like `2-123` to users unless the user explicitly asks for
   diagnostic raw data.
 - **Fix / debug a widget** - symptom to cause: invisible after upload = wrong/unsupported `extensionPoint` or missing
-  manifest entry (no error thrown); `api.x.y` undefined (enhanced DX) = stale generated types, rebuild backend;
+  manifest entry (no error thrown); `api.x.y` undefined (TypeScript backend) = stale generated types, rebuild backend;
   `host` errors = handshake in the wrong place. See Common pitfalls.
 - **Wire a widget to the backend** - ensure the handler exists, then choose the right call surface from
   [Calling the backend](#calling-the-backend).
@@ -43,9 +43,9 @@
 - **Not a standalone SPA** - no client-side router, no localhost render, no `ReactDOM.render` you own. The widget only
   lives inside YouTrack.
 - **`host` used before ready** - keep `await YTApp.register()` at module scope, never inside a hook.
-- **Editing generated files** - never edit generated API files by hand; they are overwritten on every enhanced DX
+- **Editing generated files** - never edit generated API files by hand; they are overwritten on every TypeScript
   backend build.
-- **Stale types after a backend change** - in enhanced DX mode, rebuild the backend; don't rewrite the import.
+- **Stale types after a backend change** - in a TypeScript backend app, rebuild the backend; don't rewrite the import.
 - **No HMR in `watch`** - use the dev server for instant UI feedback.
 
 ## Ring UI
@@ -85,8 +85,8 @@ Use the call surface that matches the target:
 - **YouTrack REST API** - use `host.fetchYouTrack()` for YouTrack API endpoints under `/api`.
 - **App HTTP handlers / app backend** - use `host.fetchApp()` for app-defined HTTP handlers. This works in both app
   types and is the direct host API.
-- **Typed app backend client** - in TypeScript backend apps with enhanced DX (`--type ts`), use the generated
-  `@/api` module for app HTTP handlers. It is the typed wrapper around the enhanced DX router/client shape.
+- **Typed app backend client** - in TypeScript backend apps (`--type ts`), use the generated `@/api` module for app
+  HTTP handlers. It is the typed wrapper around the file-based router/client shape.
 
 For full Host API request parameters and more examples, see [host-api.md](./host-api.md).
 
@@ -109,9 +109,9 @@ const result = await host.fetchApp('backend/debug', { query: { test: '123' } });
 The path string is not type-checked - a typo fails at runtime, not build time. Keep the widget's path in sync with
 handlers by hand.
 
-### Enhanced DX API client - `@/api`
+### Generated API client - `@/api`
 
-Use this only in TypeScript backend apps with enhanced DX (`--type ts`). [Apps with Enhanced DX](#apps-with-enhanced-dx).
+Use this only in TypeScript backend apps (`--type ts`). See [TypeScript backend apps](#typescript-backend-apps).
 
 ```typescript
 import {createApi} from "@/api";
@@ -122,10 +122,9 @@ const api = createApi(host);
 const global = await api.global.demo.GET();
 ```
 
-## Apps with enhanced DX
+## TypeScript backend apps
 
-For apps scaffolded with `--type ts`: TypeScript backend plus enhanced DX. Frontend is TypeScript and enhanced DX provides: router, generated client, generated
-types.
+Apps scaffolded with `--type ts` use a TypeScript backend, file-based router, generated client, and generated types.
 
 ### Router and generated API client
 
@@ -169,10 +168,10 @@ A widget cannot read extension properties or `ctx.settings` directly - both are 
 - If an existing app's `package.json` declares extra scripts such as `watch`, `upload-local`, or `update`, follow the
   local script definitions.
 
-## Apps without Enhanced DX
+## JavaScript backend apps
 
-For apps scaffolded with `--type js`: JavaScript backend plus basic tooling. The frontend is still TypeScript/TSX; this
-mode does not provide the generated typed API client used by Enhanced DX.
+For apps scaffolded with `--type js`, the backend uses JavaScript and basic tooling. The frontend is still
+TypeScript/TSX, but this mode does not provide the generated typed API client.
 
 ### What a generated JavaScript app looks like
 

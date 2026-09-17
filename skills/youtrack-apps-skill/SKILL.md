@@ -2,8 +2,8 @@
 name: youtrack-apps-skill
 description: Guides building, debugging, extending, and managing JetBrains YouTrack apps and workflows. Used when scaffolding, modifying, validating, uploading, downloading, enabling, disabling, or inspecting a YouTrack app, workflow rule, app endpoint, or manifest. Also use when creating GitHub release automation or publishing a YouTrack app to JetBrains Marketplace.
 metadata:
-  version: 1.0.6
-  YouTrackVersion: 2026.2.18243
+  version: 1.0.7
+  YouTrackVersion: 2026.3.12849
 ---
 
 # YouTrack App Builder
@@ -32,10 +32,11 @@ Use this distinction when initializing a new app, adding generated modules, or d
 scripts to follow in an existing app. The generator exposes this choice as `--type js` and `--type ts`; feature commands
 infer the app type from the existing project.
 
-TypeScript app (`--type ts`) means a TypeScript app with Enhanced DX such as: file-based backend routing, generated API types, typed widget client code, dev validation, watch upload, or frontend hot reload. Enhanced DX improves the developer experience.
+TypeScript app (`--type ts`) uses file-based backend routing, generated API types, typed widget client code,
+development validation, watch upload, and frontend hot reload.
 
 JavaScript app (`--type js`) means a basic JavaScript app. Use it for simple JavaScript workflows or automations, when
-the existing app is already JavaScript, or when the user wants a minimal JavaScript project without Enhanced DX.
+the existing app is already JavaScript, or when the user wants a minimal project without the TypeScript toolchain.
 
 For a new app, ask which type the user wants before scaffolding. For an existing app, follow the current project
 structure and do not mix JavaScript app and TypeScript app patterns unless the user explicitly asks to migrate or
@@ -257,7 +258,7 @@ rg -n "functionName|methodName|propertyName" references/api
 The files in `references/api/` are the ground truth for module imports, top-level functions, and type details. Start with the module file, then follow its `Types` links for detail pages that list constructors, properties, methods, parameters, return values, and examples when available.
 
 - Constructors: use entries under `## Constructors` as `new TypeName(args)` when the API explicitly documents a constructor.
-- Properties: use entries under `## Properties` as `object.property`; check the listed type and whether the text says the value is readonly. Also, property is optional if the properety description says so.
+- Properties: use entries under `## Properties` as `object.property`; check the listed type and whether the description says the value is readonly or optional.
 - Methods: use entries under `## Methods` as `object.method(args)`; follow the parameter list and return text on that method.
 - Functions: use entries under module `## Functions` after importing the module, for example `const workflow = require('@jetbrains/youtrack-scripting-api/workflow'); workflow.functionName(args);`.
 - Types: use module `## Types` links to open the detailed page for entity objects, helper objects, and schemas.

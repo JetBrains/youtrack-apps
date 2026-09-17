@@ -22,7 +22,8 @@ Use the request and any already-known context. Inspect the repository, manifest,
 or environment only when they answer a question that matters to the action:
 
 - target app name or app id
-- app type for brand-new app scaffolding: TypeScript app with Enhanced DX (`--type ts`) or basic JavaScript app (`--type js`)
+- app type for brand-new app scaffolding: TypeScript app with file-based routing and generated types (`--type ts`) or
+  basic JavaScript app (`--type js`)
 - project short name, if project-specific
 - requested output: explanation, implementation, validation, deployment, or release
 - source repository remote and whether it is GitHub, when release readiness matters
