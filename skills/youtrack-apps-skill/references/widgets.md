@@ -89,7 +89,7 @@ current user before changing the widget code.
 
 A widget is shown to everyone by default. Two manifest-level mechanisms restrict it:
 
-- **`permissions`** — an array; only users holding **all** listed permissions see the widget. This is the conditional-visibility mechanism the generator emits.
+- **`permissions`** — an array; users holding **at least one** listed permission can see the widget. This is the conditional-visibility mechanism the generator emits. For project-scoped extension points, YouTrack checks project-category permissions against the current project.
 - **`guard`** — a JS predicate that must return `true` for the widget to show. Finer-grained than permissions, but the generator does **not** emit it — add it to `manifest.json` by hand.
 *Note*: App visibility settings can restrict the widget visibility too.
 
@@ -100,6 +100,11 @@ A widget is shown to everyone by default. Two manifest-level mechanisms restrict
 - Omit `permissions` (or empty array) → visible to everyone.
 - The strings are YouTrack permission keys. A few common ones are `READ_ISSUE`, `UPDATE_ISSUE`, `READ_ARTICLE`, and `READ_USER`.
 - All supported extension points and permissions are listed in the SchemaStore YouTrack app schema: https://www.schemastore.org/youtrack-app.json. Check that schema when you need the complete current set.
+
+Guards receive `{ me }` everywhere and `{ entity, me }` at entity-related extension points. Global full-page widgets have
+no `entity`; Markdown widgets receive the entity for the text being rendered. A guard runs synchronously in an isolated
+sandbox and can use only its arguments. It must return a boolean: promises, `async`/`await`, thrown errors, and non-boolean
+results hide the widget.
 
 ## Generating a widget
 

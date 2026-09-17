@@ -2,8 +2,8 @@
 name: youtrack-apps-skill
 description: Guides building, debugging, extending, and managing JetBrains YouTrack apps and workflows. Used when scaffolding, modifying, validating, uploading, downloading, enabling, disabling, or inspecting a YouTrack app, workflow rule, app endpoint, or manifest. Also use when creating GitHub release automation or publishing a YouTrack app to JetBrains Marketplace.
 metadata:
-  version: 1.0.5
-  YouTrackVersion: 2026.2.18243
+  version: 1.0.6
+  YouTrackVersion: 2026.3.12785
 ---
 
 # YouTrack App Builder
@@ -51,6 +51,9 @@ Use the CLIs according to the task:
 
 Before running a command, confirm only the inputs that matter for that command: local directory, target app, project short
 name, YouTrack host/token, and output format.
+
+Load [references/architecture-and-access.md](references/architecture-and-access.md) when selecting a component, reasoning
+about its execution identity, or diagnosing authentication, visibility, or permission behavior.
 
 ## Command Discovery
 
@@ -141,6 +144,9 @@ Use for information on how to wire widgets to backend, or how to wire widgets wi
 # Rules
 Use rules for YouTrack automation that runs from issue/article changes, explicit user commands, schedules, or
 constrained lifecycle transitions.
+
+Load [references/workflow-management.md](references/workflow-management.md) when creating, importing, exporting, attaching,
+enabling, editing, troubleshooting, or deleting a workflow in the YouTrack administration UI.
 
 ## On-Change Rule
 Use when logic should run automatically as an issue or article is created, edited, reported, removed, or has a relevant
@@ -260,7 +266,7 @@ rg -n "functionName|methodName|propertyName" references/api
 The files in `references/api/` are the ground truth for module imports, top-level functions, and type details. Start with the module file, then follow its `Types` links for detail pages that list constructors, properties, methods, parameters, return values, and examples when available.
 
 - Constructors: use entries under `## Constructors` as `new TypeName(args)` when the API explicitly documents a constructor.
-- Properties: use entries under `## Properties` as `object.property`; check the listed type and whether the text says the value is readonly. Also, property is optional if the properety description says so.
+- Properties: use entries under `## Properties` as `object.property`; check the listed type and whether the description says the value is readonly or optional.
 - Methods: use entries under `## Methods` as `object.method(args)`; follow the parameter list and return text on that method.
 - Functions: use entries under module `## Functions` after importing the module, for example `const workflow = require('@jetbrains/youtrack-scripting-api/workflow'); workflow.functionName(args);`.
 - Types: use module `## Types` links to open the detailed page for entity objects, helper objects, and schemas.

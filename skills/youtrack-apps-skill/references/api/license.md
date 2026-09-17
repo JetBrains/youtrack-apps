@@ -1,6 +1,7 @@
 # license
 
 ## Types
+
 - [`LicenseInfo`](#licenseinfo)
 
 ## LicenseInfo
