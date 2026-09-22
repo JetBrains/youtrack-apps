@@ -151,7 +151,7 @@ Project administrators can:
 | Projects → _Project_ → Settings → Apps | Manages app setup for one project. | Editable by system administrators and administrators of that project. |
 | Projects → _Project_ → Settings → Workflows | Manages workflow rules for one project and shows only rules provided by apps. | Editable by system administrators and administrators of that project. |
 
-Prefer the CLI when reading or changing app settings. Use `youtrack-app app settings` to read values and `youtrack-app app settings-set` to update them. Both commands support global and project settings. See [Updating app settings](app-persistence.md#updating-settings).
+Prefer the CLI when reading or changing app settings. Use `youtrack-app app settings` to read values and `youtrack-app app settings-set` to update them. `settings-set` accepts a partial settings object and preserves omitted keys. Both commands support global and project settings. See [Updating app settings](app-persistence.md#updating-settings).
 
 ## 9. Where scopes meet
 

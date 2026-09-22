@@ -98,21 +98,16 @@ read and write the global configuration. With `--project <key>`, they read and
 write that project's configuration. A project update requires the app to be
 attached to that project.
 
-`--settings` is a JSON object for the selected configuration level. It replaces
-the stored `globalSettings` or `projectSettings` object; it does not patch a
-single key. To change one setting without clearing other values:
+`--settings` is a JSON object for the selected configuration level.
+`settings-set` merges its keys into the `globalSettings` or
+`projectSettings` object. Send only the settings that should change; omitted
+settings remain unchanged.
 
-1. Read the settings at the intended level.
-2. Keep every existing key, including any masked secret value.
-3. Change only the requested key.
-4. Send the full resulting object with `settings-set`.
-5. Read the same level again and confirm the requested change.
-
-For example, if the global settings are `{"url":"https://api.example.test","token":"<***>"}` and the user changes only `url`, send both keys. Send `token` back as `<***>` to keep the stored secret:
+For example, to change only the global `url` setting:
 
 ```bash
 youtrack-app app settings-set --app my-app \
-  --settings '{"url":"https://new-api.example.test","token":"<***>"}'
+  --settings '{"url":"https://new-api.example.test"}'
 ```
 
 If a project has no value for a setting whose `x-scope` was omitted, it inherits
