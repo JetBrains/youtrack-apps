@@ -154,8 +154,13 @@ describe('AppManagementOperations', () => {
     expect(gateway.globalConfigRequests).toEqual(['148-1']);
   });
 
-  it('updateSettings writes project settings when project is provided', async () => {
-    const gateway = fakeGateway();
+  it('updateSettings merges project settings when project is provided', async () => {
+    const gateway = fakeGateway({
+      projectConfig: {
+        id: '184-1',
+        projectSettings: '{"projectKey":"OLD","token":"keep-me"}',
+      },
+    });
     const operations = new AppManagementOperations(gateway);
 
     await operations.updateSettings('some-app', {projectSettings: '{"projectKey":"CP"}'}, 'CP');
@@ -164,9 +169,63 @@ describe('AppManagementOperations', () => {
       {
         projectId: '0-1',
         usageId: '184-1',
-        payload: {projectSettings: '{"projectKey":"CP"}'},
+        payload: {projectSettings: '{"projectKey":"CP","token":"keep-me"}'},
       },
     ]);
+  });
+
+  it('updateSettings merges global settings before updating', async () => {
+    const gateway = fakeGateway({
+      globalConfig: {
+        id: '94-1',
+        globalSettings: '{"apiUrl":"https://old.example.test","token":"keep-me"}',
+      },
+    });
+    const operations = new AppManagementOperations(gateway);
+
+    await operations.updateSettings(
+      'some-app',
+      {globalSettings: '{"apiUrl":"https://new.example.test"}'},
+      null,
+    );
+
+    expect(gateway.globalConfigRequests).toEqual(['148-1']);
+    expect(gateway.globalConfigUpdates).toEqual([
+      {
+        appId: '148-1',
+        payload: {globalSettings: '{"apiUrl":"https://new.example.test","token":"keep-me"}'},
+      },
+    ]);
+  });
+
+  it('updateSettings does not read settings for an enabled-only update', async () => {
+    const gateway = fakeGateway();
+    const operations = new AppManagementOperations(gateway);
+
+    await operations.updateSettings('some-app', {enabled: false}, null);
+
+    expect(gateway.globalConfigRequests).toEqual([]);
+    expect(gateway.globalConfigUpdates).toEqual([{appId: '148-1', payload: {enabled: false}}]);
+  });
+
+  it('updateSettings rejects malformed stored settings instead of replacing them', async () => {
+    const gateway = fakeGateway({globalConfig: {id: '94-1', globalSettings: 'not-json'}});
+    const operations = new AppManagementOperations(gateway);
+
+    await expect(
+      operations.updateSettings('some-app', {globalSettings: '{"apiUrl":"https://new.example.test"}'}, null),
+    ).rejects.toThrow('Stored settings should be a valid JSON object');
+    expect(gateway.globalConfigUpdates).toEqual([]);
+  });
+
+  it('updateSettings rejects a settings update that is not a JSON object', async () => {
+    const gateway = fakeGateway({globalConfig: {id: '94-1', globalSettings: '{}'}});
+    const operations = new AppManagementOperations(gateway);
+
+    await expect(operations.updateSettings('some-app', {globalSettings: '[]'}, null)).rejects.toThrow(
+      'Settings update should be a valid JSON object',
+    );
+    expect(gateway.globalConfigUpdates).toEqual([]);
   });
 
   it('searchTags uses project relevant tags when project is provided', async () => {

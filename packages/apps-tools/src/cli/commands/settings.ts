@@ -56,7 +56,11 @@ function parseEnabled(value: string): boolean {
 
 function stringifySettings(value: string): string {
   try {
-    return JSON.stringify(JSON.parse(value));
+    const parsed: unknown = JSON.parse(value);
+    if (parsed === null || Array.isArray(parsed) || typeof parsed !== 'object') {
+      throw new Error();
+    }
+    return JSON.stringify(parsed);
   } catch {
     throw new Error('Option "--settings" should be a valid JSON object');
   }
