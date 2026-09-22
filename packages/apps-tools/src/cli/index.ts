@@ -294,7 +294,7 @@ export async function run(argv = process.argv) {
       args: [
         '<app> is an app ID or package name.',
         '--project <key> writes project settings instead of global settings.',
-        '--settings JSON is a JSON object whose top-level properties are merged with the stored settings.',
+        '--settings JSON is a JSON object string whose top-level properties are merged with the stored settings.',
         '--enabled true|false updates the enabled state.',
       ],
     });

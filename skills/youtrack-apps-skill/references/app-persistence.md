@@ -99,7 +99,7 @@ write that project's configuration. A project update requires the app to be
 attached to that project.
 
 `--settings` is a JSON object for the selected configuration level.
-`settings-set` merges its keys into the `globalSettings` or
+`settings-set` merges its keys and values into the `globalSettings` or
 `projectSettings` object. Send only the settings that should change; omitted
 settings remain unchanged.
 
