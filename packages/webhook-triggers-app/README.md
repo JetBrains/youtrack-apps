@@ -7,64 +7,47 @@ Trigger external webhooks from YouTrack events such as issue creation, updates, 
 ## Features
 
 - **Multiple Event Types**: Issue (create/update/delete), Comments (add/update/delete), Work Items (add/update/delete), Attachments (add/delete)
-- **Multiple Webhooks**: Send to multiple URLs per event (comma or newline separated)
+- **Per-endpoint tokens**: One row per event, holding the endpoints that event is delivered to. Each endpoint carries its own token, so a compromised receiver never exposes the others.
 
 
 ## Configuration
 
 ### Step 1: Generate a Secure Secret
 
-The webhook token is required for security. Generate a strong random secret:
+Each endpoint carries its own token. Generate a strong random secret per endpoint:
 
 ```bash
 # Generate a 64-character hex secret (recommended)
 openssl rand -hex 32
 ```
 
-**Important**: 
+**Important**:
 - Minimum 32 characters required
-- Keep this secret secure - treat it like a password
-- Use the same secret in your webhook receiver (e.g., n8n)
+- Keep each secret secure - treat it like a password
+- Use the same secret in the matching webhook receiver (e.g., n8n)
 
 ### Step 2: Configure Project Settings
 
 1. Navigate to your project in YouTrack
 2. Go to **Settings** > **Apps** > **Webhook Triggers**
-3. Configure the following:
+3. Set the shared **Header name** (default `X-YouTrack-Token`) — the HTTP header each token is sent in.
+4. Add one **Trigger** row per event, and list its **Endpoints**.
 
-#### 2.1. Webhook Token (Required)
-- Paste the secret generated in Step 1
-- This must match the secret configured in your webhook receiver
-- Minimum 32 characters
+#### 2.1. Triggers
 
-#### 2.2. Event-Specific Webhooks
+Each row is one event holding one or more endpoints:
 
-Configure webhook URLs for specific events:
+- **Event**: which YouTrack event fires this webhook. One of:
+  - **Issue Created / Updated / Deleted**
+  - **Comment Added / Updated / Deleted**
+  - **Work Item Added / Updated / Deleted**
+  - **Attachment Added / Deleted**
+  - **All events** — fires on every event type (useful for centralized logging, backups, analytics)
+- **Endpoints**: one or more, each with:
+  - **URL**: the endpoint that receives the event payload. HTTPS strongly recommended — the token is sent with every request. Example: `https://n8n.example.com/webhook/abc123/webhook`
+  - **Token**: the shared secret sent to *this* endpoint in the configured header. Minimum 32 characters. An endpoint with no token is skipped (never sent unauthenticated).
 
-- **Issue Created**: Triggered when a new issue is created
-- **Issue Updated**: Triggered when an issue is modified
-- **Issue Deleted**: Triggered when an issue is deleted
-- **Comment Added**: Triggered when a comment is added
-- **Comment Updated**: Triggered when a comment is edited
-- **Comment Deleted**: Triggered when a comment is removed
-- **Work Item Added**: Triggered when time is logged
-- **Work Item Updated**: Triggered when a work item is modified
-- **Work Item Deleted**: Triggered when a work item is removed
-- **Attachment Added**: Triggered when a file is attached
-- **Attachment Deleted**: Triggered when an attachment is removed
-
-**Format**: Enter one or more webhook URLs:
-- Multiple URLs: Separate with commas or newlines
-- Example: `https://n8n.example.com/webhook/abc123/webhook`
-
-#### 2.3. Catch-All Webhooks
-
-**All Events**: URLs that receive all events regardless of type
-
-This is useful for:
-- Centralized logging
-- Backup webhooks
-- Analytics systems
+One row per event is usually enough: add endpoints to it rather than repeating the event. Duplicate URLs are de-duplicated per event, and the endpoint that wins is the first match in list order — so put a row for a specific event above any **All events** row that names the same URL. At most 10 endpoints are called for any one event.
 
 ### Step 3: Configure Your Webhook Receiver
 
@@ -262,20 +245,46 @@ The header name is configurable (defaults to `X-YouTrack-Token`) and contains yo
 
 ## Limitations
 
-### No Connection Timeout Control
-If a webhook endpoint is slow or unresponsive, the workflow will block until
-YouTrack's internal timeout (platform-controlled) is reached.
+### At most 10 endpoints per event
 
-**Recommendation:** Ensure your webhook endpoints respond within 2 seconds,
-or use a fast intermediary service that acknowledges immediately and processes
-asynchronously.
+Delivery runs as an async function chain: the rule dispatches the first URL, and each response
+handler dispatches the next. Every URL costs one async hop, and the server's `maxChainLength` is 10
+by default — so **at most 10 endpoints are called for any single event**. If more rows match one
+event (its own rows plus any **All events** rows), the extras are skipped and a warning is logged:
 
-### Synchronous Webhook Delivery
+```
+[webhooks] 12 valid triggers configured for Issue Created but max is 10 per event
+(async chain limit). Extra triggers dropped.
+```
 
-YouTrack workflows execute synchronously, meaning each webhook is sent
-sequentially and blocks until the endpoint responds. 
+The cap is per event, not per app, and it counts endpoints rather than rows: one row per event type
+with a handful of endpoints each stays well inside it. YouTrack itself refuses a settings payload of
+more than 1,000 rows in total, counting endpoints.
 
-**Best practice:** limit the number of webhook URLs per event.
+### 5 second timeout per request
+
+Each request is given 5 seconds. A slower endpoint gets no status code, which is logged as a
+timeout, and the chain moves on to the next URL — one slow receiver does not stop the others.
+
+**Recommendation:** have endpoints acknowledge immediately and do their work asynchronously.
+
+### Delivery is not retried
+
+A failed or timed-out webhook is logged and dropped; nothing re-sends it. Endpoints that need
+guaranteed delivery should sit behind a queue that owns the retrying.
+
+### One request per endpoint per event
+
+Duplicate URLs are de-duplicated per event, so an endpoint listed twice for one event is called
+once. The token it is called with comes from **the first match in list order** — the order of the
+rows, then of the endpoints inside them, not how specific the row is: an **All events** row placed
+above an event-specific row naming the same URL is the one whose token is used. Keep the specific
+row first.
+
+### An endpoint without a token is skipped
+
+Rather than send an unauthenticated request, an endpoint whose token is empty is skipped with a warning.
+The same applies to the whole chain if **Header name** is cleared while it is running.
 
 ## Credits
 
