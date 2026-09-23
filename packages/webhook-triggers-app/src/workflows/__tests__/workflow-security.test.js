@@ -114,4 +114,53 @@ describe('validateWebhookUrl', () => {
       expect(result.reason).toMatch(/link-local/i);
     });
   });
+
+  // ── Loopback / server-local (JT-98610) ──────────────────────────────────────
+
+  describe('loopback addresses', () => {
+    it.each([
+      'http://127.0.0.1/',
+      'http://127.0.0.1:8080/admin',
+      'https://127.255.255.255/',
+    ])('rejects 127/8 address %s', (url) => {
+      const result = validateWebhookUrl(url);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toMatch(/loopback/i);
+    });
+
+    it.each([
+      'http://localhost/',
+      'http://localhost:8080/webhook',
+      'http://LOCALHOST/',
+    ])('rejects localhost %s', (url) => {
+      const result = validateWebhookUrl(url);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toMatch(/loopback/i);
+    });
+
+    it.each([
+      'http://[::1]/',
+      'http://[::1]:8080/',
+      'http://[::]/',
+    ])('rejects IPv6 loopback/unspecified %s', (url) => {
+      const result = validateWebhookUrl(url);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toMatch(/loopback/i);
+    });
+
+    it.each([
+      'http://0.0.0.0/',
+      'http://0.0.0.0:9200/',
+    ])('rejects unspecified 0/8 address %s', (url) => {
+      const result = validateWebhookUrl(url);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toMatch(/unspecified/i);
+    });
+
+    it('rejects IPv4-mapped IPv6 loopback', () => {
+      const result = validateWebhookUrl('http://[::ffff:127.0.0.1]/');
+      expect(result.valid).toBe(false);
+      expect(result.reason).toMatch(/loopback/i);
+    });
+  });
 });
