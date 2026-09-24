@@ -3,14 +3,20 @@
 Contains definitions for the entities in YouTrack that are accessible to workflows.
 
 ## Types
+
 - [Requirements](#types-requirements)
+
 - [Abstract Entities](#types-abstract-entities)
+
 - [Entities](#types-entities)
+
 - [Additional Entities](#types-additional-entities)
 
 <a id="types-requirements"></a>
 ## Requirements
+
 - [`Requirement`](#type-requirement)
+
 - [`Requirements`](#type-requirements)
 
 <a id="type-requirement"></a>
@@ -108,11 +114,17 @@ requirements: {
 
 <a id="types-abstract-entities"></a>
 ## Abstract Entities
+
 - [`BaseArticle`](#type-basearticle)
+
 - [`BaseArticleAttachment`](#type-basearticleattachment)
+
 - [`BaseArticleComment`](#type-basearticlecomment)
+
 - [`BaseComment`](#type-basecomment)
+
 - [`BaseEntity`](#type-baseentity)
+
 - [`BaseWorkItem`](#type-baseworkitem)
 
 <a id="type-basearticle"></a>
@@ -707,61 +719,117 @@ Return type: `Number`
 
 <a id="types-entities"></a>
 ## Entities
+
 - [`AbstractVcsItem`](#type-abstractvcsitem)
+
 - [`Agile`](#type-agile)
+
 - [`AppGlobalStorage`](#type-appglobalstorage)
+
 - [`Article`](#type-article)
+
 - [`ArticleAttachment`](#type-articleattachment)
+
 - [`ArticleComment`](#type-articlecomment)
+
 - [`Build`](#type-build)
+
 - [`BundleElementCondition`](#type-bundleelementcondition)
+
 - [`BundleProjectCustomField`](#type-bundleprojectcustomfield)
+
 - [`Calendar`](#type-calendar)
+
 - [`Calendar24x7`](#type-calendar24x7)
+
 - [`ChangesProcessor`](#type-changesprocessor)
+
 - [`Channel`](#type-channel)
+
 - [`EnumField`](#type-enumfield)
+
 - [`FeedbackForm`](#type-feedbackform)
+
 - [`Field`](#type-field)
+
 - [`FieldBasedBundleValuesCondition`](#type-fieldbasedbundlevaluescondition)
+
 - [`FieldBasedUserValuesCondition`](#type-fieldbaseduservaluescondition)
+
 - [`FieldBasedValuesCondition`](#type-fieldbasedvaluescondition)
+
 - [`Gantt`](#type-gantt)
+
 - [`GroupProjectCustomField`](#type-groupprojectcustomfield)
+
 - [`Issue`](#type-issue)
+
 - [`IssueAttachment`](#type-issueattachment)
+
 - [`IssueComment`](#type-issuecomment)
+
 - [`IssueLinkPrototype`](#type-issuelinkprototype)
+
 - [`IssueTag`](#type-issuetag)
+
 - [`IssueWorkItem`](#type-issueworkitem)
+
 - [`MailboxChannel`](#type-mailboxchannel)
+
 - [`OwnedField`](#type-ownedfield)
+
 - [`PeriodProjectCustomField`](#type-periodprojectcustomfield)
+
 - [`PersistentFile`](#type-persistentfile)
+
 - [`Project`](#type-project)
+
 - [`ProjectCustomField`](#type-projectcustomfield)
+
 - [`ProjectTeam`](#type-projectteam)
+
 - [`ProjectType`](#type-projecttype)
+
 - [`ProjectVersion`](#type-projectversion)
+
 - [`PullRequest`](#type-pullrequest)
+
 - [`PullRequestState`](#type-pullrequeststate)
+
 - [`SavedQuery`](#type-savedquery)
+
 - [`SimpleCalendar`](#type-simplecalendar)
+
 - [`SimpleProjectCustomField`](#type-simpleprojectcustomfield)
+
 - [`Sprint`](#type-sprint)
+
 - [`State`](#type-state)
+
 - [`Tag`](#type-tag)
+
 - [`TextProjectCustomField`](#type-textprojectcustomfield)
+
 - [`User`](#type-user)
+
 - [`UserCondition`](#type-usercondition)
+
 - [`UserGroup`](#type-usergroup)
+
 - [`UserProjectCustomField`](#type-userprojectcustomfield)
+
 - [`UserType`](#type-usertype)
+
 - [`VcsChange`](#type-vcschange)
+
 - [`VcsServer`](#type-vcsserver)
+
 - [`WatchFolder`](#type-watchfolder)
+
 - [`WorkItemAttributeValue`](#type-workitemattributevalue)
+
 - [`WorkItemProjectAttribute`](#type-workitemprojectattribute)
+
 - [`WorkItemType`](#type-workitemtype)
 
 <a id="type-abstractvcsitem"></a>
@@ -7150,19 +7218,33 @@ The set of available work item types for the specified project.
 
 <a id="types-additional-entities"></a>
 ## Additional Entities
+
 - [`Fields`](#type-fields)
+
 - [`Iterator`](#type-iterator)
+
 - [`JsonForArticleAddAttachment`](#type-jsonforarticleaddattachment)
+
 - [`JsonForArticleAddComment`](#type-jsonforarticleaddcomment)
+
 - [`JsonForArticleConstructor`](#type-jsonforarticleconstructor)
+
 - [`JsonForIssueAddAttachment`](#type-jsonforissueaddattachment)
+
 - [`JsonForIssueAddComment`](#type-jsonforissueaddcomment)
+
 - [`JsonForIssueAddWorkItem`](#type-jsonforissueaddworkitem)
+
 - [`JsonForIssueCommentAddAttachment`](#type-jsonforissuecommentaddattachment)
+
 - [`JsonForIssueConstructor`](#type-jsonforissueconstructor)
+
 - [`JsonForUserNotify`](#type-jsonforusernotify)
+
 - [`Set`](#type-set)
+
 - [`UserAttributes`](#type-userattributes)
+
 - [`WorkItemAttributes`](#type-workitemattributes)
 
 <a id="type-fields"></a>
