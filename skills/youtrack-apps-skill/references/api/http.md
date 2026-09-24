@@ -3,8 +3,11 @@
 Contains definitions for objects and classes that exchange and transfer data over HTTP. The main class is Connection.
 
 ## Types
+
 - [`Connection`](#connection)
+
 - [`REQUEST_TYPES`](#request_types)
+
 - [`Response`](#response)
 
 ## Connection
@@ -25,6 +28,7 @@ Type: `Object`
   - [`basicAuth`](#basicauth)
   - [`bearerAuth`](#bearerauth)
   - [`setHeader`](#setheader)
+
 - [Async Methods](#async-methods)
   - [`deleteAsync`](#deleteasync)
   - [`doAsync`](#doasync)
@@ -32,6 +36,7 @@ Type: `Object`
   - [`patchAsync`](#patchasync)
   - [`postAsync`](#postasync)
   - [`putAsync`](#putasync)
+
 - [Sync Methods](#sync-methods)
   - [`connectSync`](#connectsync)
   - [`deleteSync`](#deletesync)
