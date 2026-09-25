@@ -34,6 +34,8 @@ infer the app type from the existing project.
 
 TypeScript app (`--type ts`) means a TypeScript app with Enhanced DX such as: file-based backend routing, generated API types, typed widget client code, dev validation, watch upload, or frontend hot reload. Enhanced DX improves the developer experience.
 
+In TypeScript apps, place backend implementation files under `src/backend/` unless `vite.config.backend.ts` explicitly configures another source directory, as it does for generated workflow rules in `src/workflows/`.
+
 JavaScript app (`--type js`) means a basic JavaScript app. Use it for simple JavaScript workflows or automations, when
 the existing app is already JavaScript, or when the user wants a minimal JavaScript project without Enhanced DX.
 
