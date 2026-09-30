@@ -2,7 +2,7 @@
   "name": "time-tracking-dashboard-widgets",
   "title": "Time Tracking Dashboard Widgets",
   "description": "A set of dashboard widgets for working with time tracking data from YouTrack. The set includes a widget for exporting work items and widgets for viewing personal work items and time tracking reports.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icon": "youtrack.svg",
   "minYouTrackVersion": "2024.3.0",
   "vendor": {
