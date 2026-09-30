@@ -50,7 +50,7 @@ msgid "Calculating..."
 msgstr ""
 
 #: src/app/distribution-report-form.js:358
-msgid "Can edit"
+msgid "Can configure"
 msgstr "Można edytować"
 
 #: src/app/distribution-report-form.js:349

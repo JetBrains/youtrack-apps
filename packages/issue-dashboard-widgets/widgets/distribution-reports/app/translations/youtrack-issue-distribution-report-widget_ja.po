@@ -50,7 +50,7 @@ msgid "Calculating..."
 msgstr "計算中…"
 
 #: src/app/distribution-report-form.js:358
-msgid "Can edit"
+msgid "Can configure"
 msgstr "編集できます"
 
 #: src/app/distribution-report-form.js:349
