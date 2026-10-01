@@ -42,20 +42,49 @@ function validateWebhookUrl(url) {
     return { valid: false, reason: 'URL is not valid' };
   }
 
-  // Extract hostname: strip "//" prefix, then take up to the first / : or ?
+  // Extract hostname: strip "//" prefix, then take up to the first / ? or #
   var afterScheme = rest.substring(2);
-  var hostname = afterScheme.split(/[/:?#]/)[0].toLowerCase();
+  var hostname;
+  if (afterScheme.charAt(0) === '[') {
+    // Bracketed IPv6 literal, e.g. [::1] or [::1]:8080
+    var closeBracket = afterScheme.indexOf(']');
+    if (closeBracket === -1) {
+      return { valid: false, reason: 'URL is not valid' };
+    }
+    hostname = afterScheme.substring(1, closeBracket).toLowerCase();
+  } else {
+    hostname = afterScheme.split(/[/:?#]/)[0].toLowerCase();
+  }
 
   if (!hostname) {
     return { valid: false, reason: 'URL is not valid' };
   }
 
-  // Check IPv4 private / reserved ranges
-  var ipv4 = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  // localhost / loopback hostname
+  if (hostname === 'localhost' || hostname === 'localhost.') {
+    return { valid: false, reason: 'Loopback addresses (localhost) are not allowed' };
+  }
+
+  // IPv6 loopback / unspecified address
+  if (hostname === '::1' || hostname === '::') {
+    return { valid: false, reason: 'Loopback addresses (' + hostname + ') are not allowed' };
+  }
+
+  // IPv4-mapped IPv6 loopback, e.g. ::ffff:127.0.0.1
+  var mappedIpv4 = hostname.match(/^::ffff:(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+  var ipv4 = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/) || mappedIpv4;
   if (ipv4) {
     var a = parseInt(ipv4[1], 10);
     var b = parseInt(ipv4[2], 10);
 
+    // 127.0.0.0/8 — loopback
+    if (a === 127) {
+      return { valid: false, reason: 'Loopback addresses (127.x.x.x) are not allowed' };
+    }
+    // 0.0.0.0/8 — "this network" / unspecified, resolves to loopback on many systems
+    if (a === 0) {
+      return { valid: false, reason: 'Unspecified addresses (0.x.x.x) are not allowed' };
+    }
     // 10.0.0.0/8 — RFC-1918
     if (a === 10) {
       return { valid: false, reason: 'Private network addresses (10.x.x.x) are not allowed' };

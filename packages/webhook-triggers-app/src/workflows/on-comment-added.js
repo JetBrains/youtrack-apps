@@ -12,7 +12,7 @@ exports.rule = {
     ruleType: 'onChange',
     onChange: true,
 
-    guard: core.createGuard(EVENTS.COMMENT_ADDED.key, function (ctx) {
+    guard: core.createGuard(EVENTS.COMMENT_ADDED.type, function (ctx) {
         const issue = ctx.issue;
 
         if (core.shouldSkipIssue(issue)) {
@@ -48,7 +48,7 @@ exports.rule = {
         const payload = core.createBasePayload(EVENTS.COMMENT_ADDED.type, issue, project);
         payload.comments = addedComments;
 
-        core.sendWebhooks(ctx, EVENTS.COMMENT_ADDED.key, payload, EVENTS.COMMENT_ADDED.name);
+        core.sendWebhooks(ctx, EVENTS.COMMENT_ADDED.type, payload, EVENTS.COMMENT_ADDED.name);
     },
 
     asyncFunctions: core.asyncFunctions,

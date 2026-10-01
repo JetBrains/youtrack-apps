@@ -13,7 +13,7 @@ exports.rule = {
     onChange: true,
 
 
-    guard: core.createGuard(EVENTS.WORK_ITEM_UPDATED.key, function (ctx) {
+    guard: core.createGuard(EVENTS.WORK_ITEM_UPDATED.type, function (ctx) {
         const issue = ctx.issue;
 
 
@@ -59,7 +59,7 @@ exports.rule = {
         payload.workItems = updatedWorkItems;
 
 
-        core.sendWebhooks(ctx, EVENTS.WORK_ITEM_UPDATED.key, payload, EVENTS.WORK_ITEM_UPDATED.name);
+        core.sendWebhooks(ctx, EVENTS.WORK_ITEM_UPDATED.type, payload, EVENTS.WORK_ITEM_UPDATED.name);
     },
 
     asyncFunctions: core.asyncFunctions,
