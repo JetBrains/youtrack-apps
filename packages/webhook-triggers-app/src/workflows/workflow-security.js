@@ -64,6 +64,47 @@ function internalIpv4Reason(a, b) {
 }
 
 /**
+ * True when the host is written as a number rather than a DNS name. No real
+ * hostname is all-numeric (a TLD cannot be), so anything matching here is an
+ * address literal in some notation.
+ */
+function isNumericHost(hostname) {
+  return /^(0x[0-9a-f]+|[0-9]+)(\.(0x[0-9a-f]+|[0-9]+))*$/.test(hostname);
+}
+
+/**
+ * The four octets of a canonical dotted-quad address, or null for every other
+ * spelling. inet_aton also accepts one-, two- and three-part forms and octal
+ * (leading zero) and hex (0x) parts, so 172.19.0.2 can be written 2886926338,
+ * 172.1245186, 0254.023.0.2 or 0xac130002. Those are refused rather than
+ * decoded: HTTP clients disagree on which forms they accept, so decoding one
+ * here and judging it routable would not predict what the client connects to.
+ */
+function canonicalDottedQuad(hostname) {
+  var parts = hostname.split('.');
+  if (parts.length !== 4) {
+    return null;
+  }
+  var octets = [];
+  for (var i = 0; i < 4; i++) {
+    var part = parts[i];
+    if (!/^\d{1,3}$/.test(part)) {
+      return null;
+    }
+    // A leading zero means the part may be read as octal.
+    if (part.length > 1 && part.charAt(0) === '0') {
+      return null;
+    }
+    var value = parseInt(part, 10);
+    if (value > 255) {
+      return null;
+    }
+    octets.push(value);
+  }
+  return octets;
+}
+
+/**
  * Wildcard DNS services encode the target address in the name itself
  * (127.0.0.1.nip.io, 127-0-0-1.sslip.io). Reads that address back out of the
  * hostname so an internal target is refused without resolving anything.
@@ -179,9 +220,16 @@ function validateWebhookUrl(url) {
     return { valid: true, reason: null };
   }
 
-  var ipv4 = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
-  if (ipv4) {
-    var literalReason = internalIpv4Reason(parseInt(ipv4[1], 10), parseInt(ipv4[2], 10));
+  if (isNumericHost(hostname)) {
+    var octets = canonicalDottedQuad(hostname);
+    if (!octets) {
+      return {
+        valid: false,
+        reason: 'Ambiguous numeric host "' + hostname + '" is not allowed — ' +
+          'write an IPv4 address as four dotted decimal octets'
+      };
+    }
+    var literalReason = internalIpv4Reason(octets[0], octets[1]);
     if (literalReason) {
       return { valid: false, reason: literalReason };
     }

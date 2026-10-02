@@ -243,4 +243,46 @@ describe('validateWebhookUrl', () => {
       expect(validateWebhookUrl('https://[2606:4700::1111]/hook').valid).toBe(true);
     });
   });
+
+  // ── Non-dotted-quad numeric encodings (JT-98610 follow-up) ────────────────
+  //
+  // inet_aton accepts one-, two- and three-part forms plus octal and hex, so
+  // one address has many spellings. Clients disagree on which they accept, so
+  // every non-canonical numeric host is refused rather than decoded.
+
+  describe('numeric host encodings', () => {
+    it.each([
+      ['decimal', 'http://2886926338/hook'],        // 172.19.0.2
+      ['two-part', 'http://172.1245186/hook'],      // 172.19.0.2
+      ['hex', 'http://0xac130002/hook'],            // 172.19.0.2
+      ['dotted octal', 'http://0300.0250.0.1/hook'],// 192.168.0.1
+      ['octal quad', 'http://0254.023.0.2/hook'],   // 172.19.0.2
+      ['three-part', 'http://192.168.257/hook'],
+      ['one-part loopback', 'http://2130706433/hook'], // 127.0.0.1
+    ])('rejects %s encoding %s', (_label, url) => {
+      const result = validateWebhookUrl(url);
+      expect(result.valid).toBe(false);
+    });
+
+    it('rejects a dotted quad with an out-of-range octet', () => {
+      expect(validateWebhookUrl('http://999.1.1.1/hook').valid).toBe(false);
+      expect(validateWebhookUrl('http://1.2.3.999/hook').valid).toBe(false);
+    });
+
+    it('still blocks the canonical dotted form of the same address', () => {
+      const result = validateWebhookUrl('http://172.19.0.2/hook');
+      expect(result.valid).toBe(false);
+      expect(result.reason).toMatch(/private/i);
+    });
+
+    it('still allows canonical public dotted quads', () => {
+      expect(validateWebhookUrl('https://8.8.8.8/hook').valid).toBe(true);
+      expect(validateWebhookUrl('https://1.2.3.4/hook').valid).toBe(true);
+    });
+
+    it('does not mistake a normal hostname for a numeric host', () => {
+      expect(validateWebhookUrl('https://api2.example.com/hook').valid).toBe(true);
+      expect(validateWebhookUrl('https://3m.com/hook').valid).toBe(true);
+    });
+  });
 });
