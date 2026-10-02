@@ -17,8 +17,99 @@ function addSecurityHeaders(connection, token, headerName) {
 }
 
 /**
- * Validates a webhook URL to prevent SSRF attacks.
- * Rejects non-HTTP(S) schemes and RFC-1918 / loopback / link-local addresses.
+ * Domains that exist to resolve to loopback or to a caller-chosen address.
+ * `nip.io`/`sslip.io`/`xip.io` are wildcard resolvers — no real webhook
+ * receiver is hosted on them, so the whole domain is refused.
+ */
+var LOOPBACK_DOMAINS = [
+  'localhost',      // RFC 6761 — reserved, always loopback
+  'local',          // mDNS — LAN-scoped
+  'localtest.me',
+  'lvh.me',
+  'vcap.me',
+  'localho.st',
+  'nip.io',
+  'sslip.io',
+  'xip.io'
+];
+
+/**
+ * Reason the given IPv4 leading octets are not a usable webhook destination,
+ * or null when the address is publicly routable. Ranges mirror the server's
+ * HostedOutboundConnectionFilter so the two layers agree on what "internal" is.
+ */
+function internalIpv4Reason(a, b) {
+  if (a === 127) {
+    return 'Loopback addresses (127.x.x.x) are not allowed';
+  }
+  if (a === 0) {
+    return 'Unspecified addresses (0.x.x.x) are not allowed';
+  }
+  if (a === 10) {
+    return 'Private network addresses (10.x.x.x) are not allowed';
+  }
+  if (a === 172 && b >= 16 && b <= 31) {
+    return 'Private network addresses (172.16-31.x.x) are not allowed';
+  }
+  if (a === 192 && b === 168) {
+    return 'Private network addresses (192.168.x.x) are not allowed';
+  }
+  if (a === 169 && b === 254) {
+    return 'Link-local addresses (169.254.x.x) are not allowed — these include cloud metadata endpoints';
+  }
+  if (a === 100 && b >= 64 && b <= 127) {
+    return 'Carrier-grade NAT addresses (100.64-127.x.x) are not allowed';
+  }
+  return null;
+}
+
+/**
+ * Wildcard DNS services encode the target address in the name itself
+ * (127.0.0.1.nip.io, 127-0-0-1.sslip.io). Reads that address back out of the
+ * hostname so an internal target is refused without resolving anything.
+ */
+function embeddedIpv4Reason(hostname) {
+  var patterns = [
+    /(?:^|[.\-])(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?:[.\-]|$)/,
+    /(?:^|[.\-])(\d{1,3})-(\d{1,3})-(\d{1,3})-(\d{1,3})(?:[.\-]|$)/
+  ];
+  for (var i = 0; i < patterns.length; i++) {
+    var match = hostname.match(patterns[i]);
+    if (match) {
+      var reason = internalIpv4Reason(parseInt(match[1], 10), parseInt(match[2], 10));
+      if (reason) {
+        return reason + ' (embedded in hostname "' + hostname + '")';
+      }
+    }
+  }
+  return null;
+}
+
+function loopbackDomainReason(hostname) {
+  for (var i = 0; i < LOOPBACK_DOMAINS.length; i++) {
+    var domain = LOOPBACK_DOMAINS[i];
+    var isSuffix = hostname.length > domain.length &&
+      hostname.substring(hostname.length - domain.length - 1) === '.' + domain;
+    if (hostname === domain || isSuffix) {
+      return 'Loopback or internal hostname "' + hostname + '" is not allowed (' + domain + ')';
+    }
+  }
+  return null;
+}
+
+/**
+ * Validates a webhook URL to prevent SSRF attacks. Rejects non-HTTP(S) schemes,
+ * internal IP literals, and hostnames that are known to resolve to loopback.
+ *
+ * Best-effort only, NOT a security boundary. This runs in the workflow sandbox,
+ * which has no DNS resolution, so a hostname can only be matched as a string —
+ * any name with an A record pointing at an internal address (or one that
+ * changes between validation and connect, i.e. DNS rebinding) still passes.
+ * The enforceable control is the server's outbound filter, which hooks the DNS
+ * resolver in ClientFactory and checks the addresses actually resolved. Treat
+ * the checks below as a way to catch misconfiguration early and turn away the
+ * obvious cases, not as the thing that stops a determined Project Admin.
+ *
  * @param {string} url - The URL to validate
  * @returns {{valid: boolean, reason: string|null}} Validation result
  */
@@ -56,51 +147,55 @@ function validateWebhookUrl(url) {
     hostname = afterScheme.split(/[/:?#]/)[0].toLowerCase();
   }
 
+  // A trailing dot denotes the DNS root and resolves identically ("localhost.")
+  if (hostname.charAt(hostname.length - 1) === '.') {
+    hostname = hostname.substring(0, hostname.length - 1);
+  }
+
   if (!hostname) {
     return { valid: false, reason: 'URL is not valid' };
   }
 
-  // localhost / loopback hostname
-  if (hostname === 'localhost' || hostname === 'localhost.') {
-    return { valid: false, reason: 'Loopback addresses (localhost) are not allowed' };
+  if (hostname.indexOf(':') !== -1) {
+    // IPv6 literal
+    if (hostname === '::1' || hostname === '::') {
+      return { valid: false, reason: 'Loopback addresses (' + hostname + ') are not allowed' };
+    }
+    var mapped = hostname.match(/^::ffff:(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+    if (mapped) {
+      var mappedReason = internalIpv4Reason(parseInt(mapped[1], 10), parseInt(mapped[2], 10));
+      if (mappedReason) {
+        return { valid: false, reason: mappedReason };
+      }
+    }
+    // fc00::/7 unique-local
+    if (/^f[cd]/.test(hostname)) {
+      return { valid: false, reason: 'Unique-local IPv6 addresses (fc00::/7) are not allowed' };
+    }
+    // fe80::/10 link-local
+    if (/^fe[89ab]/.test(hostname)) {
+      return { valid: false, reason: 'Link-local IPv6 addresses (fe80::/10) are not allowed' };
+    }
+    return { valid: true, reason: null };
   }
 
-  // IPv6 loopback / unspecified address
-  if (hostname === '::1' || hostname === '::') {
-    return { valid: false, reason: 'Loopback addresses (' + hostname + ') are not allowed' };
-  }
-
-  // IPv4-mapped IPv6 loopback, e.g. ::ffff:127.0.0.1
-  var mappedIpv4 = hostname.match(/^::ffff:(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
-  var ipv4 = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/) || mappedIpv4;
+  var ipv4 = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
   if (ipv4) {
-    var a = parseInt(ipv4[1], 10);
-    var b = parseInt(ipv4[2], 10);
+    var literalReason = internalIpv4Reason(parseInt(ipv4[1], 10), parseInt(ipv4[2], 10));
+    if (literalReason) {
+      return { valid: false, reason: literalReason };
+    }
+    return { valid: true, reason: null };
+  }
 
-    // 127.0.0.0/8 — loopback
-    if (a === 127) {
-      return { valid: false, reason: 'Loopback addresses (127.x.x.x) are not allowed' };
-    }
-    // 0.0.0.0/8 — "this network" / unspecified, resolves to loopback on many systems
-    if (a === 0) {
-      return { valid: false, reason: 'Unspecified addresses (0.x.x.x) are not allowed' };
-    }
-    // 10.0.0.0/8 — RFC-1918
-    if (a === 10) {
-      return { valid: false, reason: 'Private network addresses (10.x.x.x) are not allowed' };
-    }
-    // 172.16.0.0/12 — RFC-1918
-    if (a === 172 && b >= 16 && b <= 31) {
-      return { valid: false, reason: 'Private network addresses (172.16-31.x.x) are not allowed' };
-    }
-    // 192.168.0.0/16 — RFC-1918
-    if (a === 192 && b === 168) {
-      return { valid: false, reason: 'Private network addresses (192.168.x.x) are not allowed' };
-    }
-    // 169.254.0.0/16 — link-local / cloud metadata endpoints
-    if (a === 169 && b === 254) {
-      return { valid: false, reason: 'Link-local addresses (169.254.x.x) are not allowed — these include cloud metadata endpoints' };
-    }
+  var domainReason = loopbackDomainReason(hostname);
+  if (domainReason) {
+    return { valid: false, reason: domainReason };
+  }
+
+  var embeddedReason = embeddedIpv4Reason(hostname);
+  if (embeddedReason) {
+    return { valid: false, reason: embeddedReason };
   }
 
   return { valid: true, reason: null };

@@ -163,4 +163,84 @@ describe('validateWebhookUrl', () => {
       expect(result.reason).toMatch(/loopback/i);
     });
   });
+
+  // ── DNS names resolving to internal addresses (JT-98610 follow-up) ─────────
+
+  describe('loopback-resolving DNS names', () => {
+    it.each([
+      'http://127.0.0.1.nip.io:8080/x',   // wildcard resolver, dotted form
+      'http://127-0-0-1.sslip.io/x',      // wildcard resolver, dashed form
+      'http://10.0.0.1.nip.io/x',         // embedded RFC-1918
+      'http://169.254.169.254.nip.io/x',  // embedded metadata endpoint
+    ])('rejects wildcard resolver name %s', (url) => {
+      const result = validateWebhookUrl(url);
+      expect(result.valid).toBe(false);
+    });
+
+    it.each([
+      'http://anything.localtest.me/x',
+      'http://foo.lvh.me/x',
+      'http://vcap.me/x',
+      'http://localho.st/x',
+    ])('rejects known loopback domain %s', (url) => {
+      const result = validateWebhookUrl(url);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toMatch(/loopback/i);
+    });
+
+    it.each([
+      'http://foo.localhost/x',           // RFC 6761 reserved TLD
+      'http://buildserver.local/x',       // mDNS / LAN-scoped
+    ])('rejects reserved internal TLD %s', (url) => {
+      const result = validateWebhookUrl(url);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toMatch(/loopback|internal/i);
+    });
+
+    it('rejects the whole wildcard-resolver domain even with no embedded IP', () => {
+      expect(validateWebhookUrl('http://nip.io/x').valid).toBe(false);
+      expect(validateWebhookUrl('http://sslip.io/x').valid).toBe(false);
+    });
+
+    it('still allows a public hostname that merely embeds a public IP', () => {
+      expect(validateWebhookUrl('https://1.2.3.4.example.com/hook').valid).toBe(true);
+    });
+
+    it('does not false-positive on names that merely start like a blocked one', () => {
+      expect(validateWebhookUrl('https://localhostings.com/hook').valid).toBe(true);
+      expect(validateWebhookUrl('https://fcbarcelona.com/hook').valid).toBe(true);
+      expect(validateWebhookUrl('https://notnip.io.example.com/hook').valid).toBe(true);
+    });
+  });
+
+  // ── Extra internal ranges mirrored from the server-side outbound filter ────
+
+  describe('additional internal ranges', () => {
+    it.each([
+      'http://100.64.0.1/',
+      'http://100.127.255.255/',
+    ])('rejects carrier-grade NAT %s', (url) => {
+      expect(validateWebhookUrl(url).valid).toBe(false);
+    });
+
+    it('allows 100.63.x.x and 100.128.x.x (outside CGNAT)', () => {
+      expect(validateWebhookUrl('https://100.63.0.1/').valid).toBe(true);
+      expect(validateWebhookUrl('https://100.128.0.1/').valid).toBe(true);
+    });
+
+    it.each([
+      'http://[fc00::1]/',
+      'http://[fd12:3456::1]/',
+    ])('rejects IPv6 unique-local %s', (url) => {
+      expect(validateWebhookUrl(url).valid).toBe(false);
+    });
+
+    it('rejects IPv6 link-local', () => {
+      expect(validateWebhookUrl('http://[fe80::1]/').valid).toBe(false);
+    });
+
+    it('allows a public IPv6 literal', () => {
+      expect(validateWebhookUrl('https://[2606:4700::1111]/hook').valid).toBe(true);
+    });
+  });
 });
