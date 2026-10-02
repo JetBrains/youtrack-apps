@@ -245,10 +245,6 @@ describe('validateWebhookUrl', () => {
   });
 
   // ── Non-dotted-quad numeric encodings (JT-98610 follow-up) ────────────────
-  //
-  // inet_aton accepts one-, two- and three-part forms plus octal and hex, so
-  // one address has many spellings. Clients disagree on which they accept, so
-  // every non-canonical numeric host is refused rather than decoded.
 
   describe('numeric host encodings', () => {
     it.each([
@@ -283,6 +279,57 @@ describe('validateWebhookUrl', () => {
     it('does not mistake a normal hostname for a numeric host', () => {
       expect(validateWebhookUrl('https://api2.example.com/hook').valid).toBe(true);
       expect(validateWebhookUrl('https://3m.com/hook').valid).toBe(true);
+    });
+  });
+
+  // ── Authority parsing: userinfo and host charset ──────────────────────────
+
+  describe('userinfo in the authority', () => {
+    it.each([
+      'http://user@127.0.0.1:9099/hook',
+      'http://evil.com@127.0.0.1:9099/hook',
+      'http://a:b@127.0.0.1/hook',
+      'http://example.com@[::1]/hook',
+    ])('rejects loopback hidden behind userinfo in %s', (url) => {
+      const result = validateWebhookUrl(url);
+      expect(result.valid).toBe(false);
+      expect(result.reason).toMatch(/loopback/i);
+    });
+
+    it.each([
+      'http://x@10.0.0.5/hook',
+      'http://x@169.254.169.254/hook',
+    ])('rejects internal address hidden behind userinfo in %s', (url) => {
+      expect(validateWebhookUrl(url).valid).toBe(false);
+    });
+
+    it('rejects a numeric-encoded host behind userinfo', () => {
+      expect(validateWebhookUrl('http://evil.com@2886926338/hook').valid).toBe(false);
+    });
+
+    it('allows userinfo pointing at a genuinely public host', () => {
+      expect(validateWebhookUrl('https://user:pass@example.com/hook').valid).toBe(true);
+    });
+
+    it('is not fooled by a decoy host after the real one', () => {
+      // Last "@" wins, so the host here is evil.example.com, not 127.0.0.1
+      expect(validateWebhookUrl('http://127.0.0.1@evil.example.com/hook').valid).toBe(true);
+    });
+  });
+
+  describe('host charset', () => {
+    it.each([
+      'http://127.0.0.1\\@evil.com/hook',
+      'http://127.0.0.1 /hook',
+      'http://127.0.0.1\t/hook',
+      'http://exa mple.com/hook',
+    ])('rejects a host with characters outside the hostname charset: %j', (url) => {
+      expect(validateWebhookUrl(url).valid).toBe(false);
+    });
+
+    it('still allows ordinary hostnames and punycode', () => {
+      expect(validateWebhookUrl('https://hooks.example-corp.com/x').valid).toBe(true);
+      expect(validateWebhookUrl('https://xn--80ak6aa92e.com/x').valid).toBe(true);
     });
   });
 });

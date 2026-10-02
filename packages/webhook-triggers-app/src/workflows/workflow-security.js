@@ -16,14 +16,10 @@ function addSecurityHeaders(connection, token, headerName) {
   }
 }
 
-/**
- * Domains that exist to resolve to loopback or to a caller-chosen address.
- * `nip.io`/`sslip.io`/`xip.io` are wildcard resolvers — no real webhook
- * receiver is hosted on them, so the whole domain is refused.
- */
+// Reserved names and public wildcard resolvers; all resolve to loopback.
 var LOOPBACK_DOMAINS = [
-  'localhost',      // RFC 6761 — reserved, always loopback
-  'local',          // mDNS — LAN-scoped
+  'localhost',
+  'local',
   'localtest.me',
   'lvh.me',
   'vcap.me',
@@ -33,11 +29,7 @@ var LOOPBACK_DOMAINS = [
   'xip.io'
 ];
 
-/**
- * Reason the given IPv4 leading octets are not a usable webhook destination,
- * or null when the address is publicly routable. Ranges mirror the server's
- * HostedOutboundConnectionFilter so the two layers agree on what "internal" is.
- */
+// Ranges mirror the server's HostedOutboundConnectionFilter.
 function internalIpv4Reason(a, b) {
   if (a === 127) {
     return 'Loopback addresses (127.x.x.x) are not allowed';
@@ -63,22 +55,15 @@ function internalIpv4Reason(a, b) {
   return null;
 }
 
-/**
- * True when the host is written as a number rather than a DNS name. No real
- * hostname is all-numeric (a TLD cannot be), so anything matching here is an
- * address literal in some notation.
- */
 function isNumericHost(hostname) {
   return /^(0x[0-9a-f]+|[0-9]+)(\.(0x[0-9a-f]+|[0-9]+))*$/.test(hostname);
 }
 
 /**
- * The four octets of a canonical dotted-quad address, or null for every other
- * spelling. inet_aton also accepts one-, two- and three-part forms and octal
- * (leading zero) and hex (0x) parts, so 172.19.0.2 can be written 2886926338,
- * 172.1245186, 0254.023.0.2 or 0xac130002. Those are refused rather than
- * decoded: HTTP clients disagree on which forms they accept, so decoding one
- * here and judging it routable would not predict what the client connects to.
+ * Octets of a canonical dotted quad, or null for every other numeric spelling.
+ * Non-canonical forms (2886926338, 172.1245186, 0254.023.0.2, 0xac130002) are
+ * refused rather than decoded, because HTTP clients disagree on which ones they
+ * accept — decoding one here would not predict what the client connects to.
  */
 function canonicalDottedQuad(hostname) {
   var parts = hostname.split('.');
@@ -91,9 +76,8 @@ function canonicalDottedQuad(hostname) {
     if (!/^\d{1,3}$/.test(part)) {
       return null;
     }
-    // A leading zero means the part may be read as octal.
     if (part.length > 1 && part.charAt(0) === '0') {
-      return null;
+      return null; // leading zero may be read as octal
     }
     var value = parseInt(part, 10);
     if (value > 255) {
@@ -104,11 +88,7 @@ function canonicalDottedQuad(hostname) {
   return octets;
 }
 
-/**
- * Wildcard DNS services encode the target address in the name itself
- * (127.0.0.1.nip.io, 127-0-0-1.sslip.io). Reads that address back out of the
- * hostname so an internal target is refused without resolving anything.
- */
+// Wildcard resolvers encode the target in the name: 127.0.0.1.nip.io, 127-0-0-1.sslip.io
 function embeddedIpv4Reason(hostname) {
   var patterns = [
     /(?:^|[.\-])(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?:[.\-]|$)/,
@@ -139,17 +119,13 @@ function loopbackDomainReason(hostname) {
 }
 
 /**
- * Validates a webhook URL to prevent SSRF attacks. Rejects non-HTTP(S) schemes,
- * internal IP literals, and hostnames that are known to resolve to loopback.
+ * Validates a webhook URL to prevent SSRF attacks.
  *
- * Best-effort only, NOT a security boundary. This runs in the workflow sandbox,
- * which has no DNS resolution, so a hostname can only be matched as a string —
- * any name with an A record pointing at an internal address (or one that
- * changes between validation and connect, i.e. DNS rebinding) still passes.
- * The enforceable control is the server's outbound filter, which hooks the DNS
- * resolver in ClientFactory and checks the addresses actually resolved. Treat
- * the checks below as a way to catch misconfiguration early and turn away the
- * obvious cases, not as the thing that stops a determined Project Admin.
+ * Best-effort, NOT a security boundary. The workflow sandbox has no DNS, so a
+ * host is only ever matched as a string: any name with an A record pointing at
+ * an internal address, or one that changes between validation and connect,
+ * still passes. The enforceable control is the server's outbound filter, which
+ * hooks the DNS resolver in ClientFactory and checks the resolved addresses.
  *
  * @param {string} url - The URL to validate
  * @returns {{valid: boolean, reason: string|null}} Validation result
@@ -174,21 +150,28 @@ function validateWebhookUrl(url) {
     return { valid: false, reason: 'URL is not valid' };
   }
 
-  // Extract hostname: strip "//" prefix, then take up to the first / ? or #
-  var afterScheme = rest.substring(2);
+  // Host of http://example.com@127.0.0.1/ is 127.0.0.1, and for http(s) a
+  // backslash ends the authority, so http://127.0.0.1\@evil.com/ is 127.0.0.1.
+  var authority = rest.substring(2).split(/[/?#\\]/)[0];
+  var atIndex = authority.lastIndexOf('@');
+  if (atIndex !== -1) {
+    authority = authority.substring(atIndex + 1);
+  }
+
   var hostname;
-  if (afterScheme.charAt(0) === '[') {
-    // Bracketed IPv6 literal, e.g. [::1] or [::1]:8080
-    var closeBracket = afterScheme.indexOf(']');
+  var isIpv6Literal = false;
+  if (authority.charAt(0) === '[') {
+    var closeBracket = authority.indexOf(']');
     if (closeBracket === -1) {
       return { valid: false, reason: 'URL is not valid' };
     }
-    hostname = afterScheme.substring(1, closeBracket).toLowerCase();
+    hostname = authority.substring(1, closeBracket).toLowerCase();
+    isIpv6Literal = true;
   } else {
-    hostname = afterScheme.split(/[/:?#]/)[0].toLowerCase();
+    hostname = authority.split(':')[0].toLowerCase();
   }
 
-  // A trailing dot denotes the DNS root and resolves identically ("localhost.")
+  // "localhost." is the DNS root form of "localhost" and resolves the same.
   if (hostname.charAt(hostname.length - 1) === '.') {
     hostname = hostname.substring(0, hostname.length - 1);
   }
@@ -197,8 +180,17 @@ function validateWebhookUrl(url) {
     return { valid: false, reason: 'URL is not valid' };
   }
 
+  // Clients split whitespace and stray delimiters differently, so a host
+  // carrying them cannot be reasoned about here.
+  var hostCharset = isIpv6Literal ? /^[0-9a-f:.%]+$/ : /^[a-z0-9._-]+$/;
+  if (!hostCharset.test(hostname)) {
+    return {
+      valid: false,
+      reason: 'Host "' + hostname + '" contains characters that are not allowed in a hostname'
+    };
+  }
+
   if (hostname.indexOf(':') !== -1) {
-    // IPv6 literal
     if (hostname === '::1' || hostname === '::') {
       return { valid: false, reason: 'Loopback addresses (' + hostname + ') are not allowed' };
     }
@@ -209,11 +201,9 @@ function validateWebhookUrl(url) {
         return { valid: false, reason: mappedReason };
       }
     }
-    // fc00::/7 unique-local
     if (/^f[cd]/.test(hostname)) {
       return { valid: false, reason: 'Unique-local IPv6 addresses (fc00::/7) are not allowed' };
     }
-    // fe80::/10 link-local
     if (/^fe[89ab]/.test(hostname)) {
       return { valid: false, reason: 'Link-local IPv6 addresses (fe80::/10) are not allowed' };
     }
