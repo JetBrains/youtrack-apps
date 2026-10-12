@@ -182,6 +182,9 @@ describe('validateWebhookUrl', () => {
       'http://foo.lvh.me/x',
       'http://vcap.me/x',
       'http://localho.st/x',
+      'http://localhost.localdomain/x',   // common /etc/hosts alias
+      'http://ip6-localhost:8080/x',      // common /etc/hosts alias
+      'http://metadata.google.internal/x', // GCP metadata endpoint
     ])('rejects known loopback domain %s', (url) => {
       const result = validateWebhookUrl(url);
       expect(result.valid).toBe(false);
@@ -241,6 +244,40 @@ describe('validateWebhookUrl', () => {
 
     it('allows a public IPv6 literal', () => {
       expect(validateWebhookUrl('https://[2606:4700::1111]/hook').valid).toBe(true);
+      expect(validateWebhookUrl('https://[2606:4700:0:0:0:0:0:1111]/hook').valid).toBe(true);
+    });
+
+    it.each([
+      'http://[0:0:0:0:0:0:0:1]/',
+      'http://[0000:0000:0000:0000:0000:0000:0000:0001]/',
+      'http://[::0]/',
+      'http://[0:0:0:0:0:0:0:0]/',
+      'http://[::ffff:7f00:1]/',
+      'http://[::ffff:127.0.0.1]/',
+      'http://[0:0:0:0:0:ffff:7f00:1]/',
+      'http://[::ffff:a00:1]/',
+      'http://[::ffff:a9fe:a9fe]/',
+      'http://[::127.0.0.1]/',
+      'http://[::7f00:1]/',
+      'http://[64:ff9b::7f00:1]/',
+      'http://[fec0::1]/',
+      'http://[FE80:0:0:0:0:0:0:1]/',
+      'http://[fe80::1%25eth0]/',
+    ])('rejects IPv6 alias of an internal address %s', (url) => {
+      expect(validateWebhookUrl(url).valid).toBe(false);
+    });
+
+    it.each([
+      'http://[1::2::3]/',
+      'http://[1:2:3:4:5:6:7:8:9]/',
+      'http://[12345::1]/',
+      'http://[::ffff:1.2.3]/',
+    ])('rejects malformed IPv6 %s', (url) => {
+      expect(validateWebhookUrl(url).valid).toBe(false);
+    });
+
+    it('allows a mapped public IPv4', () => {
+      expect(validateWebhookUrl('https://[::ffff:8.8.8.8]/').valid).toBe(true);
     });
   });
 

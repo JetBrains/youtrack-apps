@@ -16,9 +16,13 @@ function addSecurityHeaders(connection, token, headerName) {
   }
 }
 
-// Reserved names and public wildcard resolvers; all resolve to loopback.
+// Reserved names, common /etc/hosts aliases, the GCP metadata name and public
+// wildcard resolvers; all resolve to loopback or internal addresses.
 var LOOPBACK_DOMAINS = [
   'localhost',
+  'localhost.localdomain',
+  'ip6-localhost',
+  'metadata.google.internal',
   'local',
   'localtest.me',
   'lvh.me',
@@ -51,6 +55,95 @@ function internalIpv4Reason(a, b) {
   }
   if (a === 100 && b >= 64 && b <= 127) {
     return 'Carrier-grade NAT addresses (100.64-127.x.x) are not allowed';
+  }
+  return null;
+}
+
+/**
+ * Eight 16-bit groups of an IPv6 literal, or null if it is malformed.
+ * Handles "::" compression, leading zeros and a trailing dotted IPv4 part.
+ * A zone id ("%eth0") is dropped; it does not change the address.
+ */
+function parseIpv6(rawLiteral) {
+  var zone = rawLiteral.indexOf('%');
+  var literal = zone !== -1 ? rawLiteral.substring(0, zone) : rawLiteral;
+  if (literal.split('::').length > 2) {
+    return null;
+  }
+
+  var tail = [];
+  var lastColon = literal.lastIndexOf(':');
+  var lastPart = literal.substring(lastColon + 1);
+  if (lastPart.indexOf('.') !== -1) {
+    var quad = canonicalDottedQuad(lastPart);
+    if (!quad) {
+      return null;
+    }
+    tail = [quad[0] * 256 + quad[1], quad[2] * 256 + quad[3]];
+    literal = literal.substring(0, lastColon + 1) + '0:0';
+  }
+
+  var halves = literal.split('::');
+  var head = halves[0] ? halves[0].split(':') : [];
+  var rear = halves.length === 2 && halves[1] ? halves[1].split(':') : [];
+  var all = head.concat(rear);
+  for (var i = 0; i < all.length; i++) {
+    if (!/^[0-9a-f]{1,4}$/.test(all[i])) {
+      return null;
+    }
+  }
+
+  var groups;
+  if (halves.length === 2) {
+    if (all.length > 7) {
+      return null;
+    }
+    groups = head.slice();
+    while (groups.length + rear.length < 8) {
+      groups.push('0');
+    }
+    groups = groups.concat(rear);
+  } else {
+    if (all.length !== 8) {
+      return null;
+    }
+    groups = head;
+  }
+
+  var result = [];
+  for (var j = 0; j < 8; j++) {
+    result.push(parseInt(groups[j], 16));
+  }
+  if (tail.length) {
+    result[6] = tail[0];
+    result[7] = tail[1];
+  }
+  return result;
+}
+
+function internalIpv6Reason(g) {
+  var firstSix = g[0] | g[1] | g[2] | g[3] | g[4] | g[5];
+  var firstFive = g[0] | g[1] | g[2] | g[3] | g[4];
+  if (firstSix === 0 && g[6] === 0 && (g[7] === 0 || g[7] === 1)) {
+    return 'Loopback or unspecified addresses (::, ::1) are not allowed';
+  }
+  // IPv4-mapped (::ffff:a.b.c.d), IPv4-compatible (::a.b.c.d) and NAT64 (64:ff9b::/96)
+  var embedsIpv4 = (firstFive === 0 && g[5] === 0xffff) || firstSix === 0 ||
+    (g[0] === 0x64 && g[1] === 0xff9b && (g[2] | g[3] | g[4] | g[5]) === 0);
+  if (embedsIpv4) {
+    var reason = internalIpv4Reason(g[6] >> 8, g[6] & 255);
+    if (reason) {
+      return reason;
+    }
+  }
+  if ((g[0] & 0xfe00) === 0xfc00) {
+    return 'Unique-local IPv6 addresses (fc00::/7) are not allowed';
+  }
+  if ((g[0] & 0xffc0) === 0xfe80) {
+    return 'Link-local IPv6 addresses (fe80::/10) are not allowed';
+  }
+  if ((g[0] & 0xffc0) === 0xfec0) {
+    return 'Site-local IPv6 addresses (fec0::/10) are not allowed';
   }
   return null;
 }
@@ -191,21 +284,13 @@ function validateWebhookUrl(url) {
   }
 
   if (hostname.indexOf(':') !== -1) {
-    if (hostname === '::1' || hostname === '::') {
-      return { valid: false, reason: 'Loopback addresses (' + hostname + ') are not allowed' };
+    var groups = parseIpv6(hostname);
+    if (!groups) {
+      return { valid: false, reason: 'IPv6 host "' + hostname + '" is not valid' };
     }
-    var mapped = hostname.match(/^::ffff:(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
-    if (mapped) {
-      var mappedReason = internalIpv4Reason(parseInt(mapped[1], 10), parseInt(mapped[2], 10));
-      if (mappedReason) {
-        return { valid: false, reason: mappedReason };
-      }
-    }
-    if (/^f[cd]/.test(hostname)) {
-      return { valid: false, reason: 'Unique-local IPv6 addresses (fc00::/7) are not allowed' };
-    }
-    if (/^fe[89ab]/.test(hostname)) {
-      return { valid: false, reason: 'Link-local IPv6 addresses (fe80::/10) are not allowed' };
+    var ipv6Reason = internalIpv6Reason(groups);
+    if (ipv6Reason) {
+      return { valid: false, reason: ipv6Reason };
     }
     return { valid: true, reason: null };
   }
