@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateWebhookUrl } from '../workflow-security.js';
+import { validateWebhookUrl } from '../workflow-url-validation.js';
 
 describe('validateWebhookUrl', () => {
   // ── Valid URLs ──────────────────────────────────────────────────────────────

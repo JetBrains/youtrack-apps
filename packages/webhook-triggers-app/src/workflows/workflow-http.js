@@ -14,6 +14,7 @@
 
 const http = require('@jetbrains/youtrack-scripting-api/http');
 const security = require('./workflow-security');
+const urlValidation = require('./workflow-url-validation');
 const {ALL_EVENTS_TYPE} = require('./constants');
 
 const WEBHOOK_TIMEOUT_MS = 5000;
@@ -203,7 +204,7 @@ function logWebhookResponse(response, url) {
  * @returns {boolean} true on scheduled, false on rejection (caller may retry next URL).
  */
 function tryPostWebhook(ctx, url, remainingUrls, eventType, headerName, payloadJson) {
-  const validation = security.validateWebhookUrl(url);
+  const validation = urlValidation.validateWebhookUrl(url);
   if (!validation.valid) {
     console.error('[webhooks] Blocked webhook to ' + url + ': ' + validation.reason);
     return false;
@@ -293,7 +294,7 @@ function sendWebhooks(ctx, eventType, payload, eventName) {
 
   // Filter invalid URLs first so the cap applies to URLs that can actually be dispatched.
   const validUrls = urls.filter(function (url) {
-    const validation = security.validateWebhookUrl(url);
+    const validation = urlValidation.validateWebhookUrl(url);
     if (!validation.valid) {
       console.error('[webhooks] Blocked webhook to ' + url + ': ' + validation.reason);
       return false;
