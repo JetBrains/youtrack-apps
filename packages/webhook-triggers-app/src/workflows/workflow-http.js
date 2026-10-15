@@ -143,7 +143,14 @@ function getWebhookTargets(ctx, eventType) {
     const endpoints = endpointsOf(row);
     for (let j = 0; j < endpoints.length; j++) {
       const url = normalizeUrl(endpoints[j]);
-      if (!url || seen[url]) {
+      if (!url) {
+        continue;
+      }
+      if (seen[url]) {
+        // Secrets are live objects that can't be compared, so a repeated URL
+        // can't be told apart from the same receiver listed twice. Say so
+        // instead of silently dropping a token that may differ.
+        console.warn('[webhooks] ' + url + ' is listed more than once for ' + eventType + '; it is called once, with the token of its first listing');
         continue;
       }
       seen[url] = true;

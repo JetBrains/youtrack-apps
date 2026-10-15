@@ -62,7 +62,7 @@
           },
           "endpoints": {
             "title": "Endpoints",
-            "description": "Every endpoint of this trigger is called with its own token, so one compromised receiver never exposes the others.",
+            "description": "Every endpoint of this trigger is called with its own token, so one compromised receiver never exposes the others. A URL listed more than once for the same event (including under \"All Events\") is called once, with the token of its first listing.",
             "type": "array",
             "minItems": 1,
             "items": {

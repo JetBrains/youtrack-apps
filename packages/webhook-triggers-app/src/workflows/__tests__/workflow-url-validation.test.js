@@ -354,6 +354,65 @@ describe('validateWebhookUrl', () => {
     });
   });
 
+  describe('trailing dots', () => {
+    it.each([
+      'http://localhost../hook',
+      'http://localhost.../hook',
+      'http://127.0.0.1../hook',
+      'http://foo.localtest.me../hook',
+    ])('rejects %s', (url) => {
+      expect(validateWebhookUrl(url).valid).toBe(false);
+    });
+
+    it('rejects a host made only of dots', () => {
+      expect(validateWebhookUrl('http://.../hook').valid).toBe(false);
+    });
+
+    it('still allows a single trailing dot on a public name', () => {
+      expect(validateWebhookUrl('https://example.com./hook').valid).toBe(true);
+    });
+  });
+
+  describe('non-global IPv4 ranges', () => {
+    it.each([
+      'http://192.0.0.1/',
+      'http://198.18.0.1/',
+      'http://198.19.255.255/',
+      'http://224.0.0.1/',
+      'http://239.255.255.255/',
+      'http://240.0.0.1/',
+      'http://255.255.255.255/',
+      'http://[::ffff:224.0.0.1]/',
+      'http://127-0-0-1.sslip.io/',
+    ])('rejects %s', (url) => {
+      expect(validateWebhookUrl(url).valid).toBe(false);
+    });
+
+    it.each([
+      'http://192.0.1.1/',        // just above 192.0.0.0/24
+      'http://198.17.255.255/',   // just below 198.18.0.0/15
+      'http://198.20.0.1/',       // just above 198.18.0.0/15
+      'http://223.255.255.255/',  // just below multicast
+    ])('allows %s', (url) => {
+      expect(validateWebhookUrl(url).valid).toBe(true);
+    });
+  });
+
+  describe('6to4 IPv6 addresses', () => {
+    it.each([
+      'http://[2002:7f00:1::]/',      // 127.0.0.1
+      'http://[2002:a00:1::1]/',      // 10.0.0.1
+      'http://[2002:c0a8:101::]/',    // 192.168.1.1
+      'http://[2002:a9fe:a9fe::]/',   // 169.254.169.254
+    ])('rejects %s', (url) => {
+      expect(validateWebhookUrl(url).valid).toBe(false);
+    });
+
+    it('allows a 6to4 address embedding a public IPv4', () => {
+      expect(validateWebhookUrl('http://[2002:808:808::]/').valid).toBe(true); // 8.8.8.8
+    });
+  });
+
   describe('host charset', () => {
     it.each([
       'http://127.0.0.1\\@evil.com/hook',

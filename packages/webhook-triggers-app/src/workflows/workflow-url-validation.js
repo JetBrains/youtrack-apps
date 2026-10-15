@@ -19,8 +19,10 @@ var LOOPBACK_DOMAINS = [
   'xip.io'
 ];
 
-// Ranges mirror the server's HostedOutboundConnectionFilter. Each entry tests
-// the first two octets of an address.
+// Ranges cover everything the server's HostedOutboundConnectionFilter blocks,
+// plus non-global ranges it leaves open (IETF protocol assignments, benchmarking,
+// multicast, reserved and broadcast). Each entry tests the first three octets
+// of an address.
 var INTERNAL_IPV4_RANGES = [
   { test: function (a) { return a === 127; }, reason: 'Loopback addresses (127.x.x.x) are not allowed' },
   { test: function (a) { return a === 0; }, reason: 'Unspecified addresses (0.x.x.x) are not allowed' },
@@ -40,6 +42,18 @@ var INTERNAL_IPV4_RANGES = [
   {
     test: function (a, b) { return a === 100 && b >= 64 && b <= 127; },
     reason: 'Carrier-grade NAT addresses (100.64-127.x.x) are not allowed'
+  },
+  {
+    test: function (a, b, c) { return a === 192 && b === 0 && c === 0; },
+    reason: 'IETF protocol assignment addresses (192.0.0.x) are not allowed'
+  },
+  {
+    test: function (a, b) { return a === 198 && (b === 18 || b === 19); },
+    reason: 'Benchmarking addresses (198.18-19.x.x) are not allowed'
+  },
+  {
+    test: function (a) { return a >= 224; },
+    reason: 'Multicast, reserved and broadcast addresses (224-255.x.x.x) are not allowed'
   }
 ];
 
@@ -51,9 +65,9 @@ function reject(reason) {
   return { valid: false, reason: reason };
 }
 
-function internalIpv4Reason(a, b) {
+function internalIpv4Reason(a, b, c) {
   for (var i = 0; i < INTERNAL_IPV4_RANGES.length; i++) {
-    if (INTERNAL_IPV4_RANGES[i].test(a, b)) {
+    if (INTERNAL_IPV4_RANGES[i].test(a, b, c)) {
       return INTERNAL_IPV4_RANGES[i].reason;
     }
   }
@@ -168,9 +182,17 @@ function internalIpv6Reason(g) {
   var isCompatible = firstSixZero; // ::a.b.c.d
   var isNat64 = g[0] === 0x64 && g[1] === 0xff9b && (g[2] | g[3] | g[4] | g[5]) === 0; // 64:ff9b::/96
   if (isMapped || isCompatible || isNat64) {
-    var embeddedReason = internalIpv4Reason(g[6] >> 8, g[6] & 255);
+    var embeddedReason = internalIpv4Reason(g[6] >> 8, g[6] & 255, g[7] >> 8);
     if (embeddedReason) {
       return embeddedReason;
+    }
+  }
+
+  // 6to4 (2002::/16) carries the IPv4 address in groups 1-2: 2002:7f00:1:: is 127.0.0.1.
+  if (g[0] === 0x2002) {
+    var sixToFourReason = internalIpv4Reason(g[1] >> 8, g[1] & 255, g[2] >> 8);
+    if (sixToFourReason) {
+      return sixToFourReason;
     }
   }
 
@@ -204,7 +226,7 @@ function numericHostReason(hostname) {
     return 'Ambiguous numeric host "' + hostname + '" is not allowed — ' +
       'write an IPv4 address as four dotted decimal octets';
   }
-  return internalIpv4Reason(octets[0], octets[1]);
+  return internalIpv4Reason(octets[0], octets[1], octets[2]);
 }
 
 /**
@@ -221,7 +243,7 @@ function embeddedIpv4Reason(hostname) {
   for (var i = 0; i < patterns.length; i++) {
     var match = hostname.match(patterns[i]);
     if (match) {
-      var reason = internalIpv4Reason(parseInt(match[1], 10), parseInt(match[2], 10));
+      var reason = internalIpv4Reason(parseInt(match[1], 10), parseInt(match[2], 10), parseInt(match[3], 10));
       if (reason) {
         return reason + ' (embedded in hostname "' + hostname + '")';
       }
@@ -287,10 +309,9 @@ function extractHost(url) {
     hostname = authority.split(':')[0].toLowerCase();
   }
 
-  // "localhost." is the DNS root form of "localhost" and resolves the same.
-  if (hostname.charAt(hostname.length - 1) === '.') {
-    hostname = hostname.substring(0, hostname.length - 1);
-  }
+  // "localhost." is the DNS root form of "localhost" and resolves the same, and
+  // clients tolerate repeated trailing dots ("localhost.."), so strip them all.
+  hostname = hostname.replace(/\.+$/, '');
 
   if (!hostname) {
     return { failure: 'URL is not valid' };

@@ -95,6 +95,23 @@ describe('getWebhookTargets', () => {
     expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/']);
   });
 
+  it('warns when a repeated URL is dropped, so a differing token is not lost silently', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const ctx = createCtx({
+      settings: {
+        triggers: [
+          triggerWith('issueCreated', [endpoint('https://a.com/', 'token-1'), endpoint('https://a.com/', 'token-2')]),
+          trigger('https://a.com/', 'allEvents'),
+        ],
+      },
+    });
+    expect(getWebhookTargets(ctx, 'issueCreated')).toEqual(['https://a.com/']);
+    expect(resolveTriggerSecret(ctx, 'issueCreated', 'https://a.com/')).toBe('token-1');
+    expect(warn).toHaveBeenCalledTimes(2);
+    expect(warn.mock.calls[0][0]).toContain('https://a.com/ is listed more than once for issueCreated');
+    warn.mockRestore();
+  });
+
   it('trims URLs and skips blank / malformed rows', () => {
     const ctx = createCtx({
       settings: {
