@@ -13,7 +13,7 @@ exports.rule = {
     onChange: true,
 
 
-    guard: core.createGuard(EVENTS.ATTACHMENT_ADDED.key, function (ctx) {
+    guard: core.createGuard(EVENTS.ATTACHMENT_ADDED.type, function (ctx) {
         const issue = ctx.issue;
 
 
@@ -56,7 +56,7 @@ exports.rule = {
         payload.attachments = addedAttachments;
 
 
-        core.sendWebhooks(ctx, EVENTS.ATTACHMENT_ADDED.key, payload, EVENTS.ATTACHMENT_ADDED.name);
+        core.sendWebhooks(ctx, EVENTS.ATTACHMENT_ADDED.type, payload, EVENTS.ATTACHMENT_ADDED.name);
     },
 
     asyncFunctions: core.asyncFunctions,

@@ -13,7 +13,7 @@ exports.rule = {
     onChange: true,
 
 
-    guard: core.createGuard(EVENTS.COMMENT_UPDATED.key, function (ctx) {
+    guard: core.createGuard(EVENTS.COMMENT_UPDATED.type, function (ctx) {
         var issue = ctx.issue;
 
         if (core.shouldSkipIssue(issue)) {
@@ -53,7 +53,7 @@ exports.rule = {
         payload.comments = updatedComments;
 
 
-        core.sendWebhooks(ctx, EVENTS.COMMENT_UPDATED.key, payload, EVENTS.COMMENT_UPDATED.name);
+        core.sendWebhooks(ctx, EVENTS.COMMENT_UPDATED.type, payload, EVENTS.COMMENT_UPDATED.name);
     },
 
     asyncFunctions: core.asyncFunctions,
