@@ -2,7 +2,7 @@
 name: youtrack-apps-skill
 description: Guides building, debugging, extending, and managing JetBrains YouTrack apps and workflows. Used when scaffolding, modifying, validating, uploading, downloading, enabling, disabling, or inspecting a YouTrack app, workflow rule, app endpoint, or manifest. Also use when creating GitHub release automation or publishing a YouTrack app to JetBrains Marketplace.
 metadata:
-  version: 1.0.4
+  version: 1.0.8
   YouTrackVersion: 2026.2.18243
 ---
 
@@ -26,9 +26,6 @@ user before continuing with a reduced local-only workflow.
 # Mandatory Operating Steps
 
 When this skill is loaded, always follow this [PROTOCOL](./references/operating-steps.md) in order for every YouTrack app task.
-Do not skip, reorder, or silently complete steps.
-
-For any task that involves code generation, file modification, app management commands, validation, deployment, or YouTrack instance inspection, maintain this checklist internally and expose the PLAN before acting. 
 
 # App Type Selection
 Use this distinction when initializing a new app, adding generated modules, or deciding which file layout and build
@@ -36,6 +33,8 @@ scripts to follow in an existing app. The generator exposes this choice as `--ty
 infer the app type from the existing project.
 
 TypeScript app (`--type ts`) means a TypeScript app with Enhanced DX such as: file-based backend routing, generated API types, typed widget client code, dev validation, watch upload, or frontend hot reload. Enhanced DX improves the developer experience.
+
+In TypeScript apps, place backend implementation files under `src/backend/` unless `vite.config.backend.ts` explicitly configures another source directory, as it does for generated workflow rules in `src/workflows/`.
 
 JavaScript app (`--type js`) means a basic JavaScript app. Use it for simple JavaScript workflows or automations, when
 the existing app is already JavaScript, or when the user wants a minimal JavaScript project without Enhanced DX.
@@ -235,6 +234,9 @@ rg -n "functionName|methodName|propertyName" references/api
 ```
 
 ## Important concepts
+- Global and Project app scopes: [references/scope.md](references/scope.md). Load when deciding where a widget appears, whether an app is
+  global or attached to a project, which HTTP-handler scope to use, or how app persistence maps to settings and entity
+  extensions.
 - Async functions: [references/api/async-functions.md](references/api/async-functions.md). Load when working with
   deferred work or async HTTP response callbacks. Contains the mental model, usage points, structure, constraints,
   prerequisites, and examples.
@@ -246,10 +248,10 @@ rg -n "functionName|methodName|propertyName" references/api
   and what it consist of.
 
 ## App persistence and settings
-- App Settings: [references/app-persistance.md#app-settings](references/app-persistance.md#app-settings). Expose user-facing settings in the YouTrack admin UI
+- App Settings: [references/app-persistence.md#app-settings](references/app-persistence.md#app-settings). Expose user-facing settings in the YouTrack admin UI
   for system and project administrators to configure the app. These settings are accessible from app code through
   `ctx.settings`. Load for information on required variables, scopes, lifecycle and structure.
-- Extension Properties: [references/app-persistance.md#extension-properties](references/app-persistance.md#extension-properties). Load when the app
+- Extension Properties: [references/app-persistence.md#extension-properties](references/app-persistence.md#extension-properties). Load when the app
   needs app-owned persistent state, `entity-extensions.json`, `extensionProperties`, or `ctx.globalStorage`.
 
 ## Reading the API modules

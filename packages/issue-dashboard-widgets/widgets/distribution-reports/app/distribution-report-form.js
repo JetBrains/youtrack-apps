@@ -356,7 +356,7 @@ class DistributionReportForm extends React.Component {
     return this.renderSharingSettingBlock(
       'updateSharingSettings',
       '',
-      i18n('Can edit'),
+      i18n('Can configure'),
       PencilIcon
     );
   }

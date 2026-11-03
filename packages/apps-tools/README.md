@@ -187,10 +187,10 @@ With `--project`, it reads the app configuration for the project identified by s
 `youtrack-app app settings-set --app <app> --host --token [--project <project-short-name>] [--settings <json>] [--enabled <true|false>]`
 
 This command updates app settings. The app argument is resolved by app ID or package name.
-Without `--project`, `--settings` is written as `globalSettings`.
-With `--project`, `--settings` is written as `projectSettings`.
+Without `--project`, `--settings` is merged into `globalSettings`.
+With `--project`, `--settings` is merged into `projectSettings`.
 The settings value must be a JSON string, for example `--settings '{"apiUrl":"https://api.example.test"}'`.
-Pass secret masks such as `<***>` back unchanged to keep existing masked secret values.
+Only the supplied keys are updated. Omitted keys, remain unchanged.
 
 ### Tag Search
 

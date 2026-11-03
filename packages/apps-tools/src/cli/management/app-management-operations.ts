@@ -296,15 +296,45 @@ export class AppManagementOperations {
     const app = await this.resolveApp(appName);
 
     if (!projectShortName) {
-      const config = await this.client.updateGlobalConfig(app.id, payload);
-      if (!config) {
-        throw new Error(`Global settings for app "${app.name}" were not updated`);
-      }
-      return config;
+      return await this.updateGlobalSettings(app, payload);
     }
 
+    return await this.updateProjectSettings(app, projectShortName, payload);
+  }
+
+  private async updateGlobalSettings(app: AppDetails, payload: AppSettingsUpdate): Promise<AppConfiguration> {
+    const updatePayload = {...payload};
+    if (payload.globalSettings !== undefined) {
+      const currentConfig = await this.client.getGlobalConfig(app.id);
+      if (!currentConfig) {
+        throw new Error(`Global settings for app "${app.name}" were not found`);
+      }
+      updatePayload.globalSettings = mergeSettings(currentConfig.globalSettings, payload.globalSettings);
+    }
+
+    const config = await this.client.updateGlobalConfig(app.id, updatePayload);
+    if (!config) {
+      throw new Error(`Global settings for app "${app.name}" were not updated`);
+    }
+    return config;
+  }
+
+  private async updateProjectSettings(
+    app: AppDetails,
+    projectShortName: string,
+    payload: AppSettingsUpdate,
+  ): Promise<AppConfiguration> {
     const {project, usage} = await this.requireProjectUsage(app, projectShortName);
-    const config = await this.client.updateProjectConfiguration(project.id, usage.id, payload);
+    const updatePayload = {...payload};
+    if (payload.projectSettings !== undefined) {
+      const currentConfig = await this.client.getProjectConfiguration(project.id, usage.id);
+      if (!currentConfig) {
+        throw new Error(`Project settings for app "${app.name}" and project "${projectShortName}" were not found`);
+      }
+      updatePayload.projectSettings = mergeSettings(currentConfig.projectSettings, payload.projectSettings);
+    }
+
+    const config = await this.client.updateProjectConfiguration(project.id, usage.id, updatePayload);
     if (!config) {
       throw new Error(`Project settings for app "${app.name}" and project "${projectShortName}" were not updated`);
     }
@@ -530,6 +560,27 @@ export class AppManagementOperations {
 
     return app;
   }
+}
+
+function mergeSettings(currentSettings: string | undefined, settingsUpdate: string): string {
+  const current = parseSettingsObject(currentSettings ?? '{}', 'Stored settings');
+  const update = parseSettingsObject(settingsUpdate, 'Settings update');
+  return JSON.stringify({...current, ...update});
+}
+
+function parseSettingsObject(value: string, label: string): Record<string, unknown> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    throw new Error(`${label} should be a valid JSON object`);
+  }
+
+  if (parsed === null || Array.isArray(parsed) || typeof parsed !== 'object') {
+    throw new Error(`${label} should be a valid JSON object`);
+  }
+
+  return parsed as Record<string, unknown>;
 }
 
 export function createAppManagementOperations(config: Config): AppManagementOperations {
