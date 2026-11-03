@@ -14,7 +14,7 @@ exports.rule = {
     onCreate: true,
 
 
-    guard: core.createGuard(EVENTS.ISSUE_CREATED.key, function (ctx) {
+    guard: core.createGuard(EVENTS.ISSUE_CREATED.type, function (ctx) {
         var issue = ctx.issue;
 
         if (core.shouldSkipIssue(issue)) {
@@ -42,7 +42,7 @@ exports.rule = {
         payload.reporter = core.serializeUser(issue.reporter);
 
 
-        core.sendWebhooks(ctx, EVENTS.ISSUE_CREATED.key, payload, EVENTS.ISSUE_CREATED.name);
+        core.sendWebhooks(ctx, EVENTS.ISSUE_CREATED.type, payload, EVENTS.ISSUE_CREATED.name);
     },
 
     asyncFunctions: core.asyncFunctions,

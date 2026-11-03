@@ -18,7 +18,7 @@ exports.rule = {
         removal: true
     },
 
-    guard: core.createGuard(EVENTS.ISSUE_DELETED.key, function (ctx) {
+    guard: core.createGuard(EVENTS.ISSUE_DELETED.type, function (ctx) {
         var issue = ctx.issue;
 
         if (core.shouldSkipIssue(issue)) {
@@ -41,7 +41,7 @@ exports.rule = {
         payload.description = issue.description;
 
 
-        core.sendWebhooks(ctx, EVENTS.ISSUE_DELETED.key, payload, EVENTS.ISSUE_DELETED.name);
+        core.sendWebhooks(ctx, EVENTS.ISSUE_DELETED.type, payload, EVENTS.ISSUE_DELETED.name);
     },
 
     asyncFunctions: core.asyncFunctions,

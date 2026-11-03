@@ -13,7 +13,7 @@ exports.rule = {
     onChange: true,
 
 
-    guard: core.createGuard(EVENTS.WORK_ITEM_DELETED.key, function (ctx) {
+    guard: core.createGuard(EVENTS.WORK_ITEM_DELETED.type, function (ctx) {
         var issue = ctx.issue;
 
 
@@ -58,7 +58,7 @@ exports.rule = {
         payload.workItems = removedWorkItems;
 
 
-        core.sendWebhooks(ctx, EVENTS.WORK_ITEM_DELETED.key, payload, EVENTS.WORK_ITEM_DELETED.name);
+        core.sendWebhooks(ctx, EVENTS.WORK_ITEM_DELETED.type, payload, EVENTS.WORK_ITEM_DELETED.name);
     },
 
     asyncFunctions: core.asyncFunctions,
