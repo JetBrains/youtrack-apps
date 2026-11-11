@@ -70,10 +70,10 @@ export interface AIToolAnnotations {
   returnDirect?: boolean;
 
   /**
-   * Indicates this tool requires user confirmation before execution.
+   * Indicates the tool may interact with an open world of external entities, such as the web or other systems.
    * @default false
    */
-  requiresConfirmation?: boolean;
+  openWorldHint?: boolean;
 }
 
 // =============================================================================
@@ -361,14 +361,6 @@ export type ReadOnlyAITool<TArgs = Record<string, unknown>, TResult = unknown> =
 export type MutatingAITool<TArgs = Record<string, unknown>, TResult = unknown> =
   AITool<TArgs, TResult> & {
     annotations: { readOnlyHint: false };
-  };
-
-/**
- * AI tool that requires confirmation (helper type).
- */
-export type ConfirmableAITool<TArgs = Record<string, unknown>, TResult = unknown> =
-  AITool<TArgs, TResult> & {
-    annotations: { requiresConfirmation: true };
   };
 
 // =============================================================================

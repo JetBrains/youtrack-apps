@@ -34,9 +34,10 @@ export function check(condition?: any, message?: string, ...parameters: string[]
  * References to this method in custom workflows are not supported.
  *
  * @param messageId The message ID.
+ * @param params Parameters that are substituted into the message.
  *
  * @returns An object that contains the placeholders and localized strings that are associated with the specified message.
  * When this object is passed to a function that expects a string value, the toString method is called internally,
  * replacing the parameters with the localized string.
  */
-export function i18n(messageId?: string): any;
+export function i18n(messageId?: string, ...params: string[]): any;

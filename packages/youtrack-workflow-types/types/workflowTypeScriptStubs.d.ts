@@ -24,6 +24,7 @@
  * Period represents a time duration (e.g., "3h", "2w4d3h15m").
  */
 import { Period } from './date-time.js';
+import type { JavaInputStream } from './http.js';
 export { Period };
 
 /**
@@ -107,6 +108,22 @@ type IsMultiRequirement<T> = T extends { multi: true } ? true : false;
 type HasNestedValues<T> = Exclude<keyof T, RequirementPropertyNames> extends never ? false : true;
 
 /**
+ * The project custom field that the runtime plugs into the context for a field requirement.
+ */
+type ProjectCustomFieldFor<FT> =
+  FT extends 'User.fieldType' ? UserProjectCustomField
+  : FT extends 'UserGroup.fieldType' ? GroupProjectCustomField
+  : FT extends `${string}.fieldType` ? BundleProjectCustomField
+  : FT extends 'period' ? PeriodProjectCustomField
+  : FT extends 'text' ? TextProjectCustomField
+  : SimpleProjectCustomField;
+
+/**
+ * Keys of a requirements object that describe custom fields (string `type`).
+ */
+type FieldRequirementKeys<R> = { [K in keyof R]: R[K] extends { type: string } ? K : never }[keyof R];
+
+/**
  * Helper type to get single-value field type (ignoring multi flag).
  * Used for nested requirement values which are always single values.
  */
@@ -121,7 +138,7 @@ type SingleFieldValueType<T> = T extends { type: infer FT }
     : FT extends typeof Project ? Project
     : FT extends typeof User ? User
     : FT extends typeof Issue ? Issue
-    : FT extends typeof IssueTag ? IssueTag
+    : FT extends typeof IssueTag ? Tag
     : InferEntityFromRequirement<T>
   : BaseEntity;
 
@@ -142,7 +159,9 @@ type SingleFieldValueType<T> = T extends { type: infer FT }
  * // ctx.Foo ✗ Type error - 'Foo' doesn't exist in requirements
  */
 export type RequirementsContext<R extends Record<string, Requirement>> = {
-  [K in keyof R]: R[K] extends Requirement
+  [K in keyof R]: R[K] extends { type: infer FT extends string }
+    ? ProjectCustomFieldFor<FT> & { [V in Exclude<keyof R[K], RequirementPropertyNames>]: ExtractEntityType<FT> }
+    : R[K] extends Requirement
     ? (IsMultiRequirement<R[K]> extends true
         ? (HasNestedValues<R[K]> extends true
             ? ({ values: Set<SingleFieldValueType<R[K]>> } & { [V in Exclude<keyof R[K], RequirementPropertyNames>]: SingleFieldValueType<R[K]> })
@@ -195,7 +214,7 @@ type FieldValueType<T> = T extends { type: infer FT, multi: true }
     : FT extends typeof Project ? Set<Project>
     : FT extends typeof User ? Set<User>
     : FT extends typeof Issue ? Set<Issue>
-    : FT extends typeof IssueTag ? Set<IssueTag>
+    : FT extends typeof IssueTag ? Set<Tag>
     : Set<InferEntityFromRequirement<T>>
   : T extends { type: infer FT }
     ? FT extends string
@@ -208,7 +227,7 @@ type FieldValueType<T> = T extends { type: infer FT, multi: true }
       : FT extends typeof Project ? Project
       : FT extends typeof User ? User
       : FT extends typeof Issue ? Issue
-      : FT extends typeof IssueTag ? IssueTag
+      : FT extends typeof IssueTag ? Tag
       : InferEntityFromRequirement<T>
     : BaseEntity;
 
@@ -292,6 +311,12 @@ type FieldTypeFromRequirement<T> = T extends { type: infer FT }
   : BaseEntity;
 
 /**
+ * The value type of a requirement as read from an issue. A multi-value requirement is a non-null `Set`, because a
+ * multi-value field always has a collection. Any other requirement is `null` when the field has no value.
+ */
+type FieldValueOrNull<T> = IsMultiRequirement<T> extends true ? FieldValueType<T> : FieldValueType<T> | null;
+
+/**
  * Maps requirements object to field types for Fields interface.
  * Each key in requirements maps to its corresponding field value type.
  *
@@ -304,7 +329,7 @@ type FieldTypeFromRequirement<T> = T extends { type: infer FT }
  *   issue.fields['Due Date'] = Date.now();       // Writing accepts number
  */
 type FieldTypesFromRequirements<R extends Record<string, Requirement>> = {
-  -readonly [K in keyof R]: FieldValueType<R[K]> | null;
+  -readonly [K in FieldRequirementKeys<R>]: FieldValueOrNull<R[K]>;
 };
 
 /**
@@ -455,7 +480,7 @@ export interface BaseGuardContext {
  * The type extends Issue to maintain assignability to Issue parameters.
  */
 export type IssueWithRequirements<R extends Record<string, Requirement>> =
-  Issue & { fields: FieldsWithAccess<R> } & { -readonly [K in keyof R]: FieldValueType<R[K]> | null };
+  Issue & { fields: FieldsWithAccess<R> } & { -readonly [K in FieldRequirementKeys<R>]: FieldValueOrNull<R[K]> };
 
 /**
  * The execution context for action functions.
@@ -812,49 +837,14 @@ export type FieldsWithAccess<R extends Record<string, Requirement> = Record<stri
   );
 
 /**
- * Represents an Agile board in YouTrack.
+ * @deprecated Use {@link Agile}. The runtime has no separate `AgileBoard` type; `Issue.boards` holds `Agile` entities.
  */
-export declare class AgileBoard extends BaseEntity {
-  /**
-   * The name of the agile board.
-   */
-  readonly name: string;
-}
+export type AgileBoard = Agile;
 
 /**
- * Represents a Gantt chart in YouTrack.
+ * @deprecated Use {@link Gantt}. The runtime has no separate `GanttChart` type.
  */
-export declare class GanttChart extends BaseEntity {
-  /**
-   * The name of the Gantt chart.
-   */
-  readonly name: string;
-
-  /**
-   * Checks whether a Gantt chart contains a specific issue.
-   * @param issue The issue to check.
-   * @returns true if the Gantt chart contains the issue, false otherwise.
-   */
-  contains(issue: Issue | BaseEntity): boolean;
-
-  /**
-   * Adds an issue to the Gantt chart.
-   * @param issue The issue to add.
-   */
-  addIssue(issue: Issue | BaseEntity): void;
-
-  /**
-   * Removes an issue from the Gantt chart.
-   * @param issue The issue to remove.
-   */
-  removeIssue(issue: Issue | BaseEntity): void;
-
-  /**
-   * Returns all issues in the Gantt chart.
-   * @returns A set of issues in the Gantt chart.
-   */
-  issues(): Set<Issue>;
-}
+export type GanttChart = Gantt;
 
 /**
  * The common ancestor for all entity types.
@@ -923,7 +913,77 @@ export declare class BaseEntity {
    * Checks whether a user has permission to update the field.
    */
   canBeWrittenBy(fieldName: FieldReference, user: User): boolean;
+
+  /**
+   * Returns the values that are added to a multi-value field in the current transaction.
+   * @deprecated Undocumented legacy method. Use the `added` property of the field value set.
+   */
+  getAdded(fieldName: FieldReference): Set<BaseEntity>;
+
+  /**
+   * Returns the values that are removed from a multi-value field in the current transaction.
+   * @deprecated Undocumented legacy method. Use the `removed` property of the field value set.
+   */
+  getRemoved(fieldName: FieldReference): Set<BaseEntity>;
 }
+
+/**
+ * A permission key that `User.hasPermission` accepts. Generated from the `Permission` enum of YouTrack by `yts permission-keys`.
+ */
+export type PermissionKey =
+  | 'READ_PROJECT_BASIC'
+  | 'CREATE_PROJECT'
+  | 'READ_PROJECT'
+  | 'UPDATE_PROJECT'
+  | 'DELETE_PROJECT'
+  | 'READ_ORGANIZATION'
+  | 'UPDATE_ORGANIZATION'
+  | 'CREATE_ORGANIZATION'
+  | 'DELETE_ORGANIZATION'
+  | 'UPDATE_PROFILE'
+  | 'READ_USER_BASIC'
+  | 'READ_USER'
+  | 'UPDATE_USER'
+  | 'CREATE_USER'
+  | 'DELETE_USER'
+  | 'ADMIN_READ_APP'
+  | 'ADMIN_UPDATE_APP'
+  | 'READ_ISSUE'
+  | 'PRIVATE_READ_ISSUE'
+  | 'UPDATE_ISSUE'
+  | 'CREATE_ISSUE'
+  | 'DELETE_ISSUE'
+  | 'LINK_ISSUE'
+  | 'PRIVATE_UPDATE_ISSUE'
+  | 'APPLY_COMMANDS_SILENTLY'
+  | 'VIEW_WATCHERS'
+  | 'UPDATE_WATCHERS'
+  | 'VIEW_VOTERS'
+  | 'CREATE_ATTACHMENT_ISSUE'
+  | 'UPDATE_ATTACHMENT_ISSUE'
+  | 'DELETE_ATTACHMENT_ISSUE'
+  | 'CREATE_COMMENT'
+  | 'READ_COMMENT'
+  | 'UPDATE_COMMENT'
+  | 'DELETE_COMMENT'
+  | 'UPDATE_NOT_OWN_COMMENT'
+  | 'DELETE_NOT_OWN_COMMENT'
+  | 'READ_HIDDEN_STUFF'
+  | 'READ_WORK_ITEM'
+  | 'UPDATE_WORK_ITEM'
+  | 'UPDATE_NOT_OWN_WORK_ITEM'
+  | 'CREATE_WORK_ITEM'
+  | 'CREATE_NOT_OWN_WORK_ITEM'
+  | 'READ_ARTICLE'
+  | 'CREATE_ARTICLE'
+  | 'UPDATE_ARTICLE'
+  | 'DELETE_ARTICLE'
+  | 'READ_ARTICLE_COMMENT'
+  | 'CREATE_ARTICLE_COMMENT'
+  | 'UPDATE_ARTICLE_COMMENT'
+  | 'DELETE_ARTICLE_COMMENT'
+  | 'READ_APP_CONTENT'
+  | 'UPDATE_APP_CONTENT';
 
 
 /**
@@ -934,25 +994,25 @@ export declare class AbstractVcsItem extends BaseEntity {
    * The name of the branch that the VCS change was committed to.
    * @since 2018.1.38923
    */
-  readonly branch: string;
+  readonly branch: string | null;
 
   /**
    * The commit message or pull request description that was provided when the change was applied to the VCS.
    * @since 2018.1.38923
    */
-  readonly text: string;
+  readonly text: string | null;
 
   /**
    * The user who authored the VCS change.
    * @since 2018.1.38923
    */
-  readonly user: User;
+  readonly user: User | null;
 
   /**
    * The name of the change author, as returned by the VCS.
    * @since 2018.1.38923
    */
-  readonly userName: string;
+  readonly userName: string | null;
 
 }
 
@@ -964,7 +1024,7 @@ export declare class Agile extends BaseEntity {
    * The sprint that is considered to be in active development at the current moment.
    * @since 2023.1
    */
-  readonly currentSprint: Sprint;
+  readonly currentSprint: Sprint | null;
 
   /**
    * The user who created the board.
@@ -999,27 +1059,27 @@ export declare class Agile extends BaseEntity {
    * @param name The name of an agile board.
    * @returns A set of agile boards that are assigned the specified name.
    */
-  static findByName(name: string): Set<Agile>;
+  static findByName(name: string | null): Set<Agile>;
 
   /**
    * Adds the issue to the current sprint of the board.
    * @param issue The issue that is added to the board.
    */
-  addIssue(issue: Issue | BaseEntity): void;
+  addIssue(issue: Issue): void;
 
   /**
    * Checks whether the issue belongs to the board.
    * @param issue The issue for which the condition is checked.
    * @returns If the issue belongs to the board, returns ``true``.
    */
-  containsIssue(issue: Issue | BaseEntity): boolean;
+  containsIssue(issue: Issue): boolean;
 
   /**
    * Finds a specific sprint by name.
    * @param name The name of the sprint.
    * @returns If a sprint with the specified name is found, the corresponding Sprint object is returned. Otherwise, the return value is null.
    */
-  findSprintByName(name: string): Sprint;
+  findSprintByName(name: string): Sprint | null;
 
   /**
    * Gets all sprints of this board where the issue is added during the current transaction.
@@ -1068,7 +1128,7 @@ export declare class Agile extends BaseEntity {
    * Removes the issue from all sprints of this board where it belongs.
    * @param issue The issue that is removed from the board.
    */
-  removeIssue(issue: Issue | BaseEntity): void;
+  removeIssue(issue: Issue): void;
 
 }
 
@@ -1133,7 +1193,7 @@ export declare class Article extends BaseArticle {
    * The parent article of the current one.
    * @since 2024.4
    */
-  parentArticle: Article;
+  parentArticle: Article | null;
 
   /**
    * The groups for which the article is visible when the visibility is restricted to multiple groups.
@@ -1168,7 +1228,8 @@ export declare class Article extends BaseArticle {
    * @param project The project where the article is created.
    * @param summary The article title/summary.
    */
-  constructor(author: User, project: Project, summary: string);
+  constructor(author: { author: User; project: Project; summary?: string | null; });
+  constructor(author: User, project: Project, summary: string | null);
 
   /**
    * The article description. May be an alias for content.
@@ -1223,7 +1284,7 @@ export declare class Article extends BaseArticle {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a new article draft.
@@ -1231,7 +1292,7 @@ export declare class Article extends BaseArticle {
    * @param author The author of the article draft.
    * @returns The newly created article draft.
    */
-  static createDraft(project?: Project, author?: User): BaseArticle;
+  static createDraft(project?: Project | null, author?: User | null): BaseArticle;
 
   /**
    * Searches for Article entities with extension properties that match the specified query.
@@ -1251,7 +1312,7 @@ export declare class Article extends BaseArticle {
    * @param id The article ID.
    * @returns The article that is assigned the specified ID.
    */
-  static findById(id: string): Article;
+  static findById(id: string): Article | null;
 
   /**
    * Creates a declaration of a rule that is triggered when a change is applied to an article.
@@ -1275,7 +1336,7 @@ export declare class Article extends BaseArticle {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static onChange<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static onChange<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Attaches a file to the article.
@@ -1287,7 +1348,8 @@ export declare class Article extends BaseArticle {
    * @param mimeType The MIME type of the file.
    * @returns The attachment that is added to the article.
    */
-  addAttachment(content: ArrayBuffer | Uint8Array, name: string, charset: string, mimeType: string): ArticleAttachment;
+  addAttachment(content: { content: JavaInputStream | string; name: string; charset?: string | null; mimeType?: string | null; }): ArticleAttachment;
+  addAttachment(content: JavaInputStream | string, name: string, charset: string | null, mimeType: string | null): ArticleAttachment;
 
   /**
    * Adds a comment to the article.
@@ -1295,6 +1357,7 @@ export declare class Article extends BaseArticle {
    * @param author The author of the comment.
    * @returns A newly created comment.
    */
+  addComment(text: { text: string; author?: User; }): ArticleComment;
   addComment(text: string, author?: User): ArticleComment;
 
 }
@@ -1349,7 +1412,7 @@ export declare class ArticleAttachment extends BaseArticleAttachment {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for ArticleAttachment entities with extension properties that match the specified query.
@@ -1421,7 +1484,7 @@ export declare class ArticleComment extends BaseArticleComment {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for ArticleComment entities with extension properties that match the specified query.
@@ -1447,7 +1510,7 @@ export declare class BaseArticle extends BaseEntity {
    * The article from which the current article draft was created, or `null` if the current article is not a draft.
    * @since 2026.1
    */
-  readonly originalArticle: Article;
+  readonly originalArticle: Article | null;
 
   /**
    * If the current user has added the 'Star' to watch the article, this property is `true`.
@@ -1468,12 +1531,12 @@ export declare class BaseArticle extends BaseEntity {
   /**
    * The text that is entered as the article content.
    */
-  content: string;
+  content: string | null;
 
   /**
    * The article title.
    */
-  summary: string;
+  summary: string | null;
 
   /**
    * The list of tags that are attached to the article.
@@ -1494,22 +1557,18 @@ export declare class BaseArticle extends BaseEntity {
   /**
    * The parent article of the current one.
    */
-  parentArticle: Article;
+  parentArticle: Article | null;
 
   /**
    * Attaches a file to the article. Can accept an object with attachment properties.
-   * @param contentOrAttachment The content of the file in binary form, or an object with attachment properties
+   * @param content The content of the file in binary form, or an object with attachment properties
    * @param name The name of the file (optional if passing object)
    * @param charset The charset of the file (optional)
    * @param mimeType The MIME type of the file (optional)
    * @returns The attachment that is added to the article.
    */
-  addAttachment(contentOrAttachment: ArrayBuffer | Uint8Array | {
-    content: string,
-    name: string,
-    charset?: string,
-    mimeType?: string
-  }, name?: string, charset?: string, mimeType?: string): BaseArticleAttachment;
+  addAttachment(content: { content: JavaInputStream | string; name: string; charset?: string | null; mimeType?: string | null; }): BaseArticleAttachment;
+  addAttachment(content: JavaInputStream | string, name: string, charset: string | null, mimeType: string | null): BaseArticleAttachment;
 
   /**
    * Adds a tag with the specified name to an article. YouTrack adds the first matching tag that is visible to the current user.
@@ -1520,7 +1579,7 @@ export declare class BaseArticle extends BaseEntity {
    * @param name The name of the tag to add to the article.
    * @returns The tag that has been added to the article.
    */
-  addTag(name: string): Tag;
+  addTag(name: string): Tag | null;
 
   /**
    * Checks whether the specified tag is attached to the article.
@@ -1539,7 +1598,7 @@ export declare class BaseArticle extends BaseEntity {
    * @param name The name of the tag to remove from the article.
    * @returns The tag that has been removed from the article.
    */
-  removeTag(name: string): Tag;
+  removeTag(name: string): Tag | null;
 
 }
 
@@ -1557,7 +1616,7 @@ export declare class BaseArticleAttachment extends PersistentFile {
    * The user who attached the file to the issue.
    * @since 2026.1
    */
-  readonly author: User;
+  readonly author: User | null;
 
   /**
    * If the attachment is removed, this property is `true`.
@@ -1569,7 +1628,7 @@ export declare class BaseArticleAttachment extends PersistentFile {
    * The image dimensions. For image files, the value is rw=_width_&rh=_height_. For non-image files, the value is `empty`.
    * @since 2026.1
    */
-  readonly metaData: string;
+  readonly metaData: string | null;
 
 }
 
@@ -1597,12 +1656,12 @@ export declare class BaseArticleComment extends BaseEntity {
   /**
    * The text of the comment.
    */
-  text: string;
+  text: string | null;
 
   /**
    * Time the comment was last updated.
    */
-  readonly updated: number;
+  readonly updated: number | null;
 
 }
 
@@ -1630,12 +1689,12 @@ export declare class BaseComment extends BaseEntity {
   /**
    * The text of the comment.
    */
-  text: string;
+  text: string | null;
 
   /**
    * Time the comment was last updated.
    */
-  readonly updated: number;
+  readonly updated: number | null;
 
 
   /**
@@ -1669,18 +1728,18 @@ export declare class BaseWorkItem extends BaseEntity {
   /**
    * The work item description.
    */
-  description: string;
+  description: string | null;
 
   /**
    * The work item type.
    *  Writable since 2020.2
    */
-  type: WorkItemType;
+  type: WorkItemType | null;
 
   /**
    * The date when the work item was last updated.
    */
-  readonly updated: number;
+  readonly updated: number | null;
 
 }
 
@@ -1691,7 +1750,7 @@ export declare class Build extends Field {
   /**
    * The date and time when the build was assembled.
    */
-  readonly assembleDate: number;
+  readonly assembleDate: number | null;
 
   /**
    * Field type. Used when defining rule requirements.
@@ -1749,7 +1808,7 @@ export declare class BundleProjectCustomField extends ProjectCustomField {
    * The condition that determines which values are possible for this field based on the condition field value. If not setthere are no value-based conditions for this field, all values are possible.
    * @since 2025.3
    */
-  readonly valuesCondition: FieldBasedBundleValuesCondition;
+  readonly valuesCondition: FieldBasedBundleValuesCondition | null;
 
   /**
    * Searches for BundleProjectCustomField entities with extension properties that match the specified query.
@@ -1770,21 +1829,21 @@ export declare class BundleProjectCustomField extends ProjectCustomField {
    * @param name The name of the value that you want to add to the set.
    * @returns The value that was added to the set.
    */
-  createValue(name: string): Field;
+  createValue(name: string | null): Field | null;
 
   /**
    * Returns a value with the specified name in the set of values for a custom field.
    * @param name The name of the field value to search for.
    * @returns The value with the specified name in the set of values for the custom field.
    */
-  findValueByName(name: string): Field;
+  findValueByName(name: string | null): Field | null;
 
   /**
    * Returns a value that is assigned a specified position in the set of values for a custom field.
    * @param ordinal The position of the field value to search by.
    * @returns The value that is assigned the specified position in the set of values for the custom field.
    */
-  findValueByOrdinal(ordinal: number): Field;
+  findValueByOrdinal(ordinal: number | null): Field | null;
 
   /**
    * The list of possible values for a custom field based on the value-based conditions in the project settings and the current value stored in the issue. If there are no value-based conditions in the project settings, returns the complete list of values for the custom field.
@@ -1954,7 +2013,7 @@ export declare class Field extends BaseEntity {
   /**
    * The description of the value as visible in the administrative UI for custom fields.
    */
-  readonly description: string;
+  readonly description: string | null;
 
   /**
    * The name of the value, which is also stored as the value in the custom field.
@@ -2090,26 +2149,26 @@ export declare class Gantt extends BaseEntity {
    * @param name The name of the chart to search for.
    * @returns The most relevant chart found by name.
    */
-  static findChartByName(name: string): Gantt;
+  static findChartByName(name: string): Gantt | null;
 
   /**
    * Adds the specified issue to the Gantt chart.
    * @param issue The issue to add to the Gantt chart.
    */
-  addIssue(issue: Issue | BaseEntity): void;
+  addIssue(issue: Issue): void;
 
   /**
    * Checks whether the issue belongs to the Gantt chart.
    * @param issue The issue for which the condition is checked.
    * @returns If the issue belongs to the Gantt chart, returns `true`.
    */
-  containsIssue(issue: Issue | BaseEntity): boolean;
+  containsIssue(issue: Issue): boolean;
 
   /**
    * Removes the specified issue from the Gantt chart. If the issue was not present on the chart, nothing happens.
    * @param issue The issue to remove from the Gantt chart.
    */
-  removeIssue(issue: Issue | BaseEntity): void;
+  removeIssue(issue: Issue): void;
 
 }
 
@@ -2140,7 +2199,7 @@ export declare class GroupProjectCustomField extends ProjectCustomField {
    * @param name The name of the group to search for in the set of values for the custom field.
    * @returns The group with the specified name. This group can be set as the value for a field that stores a user group.
    */
-  findValueByName(name: string): UserGroup;
+  findValueByName(name: string | null): UserGroup | null;
 
 }
 
@@ -2173,14 +2232,14 @@ export declare class Issue extends BaseEntity {
    * Draft issue ID. Returns `null` if the issue is not a draft.
    * @since 2025.3
    */
-  readonly draftId: string;
+  readonly draftId: string | null;
 
   /**
    * The root issue in a tree of duplicates that are linked to the issue.
    * For example, if `issueA` duplicates `issueB` and `issueB` duplicates
    * `issueC`, then the value for the `issueA.duplicateRoot()` property is `issueC`.
    */
-  readonly duplicateRoot: Issue;
+  readonly duplicateRoot: Issue | null;
 
   /**
    * The set of comments that are edited in the current transaction.
@@ -2276,7 +2335,7 @@ export declare class Issue extends BaseEntity {
   /**
    * The channel used by the reporter to create the ticket. Possible values are 'FeedbackForm' for online forms or 'MailboxChannel' for email.
    */
-  readonly channel: Channel;
+  readonly channel: Channel | null;
 
   /**
    * A list of comments for the issue.
@@ -2297,7 +2356,7 @@ export declare class Issue extends BaseEntity {
   /**
    * The text that is entered as the issue description.
    */
-  description: string;
+  description: string | null;
 
   /**
    * The collection of Gantt charts that this issue has been added to.
@@ -2323,7 +2382,7 @@ export declare class Issue extends BaseEntity {
   /**
    * The user group for which the issue is visible. If the property contains a null value, the issue is visible to the All Users group.
    */
-  permittedGroup: UserGroup;
+  permittedGroup: UserGroup | null;
 
   /**
    * The groups for which the issue is visible when the visibility is restricted to multiple groups.
@@ -2345,17 +2404,17 @@ export declare class Issue extends BaseEntity {
    * @example
    * issue.fields.Assignee = issue.reporter;
    */
-  reporter: User;
+  readonly reporter: User;
 
   /**
    * The date and time when the issue was assigned a state that is considered to be resolved.
    */
-  readonly resolved: number;
+  readonly resolved: number | null;
 
   /**
    * The text that is entered as the issue summary.
    */
-  summary: string;
+  summary: string | null;
 
   /**
    * The list of tags that are attached to an issue.
@@ -2392,7 +2451,12 @@ export declare class Issue extends BaseEntity {
   /**
    * Agile boards that this issue belongs to.
    */
-  readonly boards: Set<AgileBoard>;
+  readonly boards: Set<Agile>;
+
+  /**
+   * Sprints that this issue belongs to.
+   */
+  readonly sprints: Set<Sprint>;
 
   /**
    * Plugged attributes for the issue. Used to store custom data from external integrations.
@@ -2442,19 +2506,12 @@ export declare class Issue extends BaseEntity {
    * Issue attributes like reporter, numberInProject, and project are accessed directly.
    * Both issue.State and issue.fields.State can be used to access/assign field values.
    */
-  fields: FieldsWithAccess<any>;
+  fields: FieldsWithAccess;
 
   /**
    * Issue links (e.g. 'relates to', 'parent for', etc.). Each link is a Set of Issue objects.
    */
   links: {
-    'relates to': Set<Issue>;
-    'depends on': Set<Issue>;
-    'is required for': Set<Issue>;
-    'duplicates': Set<Issue>;
-    'is duplicated by': Set<Issue>;
-    'subtask of': Set<Issue>;
-    'parent for': Set<Issue>;
     [key: string]: Set<Issue>;
   };
 
@@ -2467,15 +2524,12 @@ export declare class Issue extends BaseEntity {
 
   /**
    * Creates a new issue instance.
-   * @param authorOrOptions Either the author/reporter of the issue, or an options object with reporter, project, and summary.
+   * @param reporter Either the author/reporter of the issue, or an options object with reporter, project, and summary.
    * @param project The project where the issue is created (if first parameter is User).
    * @param summary The issue summary/title (if first parameter is User).
    */
-  constructor(authorOrOptions: User | {
-    reporter: User,
-    project: Project,
-    summary: string
-  }, project?: Project, summary?: string);
+  constructor(reporter: { reporter: User; project: Project; summary?: string | null; });
+  constructor(reporter: User, project: Project, summary: string | null);
 
   /**
    * Creates a copy of the issue.
@@ -2486,43 +2540,32 @@ export declare class Issue extends BaseEntity {
 
   /**
    * Attaches a file to the issue. Can accept an object with attachment properties.
-   * @param contentOrAttachment Either the content in binary form, or an object with attachment properties.
+   * @param content Either the content in binary form, or an object with attachment properties.
    * @param name The name of the file (if first parameter is binary).
    * @param charset The charset of the file (if first parameter is binary).
    * @param mimeType The MIME type of the file (if first parameter is binary).
    * @returns The attachment that is added to the issue.
    */
-  addAttachment(contentOrAttachment: ArrayBuffer | Uint8Array | string | {
-    content: ArrayBuffer | Uint8Array | string,
-    name: string,
-    charset?: string,
-    mimeType?: string
-  }, name?: string, charset?: string, mimeType?: string): IssueAttachment;
+  addAttachment(content: { content: JavaInputStream | string; name: string; charset?: string | null; mimeType?: string | null; }): IssueAttachment;
 
   /**
    * Adds a comment to the issue.
-   * @param textOrOptions Either the text string or an options object with text and author.
+   * @param text Either the text string or an options object with text and author.
    * @param author The author of the comment (if first parameter is string).
    * @returns A newly created comment.
    */
-  addComment(textOrOptions: string | { text: string, author?: User }, author?: User): IssueComment;
+  addComment(text: { text: string; author?: User; }): IssueComment | null;
 
   /**
    * Adds a work item to the issue.
-   * @param descriptionOrOptions Either the description string or an options object with work item properties.
+   * @param description Either the description string or an options object with work item properties.
    * @param date The date that is assigned to the work item (if first parameter is string).
    * @param author The user who performed the work (if first parameter is string).
    * @param duration The work duration in minutes (if first parameter is string).
    * @param type The work item type (if first parameter is string).
    * @returns A newly created work item.
    */
-  addWorkItem(descriptionOrOptions: string | {
-    description: string,
-    date: number,
-    author: User,
-    duration: number,
-    type?: WorkItemType
-  }, date?: number, author?: User, duration?: number, type?: WorkItemType): IssueWorkItem;
+  addWorkItem(description: { description?: string | null; date?: number | null; author?: User | null; duration?: number | null; type?: WorkItemType | null; }): IssueWorkItem;
 
   /**
    * Creates a declaration of a rule that a user can apply to one or more issues with a command or menu option.
@@ -2568,7 +2611,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a new issue draft.
@@ -2607,7 +2650,7 @@ export declare class Issue extends BaseEntity {
    * @param id The issue ID.
    * @returns The issue that is assigned the specified ID.
    */
-  static findById(id: string): Issue;
+  static findById(id: string | null): Issue | null;
 
   /**
    * Creates a declaration of a rule that is triggered when a change is applied to an issue.
@@ -2631,7 +2674,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static onChange<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static onChange<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a declaration of a rule that is triggered on a set schedule.
@@ -2658,7 +2701,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static onSchedule<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static onSchedule<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a declaration of a custom SLA policy. An SLA policy defines the time goals for the replies from staff and request resolution.
@@ -2701,7 +2744,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the SLA policy.
    */
-  static sla<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static sla<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Creates a declaration of a state-machine rule. The state-machine imposes restrictions for the transitions between values in a custom field.
@@ -2758,7 +2801,7 @@ export declare class Issue extends BaseEntity {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static stateMachine<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static stateMachine<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Attaches a file to the issue.
@@ -2770,7 +2813,7 @@ export declare class Issue extends BaseEntity {
    * @param mimeType The MIME type of the file.
    * @returns The attachment that is added to the issue.
    */
-  addAttachment(content: ArrayBuffer | Uint8Array, name: string, charset: string, mimeType: string): IssueAttachment;
+  addAttachment(content: JavaInputStream | string, name: string, charset: string | null, mimeType: string | null): IssueAttachment;
 
   /**
    * Adds a comment to the issue.
@@ -2779,7 +2822,7 @@ export declare class Issue extends BaseEntity {
    * @param author The author of the comment.
    * @returns A newly created comment.
    */
-  addComment(text: string, author?: User): IssueComment;
+  addComment(text: string, author?: User): IssueComment | null;
 
   /**
    * Adds a tag with the specified name to an issue. YouTrack adds the first matching tag that is visible to the current user.
@@ -2787,7 +2830,7 @@ export declare class Issue extends BaseEntity {
    * @param name The name of the tag to add to the issue.
    * @returns The tag that has been added to the issue.
    */
-  addTag(name: string): Tag;
+  addTag(name: string): Tag | null;
 
   /**
    * Adds a work item to the issue.
@@ -2798,7 +2841,7 @@ export declare class Issue extends BaseEntity {
    * @param type The work item type.
    * @returns The new work item.
    */
-  addWorkItem(description: string, date?: number, author?: User, duration?: number, type?: WorkItemType): IssueWorkItem;
+  addWorkItem(description: string | null, date?: number | null, author?: User | null, duration?: number | null, type?: WorkItemType | null): IssueWorkItem;
 
   /**
    * Adds the specified number of minutes to a specified starting point in time.
@@ -2816,19 +2859,12 @@ export declare class Issue extends BaseEntity {
    * @param command The command that is applied to the issue.
    * @param runAs Specifies the user by which the command is applied. If this parameter is not set, the command is applied on behalf of the current user.
    */
-  applyCommand(command: string, runAs: User): void;
+  applyCommand(command: string, runAs?: User): void;
 
   /**
    * Removes all of the attachments from the issue.
    */
   clearAttachments(): void;
-
-  /**
-   * Creates a copy of the issue.
-   * @param project Project to create new issue in. Available since 2018.1.40575.
-   * @returns The copy of the original issue.
-   */
-  copy(project?: Project): Issue;
 
   /**
    * Checks whether the specified tag is attached to an issue.
@@ -2843,7 +2879,7 @@ export declare class Issue extends BaseEntity {
    * @param user The user to check.
    * @returns If the issue is accessible for the user, returns 'true'.
    */
-  isVisibleTo(user: User): boolean;
+  isVisibleTo(user: User | null): boolean;
 
   /**
    * Pauses the timers for the current SLA applied to the issue.
@@ -2857,7 +2893,7 @@ export declare class Issue extends BaseEntity {
    * @param name The name of the tag to remove from the issue.
    * @returns The tag that has been removed from the issue.
    */
-  removeTag(name: string): Tag;
+  removeTag(name: string): Tag | null;
 
   /**
    * Converts text in markdown to HTML. Use this method to send "pretty" notifications.
@@ -2904,18 +2940,18 @@ export declare class IssueAttachment extends PersistentFile {
    * The Base64 representation of the attachment.
    * @since 2021.2
    */
-  readonly base64Content: string;
+  readonly base64Content: string | null;
 
   /**
    * The content of the file in binary form.
    * @since 2019.2.53994
    */
-  readonly content: ArrayBuffer | Uint8Array;
+  readonly content: JavaInputStream | null;
 
   /**
    * The user who attached the file to the issue.
    */
-  readonly author: User;
+  readonly author: User | null;
 
   /**
    * The date and time when the attachment was created as a timestamp.
@@ -2936,17 +2972,17 @@ export declare class IssueAttachment extends PersistentFile {
   /**
    * The issue that the file is attached to.
    */
-  readonly issue: Issue;
+  readonly issue: Issue | null;
 
   /**
    * The image dimensions. For image files, the value is rw=_width_&rh=_height_. For non-image files, the value is `empty`.
    */
-  readonly metaData: string;
+  readonly metaData: string | null;
 
   /**
    * The group for which the attachment is visible when the visibility is restricted to a single group.
    */
-  permittedGroup: UserGroup;
+  permittedGroup: UserGroup | null;
 
   /**
    * The groups for which the issue is visible when the visibility is restricted to multiple groups.
@@ -3003,7 +3039,7 @@ export declare class IssueAttachment extends PersistentFile {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for IssueAttachment entities with extension properties that match the specified query.
@@ -3056,7 +3092,7 @@ export declare class IssueComment extends BaseComment {
   /**
    * A group who's members are allowed to access the comment.
    */
-  permittedGroup: UserGroup;
+  permittedGroup: UserGroup | null;
 
   /**
    * Groups whose members are allowed to access the comment.
@@ -3071,7 +3107,7 @@ export declare class IssueComment extends BaseComment {
   /**
    * The user who last updated the comment.
    */
-  readonly updatedBy: User;
+  readonly updatedBy: User | null;
 
   /**
    * Attaches a file to the comment.
@@ -3081,7 +3117,7 @@ export declare class IssueComment extends BaseComment {
    * @param mimeType The MIME type of the file (optional).
    * @returns The attachment that is added to the comment.
    */
-  addAttachment(content: ArrayBuffer | Uint8Array | string, name: string, charset?: string, mimeType?: string): IssueAttachment;
+  addAttachment(content: { content: JavaInputStream | string; name: string; charset?: string | null; mimeType?: string | null; }): IssueAttachment;
 
   /**
    * Creates a declaration of a rule that a user can apply to an issue comment using a menu option.
@@ -3123,7 +3159,7 @@ export declare class IssueComment extends BaseComment {
    * @param ruleProperties $ignore
    * @returns The object representation of the rule.
    */
-  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties?: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
+  static action<R extends Requirements = Requirements, AK extends string = string, S extends Record<keyof S, AsyncStoreValue> = Record<string, any>>(ruleProperties: RuleProperties<R, AK, S>): RuleProperties<R, AK, S>;
 
   /**
    * Searches for IssueComment entities with extension properties that match the specified query.
@@ -3148,7 +3184,7 @@ export declare class IssueComment extends BaseComment {
    * @param mimeType The MIME type of the file.
    * @returns The attachment that is added to the issue comment.
    */
-  addAttachment(content: ArrayBuffer | Uint8Array, name: string, charset: string, mimeType: string): IssueAttachment;
+  addAttachment(content: JavaInputStream | string, name: string, charset: string | null, mimeType: string | null): IssueAttachment;
 
   /**
    * Logically deletes the comment. This means that the comment is marked as deleted, but remains in the database.
@@ -3200,7 +3236,7 @@ export declare class IssueLinkPrototype extends BaseEntity {
    * @param name Name or localized name of an issue link type
    * @returns The issue link type.
    */
-  static findByName(name: string): IssueLinkPrototype;
+  static findByName(name: string): IssueLinkPrototype | null;
 
 }
 
@@ -3278,7 +3314,7 @@ export declare class OwnedField extends Field {
   /**
    * The user who is associated with the value.
    */
-  readonly owner: User;
+  readonly owner: User | null;
 
   /**
    * Field type. Used when defining rule requirements.
@@ -3342,18 +3378,18 @@ export declare class PersistentFile extends BaseEntity {
    * The charset type of the file. Only applicable to text files.
    * @since 2019.2.53994
    */
-  readonly charset: string;
+  readonly charset: string | null;
 
   /**
    * The extension that defines the file type.
    */
-  readonly extension: string;
+  readonly extension: string | null;
 
   /**
    * The MIME type of the file.
    * @since 2019.2.53994
    */
-  readonly mimeType: string;
+  readonly mimeType: string | null;
 
   /**
    * The name of the file.
@@ -3399,7 +3435,7 @@ export declare class Project extends BaseEntity {
    * The absolute URL of the project icon. Returns the custom uploaded icon when present, otherwise the generated default icon, or `null` when the icon URL cannot be produced.
    * @since 2026.2
    */
-  readonly iconUrl: string;
+  readonly iconUrl: string | null;
 
   /**
    * The ID of the project. Use instead of project.shortName, which is deprecated.
@@ -3430,7 +3466,7 @@ export declare class Project extends BaseEntity {
    *   issue.fields['Last message related emails'] = null;
    * }
    */
-  readonly notificationEmail: string;
+  readonly notificationEmail: string | null;
 
   /**
    * The list of VCS change processors that are shared with the project.
@@ -3471,12 +3507,12 @@ export declare class Project extends BaseEntity {
    * The group that is set automatically as the initial default for the Visible to group in new issues and articles in this project.
    * @since 2026.2
    */
-  readonly defaultVisibilityGroup: UserGroup;
+  readonly defaultVisibilityGroup: UserGroup | null;
 
   /**
    * The description of the project as shown on the project profile page.
    */
-  readonly description: string;
+  readonly description: string | null;
 
   /**
    * A list of all issues that belong to the project.
@@ -3516,21 +3552,21 @@ export declare class Project extends BaseEntity {
    * @param key The ID of the project to search for.
    * @returns The project, or null when there are no projects with the specified ID.
    */
-  static findByKey(key: string): Project;
+  static findByKey(key: string | null): Project | null;
 
   /**
    * Finds a project by name.
    * @param name The name of the project to search for.
    * @returns The project, or null when there are no projects with the specified name.
    */
-  static findByName(name: string): Project;
+  static findByName(name: string | null): Project | null;
 
   /**
    * Returns the custom field in the project with the specified name.
    * @param name The name of the custom field.
    * @returns The custom field with the specified name.
    */
-  findFieldByName(name: string): ProjectCustomField;
+  findFieldByName(name: string | null): ProjectCustomField | null;
 
   /**
    * Returns work item attribute with the given name or null if it does not exist.
@@ -3538,7 +3574,7 @@ export declare class Project extends BaseEntity {
    * @param name Name of the attribute to find by
    * @returns Work item attribute with the given name or null if it does not exist.
    */
-  findWorkItemAttributeByName(name: string): WorkItemProjectAttribute;
+  findWorkItemAttributeByName(name: string): WorkItemProjectAttribute | null;
 
   /**
    * Gets the number of minutes that occurred during working hours in a specified interval.
@@ -3547,7 +3583,7 @@ export declare class Project extends BaseEntity {
    * @param end End of the interval.
    * @returns The number of minutes that occurred during working hours in the specified interval.
    */
-  intervalToWorkingMinutes(start: number, end: number): number;
+  intervalToWorkingMinutes(start: number | null, end: number | null): number;
 
   /**
    * Checks if the specified user is an agent in the project.
@@ -3574,7 +3610,7 @@ export declare class ProjectCustomField extends BaseEntity {
   /**
    * The localized name of the field.
    */
-  readonly localizedName: string;
+  readonly localizedName: string | null;
 
   /**
    * The name of the field.
@@ -3589,7 +3625,7 @@ export declare class ProjectCustomField extends BaseEntity {
   /**
    * The text that is displayed for this field when it is empty.
    */
-  readonly nullValueText: string;
+  readonly nullValueText: string | null;
 
   /**
    * Checks if the changes that are applied in the current transaction remove the condition to show the custom field.
@@ -3613,7 +3649,7 @@ export declare class ProjectCustomField extends BaseEntity {
    * @param issue The issue for which the background color is returned.
    * @returns The background color that is used for this field value in the specified issue.
    */
-  getBackgroundColor(issue: Issue): string;
+  getBackgroundColor(issue: Issue): string | null;
 
   /**
    * Returns the foreground color that is used for this field value in the specified issue.
@@ -3621,7 +3657,7 @@ export declare class ProjectCustomField extends BaseEntity {
    * @param issue The issue for which the foreground color is returned.
    * @returns The foreground color that is used for this field value in the specified issue.
    */
-  getForegroundColor(issue: Issue): string;
+  getForegroundColor(issue: Issue): string | null;
 
   /**
    * Returns the string presentation of the value that is stored in this field in the specified issue.
@@ -3730,12 +3766,12 @@ export declare class ProjectVersion extends Field {
   /**
    * The release date that is associated with the version.
    */
-  readonly releaseDate: number;
+  readonly releaseDate: number | null;
 
   /**
    * The start date that is associated with the version.
    */
-  readonly startDate: number;
+  readonly startDate: number | null;
 
   /**
    * Field type. Used when defining rule requirements.
@@ -3772,7 +3808,7 @@ export declare class PullRequest extends AbstractVcsItem {
    * The previous state of the pull request.
    * @since 2020.3
    */
-  readonly previousState: PullRequestState;
+  readonly previousState: PullRequestState | null;
 
   /**
    * The URL of the pull request.
@@ -3783,7 +3819,7 @@ export declare class PullRequest extends AbstractVcsItem {
   /**
    * The date when the pull request was retrieved from the VCS change processor.
    */
-  readonly fetched: number;
+  readonly fetched: number | null;
 
   /**
    * A unique identifier.
@@ -3877,7 +3913,7 @@ export declare class SavedQuery extends WatchFolder {
   /**
    * The search query.
    */
-  readonly query: string;
+  readonly query: string | null;
 
   /**
    * Searches for SavedQuery entities with extension properties that match the specified query.
@@ -3905,7 +3941,7 @@ export declare class SavedQuery extends WatchFolder {
    * @param name The name of the saved search to search for.
    * @returns The most relevant saved search.
    */
-  static findQueryByName(name: string): SavedQuery;
+  static findQueryByName(name: string): SavedQuery | null;
 
 }
 
@@ -3959,7 +3995,7 @@ export declare class Sprint extends BaseEntity {
   /**
    * The end date of the sprint.
    */
-  readonly finish: number;
+  readonly finish: number | null;
 
   /**
    * If the sprint is currently archived, this property is `true`.
@@ -3974,7 +4010,7 @@ export declare class Sprint extends BaseEntity {
   /**
    * The start date of the sprint.
    */
-  readonly start: number;
+  readonly start: number | null;
 
   /**
    * Searches for Sprint entities with extension properties that match the specified query.
@@ -3993,27 +4029,27 @@ export declare class Sprint extends BaseEntity {
    * Adds the issue to the sprint.
    * @param issue The issue that is added to the sprint.
    */
-  addIssue(issue: Issue | BaseEntity): void;
+  addIssue(issue: Issue): void;
 
   /**
    * Checks whether the issue belongs to the sprint.
    * @param issue The issue for which the condition is checked.
    * @returns If the issue belongs to the sprint, returns ``true``.
    */
-  containsIssue(issue: Issue | BaseEntity): boolean;
+  containsIssue(issue: Issue): boolean;
 
   /**
    * Checks whether the specified issue is represented as a swimlane on the agile board that the sprint belongs to.
    * @param issue The issue to check.
    * @returns If the specified issue is represented as a swimlane in the sprint, returns `true`.
    */
-  isSwimlane(issue: Issue | BaseEntity): boolean;
+  isSwimlane(issue: Issue): boolean;
 
   /**
    * Removes the issue from the sprint.
    * @param issue The issue that is removed from the sprint.
    */
-  removeIssue(issue: Issue | BaseEntity): void;
+  removeIssue(issue: Issue): void;
 
 }
 
@@ -4073,6 +4109,13 @@ export declare class Tag extends WatchFolder {
   readonly permittedTagUsers: Set<User>;
 
   /**
+   * TODO documentation missing
+   * @param name The name of the tag.
+   * @param owner The owner of the tag. Defaults to the current user.
+   */
+  constructor(name: string, owner?: User);
+
+  /**
    * Searches for Tag entities with extension properties that match the specified query.
    * @since 2024.3.43260
    * @param extensionPropertiesQuery The extension properties query, defined as a set of key-value pairs representing properties and their corresponding values.
@@ -4106,7 +4149,7 @@ export declare class Tag extends WatchFolder {
    * @param name The name of the tag to search for.
    * @returns The most relevant tag.
    */
-  static findTagByName(name: string): Tag;
+  static findTagByName(name: string): Tag | null;
 
   /**
    * Checks whether a user has permission to use the tag in the specified article.
@@ -4115,7 +4158,7 @@ export declare class Tag extends WatchFolder {
    * @param user The user to check. Defaults to the current user.
    * @returns If the user can tag the article, returns `true`.
    */
-  canBeUsedForArticle(article: BaseArticle, user: User): boolean;
+  canBeUsedForArticle(article: BaseArticle, user?: User): boolean;
 
   /**
    * Checks whether a user has permission to use the tag in the specified issue.
@@ -4124,7 +4167,7 @@ export declare class Tag extends WatchFolder {
    * @param user The user to check. Defaults to the current user.
    * @returns If the user can tag the issue, returns `true`.
    */
-  canBeUsedForIssue(issue: Issue, user: User): boolean;
+  canBeUsedForIssue(issue: Issue, user?: User): boolean;
 
 }
 
@@ -4179,7 +4222,7 @@ export declare class User extends BaseEntity {
    * ID of the user in Hub. You can use this ID for operations in Hub, and for matching users between YouTrack and Hub.
    * @since 2020.6.3000
    */
-  readonly ringId: string;
+  readonly ringId: string | null;
 
   /**
    * The ID of the local time zone selected in the general settings of the user profile.
@@ -4211,7 +4254,7 @@ export declare class User extends BaseEntity {
   /**
    * The email address of the user.
    */
-  email: string;
+  readonly email: string | null;
 
   /**
    * The full name of the user as seen in their profile.
@@ -4276,7 +4319,7 @@ export declare class User extends BaseEntity {
    * @param email The email to search for.
    * @returns Users with the specified email.
    */
-  static findByEmail(email: string): Set<User>;
+  static findByEmail(email: string | null): Set<User>;
 
   /**
    * Searches for User entities with extension properties that match the specified query.
@@ -4296,7 +4339,7 @@ export declare class User extends BaseEntity {
    * @param login The login of the user account to search for.
    * @returns The specified user, or null when a user with the specified login is not found.
    */
-  static findByLogin(login: string): User;
+  static findByLogin(login: string): User | null;
 
   /**
    * Finds a user by email.
@@ -4304,7 +4347,7 @@ export declare class User extends BaseEntity {
    * @param email The email of the user account to search for.
    * @returns The specified user, or null when a user with the specified email is not found or there are multiple users with the specified email.
    */
-  static findUniqueByEmail(email: string): User;
+  static findUniqueByEmail(email: string): User | null;
 
   /**
    * Checks whether the user is permitted to link the specified issue to any other issue.
@@ -4332,7 +4375,7 @@ export declare class User extends BaseEntity {
    * @param name The name of the tag.
    * @returns The tag.
    */
-  getSharedTag(name: string): Tag;
+  getSharedTag(name: string): Tag | null;
 
   /**
    * Returns a tag that is visible to the user.
@@ -4340,7 +4383,7 @@ export declare class User extends BaseEntity {
    * @param createIfNotExists If `true` and the specified tag does not exist or is not visible to the user and the user has permission to create tags, a new tag with the specified name is created.
    * @returns The tag.
    */
-  getTag(name: string, createIfNotExists: boolean): Tag;
+  getTag(name: string, createIfNotExists: boolean): Tag | null;
 
   /**
    * Checks whether the user has the specified permission.
@@ -4349,7 +4392,7 @@ export declare class User extends BaseEntity {
    * @param project The project to check for the specified permission assignment. If omitted, checks if the user has the global role.
    * @returns If the user has the permission, returns `true`.
    */
-  hasPermission(permissionKey: string, project?: Project): boolean;
+  hasPermission(permissionKey: PermissionKey, project?: Project | null): boolean;
 
   /**
    * Checks whether the user is granted the specified role in the specified project. When the project parameter is not specified, checks whether the user has the specified role in any project.
@@ -4364,7 +4407,7 @@ export declare class User extends BaseEntity {
    * @param groupName The name of the group to check for.
    * @returns If the user is a member of the specified group, returns `true`.
    */
-  isInGroup(groupName: string): boolean;
+  isInGroup(groupName: string | null): boolean;
 
   /**
    * Check whether the user has voted for the specified issue.
@@ -4389,7 +4432,8 @@ export declare class User extends BaseEntity {
    * @param ignoreNotifyOnOwnChangesSetting If `false`, the message is not sent when changes are performed on behalf of the current user. Otherwise, the message is sent anyway.
    * @param project When set, the email address that is used as the 'From' address for the specified project is used to send the message.
    */
-  notify(subject: string, body: string, ignoreNotifyOnOwnChangesSetting?: boolean, project?: Project): void;
+  notify(subject: { subject: string; body: string; ignoreNotifyOnOwnChangesSetting?: boolean; project?: Project | null; }): void;
+  notify(subject: string, body: string, ignoreNotifyOnOwnChangesSetting?: boolean, project?: Project | null): void;
 
   /**
    * Sends a notification to all notification channels configured for the user.
@@ -4401,7 +4445,7 @@ export declare class User extends BaseEntity {
    * @param parameters $ignore
    * @param projectDocument $ignore
    */
-  notifyOnCase(caseName: string, parameters: Record<string, any>, projectDocument: Issue): void;
+  notifyOnCase(caseName: string, parameters: Record<string, unknown> | null, projectDocument: Issue | null): void;
 
   /**
    * Sends an email notification to the email address that is set in the user profile. An alias for notify(subject, body, true).
@@ -4494,7 +4538,7 @@ export declare class UserGroup extends BaseEntity {
   /**
    * The description of the group.
    */
-  readonly description: string;
+  readonly description: string | null;
 
   /**
    * If the group is the All Users group, this property is `true`.
@@ -4540,7 +4584,7 @@ export declare class UserGroup extends BaseEntity {
    * @param name The name of the group to search for.
    * @returns The specified user group, or null when a group with the specified name is not found.
    */
-  static findByName(name: string): UserGroup;
+  static findByName(name: string): UserGroup | null;
 
   /**
    * Sends an email notification to all of the users who are members of the group.
@@ -4573,7 +4617,7 @@ export declare class UserProjectCustomField extends ProjectCustomField {
    * The condition that determines which values are possible for this field based on the condition field value. If not set, all values are possible.
    * @since 2025.3
    */
-  readonly valuesCondition: FieldBasedUserValuesCondition;
+  readonly valuesCondition: FieldBasedUserValuesCondition | null;
 
   /**
    * Searches for UserProjectCustomField entities with extension properties that match the specified query.
@@ -4593,7 +4637,7 @@ export declare class UserProjectCustomField extends ProjectCustomField {
    * @param login The user login to search for in the set of values for the custom field.
    * @returns The user with the specified login. This user can be set as the value for a field that stores a user type.
    */
-  findValueByLogin(login: string): User;
+  findValueByLogin(login: string | null): User | null;
 
   /**
    * The list of possible custom field values based on the value-based conditions in the project settings and the current value stored in the issue. If there are no value-based conditions in the project settings, returns the complete list of values for the custom field.
@@ -4657,7 +4701,7 @@ export declare class VcsChange extends AbstractVcsItem {
    * The date when the change was applied, as returned by the VCS.
    * @since 2018.1.39547
    */
-  readonly created: number;
+  readonly created: number | null;
 
   /**
    * The date when the change was applied, as returned by the VCS.
@@ -4665,13 +4709,13 @@ export declare class VcsChange extends AbstractVcsItem {
    * @deprecated 2018.1.39547
    * @since 2018.1.38923
    */
-  readonly date: number;
+  readonly date: number | null;
 
   /**
    * The date when the VCS change was retrieved from the change processor.
    * @since 2018.1.39547
    */
-  readonly fetched: number;
+  readonly fetched: number | null;
 
   /**
    * A unique identifier. Used by some CI servers in addition to version.
@@ -4683,7 +4727,7 @@ export declare class VcsChange extends AbstractVcsItem {
    * The version number of the change. For a Git-based VCS, the revision hash.
    * @since 2018.1.38923
    */
-  readonly version: string;
+  readonly version: string | null;
 
   /**
    * Searches for VcsChange entities with extension properties that match the specified query.
@@ -4704,7 +4748,7 @@ export declare class VcsChange extends AbstractVcsItem {
    * @param user The user to act as.
    * @returns List of commands that can be extracted from vcs change by provided user
    */
-  extractCommands(user: User): FieldValue[];
+  extractCommands(user: User): string[];
 
   /**
    * Returns the URL for a specific VCS change.
@@ -4746,14 +4790,14 @@ export declare class WatchFolder extends BaseEntity {
    * If the tag or the saved search is only visible to its owner, the value for this property is `null`.
    * Use `folder.permittedReadUserGroups` and `folder.permittedReadUsers` instead.
    */
-  readonly shareGroup: UserGroup;
+  readonly shareGroup: UserGroup | null;
 
   /**
    * The group of users who are allowed to update the settings for the tag or saved search.
    * If the tag or the saved search can only be updated by its owner, the value for this property is `null`.
    * Use `folder.permittedUpdateUserGroups` and `folder.permittedUpdateUsers` instead.
    */
-  readonly updateShareGroup: UserGroup;
+  readonly updateShareGroup: UserGroup | null;
 
   /**
    * The groups of users for whom the tag or saved search is visible.
@@ -4837,7 +4881,7 @@ export declare class WorkItemProjectAttribute extends BaseEntity {
    * @param name Name of a work item value.
    * @returns The attribute value with the given name or null if such value does not exist.
    */
-  findValueByName(name: string): WorkItemAttributeValue;
+  findValueByName(name: string): WorkItemAttributeValue | null;
 
 }
 

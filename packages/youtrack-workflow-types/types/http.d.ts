@@ -4,6 +4,19 @@
  */
 
 /**
+ * A java.io.InputStream, for example the content of an attachment.
+ */
+export interface JavaInputStream {
+  read(): number;
+  skip(n: number): number;
+  available(): number;
+  mark(readlimit: number): void;
+  reset(): void;
+  markSupported(): boolean;
+  close(): void;
+}
+
+/**
  * HTTP response object.
  */
 export interface Response {
