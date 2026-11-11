@@ -165,6 +165,28 @@ describe('Non-interactive scaffold gate (--name)', () => {
         assert.match(output, /requires a TypeScript Enhanced DX project/);
       }
     });
+
+    test('ships workflow API typings for the JavaScript rule files', () => {
+      const js = runScaffold('app init --name js-typed --type js --no-install');
+      const ts = runScaffold('app init --name ts-typed --type ts --no-install');
+      assert.strictEqual(js.success, true, js.output);
+      assert.strictEqual(ts.success, true, ts.output);
+
+      const typesPackage = '@jetbrains/youtrack-workflow-types';
+      const expectedRange = readJson(ts.dir, 'package.json').dependencies[typesPackage];
+      assert.ok(expectedRange, 'Enhanced DX template should declare the workflow types package');
+      assert.strictEqual(
+        readJson(js.dir, 'package.json').devDependencies[typesPackage],
+        expectedRange,
+        'JavaScript template should use the same workflow types range as Enhanced DX'
+      );
+
+      const tsconfigSource = readFile(js.dir, 'tsconfig.app.json').replace(/^\s*\/\*.*\*\/\s*$/gm, '');
+      const { compilerOptions } = JSON.parse(tsconfigSource);
+      assert.deepStrictEqual(compilerOptions.types, [`${typesPackage}/scripting-api`]);
+      assert.strictEqual(compilerOptions.allowJs, true, 'allowJs puts the .js rule files in the TS project');
+      assert.notStrictEqual(compilerOptions.checkJs, true, 'checkJs must stay off');
+    });
   });
 
   describe('Validation', () => {

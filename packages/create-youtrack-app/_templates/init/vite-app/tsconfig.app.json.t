@@ -16,9 +16,12 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    "allowJs": true,
 
     /* Linting */
-    "strict": true
+    "strict": true,
+
+    "types": ["@jetbrains/youtrack-workflow-types/scripting-api"]
   },
   "include": ["src", "@types"]
 }
