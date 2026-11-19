@@ -551,3 +551,51 @@ describe('asyncFunctions export', () => {
     expect(asyncFunctions.logAndPostNext).toBe(logAndPostNext);
   });
 });
+
+// ── JT-100132: header name with line breaks ──────────────────────────────────
+
+describe('invalid header name setting', () => {
+  const INJECTED = 'X-A\r\nX-Injected: 1';
+
+  beforeEach(() => {
+    resetHttp();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  function loggedText() {
+    return [console.error, console.log, console.warn].flatMap((spy) => spy.mock.calls.flat()).join('\n');
+  }
+
+  it('sends nothing and logs one error that does not repeat the value', () => {
+    const ctx = createCtx({
+      settings: { headerName: INJECTED, triggers: [trigger('https://a.com/'), trigger('https://b.com/')] },
+      asyncFunctions,
+    });
+
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
+
+    expect(httpInstances).toHaveLength(0);
+    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('not a valid HTTP header name'));
+    expect(loggedText()).not.toContain('X-Injected');
+  });
+
+  it('aborts the chain when the header name becomes invalid mid-chain', () => {
+    const ctx = createCtx({
+      settings: { headerName: HEADER, triggers: [trigger('https://a.com/'), trigger('https://b.com/')] },
+      asyncFunctions,
+    });
+    sendWebhooks(ctx, 'issueCreated', PAYLOAD, 'IssueCreated');
+    expect(httpInstances).toHaveLength(1);
+
+    ctx.settings.headerName = INJECTED;
+    ctx.response = { code: 200 };
+    logAndPostNext(ctx);
+
+    expect(httpInstances).toHaveLength(1);
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('not a valid HTTP header name'));
+    expect(loggedText()).not.toContain('X-Injected');
+  });
+});
