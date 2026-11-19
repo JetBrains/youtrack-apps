@@ -30,7 +30,7 @@ openssl rand -hex 32
 
 1. Navigate to your project in YouTrack
 2. Go to **Settings** > **Apps** > **Webhook Triggers**
-3. Set the shared **Header name** (default `X-YouTrack-Token`) — the HTTP header each token is sent in.
+3. Set the shared **Header name** (default `X-YouTrack-Token`) — the HTTP header each token is sent in. Use letters, digits and `!#$%&'*+-.^_`|~` only, without spaces; any other value is rejected when you save.
 4. Add one **Trigger** row per event, and list its **Endpoints**.
 
 #### 2.1. Triggers
@@ -285,6 +285,10 @@ row first.
 
 Rather than send an unauthenticated request, an endpoint whose token is empty is skipped with a warning.
 The same applies to the whole chain if **Header name** is cleared while it is running.
+
+### An invalid header name disables sending
+
+**Header name** must be a valid HTTP header name (letters, digits and `!#$%&'*+-.^_`|~`). A name saved by an earlier version that does not meet this rule, for example one with a space or a line break, is not sent: no webhook is delivered for the project, and one error is logged per event (the value itself is not logged). Open the app settings and enter a valid name; saving other settings is refused until you do.
 
 ## Credits
 

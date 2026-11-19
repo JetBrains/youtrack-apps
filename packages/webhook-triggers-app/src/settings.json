@@ -9,9 +9,10 @@
   "properties": {
     "headerName": {
       "title": "Header name",
-      "description": "The HTTP header name that carries each trigger's token in outgoing requests",
+      "description": "The HTTP header name that carries each trigger's token in outgoing requests. Use letters, digits and !#$%&'*+-.^_`|~ only, without spaces.",
       "type": "string",
       "format": "text",
+      "pattern": "^[!#$%&'*+\\-.^_`|~0-9A-Za-z]+(?![\\s\\S])",
       "default": "X-YouTrack-Token",
       "x-scope": "PROJECT"
     },

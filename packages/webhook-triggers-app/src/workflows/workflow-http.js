@@ -204,6 +204,9 @@ function logWebhookResponse(response, url) {
   // Response body not logged - SSRF: receivers may reflect internal data.
 }
 
+const INVALID_HEADER_NAME_MESSAGE =
+  '[webhooks] The header name setting is not a valid HTTP header name (use letters, digits and !#$%&\'*+-.^_`|~ only)';
+
 /**
  * Validates a URL, resolves its live secret, persists post-dispatch state, then
  * fires postAsync with `logAndPostNext` as the response handler. Stores BEFORE
@@ -258,6 +261,10 @@ function postNextValid(ctx) {
     console.warn('[webhooks] Header name was cleared during chain execution; aborting remaining dispatches');
     return false;
   }
+  if (!security.isValidHeaderName(headerName)) {
+    console.error(INVALID_HEADER_NAME_MESSAGE + '; aborting remaining dispatches');
+    return false;
+  }
 
   const eventType = ctx.load(STORE_EVENT_TYPE);
   const payloadJson = ctx.load(STORE_PAYLOAD);
@@ -289,6 +296,12 @@ function sendWebhooks(ctx, eventType, payload, eventName) {
   const headerName = ctx.settings.headerName || null;
   if (!headerName) {
     console.warn('[webhooks] No header name configured - webhooks disabled for ' + eventName);
+    return;
+  }
+  // Checked once per event, before any URL, so the log gets one line and the
+  // configured value itself is never logged (it may contain line breaks).
+  if (!security.isValidHeaderName(headerName)) {
+    console.error(INVALID_HEADER_NAME_MESSAGE + ' - webhooks disabled for ' + eventName);
     return;
   }
 
