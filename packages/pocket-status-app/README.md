@@ -70,7 +70,7 @@ YOUTRACK_TOKEN=perm:your-permanent-token
 | `npm run pack` | Create `pocket-status.zip` for manual upload |
 | `npm run upload` | Upload built app to YouTrack from `dist/` |
 | `npm run lint` | Run ESLint |
-| `npm run screenshots` | Render the Marketplace and README screenshots to `screenshots/` |
+| `npm run screenshots` | Render the Marketplace and README screenshots to `screenshots/`. Install Playwright first: `npm install --no-save playwright && npx playwright install chromium` |
 
 ## Usage
 

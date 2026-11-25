@@ -1,5 +1,6 @@
 // Renders the built widgets with a mocked YouTrack host and saves the screenshots
 // for JetBrains Marketplace and the README to `screenshots/`.
+// Playwright is not a dependency. Install it first: npm install --no-save playwright && npx playwright install chromium
 // Run: npm run screenshots (builds the app first when `dist` is missing)
 import {chromium} from 'playwright';
 import {dirname, extname, join, resolve} from 'node:path';

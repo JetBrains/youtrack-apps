@@ -8,6 +8,8 @@ import react from '@vitejs/plugin-react';
       See https://vitejs.dev/config/
 */
 
+// vite-plugin-static-copy v4 keeps the `..` segment of `../manifest.json` and writes the file onto itself,
+// so the manifest is copied here.
 const copyManifestPlugin = () => ({
   name: 'copy-manifest',
   writeBundle() {
@@ -15,18 +17,10 @@ const copyManifestPlugin = () => ({
   }
 });
 
-const dropCrossoriginAttributePlugin = () => ({
-  name: 'no-attribute',
-  transformIndexHtml(html: string) {
-    return html.replaceAll('crossorigin', '');
-  }
-});
-
 export default defineConfig({
   plugins: [
     react(),
     copyManifestPlugin(),
-    dropCrossoriginAttributePlugin(),
     viteStaticCopy({
       targets: [
         {
