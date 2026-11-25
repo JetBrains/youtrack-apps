@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "isConfigured": {
+      "type": "boolean"
+    },
+    "key": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "backgroundColor": {
+      "type": "string"
+    },
+    "textColor": {
+      "type": "string"
+    },
+    "issueId": {
+      "type": "string"
+    },
+    "fieldName": {
+      "type": "string"
+    },
+    "setOwner": {
+      "type": "string"
+    }
+  }
+}

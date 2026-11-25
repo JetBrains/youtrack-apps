@@ -1,0 +1,43 @@
+{
+  "name": "pocket-status",
+  "title": "Pocket Status",
+  "description": "Markdown extension app to reflect statuses",
+  "$schema": "https://json.schemastore.org/youtrack-app.json",
+  "icon": "pocket-status-icon.svg",
+  "version": "0.0.1",
+  "minYouTrackVersion": "2026.2.0",
+  "vendor": {
+    "name": "JetBrains s.r.o.",
+    "url": "https://jetbrains.com",
+    "email": "support@jetbrains.com"
+  },
+  "widgets": [
+    {
+      "key": "pocket-status",
+      "name": "Pocket Status",
+      "indexPath": "pocket-status/index.html",
+      "extensionPoint": "MARKDOWN",
+      "borderless": true,
+      "description": "Inline status tag for Markdown: click it to switch to the next status of the set",
+      "settingsSchemaPath": "pocket-status/settings.json",
+      "defaultDimensions": {
+        "height": "27px",
+        "width": "100px"
+      }
+    },
+    {
+      "key": "pocket-status-settings",
+      "name": "Pocket Status",
+      "indexPath": "pocket-status-settings/index.html",
+      "extensionPoint": "PROJECT_TAB",
+      "description": "Manage the status sets that Pocket Status widgets in this project can use"
+    },
+    {
+      "key": "pocket-status-my-sets",
+      "name": "Pocket Status",
+      "indexPath": "pocket-status-settings/index.html",
+      "extensionPoint": "USER_PROFILE_SETTINGS",
+      "description": "Manage your personal status sets for Pocket Status widgets"
+    }
+  ]
+}

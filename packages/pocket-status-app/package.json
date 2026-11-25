@@ -1,0 +1,55 @@
+{
+  "name": "pocket-status",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.app.json && tsc -p tsconfig.node.json && vite build && youtrack-app app validate",
+    "lint": "eslint --report-unused-disable-directives --max-warnings 0",
+    "test": "echo 'no tests'",
+    "pack": "rm -rf pocket-status.zip && cd dist && zip -r ../pocket-status.zip .",
+    "upload": "youtrack-app app upload",
+    "screenshots": "node scripts/screenshots/take-screenshots.js",
+    "release:bump-version": "commit-and-tag-version --release-as patch --bumpFiles manifest.json --packageFiles manifest.json",
+    "release:ci": "npm run release:bump-version && npm run build && npm run pack && npm run upload:marketplace && git push --follow-tags origin main",
+    "upload:marketplace": "curl -X POST -L -v --fail -H \"Authorization: Bearer $pluginsRepositoryToken\" -F \"pluginId=$pluginRepositoryID\" -F \"file=@pocket-status.zip;type=application/zip\" https://plugins.jetbrains.com/plugin/uploadPlugin"
+  },
+  "dependencies": {
+    "@jetbrains/icons": "^5.23.4",
+    "@jetbrains/ring-ui-built": "^7.0.127",
+    "core-js": "^3.50.0",
+    "mobx": "^7.0.6",
+    "mobx-react-lite": "^5.1.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@eslint/compat": "^2.1.1",
+    "@eslint/eslintrc": "^3.3.7",
+    "@eslint/js": "^9",
+    "@jetbrains/eslint-config": "^6.0.5",
+    "@jetbrains/youtrack-apps-tools": "^1.0.3",
+    "@types/node": "^24.19.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "commit-and-tag-version": "^12.6.0",
+    "eslint": "^9",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "globals": "^17.13.0",
+    "playwright": "^1.64.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.1",
+    "vite": "^6.4.4",
+    "vite-plugin-static-copy": "^4.1.1"
+  },
+  "commit-and-tag-version": {
+    "skip": {
+      "tag": true
+    }
+  }
+}

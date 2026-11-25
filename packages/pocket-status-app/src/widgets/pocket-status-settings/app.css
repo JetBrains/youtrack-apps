@@ -1,0 +1,81 @@
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 3);
+  max-width: 720px;
+  padding: calc(var(--ring-unit) * 3) calc(var(--ring-unit) * 4) 0;
+}
+
+.settings-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ring-unit);
+}
+
+.settings-title {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.pretty {
+  text-wrap: pretty;
+}
+
+.set-list {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 2);
+}
+
+/* A shadow ring instead of a border, so the card edge stays soft on both themes */
+.set-card {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 1.5);
+  padding: calc(var(--ring-unit) * 2);
+  border-radius: var(--ring-border-radius-large);
+  box-shadow: 0 0 0 1px var(--ring-line-color), 0 1px 2px var(--ring-popup-shadow-color);
+}
+
+.set-head {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--ring-unit) * 2);
+  min-height: calc(var(--ring-unit) * 3.5);
+}
+
+.set-title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ring-unit);
+}
+
+.set-name {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.secondary-text {
+  color: var(--ring-secondary-color);
+  font-size: var(--ring-font-size-smaller);
+  white-space: nowrap;
+}
+
+/* Save stays in reach on long lists */
+.settings-footer {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--ring-unit);
+  padding: calc(var(--ring-unit) * 2) 0;
+  background-color: var(--ring-content-background-color);
+  box-shadow: 0 -1px 0 var(--ring-line-color);
+}
+
+.footer-note {
+  margin-left: var(--ring-unit);
+  text-wrap: pretty;
+}
