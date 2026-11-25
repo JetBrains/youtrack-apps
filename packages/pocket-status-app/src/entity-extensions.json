@@ -1,0 +1,22 @@
+{
+  "entityTypeExtensions": [
+    {
+      "entityType": "Project",
+      "properties": {
+        "statusSets": {
+          "type": "string",
+          "description": "JSON with the status sets of this project. When empty, the predefined sets are used."
+        }
+      }
+    },
+    {
+      "entityType": "User",
+      "properties": {
+        "statusSets": {
+          "type": "string",
+          "description": "JSON with the personal status sets of this user."
+        }
+      }
+    }
+  ]
+}

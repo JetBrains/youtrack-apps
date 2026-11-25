@@ -1,0 +1,154 @@
+.widget {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: calc(var(--ring-unit) * 3);
+  min-height: 100vh;
+  padding: calc(var(--ring-unit) * 4);
+}
+
+/* Borderless MARKDOWN view: the tag sits inline in the text, no extra frame */
+.widget-inline {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+}
+
+.issue-view {
+  display: flex;
+  align-items: center;
+  gap: var(--ring-unit);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.issue-link {
+  flex-shrink: 0;
+  color: var(--ring-link-color);
+  text-decoration: none;
+}
+
+.issue-link:hover {
+  text-decoration: underline;
+}
+
+.issue-summary {
+  /* Takes only the space left after the ID and the tag, so the tag is cut only when those two do not fit */
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* The found issue takes the free space and is cut, so the field select and Track stay in one row */
+.issue-found {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.issue-lock {
+  flex-shrink: 0;
+  color: var(--ring-icon-secondary-color);
+}
+
+.issue-view .ring-tag-container {
+  min-width: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ring-unit);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--ring-unit) * 1.5);
+}
+
+.dialog-title {
+  margin: 0;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* The select hides its label once a set is picked, so the buttons center on the field */
+.select-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ring-unit);
+}
+
+.set-actions {
+  display: flex;
+  gap: calc(var(--ring-unit) / 2);
+}
+
+.section-label {
+  color: var(--ring-secondary-color);
+  font-size: var(--ring-font-size-smaller);
+  text-align: center;
+}
+
+/* A hairline inside the top edge separates the actions without a hard border */
+.dialog-footer {
+  padding-top: calc(var(--ring-unit) * 3);
+  box-shadow: inset 0 1px 0 var(--ring-line-color);
+}
+
+.secondary-text {
+  color: var(--ring-secondary-color);
+  font-size: var(--ring-font-size-smaller);
+}
+
+.centered {
+  text-align: center;
+  text-wrap: pretty;
+}
+
+/* The config dialog centers its content, including the shared tag list and value form */
+.widget .tags,
+.widget .value-form {
+  justify-content: center;
+}
+
+/* Rows sit 20px apart, so the 40px hit areas below never overlap */
+.widget .tags {
+  gap: calc(var(--ring-unit) * 2.5) calc(var(--ring-unit) * 1.5);
+}
+
+/* The status tags are the main targets: 20px tall, so the hit area grows to 40px */
+.tag-target::after {
+  position: absolute;
+  inset: calc(var(--ring-unit) * -1.25) calc(var(--ring-unit) * -0.75);
+  content: '';
+}
+
+.tag-target {
+  transition: scale 150ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.tag-target:active {
+  scale: 0.96;
+}
+
+/* The stored status: an offset ring in the main color, so it does not merge with the tag color */
+.ring-tag-tag.tag-current {
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, currentColor 15%, transparent),
+    0 0 0 1px var(--ring-content-background-color),
+    0 0 0 3px var(--ring-main-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tag-target {
+    transition: none;
+  }
+}

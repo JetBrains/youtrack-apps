@@ -1,0 +1,12 @@
+{
+  "type": "object",
+  "title": "Pocket Status",
+  "properties": {
+    "issueTracking": {
+      "title": "Issue tracking",
+      "description": "Let Pocket Status widgets show and change a field of an issue. Set it globally, or per project.",
+      "type": "boolean",
+      "default": true
+    }
+  }
+}
