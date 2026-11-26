@@ -3,14 +3,20 @@
 Contains definitions for the entities in YouTrack that are accessible to workflows.
 
 ## Types
+
 - [Requirements](#types-requirements)
+
 - [Abstract Entities](#types-abstract-entities)
+
 - [Entities](#types-entities)
+
 - [Additional Entities](#types-additional-entities)
 
 <a id="types-requirements"></a>
 ## Requirements
+
 - [`Requirement`](#type-requirement)
+
 - [`Requirements`](#type-requirements)
 
 <a id="type-requirement"></a>
@@ -108,11 +114,17 @@ requirements: {
 
 <a id="types-abstract-entities"></a>
 ## Abstract Entities
+
 - [`BaseArticle`](#type-basearticle)
+
 - [`BaseArticleAttachment`](#type-basearticleattachment)
+
 - [`BaseArticleComment`](#type-basearticlecomment)
+
 - [`BaseComment`](#type-basecomment)
+
 - [`BaseEntity`](#type-baseentity)
+
 - [`BaseWorkItem`](#type-baseworkitem)
 
 <a id="type-basearticle"></a>
@@ -122,21 +134,30 @@ The base class for article.
 
 Since: `2021.4.23500`  
 
+Parent types: `BaseEntity`.  
+
 #### Contents
 
 ##### Properties
 - [`attachments`](#attachments)
 - [`author`](#author)
+- [`comments`](#comments)
 - [`content`](#content)
 - [`isStarred`](#isstarred)
+- [`mentionedUsers`](#mentionedusers)
 - [`originalArticle`](#originalarticle)
+- [`pinnedComments`](#pinnedcomments)
 - [`summary`](#summary)
 - [`tags`](#tags)
 
 ##### Methods
 - [`addTag`](#addtag)
+- [`becomes`](#becomes)
 - [`hasTag`](#hastag)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
 - [`removeTag`](#removetag)
+- [`was`](#was)
 
 #### Properties
 
@@ -156,6 +177,14 @@ Readonly
 
 Return type: `User`  
 
+##### comments
+
+A list of comments for the article.
+
+Readonly  
+
+Return type: `Set.<ArticleComment>`  
+
 ##### content
 
 The text that is entered as the article content.
@@ -171,6 +200,15 @@ Since: `2023.1`
 
 Return type: `Boolean`  
 
+##### mentionedUsers
+
+The set of users that are mentioned in the article content.
+
+Readonly  
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 ##### originalArticle
 
 The article from which the current article draft was created, or `null` if the current article is not a draft.
@@ -179,6 +217,15 @@ Readonly
 Since: `2026.1`  
 
 Return type: `Article`  
+
+##### pinnedComments
+
+The set of comments that are pinned in the article or draft.
+
+Readonly  
+Since: `2024.1`  
+
+Return type: `Set.<ArticleComment>`  
 
 ##### summary
 
@@ -221,6 +268,23 @@ The tag that has been added to the article.
 article.addTag('review');
 ```
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### hasTag
 
 Checks whether the specified tag is attached to the article.
@@ -238,6 +302,41 @@ Since: `2023.1`
 Return type: `Boolean`.
 
 If the specified tag is attached to the article, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
 
 ##### removeTag
 
@@ -264,10 +363,31 @@ The tag that has been removed from the article.
 article.removeTag('waiting for review');
 ```
 
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-basearticleattachment"></a>
 ### BaseArticleAttachment
 
 The base class for article comment.
+
+Parent types: `BaseEntity`, `PersistentFile`.  
 
 #### Contents
 
@@ -276,6 +396,12 @@ The base class for article comment.
 - [`fileUrl`](#fileurl)
 - [`isRemoved`](#isremoved)
 - [`metaData`](#metadata)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -315,12 +441,87 @@ Since: `2026.1`
 
 Return type: `String`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-basearticlecomment"></a>
 ### BaseArticleComment
 
 The base class for article comment.
 
 Since: `2021.4.23500`  
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -330,6 +531,12 @@ Since: `2021.4.23500`
 - [`isPinned`](#ispinned)
 - [`text`](#text)
 - [`updated`](#updated)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -371,10 +578,85 @@ Readonly
 
 Return type: `Number`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-basecomment"></a>
 ### BaseComment
 
 The base class for issue comment.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -382,8 +664,15 @@ The base class for issue comment.
 - [`attachments`](#attachments)
 - [`created`](#created)
 - [`isPinned`](#ispinned)
+- [`mentionedUsers`](#mentionedusers)
 - [`text`](#text)
 - [`updated`](#updated)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -412,6 +701,15 @@ Since: `2024.1`
 
 Return type: `Boolean`  
 
+##### mentionedUsers
+
+The set of users that are mentioned in the comment.
+
+Readonly  
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 ##### text
 
 The text of the comment.
@@ -426,6 +724,79 @@ Readonly
 
 Return type: `Number`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-baseentity"></a>
 ### BaseEntity
 
@@ -439,14 +810,10 @@ The common ancestor for all entity types.
 - [`isNew`](#isnew)
 
 ##### Methods
-- [`becomes`](#becomes)
 - [`canBeReadBy`](#canbereadby)
 - [`canBeWrittenBy`](#canbewrittenby)
-- [`isChanged`](#ischanged)
 - [`is`](#is)
-- [`oldValue`](#oldvalue)
 - [`required`](#required)
-- [`was`](#was)
 
 #### Properties
 
@@ -508,23 +875,6 @@ Return type: `Boolean`
 
 #### Methods
 
-##### becomes
-
-Checks whether a field is set to an expected value in the current transaction.
-
-###### Parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `fieldName` | `string` | The name of the field to check. |
-| `expected` | `string` | The expected value. |
-
-###### Returns
-
-Return type: `boolean`.
-
-If the field is set to the expected value, returns `true`.
-
 ##### canBeReadBy
 
 Checks whether a user has permission to read the field.
@@ -559,22 +909,6 @@ Return type: `boolean`.
 
 If the user can update the field, returns `true`.
 
-##### isChanged
-
-Checks whether the value of a field is changed in the current transaction.
-
-###### Parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `fieldName` | `string` | The name of the field to check. |
-
-###### Returns
-
-Return type: `boolean`.
-
-If the value of the field is changed in the current transaction, returns `true`.
-
 ##### is
 
 Checks whether a field is equal to an expected value.
@@ -594,24 +928,6 @@ Return type: `boolean`.
 
 If the field is equal to the expected value, returns `true`.
 
-##### oldValue
-
-Returns the previous value of a single-value field before an update was applied. If the field is not changed
-in the transaction, returns null.
-
-###### Parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `fieldName` | `string` | The name of the field. |
-
-###### Returns
-
-Return type: `Object`.
-
-If the field is changed in the current transaction, the previous value of the field.
-Otherwise, null.
-
 ##### required
 
 Asserts that a value is set for a field.
@@ -624,29 +940,12 @@ If a value for the required field is not set, the specified message is displayed
 | `fieldName` | `string` | The name of the field to check. |
 | `message` | `string` | The message that is displayed to the user that describes the field requirement. |
 
-##### was
-
-Checks whether a field was equal to an expected value prior to the current transaction.
-
-Since: `2019.2.55603`  
-
-###### Parameters
-
-| Name | Type | Description |
-| --- | --- | --- |
-| `fieldName` | `string` | The name of the field to check. |
-| `expected` | `string` | The expected value. |
-
-###### Returns
-
-Return type: `boolean`.
-
-If the field was equal to the expected value, returns `true`.
-
 <a id="type-baseworkitem"></a>
 ### BaseWorkItem
 
 The base class for issue work items.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -657,6 +956,12 @@ The base class for issue work items.
 - [`description`](#description)
 - [`type`](#type)
 - [`updated`](#updated)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -705,69 +1010,200 @@ Readonly
 
 Return type: `Number`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="types-entities"></a>
 ## Entities
+
 - [`AbstractVcsItem`](#type-abstractvcsitem)
+
 - [`Agile`](#type-agile)
+
 - [`AppGlobalStorage`](#type-appglobalstorage)
+
 - [`Article`](#type-article)
+
 - [`ArticleAttachment`](#type-articleattachment)
+
 - [`ArticleComment`](#type-articlecomment)
+
 - [`Build`](#type-build)
+
 - [`BundleElementCondition`](#type-bundleelementcondition)
+
 - [`BundleProjectCustomField`](#type-bundleprojectcustomfield)
+
 - [`Calendar`](#type-calendar)
+
 - [`Calendar24x7`](#type-calendar24x7)
+
 - [`ChangesProcessor`](#type-changesprocessor)
+
 - [`Channel`](#type-channel)
+
 - [`EnumField`](#type-enumfield)
+
 - [`FeedbackForm`](#type-feedbackform)
+
 - [`Field`](#type-field)
+
 - [`FieldBasedBundleValuesCondition`](#type-fieldbasedbundlevaluescondition)
+
 - [`FieldBasedUserValuesCondition`](#type-fieldbaseduservaluescondition)
+
 - [`FieldBasedValuesCondition`](#type-fieldbasedvaluescondition)
+
 - [`Gantt`](#type-gantt)
+
 - [`GroupProjectCustomField`](#type-groupprojectcustomfield)
+
 - [`Issue`](#type-issue)
+
 - [`IssueAttachment`](#type-issueattachment)
+
 - [`IssueComment`](#type-issuecomment)
+
 - [`IssueLinkPrototype`](#type-issuelinkprototype)
+
 - [`IssueTag`](#type-issuetag)
+
 - [`IssueWorkItem`](#type-issueworkitem)
+
 - [`MailboxChannel`](#type-mailboxchannel)
+
 - [`OwnedField`](#type-ownedfield)
+
 - [`PeriodProjectCustomField`](#type-periodprojectcustomfield)
+
 - [`PersistentFile`](#type-persistentfile)
+
 - [`Project`](#type-project)
+
 - [`ProjectCustomField`](#type-projectcustomfield)
+
 - [`ProjectTeam`](#type-projectteam)
+
 - [`ProjectType`](#type-projecttype)
+
 - [`ProjectVersion`](#type-projectversion)
+
 - [`PullRequest`](#type-pullrequest)
+
 - [`PullRequestState`](#type-pullrequeststate)
+
 - [`SavedQuery`](#type-savedquery)
+
 - [`SimpleCalendar`](#type-simplecalendar)
+
 - [`SimpleProjectCustomField`](#type-simpleprojectcustomfield)
+
 - [`Sprint`](#type-sprint)
+
 - [`State`](#type-state)
+
 - [`Tag`](#type-tag)
+
 - [`TextProjectCustomField`](#type-textprojectcustomfield)
+
 - [`User`](#type-user)
+
 - [`UserCondition`](#type-usercondition)
+
 - [`UserGroup`](#type-usergroup)
+
 - [`UserProjectCustomField`](#type-userprojectcustomfield)
+
 - [`UserType`](#type-usertype)
+
 - [`VcsChange`](#type-vcschange)
+
 - [`VcsServer`](#type-vcsserver)
+
 - [`WatchFolder`](#type-watchfolder)
+
 - [`WorkItemAttributeValue`](#type-workitemattributevalue)
+
 - [`WorkItemProjectAttribute`](#type-workitemprojectattribute)
+
 - [`WorkItemType`](#type-workitemtype)
 
 <a id="type-abstractvcsitem"></a>
 ### AbstractVcsItem
 
 Represents VCS-related items such as commits and pull requests.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -776,6 +1212,12 @@ Represents VCS-related items such as commits and pull requests.
 - [`text`](#text)
 - [`user`](#user)
 - [`userName`](#username)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -815,10 +1257,85 @@ Since: `2018.1.38923`
 
 Return type: `String`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-agile"></a>
 ### Agile
 
 Represents an agile board and the set of sprints that belong to the board.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -830,6 +1347,7 @@ Represents an agile board and the set of sprints that belong to the board.
 
 ##### Methods
 - [`addIssue`](#addissue)
+- [`becomes`](#becomes)
 - [`containsIssue`](#containsissue)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findByName`](#findbyname)
@@ -839,8 +1357,11 @@ Represents an agile board and the set of sprints that belong to the board.
 - [`getRemovedSprints`](#getremovedsprints)
 - [`getSprints`](#getsprints)
 - [`isAdded`](#isadded)
+- [`isChanged`](#ischanged)
 - [`isRemoved`](#isremoved)
+- [`oldValue`](#oldvalue)
 - [`removeIssue`](#removeissue)
+- [`was`](#was)
 
 #### Properties
 
@@ -888,6 +1409,23 @@ Adds the issue to the current sprint of the board.
 | Name | Type | Description |
 | --- | --- | --- |
 | `issue` | `Issue` | The issue that is added to the board. |
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### containsIssue
 
@@ -1046,6 +1584,22 @@ Return type: `Boolean`.
 
 If the issue gets added to the board, returns ``true``.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### isRemoved
 
 Checks whether the issue gets removed from the board in the current transaction.
@@ -1062,6 +1616,25 @@ Return type: `Boolean`.
 
 If the issue gets removed from the board, returns ``true``.
 
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
 ##### removeIssue
 
 Removes the issue from all sprints of this board where it belongs.
@@ -1072,6 +1645,25 @@ Removes the issue from all sprints of this board where it belongs.
 | --- | --- | --- |
 | `issue` | `Issue` | The issue that is removed from the board. |
 
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-appglobalstorage"></a>
 ### AppGlobalStorage
 
@@ -1079,12 +1671,16 @@ Entity type for App global extension properties
 
 Since: `2024.2`  
 
+Parent types: `BaseEntity`.  
+
 <a id="type-article"></a>
 ### Article
 
 Represents an article in YouTrack.
 
 Since: `2021.4.23500`  
+
+Parent types: `BaseEntity`, `BaseArticle`.  
 
 #### Contents
 
@@ -1101,6 +1697,7 @@ Since: `2021.4.23500`
 - [`editedComments`](#editedcomments)
 - [`id`](#id)
 - [`isStarred`](#isstarred)
+- [`mentionedUsers`](#mentionedusers)
 - [`numberInProject`](#numberinproject)
 - [`originalArticle`](#originalarticle)
 - [`parentArticle`](#parentarticle)
@@ -1117,9 +1714,13 @@ Since: `2021.4.23500`
 ##### Methods
 - [`addAttachment`](#addattachment)
 - [`addComment`](#addcomment)
+- [`becomes`](#becomes)
 - [`createDraft`](#createdraft)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findById`](#findbyid)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Constructors
 
@@ -1208,6 +1809,15 @@ Since: `2023.1`
 
 Return type: `Boolean`  
 
+##### mentionedUsers
+
+The set of users that are mentioned in the article content.
+
+Readonly  
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 ##### numberInProject
 
 The article number in the project.
@@ -1251,7 +1861,7 @@ Return type: `Set.<User>`
 
 ##### pinnedComments
 
-The set of comments that are pinned in the article.
+The set of comments that are pinned in the article or draft.
 
 Readonly  
 Since: `2024.1`  
@@ -1344,6 +1954,23 @@ Return type: `ArticleComment`.
 
 A newly created comment.
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### createDraft
 
 Creates a new article draft.
@@ -1404,18 +2031,80 @@ Return type: `Article`.
 
 The article that is assigned the specified ID.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-articleattachment"></a>
 ### ArticleAttachment
 
 Represents a file that is attached to an article.
 
+Parent types: `BaseEntity`, `PersistentFile`, `BaseArticleAttachment`.  
+
 #### Contents
 
 ##### Properties
 - [`created`](#created)
+- [`permittedGroups`](#permittedgroups)
+- [`permittedUsers`](#permittedusers)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -1428,7 +2117,40 @@ Since: `2026.1`
 
 Return type: `Number`  
 
+##### permittedGroups
+
+The groups for which the attachment is visible when the visibility is restricted to multiple groups.
+
+Since: `2026.3`  
+
+Return type: `Set.<UserGroup>`  
+
+##### permittedUsers
+
+The list of users for whom the attachment is visible.
+
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -1457,31 +2179,92 @@ The set of ArticleAttachment entities that contain the specified extension prope
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-articlecomment"></a>
 ### ArticleComment
 
-Represents a comment that is added to an article.
+Represents a comment that is added to an article or an article draft.
 
 Since: `2021.4.23500`  
+
+Parent types: `BaseEntity`, `BaseArticleComment`.  
 
 #### Contents
 
 ##### Properties
 - [`article`](#article)
 - [`author`](#author)
+- [`mentionedUsers`](#mentionedusers)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
 ##### article
 
-The article the comment belongs to.
+The article or draft the comment belongs to.
 
 Readonly  
 
-Return type: `Article`  
+Return type: `BaseArticle`  
 
 ##### author
 
@@ -1491,7 +2274,33 @@ Readonly
 
 Return type: `User`  
 
+##### mentionedUsers
+
+The set of users that are mentioned in the comment.
+
+Readonly  
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -1520,10 +2329,66 @@ The set of ArticleComment entities that contain the specified extension properti
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-build"></a>
 ### Build
 
 Represents a value that is stored in a custom field that stores a build type.
+
+Parent types: `BaseEntity`, `Field`.  
 
 #### Contents
 
@@ -1532,7 +2397,11 @@ Represents a value that is stored in a custom field that stores a build type.
 - [`fieldType`](#fieldtype)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -1553,6 +2422,23 @@ Readonly
 Return type: `String`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -1581,6 +2467,60 @@ The set of Build entities that contain the specified extension properties.
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-bundleelementcondition"></a>
 ### BundleElementCondition
 
@@ -1588,11 +2528,19 @@ Represents a value-based condition for a custom field in a specific project.
 
 Since: `2025.3`  
 
+Parent types: `BaseEntity`.  
+
 #### Contents
 
 ##### Properties
 - [`bundleElement`](#bundleelement)
 - [`possibleValues`](#possiblevalues)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -1612,10 +2560,85 @@ Readonly
 
 Return type: `Set.<Field>`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-bundleprojectcustomfield"></a>
 ### BundleProjectCustomField
 
 Represents a custom field in a project that stores a predefined set of values.
+
+Parent types: `BaseEntity`, `ProjectCustomField`.  
 
 #### Contents
 
@@ -1625,12 +2648,16 @@ Represents a custom field in a project that stores a predefined set of values.
 - [`valuesCondition`](#valuescondition)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`createValue`](#createvalue)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findValueByName`](#findvaluebyname)
 - [`findValueByOrdinal`](#findvaluebyordinal)
 - [`getPossibleValuesForIssue`](#getpossiblevaluesforissue)
+- [`isChanged`](#ischanged)
 - [`isValuePermittedInIssue`](#isvaluepermittedinissue)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -1661,6 +2688,23 @@ Since: `2025.3`
 Return type: `FieldBasedBundleValuesCondition`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### createValue
 
@@ -1757,6 +2801,22 @@ Return type: `Set.<Field>`.
 
 The set of possible values for the custom field.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### isValuePermittedInIssue
 
 Checks if a specified value is allowed in the issue.
@@ -1776,15 +2836,57 @@ Return type: `Boolean`.
 
 If the conditions for using the specified value in the issue have been met, returns `true`.
 
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-calendar"></a>
 ### Calendar
 
 Represents a group of business hours settings in a helpdesk project. In the Workflow API, such a group is called a Calendar.
 
+Parent types: `BaseEntity`.  
+
 <a id="type-calendar24x7"></a>
 ### Calendar24x7
 
 Represents a group of 24x7 business hours settings in a helpdesk project. In the Workflow API, such a group is called a Calendar24x7.
+
+Parent types: `BaseEntity`, `Calendar`.  
 
 #### Contents
 
@@ -1838,6 +2940,8 @@ An entity that retrieves VCS changes and creates their representation in YouTrac
 
 Since: `2018.1.38923`  
 
+Parent types: `BaseEntity`.  
+
 #### Contents
 
 ##### Properties
@@ -1845,6 +2949,12 @@ Since: `2018.1.38923`
 - [`server`](#server)
 - [`url`](#url)
 - [`vcsChanges`](#vcschanges)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -1868,7 +2978,7 @@ Return type: `VcsServer`
 
 ##### url
 
-The URL of the change processor. Integrations with TeamCity, Jenkins, GitLab CI/CD, and Upsource return the web address of the build configuration or project page.
+The URL of the change processor. Integrations with TeamCity, Jenkins, and GitLab CI/CD return the web address of the build configuration or project page.
 
 Readonly  
 Since: `2021.2`  
@@ -1884,10 +2994,85 @@ Since: `2020.3`
 
 Return type: `Set.<VcsChange>`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-channel"></a>
 ### Channel
 
 Represents a channel used by customers to reach out to the helpdesk for support.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -1909,13 +3094,19 @@ Return type: `String`
 
 Represents a value in a custom field that stores a predefined set of values.
 
+Parent types: `BaseEntity`, `Field`.  
+
 #### Contents
 
 ##### Properties
 - [`fieldType`](#fieldtype)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -1928,6 +3119,23 @@ Readonly
 Return type: `String`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -1956,10 +3164,66 @@ The set of EnumField entities that contain the specified extension properties.
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-feedbackform"></a>
 ### FeedbackForm
 
 Represents an online form used in a helpdesk project. Online forms provide customers with a web-based interface that they can use to submit inquiries, requests, or complaints.
+
+Parent types: `BaseEntity`, `Channel`.  
 
 #### Contents
 
@@ -2001,6 +3265,8 @@ The set of FeedbackForm entities that contain the specified extension properties
 Represents a value that is stored in a custom field.
 The custom fields themselves are represented by the Fields class.
 
+Parent types: `BaseEntity`.  
+
 #### Contents
 
 ##### Properties
@@ -2019,6 +3285,12 @@ The custom fields themselves are represented by the Fields class.
 - [`presentation`](#presentation)
 - [`stringType`](#stringtype)
 - [`textType`](#texttype)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -2142,6 +3414,79 @@ Readonly
 
 Return type: `String`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-fieldbasedbundlevaluescondition"></a>
 ### FieldBasedBundleValuesCondition
 
@@ -2149,10 +3494,18 @@ Represents a value-based condition for a custom field in a specific project.
 
 Since: `2025.3`  
 
+Parent types: `BaseEntity`, `FieldBasedValuesCondition`.  
+
 #### Contents
 
 ##### Properties
 - [`conditions`](#conditions)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -2165,6 +3518,79 @@ Since: `2025.3`
 
 Return type: `Set.<BundleElementCondition>`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-fieldbaseduservaluescondition"></a>
 ### FieldBasedUserValuesCondition
 
@@ -2172,10 +3598,18 @@ Represents a value-based condition for a custom field that stores references to 
 
 Since: `2025.3`  
 
+Parent types: `BaseEntity`, `FieldBasedValuesCondition`.  
+
 #### Contents
 
 ##### Properties
 - [`conditions`](#conditions)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -2188,6 +3622,79 @@ Since: `2025.3`
 
 Return type: `Set.<UserCondition>`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-fieldbasedvaluescondition"></a>
 ### FieldBasedValuesCondition
 
@@ -2195,10 +3702,18 @@ Represents the base entity for a value-based condition for a custom field in a p
 
 Since: `2025.3`  
 
+Parent types: `BaseEntity`.  
+
 #### Contents
 
 ##### Properties
 - [`field`](#field)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -2211,12 +3726,87 @@ Since: `2025.3`
 
 Return type: `BundleProjectCustomField`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-gantt"></a>
 ### Gantt
 
 Represents a Gantt chart.
 
 Since: `2022.1`  
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -2229,10 +3819,14 @@ Since: `2022.1`
 
 ##### Methods
 - [`addIssue`](#addissue)
+- [`becomes`](#becomes)
 - [`containsIssue`](#containsissue)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findChartByName`](#findchartbyname)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
 - [`removeIssue`](#removeissue)
+- [`was`](#was)
 
 #### Properties
 
@@ -2287,6 +3881,23 @@ Adds the specified issue to the Gantt chart.
 | Name | Type | Description |
 | --- | --- | --- |
 | `issue` | `Issue` | The issue to add to the Gantt chart. |
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### containsIssue
 
@@ -2347,6 +3958,41 @@ Return type: `Gantt`.
 
 The most relevant chart found by name.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
 ##### removeIssue
 
 Removes the specified issue from the Gantt chart. If the issue was not present on the chart, nothing happens.
@@ -2357,10 +4003,31 @@ Removes the specified issue from the Gantt chart. If the issue was not present o
 | --- | --- | --- |
 | `issue` | `Issue` | The issue to remove from the Gantt chart. |
 
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-groupprojectcustomfield"></a>
 ### GroupProjectCustomField
 
 Represents a custom field in a project that stores a UserGroup type.
+
+Parent types: `BaseEntity`, `ProjectCustomField`.  
 
 #### Contents
 
@@ -2368,8 +4035,12 @@ Represents a custom field in a project that stores a UserGroup type.
 - [`values`](#values)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findValueByName`](#findvaluebyname)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -2382,6 +4053,23 @@ Readonly
 Return type: `Set.<UserGroup>`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -2426,10 +4114,66 @@ Return type: `UserGroup`.
 
 The group with the specified name. This group can be set as the value for a field that stores a user group.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-issue"></a>
 ### Issue
 
 Represents an issue in YouTrack.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -2463,6 +4207,7 @@ Represents an issue in YouTrack.
 - [`links`](#links)
 - [`mentionedInIssueComments`](#mentionedinissuecomments)
 - [`mentionedInIssues`](#mentionedinissues)
+- [`mentionedUsers`](#mentionedusers)
 - [`numberInProject`](#numberinproject)
 - [`permittedGroup`](#permittedgroup)
 - [`permittedGroups`](#permittedgroups)
@@ -2491,6 +4236,7 @@ Represents an issue in YouTrack.
 - [`addWorkItem`](#addworkitem)
 - [`afterMinutes`](#afterminutes)
 - [`applyCommand`](#applycommand)
+- [`becomes`](#becomes)
 - [`clearAttachments`](#clearattachments)
 - [`copy`](#copy)
 - [`createDraft`](#createdraft)
@@ -2498,7 +4244,9 @@ Represents an issue in YouTrack.
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findById`](#findbyid)
 - [`hasTag`](#hastag)
+- [`isChanged`](#ischanged)
 - [`isVisibleTo`](#isvisibleto)
+- [`oldValue`](#oldvalue)
 - [`pauseSLA`](#pausesla)
 - [`removeTag`](#removetag)
 - [`renderMarkup`](#rendermarkup)
@@ -2506,6 +4254,7 @@ Represents an issue in YouTrack.
 - [`setDefaultFieldValues`](#setdefaultfieldvalues)
 - [`tag`](#tag)
 - [`untag`](#untag)
+- [`was`](#was)
 
 #### Constructors
 
@@ -2815,6 +4564,15 @@ Readonly
 
 Return type: `Set.<Issue>`  
 
+##### mentionedUsers
+
+The set of users that are mentioned in the issue description.
+
+Readonly  
+Since: `2026.3`  
+
+Return type: `Set.<User>`  
+
 ##### numberInProject
 
 The issue number in the project.
@@ -3091,6 +4849,23 @@ Applies a command to the issue.
 | `command` | `String` | The command that is applied to the issue. |
 | `runAs` | `User` | Specifies the user by which the command is applied. If this parameter is not set, the command is applied on behalf of the current user. |
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### clearAttachments
 
 Removes all of the attachments from the issue.
@@ -3214,6 +4989,22 @@ Return type: `Boolean`.
 
 If the specified tag is attached to the issue, returns `true`.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### isVisibleTo
 
 Checks whether the issue is accessible by specified user.
@@ -3229,6 +5020,25 @@ Checks whether the issue is accessible by specified user.
 Return type: `Boolean`.
 
 If the issue is accessible for the user, returns 'true'.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
 
 ##### pauseSLA
 
@@ -3311,10 +5121,31 @@ Since: `2025.3`
 | --- | --- | --- |
 | `tag` | `Tag` | The tag object. |
 
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-issueattachment"></a>
 ### IssueAttachment
 
 Represents a file that is attached to an issue.
+
+Parent types: `BaseEntity`, `PersistentFile`.  
 
 #### Contents
 
@@ -3333,8 +5164,12 @@ Represents a file that is attached to an issue.
 - [`updated`](#updated)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`delete`](#delete)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -3433,6 +5268,23 @@ Return type: `Number`
 
 #### Methods
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### delete
 
 Permanently deletes the attachment.
@@ -3466,10 +5318,66 @@ The set of IssueAttachment entities that contain the specified extension propert
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-issuecomment"></a>
 ### IssueComment
 
 Represents a comment that is added to an issue.
+
+Parent types: `BaseEntity`, `BaseComment`.  
 
 #### Contents
 
@@ -3485,9 +5393,13 @@ Represents a comment that is added to an issue.
 
 ##### Methods
 - [`addAttachment`](#addattachment)
+- [`becomes`](#becomes)
 - [`delete`](#delete)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
 - [`isVisibleTo`](#isvisibleto)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -3580,6 +5492,23 @@ Return type: `IssueAttachment`.
 
 The attachment that is added to the issue comment.
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### delete
 
 Logically deletes the comment. This means that the comment is marked as deleted, but remains in the database.
@@ -3615,6 +5544,22 @@ The set of IssueComment entities that contain the specified extension properties
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### isVisibleTo
 
 Checks whether the specified user has access to view the comment.
@@ -3633,10 +5578,50 @@ Return type: `Boolean`.
 
 When 'true', the specified user has access to view the comment. Otherwise, 'false'.
 
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-issuelinkprototype"></a>
 ### IssueLinkPrototype
 
 Represents an issue link type.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -3718,6 +5703,8 @@ Deprecated. Use Tag instead.
 
 Deprecated: 2023.1  
 
+Parent types: `BaseEntity`, `WatchFolder`.  
+
 #### Contents
 
 ##### Methods
@@ -3761,6 +5748,8 @@ The most relevant tag.
 
 Represents a work item that has been added to an issue.
 
+Parent types: `BaseEntity`, `BaseWorkItem`.  
+
 #### Contents
 
 ##### Properties
@@ -3769,8 +5758,12 @@ Represents a work item that has been added to an issue.
 - [`duration`](#duration)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`delete`](#delete)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -3799,6 +5792,23 @@ Writable since 2018.1.40800
 Return type: `Number`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### delete
 
@@ -3833,10 +5843,66 @@ The set of IssueWorkItem entities that contain the specified extension propertie
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-mailboxchannel"></a>
 ### MailboxChannel
 
 Represents an email channel used in a helpdesk project. Email channels pull messages from an external mail service and process them according to the channel settings.
+
+Parent types: `BaseEntity`, `Channel`.  
 
 #### Contents
 
@@ -3877,6 +5943,8 @@ The set of MailboxChannel entities that contain the specified extension properti
 
 Represents a value in a custom field that has a user associated with it, a so-called owner.
 
+Parent types: `BaseEntity`, `Field`.  
+
 #### Contents
 
 ##### Properties
@@ -3884,7 +5952,11 @@ Represents a value in a custom field that has a user associated with it, a so-ca
 - [`owner`](#owner)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -3905,6 +5977,23 @@ Readonly
 Return type: `User`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -3933,6 +6022,60 @@ The set of OwnedField entities that contain the specified extension properties.
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-periodprojectcustomfield"></a>
 ### PeriodProjectCustomField
 
@@ -3943,26 +6086,52 @@ http://joda-time.sourceforge.net/apidocs/org/joda/time/Period.html,
 please note that we support only class members which use the Period class and
 primitive types like String and int.
 
+Parent types: `BaseEntity`, `ProjectCustomField`, `SimpleProjectCustomField`.  
+
 #### Contents
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Examples
 
 ```javascript
 // to convert period to minutes (or other units) use get* methods:
+// This example assumes a five-day work week and an eight-hour work day.
+// Adjust the conversion if your YouTrack instance uses different time tracking settings.
 var period = issue.fields.Estimation;
 var minutes = !period ? 0 : (period.getMinutes() +
                              60 * (period.getHours() +
-                                   8 * period.getDays()));
-// to create Period instance, use toPeriod function from date-time module:
+                                   8 * (period.getDays() +
+                                        5 * period.getWeeks())));
+// To create a Period instance, use the toPeriod function from the date-time module:
 issue.fields.Estimation = dateTime.toPeriod(3 * 3600 * 1000); // 3h in ms
 issue.fields.Estimation = dateTime.toPeriod('3h'); // short form
 issue.fields.Estimation = dateTime.toPeriod('2w4d3h15m'); // full form
 ```
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -3991,10 +6160,66 @@ The set of PeriodProjectCustomField entities that contain the specified extensio
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-persistentfile"></a>
 ### PersistentFile
 
 Represents the common ancestor for all persistent files that are available in YouTrack.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -4006,7 +6231,11 @@ Represents the common ancestor for all persistent files that are available in Yo
 - [`size`](#size)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -4054,6 +6283,23 @@ Return type: `Number`
 
 #### Methods
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### findByExtensionProperties
 
 Searches for PersistentFile entities with extension properties that match the specified query.
@@ -4081,10 +6327,66 @@ The set of PersistentFile entities that contain the specified extension properti
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-project"></a>
 ### Project
 
 Represents a YouTrack project.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -4109,6 +6411,7 @@ Represents a YouTrack project.
 - [`workItemAttributes`](#workitemattributes)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findByKey`](#findbykey)
 - [`findByName`](#findbyname)
@@ -4116,7 +6419,10 @@ Represents a YouTrack project.
 - [`findWorkItemAttributeByName`](#findworkitemattributebyname)
 - [`intervalToWorkingMinutes`](#intervaltoworkingminutes)
 - [`isAgent`](#isagent)
+- [`isChanged`](#ischanged)
 - [`newDraft`](#newdraft)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -4292,6 +6598,23 @@ Return type: `Set.<WorkItemProjectAttribute>`
 
 #### Methods
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### findByExtensionProperties
 
 Searches for Project entities with extension properties that match the specified query.
@@ -4421,6 +6744,22 @@ Return type: `Boolean`.
 
 If the specified user is added to agents in the project, returns 'true'.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### newDraft
 
 Creates a new issue draft.
@@ -4439,10 +6778,50 @@ Return type: `Issue`.
 
 Newly created issue draft.
 
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-projectcustomfield"></a>
 ### ProjectCustomField
 
 Represents a custom field that is available in a project.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -4454,11 +6833,15 @@ Represents a custom field that is available in a project.
 
 ##### Methods
 - [`becomesInvisibleInIssue`](#becomesinvisibleinissue)
+- [`becomes`](#becomes)
 - [`becomesVisibleInIssue`](#becomesvisibleinissue)
 - [`getBackgroundColor`](#getbackgroundcolor)
 - [`getForegroundColor`](#getforegroundcolor)
 - [`getValuePresentation`](#getvaluepresentation)
+- [`isChanged`](#ischanged)
 - [`isVisibleInIssue`](#isvisibleinissue)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -4488,7 +6871,7 @@ Return type: `String`
 
 ##### typeName
 
-The data type assigned to values stored in the custom field.
+The data type assigned to values stored in the custom field. Field types that include a cardinality suffix use `[*]` for multiple values and `[1]` for a single value, for example, `version[*]` or `user[1]`.
 
 Readonly  
 
@@ -4513,6 +6896,23 @@ Since: `2018.2.42312`
 Return type: `Boolean`.
 
 When `true`, the condition for showing the field is removed in the current transaction.
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### becomesVisibleInIssue
 
@@ -4582,6 +6982,22 @@ Return type: `String`.
 
 The string presentation of the value.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### isVisibleInIssue
 
 Checks if a field is visible in the issue.
@@ -4622,10 +7038,50 @@ requirements: {
 }
 ```
 
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-projectteam"></a>
 ### ProjectTeam
 
 Represents a project team. To access a project team in a workflow, use the `team` property of a `Project` object, such as `ctx.issue.project.team`, or the `teams` property of a `User` object. In rule requirements, reference a project team as a `UserGroup` by name.
+
+Parent types: `BaseEntity`, `UserGroup`.  
 
 #### Contents
 
@@ -4633,7 +7089,11 @@ Represents a project team. To access a project team in a workflow, use the `team
 - [`project`](#project)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -4647,6 +7107,23 @@ Since: `2025.3`
 Return type: `Project`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -4675,10 +7152,66 @@ The set of ProjectTeam entities that contain the specified extension properties.
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-projecttype"></a>
 ### ProjectType
 
 Represents a classification that determines which basic features are available for use in a project.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -4688,7 +7221,11 @@ Represents a classification that determines which basic features are available f
 - [`typeName`](#typename)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -4718,6 +7255,23 @@ Return type: `String`
 
 #### Methods
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### findByExtensionProperties
 
 Searches for ProjectType entities with extension properties that match the specified query.
@@ -4745,10 +7299,66 @@ The set of ProjectType entities that contain the specified extension properties.
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-projectversion"></a>
 ### ProjectVersion
 
 Represents a value in a custom field that stores a version type.
+
+Parent types: `BaseEntity`, `Field`.  
 
 #### Contents
 
@@ -4759,7 +7369,11 @@ Represents a value in a custom field that stores a version type.
 - [`startDate`](#startdate)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -4797,6 +7411,23 @@ Return type: `Number`
 
 #### Methods
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### findByExtensionProperties
 
 Searches for ProjectVersion entities with extension properties that match the specified query.
@@ -4824,12 +7455,68 @@ The set of ProjectVersion entities that contain the specified extension properti
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-pullrequest"></a>
 ### PullRequest
 
 Represents a pull or merge request that is attached to an issue.
 
 Since: `2020.3`  
+
+Parent types: `BaseEntity`, `AbstractVcsItem`.  
 
 #### Contents
 
@@ -4845,7 +7532,11 @@ Since: `2020.3`
 - [`url`](#url)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -4928,6 +7619,23 @@ Return type: `String`
 
 #### Methods
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### findByExtensionProperties
 
 Searches for PullRequest entities with extension properties that match the specified query.
@@ -4955,12 +7663,68 @@ The set of PullRequest entities that contain the specified extension properties.
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-pullrequeststate"></a>
 ### PullRequestState
 
 Represents a pull request state.
 
 Since: `2020.3`  
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -5041,6 +7805,8 @@ The set of PullRequestState entities that contain the specified extension proper
 
 Represents a saved search.
 
+Parent types: `BaseEntity`, `WatchFolder`.  
+
 #### Contents
 
 ##### Properties
@@ -5049,9 +7815,13 @@ Represents a saved search.
 - [`query`](#query)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findByName`](#findbyname)
 - [`findQueryByName`](#findquerybyname)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -5080,6 +7850,23 @@ Readonly
 Return type: `String`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -5141,10 +7928,66 @@ Return type: `SavedQuery`.
 
 The most relevant saved search.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-simplecalendar"></a>
 ### SimpleCalendar
 
 Represents a work days calendar in YouTrack.
+
+Parent types: `BaseEntity`, `Calendar`.  
 
 #### Contents
 
@@ -5185,12 +8028,35 @@ The set of SimpleCalendar entities that contain the specified extension properti
 
 Base class for custom fields that store simple values like strings and numbers.
 
+Parent types: `BaseEntity`, `ProjectCustomField`.  
+
 #### Contents
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -5219,10 +8085,66 @@ The set of SimpleProjectCustomField entities that contain the specified extensio
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-sprint"></a>
 ### Sprint
 
 Represents a sprint that is associated with an agile board. Each sprint can include issues from one or more projects.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -5235,10 +8157,14 @@ Represents a sprint that is associated with an agile board. Each sprint can incl
 
 ##### Methods
 - [`addIssue`](#addissue)
+- [`becomes`](#becomes)
 - [`containsIssue`](#containsissue)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
 - [`isSwimlane`](#isswimlane)
+- [`oldValue`](#oldvalue)
 - [`removeIssue`](#removeissue)
+- [`was`](#was)
 
 #### Properties
 
@@ -5294,6 +8220,23 @@ Adds the issue to the sprint.
 | --- | --- | --- |
 | `issue` | `Issue` | The issue that is added to the sprint. |
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### containsIssue
 
 Checks whether the issue belongs to the sprint.
@@ -5337,6 +8280,22 @@ The set of Sprint entities that contain the specified extension properties.
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### isSwimlane
 
 Checks whether the specified issue is represented as a swimlane on the agile board that the sprint belongs to.
@@ -5353,6 +8312,25 @@ Return type: `Boolean`.
 
 If the specified issue is represented as a swimlane in the sprint, returns `true`.
 
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
 ##### removeIssue
 
 Removes the issue from the sprint.
@@ -5363,10 +8341,31 @@ Removes the issue from the sprint.
 | --- | --- | --- |
 | `issue` | `Issue` | The issue that is removed from the sprint. |
 
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-state"></a>
 ### State
 
 Represents a value in a custom field that stores a state type.
+
+Parent types: `BaseEntity`, `Field`.  
 
 #### Contents
 
@@ -5375,7 +8374,11 @@ Represents a value in a custom field that stores a state type.
 - [`isResolved`](#isresolved)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -5396,6 +8399,23 @@ Readonly
 Return type: `Boolean`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -5424,10 +8444,66 @@ The set of State entities that contain the specified extension properties.
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-tag"></a>
 ### Tag
 
 Represents a tag.
+
+Parent types: `BaseEntity`, `WatchFolder`.  
 
 #### Contents
 
@@ -5447,12 +8523,16 @@ Represents a tag.
 - [`updateShareGroup`](#updatesharegroup)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`canBeUsedForArticle`](#canbeusedforarticle)
 - [`canBeUsedForIssue`](#canbeusedforissue)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findByName`](#findbyname)
 - [`findByOwner`](#findbyowner)
 - [`findTagByName`](#findtagbyname)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Constructors
 
@@ -5554,6 +8634,23 @@ Readonly
 Return type: `UserGroup`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### canBeUsedForArticle
 
@@ -5671,17 +8768,94 @@ Return type: `Tag`.
 
 The most relevant tag.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-textprojectcustomfield"></a>
 ### TextProjectCustomField
 
 Represents a custom field that stores a string of characters as text. When displayed in an issue, the text is shown as formatted in Markdown.
 
+Parent types: `BaseEntity`, `ProjectCustomField`, `SimpleProjectCustomField`.  
+
 #### Contents
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -5710,10 +8884,66 @@ The set of TextProjectCustomField entities that contain the specified extension 
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-user"></a>
 ### User
 
 Represents a user account in YouTrack.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -5741,6 +8971,7 @@ Represents a user account in YouTrack.
 - [`visibleName`](#visiblename)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`canLinkIssue`](#canlinkissue)
 - [`canUnvoteIssue`](#canunvoteissue)
 - [`canVoteIssue`](#canvoteissue)
@@ -5751,17 +8982,21 @@ Represents a user account in YouTrack.
 - [`getSharedTag`](#getsharedtag)
 - [`getTag`](#gettag)
 - [`hasPermission`](#haspermission)
+- [`hasRoleGlobally`](#hasroleglobally)
 - [`hasRole`](#hasrole)
+- [`isChanged`](#ischanged)
 - [`isInGroup`](#isingroup)
 - [`isVotedForIssue`](#isvotedforissue)
 - [`isWatchingIssue`](#iswatchingissue)
 - [`notify`](#notify)
 - [`notifyOnCase`](#notifyoncase)
+- [`oldValue`](#oldvalue)
 - [`sendMail`](#sendmail)
 - [`unvoteIssue`](#unvoteissue)
 - [`unwatchArticle`](#unwatcharticle)
 - [`unwatchIssue`](#unwatchissue)
 - [`voteIssue`](#voteissue)
+- [`was`](#was)
 - [`watchArticle`](#watcharticle)
 - [`watchIssue`](#watchissue)
 
@@ -5950,6 +9185,23 @@ Return type: `String`
 
 #### Methods
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### canLinkIssue
 
 Checks whether the user is permitted to link the specified issue to any other issue.
@@ -6129,9 +9381,27 @@ Return type: `Boolean`.
 
 If the user has the permission, returns `true`.
 
+##### hasRoleGlobally
+
+Checks whether the user is granted the specified role at the global scope.
+
+Since: `2026.3`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `roleName` | `String` | The name of the role to check for. |
+
+###### Returns
+
+Return type: `Boolean`.
+
+If the user is granted the specified role globally, returns `true`.
+
 ##### hasRole
 
-Checks whether the user is granted the specified role in the specified project. When the project parameter is not specified, checks whether the user has the specified role in any project.
+Checks whether the user is granted the specified role in the specified project. This is also `true` when the role is granted at the global scope. When the project parameter is not specified, checks whether the user has the specified role in any project.
 
 ###### Parameters
 
@@ -6144,7 +9414,23 @@ Checks whether the user is granted the specified role in the specified project. 
 
 Return type: `Boolean`.
 
-If the user is granted the specified role, returns `true`.
+If the user is granted the specified role in the given scope, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
 
 ##### isInGroup
 
@@ -6225,6 +9511,25 @@ Since: `2023.1`
 | `parameters` | `Object` | A JSON object that provides required parameters for the notification to render. Particular parameters depend on the notification case. |
 | `projectDocument` | `Issue`, `Article` | An issue or an article that this notification is about. The difference between providing it as a separately vs. passing it among other parameters is that in the former case the notification will be merged with other notifications on that issue/article. |
 
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
 ##### sendMail
 
 Sends an email notification to the email address that is set in the user profile. An alias for notify(subject, body, true).
@@ -6280,6 +9585,25 @@ Adds a vote on behalf of the user to the issue, if allowed.
 | --- | --- | --- |
 | `issue` | `Issue` | The issue to which the vote is added. |
 
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 ##### watchArticle
 
 Adds the current user to the article as a watcher (adds the `Star`).
@@ -6309,11 +9633,19 @@ Represents a value-based condition for a custom field in a specific project, whe
 
 Since: `2025.3`  
 
+Parent types: `BaseEntity`.  
+
 #### Contents
 
 ##### Properties
 - [`bundleElement`](#bundleelement)
 - [`possibleValues`](#possiblevalues)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -6335,10 +9667,85 @@ Since: `2025.3`
 
 Return type: `Set.<User>`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-usergroup"></a>
 ### UserGroup
 
 Represents a group of users.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -6354,9 +9761,13 @@ Represents a group of users.
 - [`users`](#users)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findByName`](#findbyname)
+- [`isChanged`](#ischanged)
 - [`notifyAllUsers`](#notifyallusers)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -6436,6 +9847,23 @@ Return type: `Set.<User>`
 
 #### Methods
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### findByExtensionProperties
 
 Searches for UserGroup entities with extension properties that match the specified query.
@@ -6479,6 +9907,22 @@ Return type: `UserGroup`.
 
 The specified user group, or null when a group with the specified name is not found.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### notifyAllUsers
 
 Sends an email notification to all of the users who are members of the group.
@@ -6498,10 +9942,50 @@ issue.oldValue('permittedGroup').notifyAllUsers('Visibility has been changed',
   ' has been changed to ' + permittedGroup.name);
 ```
 
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-userprojectcustomfield"></a>
 ### UserProjectCustomField
 
 Represents a custom field in a project that stores values as a user type.
+
+Parent types: `BaseEntity`, `ProjectCustomField`.  
 
 #### Contents
 
@@ -6511,10 +9995,14 @@ Represents a custom field in a project that stores values as a user type.
 - [`values`](#values)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findValueByLogin`](#findvaluebylogin)
 - [`getPossibleValuesForIssue`](#getpossiblevaluesforissue)
+- [`isChanged`](#ischanged)
 - [`isValuePermittedInIssue`](#isvaluepermittedinissue)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -6544,6 +10032,23 @@ Readonly
 Return type: `Set.<User>`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -6606,6 +10111,22 @@ Return type: `Set.<User>`.
 
 The set of possible users.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### isValuePermittedInIssue
 
 Checks if value is permitted in the issue.
@@ -6625,12 +10146,52 @@ Return type: `Boolean`.
 
 If the value can be used for the issue, returns `true`.
 
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-usertype"></a>
 ### UserType
 
 Represents a classification that defines access to advanced helpdesk features and are used to regulate the pricing associated with each user account in YouTrack.
 
 Since: `2026.2`  
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -6639,6 +10200,12 @@ Since: `2026.2`
 - [`REPORTER`](#reporter)
 - [`STANDARD_USER`](#standard_user)
 - [`typeName`](#typename)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -6675,12 +10242,87 @@ Since: `2026.2`
 
 Return type: `String`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-vcschange"></a>
 ### VcsChange
 
 Represents a commit that is attached to an issue.
 
 Since: `2018.1.38923`  
+
+Parent types: `BaseEntity`, `AbstractVcsItem`.  
 
 #### Contents
 
@@ -6694,10 +10336,14 @@ Since: `2018.1.38923`
 - [`version`](#version)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`extractCommands`](#extractcommands)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`getUrl`](#geturl)
+- [`isChanged`](#ischanged)
 - [`isVisibleTo`](#isvisibleto)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -6769,6 +10415,23 @@ Return type: `String`
 
 #### Methods
 
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
 ##### extractCommands
 
 Extracts commands from vcs change on behalf of provided user
@@ -6832,6 +10495,22 @@ Return type: `String`.
 
 The URL of the VCS change.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
 ##### isVisibleTo
 
 Checks whether the specified user has access to view the VCS change.
@@ -6850,6 +10529,44 @@ Return type: `Boolean`.
 
 When 'true', the specified user has access to view the VCS change. Otherwise, 'false'.
 
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-vcsserver"></a>
 ### VcsServer
 
@@ -6857,10 +10574,18 @@ Represents a VCS server.
 
 Since: `2018.1.38923`  
 
+Parent types: `BaseEntity`.  
+
 #### Contents
 
 ##### Properties
 - [`url`](#url)
+
+##### Methods
+- [`becomes`](#becomes)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -6873,10 +10598,85 @@ Since: `2018.1.38923`
 
 Return type: `String`  
 
+#### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-watchfolder"></a>
 ### WatchFolder
 
 Represents a common ancestor of classes that represent tags and saved searches.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -6887,6 +10687,10 @@ Represents a common ancestor of classes that represent tags and saved searches.
 - [`permittedUpdateUsers`](#permittedupdateusers)
 - [`shareGroup`](#sharegroup)
 - [`updateShareGroup`](#updatesharegroup)
+
+##### Methods
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
 
 #### Properties
 
@@ -6942,6 +10746,43 @@ Readonly
 
 Return type: `UserGroup`  
 
+#### Methods
+
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
 <a id="type-workitemattributevalue"></a>
 ### WorkItemAttributeValue
 
@@ -6949,13 +10790,19 @@ Value of a work item attribute.
 
 Since: `2022.2`  
 
+Parent types: `BaseEntity`.  
+
 #### Contents
 
 ##### Properties
 - [`name`](#name)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -6968,6 +10815,23 @@ Readonly
 Return type: `String`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -6996,12 +10860,68 @@ The set of WorkItemAttributeValue entities that contain the specified extension 
 }
 ```
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="type-workitemprojectattribute"></a>
 ### WorkItemProjectAttribute
 
 Work item attribute configured for the project.
 
 Since: `2024.2`  
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -7012,6 +10932,8 @@ Since: `2024.2`
 ##### Methods
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findValueByName`](#findvaluebyname)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
 
 #### Properties
 
@@ -7079,10 +11001,47 @@ Return type: `WorkItemAttributeValue`.
 
 The attribute value with the given name or null if such value does not exist.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
 <a id="type-workitemtype"></a>
 ### WorkItemType
 
 Represents a work type that can be assigned to a work item.
+
+Parent types: `BaseEntity`.  
 
 #### Contents
 
@@ -7090,8 +11049,12 @@ Represents a work type that can be assigned to a work item.
 - [`name`](#name)
 
 ##### Methods
+- [`becomes`](#becomes)
 - [`findByExtensionProperties`](#findbyextensionproperties)
 - [`findByProject`](#findbyproject)
+- [`isChanged`](#ischanged)
+- [`oldValue`](#oldvalue)
+- [`was`](#was)
 
 #### Properties
 
@@ -7104,6 +11067,23 @@ Readonly
 Return type: `String`  
 
 #### Methods
+
+##### becomes
+
+Checks whether a field is set to an expected value in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field is set to the expected value, returns `true`.
 
 ##### findByExtensionProperties
 
@@ -7148,21 +11128,89 @@ Return type: `Set.<WorkItemType>`.
 
 The set of available work item types for the specified project.
 
+##### isChanged
+
+Checks whether the value of a field is changed in the current transaction.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the value of the field is changed in the current transaction, returns `true`.
+
+##### oldValue
+
+Returns the value that the field had before the current transaction. For a multi-value field, returns a
+collection containing the values that the field had before the transaction. If a single-value field is not
+changed in the transaction, returns null.
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field. |
+
+###### Returns
+
+Return type: `Object`.
+
+The value of the field before the current transaction. For a multi-value field, a collection
+containing the previous values. For an unchanged single-value field, null.
+
+##### was
+
+Checks whether a field was equal to an expected value prior to the current transaction.
+
+Since: `2019.2.55603`  
+
+###### Parameters
+
+| Name | Type | Description |
+| --- | --- | --- |
+| `fieldName` | `string` | The name of the field to check. |
+| `expected` | `string` | The expected value. |
+
+###### Returns
+
+Return type: `boolean`.
+
+If the field was equal to the expected value, returns `true`.
+
 <a id="types-additional-entities"></a>
 ## Additional Entities
+
 - [`Fields`](#type-fields)
+
 - [`Iterator`](#type-iterator)
+
 - [`JsonForArticleAddAttachment`](#type-jsonforarticleaddattachment)
+
 - [`JsonForArticleAddComment`](#type-jsonforarticleaddcomment)
+
 - [`JsonForArticleConstructor`](#type-jsonforarticleconstructor)
+
 - [`JsonForIssueAddAttachment`](#type-jsonforissueaddattachment)
+
 - [`JsonForIssueAddComment`](#type-jsonforissueaddcomment)
+
 - [`JsonForIssueAddWorkItem`](#type-jsonforissueaddworkitem)
+
 - [`JsonForIssueCommentAddAttachment`](#type-jsonforissuecommentaddattachment)
+
 - [`JsonForIssueConstructor`](#type-jsonforissueconstructor)
+
 - [`JsonForUserNotify`](#type-jsonforusernotify)
+
 - [`Set`](#type-set)
+
 - [`UserAttributes`](#type-userattributes)
+
 - [`WorkItemAttributes`](#type-workitemattributes)
 
 <a id="type-fields"></a>

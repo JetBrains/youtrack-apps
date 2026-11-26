@@ -59,7 +59,8 @@ function uniqueDocs(docs: DocBlock[]): DocBlock[] {
 }
 
 export function buildTypePageModel(module: ModuleGroup, typeName: string, includeInherited: boolean): TypePageModel {
-  const typeNames = includeInherited ? inheritedTypeNames(module, typeName) : [typeName];
+  const hierarchy = inheritedTypeNames(module, typeName);
+  const typeNames = includeInherited ? hierarchy : [typeName];
   const groups = typeNames.map((name) => module.types[name]).filter((group): group is NonNullable<typeof group> => Boolean(group));
   const ownGroup = module.types[typeName];
 
@@ -71,7 +72,7 @@ export function buildTypePageModel(module: ModuleGroup, typeName: string, includ
     constructors: groups
       .map((group) => ({ name: group.name, doc: group.typeDoc }))
       .filter((constructor): constructor is ConstructorBlock => Boolean(constructor.doc?.params?.length)),
-    hierarchy: typeNames,
+    hierarchy,
   };
 }
 

@@ -162,6 +162,7 @@ Required authoring shape:
 - optional `guard` - The condition that determines when the action rule is enabled. If the guard condition is not met, the custom command cannot be applied to an issue.
 - `action` - The changes that should be applied to each of the issues that are selected when the command is applied. Accepts only one parameter `ctx`.
 - optional `userInput` - The input that this action rule requires from the user.
+- optional `permissions` - For `Issue.action` only, restricts execution to users with the specified permissions. Available since YouTrack 2026.3; see [Action permissions](#action-permissions).
 - optional `requirements` - The list of entities that are required for the rule to execute without errors. This property ensures that rules can be attached to projects safely.
 
 #### Generation rules
@@ -204,6 +205,60 @@ userInput: {
   description: 'Enter story points'
 }
 ```
+
+##### Filter user input
+
+Since YouTrack 2026.3, all six action targets support these optional `userInput` filters:
+
+| Property | Type | Use |
+| --- | --- | --- |
+| `field` | `string` | Restrict bundle values to a custom field with this name. Supported with `entities.EnumField`, `entities.ProjectVersion`, `entities.State`, `entities.OwnedField`, and `entities.Build`. Uses the action's project unless `project` is provided. |
+| `project` | `string` | The project key whose custom field bundle supplies the values. Requires `field`. |
+| `group` | `string` | Restrict `entities.User` input to members of the named user group. |
+
+```js
+userInput: {
+  type: entities.ProjectVersion,
+  description: 'Select target version',
+  field: 'Fix versions',
+  project: 'DEMO'
+}
+```
+
+For a user selection, use a group filter:
+
+```js
+userInput: {
+  type: entities.User,
+  description: 'Select reviewer',
+  group: 'Reviewers'
+}
+```
+
+##### Action permissions
+
+Since YouTrack 2026.3, `Issue.action` accepts `permissions` with permission keys:
+
+| Shape | Required permissions |
+| --- | --- |
+| `['READ_ISSUE', 'UPDATE_ISSUE']` | At least one listed permission. |
+| `{ anyOf: ['READ_ISSUE', 'UPDATE_ISSUE'] }` | At least one listed permission. |
+| `{ allOf: ['READ_ISSUE', 'UPDATE_ISSUE'] }` | Every listed permission. |
+
+An object must specify exactly one of `anyOf` or `allOf`. When `permissions` is omitted, the rule adds no permission restriction.
+
+```js
+exports.rule = entities.Issue.action({
+  title: 'Request QA review',
+  command: 'request-qa-review',
+  permissions: { allOf: ['READ_ISSUE', 'UPDATE_ISSUE'] },
+  action: (ctx) => {
+    ctx.issue.addComment('Ready for QA review.');
+  }
+});
+```
+
+##### Create related issues
 
 Create or clone real issues by default unless the user asks for drafts.
 

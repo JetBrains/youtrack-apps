@@ -308,9 +308,17 @@ type FieldTypesFromRequirements<R extends Record<string, Requirement>> = {
 };
 
 /**
- * Base type for rule property values (includes functions)
+ * Permission requirements for Issue.action. An array has the same behavior as anyOf.
+ * An object must specify exactly one of anyOf or allOf.
+ * @since 2026.3
  */
-export type RulePropertyValue = FieldValue | boolean | Function | Requirements | { [key: string]: unknown };
+export type ActionPermissions =
+  | string[]
+  | { anyOf: string[]; allOf?: never }
+  | { allOf: string[]; anyOf?: never };
+
+/** Base type for rule property values (includes functions). */
+export type RulePropertyValue = FieldValue | boolean | Function | Requirements | ActionPermissions | { [key: string]: unknown };
 
 /**
  * State machine transition definition
@@ -353,6 +361,23 @@ export interface UserInputSpec {
   type: string | object | (new (...args: any[]) => any);
   /** Description shown to the user */
   description?: string;
+  /**
+   * For bundle-based input types (EnumField, ProjectVersion, State, OwnedField, Build),
+   * restricts values to the custom field with this name in the action's project.
+   * Use project to select a different project's bundle.
+   * @since 2026.3
+   */
+  field?: string;
+  /**
+   * The project key whose custom field bundle supplies the values. Requires field.
+   * @since 2026.3
+   */
+  project?: string;
+  /**
+   * For User input, restricts values to members of the named user group.
+   * @since 2026.3
+   */
+  group?: string;
   [key: string]: unknown;
 }
 
@@ -560,6 +585,13 @@ export interface RuleProperties<R extends Record<string, Requirement> = Record<s
   cron?: string;
   /** User input specification */
   userInput?: UserInputSpec;
+  /**
+   * For Issue.action only, restricts execution to users with the specified permissions.
+   * An array or anyOf requires at least one permission; allOf requires every permission.
+   * When omitted, the action adds no permission restriction.
+   * @since 2026.3
+   */
+  permissions?: ActionPermissions;
   /**
    * A map of named functions that can be invoked asynchronously from the `action` function
    * (via `ctx.invokeAsync`) or as HTTP response callbacks. Each function receives an
@@ -889,30 +921,9 @@ export declare class BaseEntity {
   required(fieldName: FieldReference, message: string): void;
 
   /**
-   * Checks whether a field is set to an expected value in the current transaction.
-   */
-  becomes(fieldName: FieldReference, expected: FieldValue): boolean;
-
-  /**
    * Checks whether a field is equal to an expected value.
    */
   is(fieldName: FieldReference, expected: FieldValue): boolean;
-
-  /**
-   * Checks whether a field was equal to an expected value prior to the current transaction.
-   */
-  was(fieldName: FieldReference, expected: FieldValue): boolean;
-
-  /**
-   * Checks whether the value of a field is changed in the current transaction.
-   */
-  isChanged(fieldName: FieldReference): boolean;
-
-  /**
-   * Returns the previous value of a single-value field before an update was applied.
-   * If the field is not changed in the transaction, returns null.
-   */
-  oldValue(fieldName: FieldReference): FieldValue;
 
   /**
    * Checks whether a user has permission to read the field.
@@ -923,6 +934,26 @@ export declare class BaseEntity {
    * Checks whether a user has permission to update the field.
    */
   canBeWrittenBy(fieldName: FieldReference, user: User): boolean;
+}
+
+interface EntityChangeTracking {
+  /** Checks whether the value of a field is changed in the current transaction. */
+  isChanged(fieldName: FieldReference): boolean;
+
+  /**
+   * Returns the value of the field before the current transaction. For a multi-value
+   * field, returns a collection containing the previous values. For an unchanged
+   * single-value field, returns null.
+   */
+  oldValue(fieldName: FieldReference): FieldValue | Set<FieldValue>;
+}
+
+interface EntityValueComparison extends EntityChangeTracking {
+  /** Checks whether a field is set to an expected value in the current transaction. */
+  becomes(fieldName: FieldReference, expected: FieldValue): boolean;
+
+  /** Checks whether a field was equal to an expected value prior to the current transaction. */
+  was(fieldName: FieldReference, expected: FieldValue): boolean;
 }
 
 
@@ -1097,7 +1128,7 @@ export declare class Article extends BaseArticle {
   readonly id: string;
 
   /**
-   * The set of comments that are pinned in the article.
+   * The set of comments that are pinned in the article or draft.
    * @since 2024.1
    */
   readonly pinnedComments: Set<ArticleComment>;
@@ -1214,9 +1245,13 @@ export declare class Article extends BaseArticle {
    * * entities.OwnedField
    * * entities.Project
    * * entities.ProjectVersion
+   * * entities.State
    * * entities.UserGroup
    * * entities.User
    * @param {string} [ruleProperties.userInput.description] The label for the control that is used to collect additional information from the user.
+   * @param {string} [ruleProperties.userInput.field] For bundle-based input types (EnumField, ProjectVersion, State, OwnedField, Build), restricts values to the named custom field's bundle. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.project] The project key whose bundle supplies the values. Requires userInput.field. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.group] For User input, restricts values to members of the named user group. Available since 2026.3.
    * @param {Article~guardFunction} ruleProperties.guard A function that is invoked to determine whether the action is applicable to an article.
    * @param {Article~actionFunction} ruleProperties.action The function that is invoked when a user triggers this action.
    * @param {Requirements} ruleProperties.requirements The set of entities that must be present for the script to work as expected.
@@ -1304,6 +1339,18 @@ export declare class Article extends BaseArticle {
  */
 export declare class ArticleAttachment extends BaseArticleAttachment {
   /**
+   * The groups for which the attachment is visible when visibility is restricted to multiple groups.
+   * @since 2026.3
+   */
+  permittedGroups: Set<UserGroup>;
+
+  /**
+   * The list of users for whom the attachment is visible.
+   * @since 2026.3
+   */
+  permittedUsers: Set<User>;
+
+  /**
    * The date and time when the attachment was created as a timestamp.
    * @since 2026.1
    */
@@ -1340,9 +1387,13 @@ export declare class ArticleAttachment extends BaseArticleAttachment {
    * * entities.OwnedField
    * * entities.Project
    * * entities.ProjectVersion
+   * * entities.State
    * * entities.UserGroup
    * * entities.User
    * @param {string} [ruleProperties.userInput.description] The label for the control that is used to collect additional information from the user.
+   * @param {string} [ruleProperties.userInput.field] For bundle-based input types (EnumField, ProjectVersion, State, OwnedField, Build), restricts values to the named custom field's bundle. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.project] The project key whose bundle supplies the values. Requires userInput.field. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.group] For User input, restricts values to members of the named user group. Available since 2026.3.
    * @param {ArticleAttachment~guardFunction} ruleProperties.guard A function that is invoked to determine whether the action is applicable to an article attachment.
    * @param {ArticleAttachment~actionFunction} ruleProperties.action The function that is invoked when a user triggers this action.
    * @param {Requirements} ruleProperties.requirements The set of entities that must be present for the script to work as expected.
@@ -1367,14 +1418,20 @@ export declare class ArticleAttachment extends BaseArticleAttachment {
 }
 
 /**
- * Represents a comment that is added to an article.
+ * Represents a comment that is added to an article or an article draft.
  * @since 2021.4.23500
  */
 export declare class ArticleComment extends BaseArticleComment {
   /**
-   * The article the comment belongs to.
+   * The article or draft the comment belongs to.
    */
-  readonly article: Article;
+  readonly article: BaseArticle;
+
+  /**
+   * The set of users that are mentioned in the comment.
+   * @since 2026.3
+   */
+  readonly mentionedUsers: Set<User>;
 
   /**
    * The user who created the comment.
@@ -1412,9 +1469,13 @@ export declare class ArticleComment extends BaseArticleComment {
    * * entities.OwnedField
    * * entities.Project
    * * entities.ProjectVersion
+   * * entities.State
    * * entities.UserGroup
    * * entities.User
    * @param {string} [ruleProperties.userInput.description] The label for the control that is used to collect additional information from the user.
+   * @param {string} [ruleProperties.userInput.field] For bundle-based input types (EnumField, ProjectVersion, State, OwnedField, Build), restricts values to the named custom field's bundle. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.project] The project key whose bundle supplies the values. Requires userInput.field. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.group] For User input, restricts values to members of the named user group. Available since 2026.3.
    * @param {ArticleComment~guardFunction} ruleProperties.guard A function that is invoked to determine whether the action is applicable to an article comment.
    * @param {ArticleComment~actionFunction} ruleProperties.action The function that is invoked when a user triggers this action.
    * @param {Requirements} ruleProperties.requirements The set of entities that must be present for the script to work as expected.
@@ -1443,6 +1504,21 @@ export declare class ArticleComment extends BaseArticleComment {
  * @since 2021.4.23500
  */
 export declare class BaseArticle extends BaseEntity {
+  /** A list of comments for the article. */
+  readonly comments: Set<ArticleComment>;
+
+  /**
+   * The set of comments that are pinned in the article or draft.
+   * @since 2024.1
+   */
+  readonly pinnedComments: Set<ArticleComment>;
+
+  /**
+   * The set of users that are mentioned in the article content.
+   * @since 2026.3
+   */
+  readonly mentionedUsers: Set<User>;
+
   /**
    * The article from which the current article draft was created, or `null` if the current article is not a draft.
    * @since 2026.1
@@ -1610,6 +1686,12 @@ export declare class BaseArticleComment extends BaseEntity {
  * The base class for issue comment.
  */
 export declare class BaseComment extends BaseEntity {
+  /**
+   * The set of users that are mentioned in the comment.
+   * @since 2026.3
+   */
+  readonly mentionedUsers: Set<User>;
+
   /**
    * The set of attachments that are attached to the comment.
    * @since 2018.1.40030
@@ -1848,7 +1930,7 @@ export declare class ChangesProcessor extends BaseEntity {
   readonly pullRequests: Set<PullRequest>;
 
   /**
-   * The URL of the change processor. Integrations with TeamCity, Jenkins, GitLab CI/CD, and Upsource return the web address of the build configuration or project page.
+   * The URL of the change processor. Integrations with TeamCity, Jenkins, and GitLab CI/CD return the web address of the build configuration or project page.
    * @since 2021.2
    */
   readonly url: string;
@@ -2148,6 +2230,12 @@ export declare class GroupProjectCustomField extends ProjectCustomField {
  * Represents an issue in YouTrack.
  */
 export declare class Issue extends BaseEntity {
+  /**
+   * The set of users that are mentioned in the issue description.
+   * @since 2026.3
+   */
+  readonly mentionedUsers: Set<User>;
+
   /**
    * If the issue becomes reported in the current transaction, this property is `true`.
    * @example
@@ -2559,9 +2647,14 @@ export declare class Issue extends BaseEntity {
    * * entities.OwnedField
    * * entities.Project
    * * entities.ProjectVersion
+   * * entities.State
    * * entities.UserGroup
    * * entities.User
    * @param {string} [ruleProperties.userInput.description] The label for the control that is used to collect additional information from the user.
+   * @param {Array.<string>|Object} [ruleProperties.permissions] Restricts Issue.action execution. An array or anyOf requires at least one listed permission; allOf requires every permission. An object must specify exactly one mode. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.field] For bundle-based input types (EnumField, ProjectVersion, State, OwnedField, Build), restricts values to the named custom field's bundle. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.project] The project key whose bundle supplies the values. Requires userInput.field. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.group] For User input, restricts values to members of the named user group. Available since 2026.3.
    * @param {Issue~guardFunction} ruleProperties.guard A function that is invoked to determine whether the action is applicable to an issue.
    * @param {Issue~actionFunction} ruleProperties.action The function that is invoked when a user triggers this action.
    * @param {Requirements} ruleProperties.requirements The set of entities that must be present for the script to work as expected.
@@ -2994,9 +3087,13 @@ export declare class IssueAttachment extends PersistentFile {
    * * entities.OwnedField
    * * entities.Project
    * * entities.ProjectVersion
+   * * entities.State
    * * entities.UserGroup
    * * entities.User
    * @param {string} [ruleProperties.userInput.description] The label for the control that is used to collect additional information from the user.
+   * @param {string} [ruleProperties.userInput.field] For bundle-based input types (EnumField, ProjectVersion, State, OwnedField, Build), restricts values to the named custom field's bundle. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.project] The project key whose bundle supplies the values. Requires userInput.field. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.group] For User input, restricts values to members of the named user group. Available since 2026.3.
    * @param {IssueAttachment~guardFunction} ruleProperties.guard A function that is invoked to determine whether the action is applicable to an issue attachment.
    * @param {IssueAttachment~actionFunction} ruleProperties.action The function that is invoked when a user triggers this action.
    * @param {Requirements} ruleProperties.requirements The set of entities that must be present for the script to work as expected.
@@ -3114,9 +3211,13 @@ export declare class IssueComment extends BaseComment {
    * * entities.OwnedField
    * * entities.Project
    * * entities.ProjectVersion
+   * * entities.State
    * * entities.UserGroup
    * * entities.User
    * @param {string} [ruleProperties.userInput.description] The label for the control that is used to collect additional information from the user.
+   * @param {string} [ruleProperties.userInput.field] For bundle-based input types (EnumField, ProjectVersion, State, OwnedField, Build), restricts values to the named custom field's bundle. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.project] The project key whose bundle supplies the values. Requires userInput.field. Available since 2026.3.
+   * @param {string} [ruleProperties.userInput.group] For User input, restricts values to members of the named user group. Available since 2026.3.
    * @param {IssueComment~guardFunction} ruleProperties.guard A function that is invoked to determine whether the action is applicable to an issue comment.
    * @param {IssueComment~actionFunction} ruleProperties.action The function that is invoked when a user triggers this action.
    * @param {Requirements} ruleProperties.requirements The set of entities that must be present for the script to work as expected.
@@ -3583,6 +3684,8 @@ export declare class ProjectCustomField extends BaseEntity {
 
   /**
    * The data type assigned to values stored in the custom field.
+   * Field types that include a cardinality suffix use `[*]` for multiple values and
+   * `[1]` for a single value, for example, `version[*]` or `user[1]`.
    */
   readonly typeName: string;
 
@@ -4352,12 +4455,22 @@ export declare class User extends BaseEntity {
   hasPermission(permissionKey: string, project?: Project): boolean;
 
   /**
-   * Checks whether the user is granted the specified role in the specified project. When the project parameter is not specified, checks whether the user has the specified role in any project.
+   * Checks whether the user is granted the specified role in the specified project.
+   * This is also true when the role is granted at the global scope. When the project
+   * parameter is not specified, checks whether the user has the specified role in any project.
    * @param roleName The name of the role to check for.
    * @param project The project to check for the specified role assignment. If omitted, checks whether the user has the specified role in any project.
-   * @returns If the user is granted the specified role, returns `true`.
+   * @returns If the user is granted the specified role in the given scope, returns `true`.
    */
   hasRole(roleName: string, project?: Project): boolean;
+
+  /**
+   * Checks whether the user is granted the specified role at the global scope.
+   * @since 2026.3
+   * @param roleName The name of the role to check for.
+   * @returns If the user is granted the specified role globally, returns true.
+   */
+  hasRoleGlobally(roleName: string): boolean;
 
   /**
    * Checks whether the user is a member of the specified group.
@@ -4886,6 +4999,38 @@ export declare class IssueTag extends WatchFolder {
    */
   static findTagByName(name: string): Tag;
 }
+
+// Merge shared method signatures into the supported entity hierarchies. Keeping
+// these off BaseEntity prevents unsupported types from inheriting change tracking.
+export interface AbstractVcsItem extends EntityValueComparison {}
+export interface Agile extends EntityValueComparison {}
+export interface BaseArticle extends EntityValueComparison {}
+export interface BaseArticleComment extends EntityValueComparison {}
+export interface BaseComment extends EntityValueComparison {}
+export interface BaseWorkItem extends EntityValueComparison {}
+export interface BundleElementCondition extends EntityValueComparison {}
+export interface ChangesProcessor extends EntityValueComparison {}
+export interface Field extends EntityValueComparison {}
+export interface FieldBasedValuesCondition extends EntityValueComparison {}
+export interface Gantt extends EntityValueComparison {}
+export interface Issue extends EntityValueComparison {}
+export interface PersistentFile extends EntityValueComparison {}
+export interface Project extends EntityValueComparison {}
+export interface ProjectCustomField extends EntityValueComparison {}
+export interface ProjectType extends EntityValueComparison {}
+export interface SavedQuery extends EntityValueComparison {}
+export interface Sprint extends EntityValueComparison {}
+export interface Tag extends EntityValueComparison {}
+export interface User extends EntityValueComparison {}
+export interface UserCondition extends EntityValueComparison {}
+export interface UserGroup extends EntityValueComparison {}
+export interface UserType extends EntityValueComparison {}
+export interface VcsServer extends EntityValueComparison {}
+export interface WorkItemAttributeValue extends EntityValueComparison {}
+export interface WorkItemType extends EntityValueComparison {}
+
+export interface WatchFolder extends EntityChangeTracking {}
+export interface WorkItemProjectAttribute extends EntityChangeTracking {}
 
 /**
  * Global workflow utilities available in workflow scripts.
