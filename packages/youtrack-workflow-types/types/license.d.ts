@@ -9,13 +9,6 @@
  */
 export interface LicenseInfo {
   /**
-   * The unique identifier of this YouTrack installation. Matches the `uuid` field
-   * returned by the `/api/config` REST endpoint.
-   * @since 2026.3
-   */
-  readonly instanceId: string;
-
-  /**
    * The YouTrack version.
    */
   readonly youTrackVersion: string;

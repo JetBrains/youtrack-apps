@@ -13,7 +13,6 @@
     "./http-sync-uri.ts",
     "./define-aitool-plain.ts",
     "./rule-requirements-generics.ts",
-    "./action-ctx-async-split.ts",
-    "./workflow-api-2026-3.ts"
+    "./action-ctx-async-split.ts"
   ]
 }
