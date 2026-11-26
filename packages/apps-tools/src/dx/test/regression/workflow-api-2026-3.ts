@@ -108,6 +108,6 @@ const publishedArticle: Article = articleComment.article;
 issue.mentionedUsers = issueComment.mentionedUsers;
 
 void [
-  mentions, comments, commentOwner, instanceId, hasGlobalRole, previousUsers,
+  mentions, comments, commentOwner, instanceId, hasGlobalRole, history, previousUsers,
   comparableEntities, unsupportedTracking, mixedPermissions, publishedArticle,
 ];
