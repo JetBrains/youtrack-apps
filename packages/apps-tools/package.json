@@ -141,6 +141,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "prepare": "npm run build",
     "dev": "tsc --watch",
     "lint": "eslint",
     "test": "npm run build && npm run typecheck:regression && npm run typecheck:types && npm run test:dx && npm run test:cli",
