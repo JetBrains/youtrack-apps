@@ -1,6 +1,7 @@
 # license
 
 ## Types
+
 - [`LicenseInfo`](#licenseinfo)
 
 ## LicenseInfo
@@ -26,6 +27,7 @@ Type: `Object`
 - `currentDiskSpaceMb`
 - `maxDiskSpaceMb`
 - `expirationTimestamp`
+- `instanceId`
 
 ### Examples
 
@@ -33,6 +35,7 @@ Type: `Object`
 const { licenseInfo } = require('@jetbrains/youtrack-scripting-api/license');
 console.log('Current YouTrack version is: ' + licenseInfo.youTrackVersion);
 console.log('The current user count in this YouTrack is: ' + licenseInfo.currentUserCount);
+console.log('The ID of this YouTrack installation is: ' + licenseInfo.instanceId);
 ```
 
 ### Properties
@@ -51,3 +54,4 @@ console.log('The current user count in this YouTrack is: ' + licenseInfo.current
 | `currentDiskSpaceMb` | `number` | The current amount of disk space (in megabytes) used by this YouTrack. |
 | `maxDiskSpaceMb` | `number` | The maximum amount of disk space (in megabytes) allowed for this YouTrack. |
 | `expirationTimestamp` | `number` | The license expiration timestamp in milliseconds since the Unix epoch. |
+| `instanceId` | `string` | The unique identifier of this YouTrack installation. The value matches the `uuid` field returned by the `/api/config` REST endpoint. Available since 2026.3. |

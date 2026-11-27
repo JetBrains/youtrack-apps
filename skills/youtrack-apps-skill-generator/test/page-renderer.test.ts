@@ -7,9 +7,41 @@ import { fileURLToPath } from "node:url";
 import { formatUpdatedApiReferenceFile } from "../src/workflow-api-markdown/render/api-reference.ts";
 import { renderMergedTypePage, renderModulePage, renderTypePage } from "../src/workflow-api-markdown/render/page-renderer.ts";
 import { writeAllFiles } from "../src/workflow-api-markdown/write/files.ts";
+import { buildTypePageModel } from "../src/workflow-api-markdown/render/type-model.ts";
 import type { ModuleGroup } from "../src/workflow-api-markdown/types.ts";
 
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
+
+test("preserves inheritance lookup when parent members are documented separately", () => {
+  const module: ModuleGroup = {
+    key: "entities",
+    longname: "module:@jetbrains/youtrack-scripting-api/entities",
+    moduleDoc: null,
+    functions: [],
+    types: {
+      BaseComment: {
+        name: "BaseComment",
+        typeDoc: { name: "BaseComment" },
+        properties: [{ name: "mentionedUsers", type: ["Set.<User>"] }],
+        methods: [],
+      },
+      IssueComment: {
+        name: "IssueComment",
+        typeDoc: { name: "IssueComment", augments: ["BaseComment"] },
+        properties: [{ name: "issue", type: ["Issue"] }],
+        methods: [],
+      },
+    },
+  };
+
+  const ownMembers = buildTypePageModel(module, "IssueComment", false);
+  assert.deepEqual(ownMembers.hierarchy, ["BaseComment", "IssueComment"]);
+  assert.deepEqual(ownMembers.properties.map((doc) => doc.name), ["issue"]);
+
+  const inheritedMembers = buildTypePageModel(module, "IssueComment", true);
+  assert.deepEqual(inheritedMembers.hierarchy, ownMembers.hierarchy);
+  assert.deepEqual(inheritedMembers.properties.map((doc) => doc.name), ["mentionedUsers", "issue"]);
+});
 
 test("renders a module through the Eta page template", () => {
   const module: ModuleGroup = {

@@ -7,6 +7,7 @@ The files in `references/api/` are the ground truth for module imports, top-leve
 - Methods: use entries under `## Methods` as `object.method(args)`; follow the parameter list and return text on that method.
 - Functions: use entries under module `## Functions` after importing the module, for example `const workflow = require('@jetbrains/youtrack-scripting-api/workflow'); workflow.functionName(args);`.
 - Types: use module `## Types` links to open the detailed page for entity objects, helper objects, and schemas.
+- Inherited members: search the listed `Parent types` in the same module before deciding that a property or method is unavailable.
 
 ### API Modules
 
